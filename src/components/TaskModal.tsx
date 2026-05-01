@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { Priority, Task } from '../types';
-import { CloseCircle, ArrowDown, ArrowRight, ArrowUp } from '@solar-icons/react';
+import { CloseCircle } from '@solar-icons/react';
 import { DatePicker } from './DatePicker';
 
 interface Props {
@@ -13,12 +13,11 @@ interface Props {
 const PRIORITIES: {
   value: Priority;
   label: string;
-  Icon: React.FC<{ size?: number }>;
   cls: string;
 }[] = [
-  { value: 'low',    label: 'Low',    Icon: ArrowDown,  cls: 'border-sage-200  text-sage-500  bg-sage-100  dark:bg-sage-500/10  dark:border-sage-500/30' },
-  { value: 'medium', label: 'Medium', Icon: ArrowRight, cls: 'border-amber-200 text-amber-500 bg-amber-100 dark:bg-amber-500/10 dark:border-amber-500/30' },
-  { value: 'high',   label: 'High',   Icon: ArrowUp,    cls: 'border-blush-200 text-blush-500 bg-blush-100 dark:bg-blush-500/10 dark:border-blush-500/30' },
+  { value: 'low',    label: 'Low',    cls: 'border-sage-200  text-sage-500  bg-sage-100  dark:bg-sage-500/10  dark:border-sage-500/30' },
+  { value: 'medium', label: 'Medium', cls: 'border-amber-200 text-amber-500 bg-amber-100 dark:bg-amber-500/10 dark:border-amber-500/30' },
+  { value: 'high',   label: 'High',   cls: 'border-blush-200 text-blush-500 bg-blush-100 dark:bg-blush-500/10 dark:border-blush-500/30' },
 ];
 
 export const TaskModal: React.FC<Props> = ({ mode, initial, onClose, onSubmit }) => {
@@ -117,7 +116,6 @@ export const TaskModal: React.FC<Props> = ({ mode, initial, onClose, onSubmit })
                   }`}
                   style={priority !== p.value ? { borderColor: 'var(--border)', color: 'var(--text-muted)', background: 'var(--bg-panel)' } : {}}
                 >
-                  <p.Icon size={13} />
                   {p.label}
                 </button>
               ))}
