@@ -31,7 +31,11 @@ function formatDisplay(s: string): string {
   if (diff === 0) return 'Today';
   if (diff === 1) return 'Tomorrow';
   if (diff === 2) return 'In 2 days';
-  return d.toLocaleDateString('en', { month: 'short', day: 'numeric', year: d.getFullYear() !== now.getFullYear() ? 'numeric' : undefined });
+  return d.toLocaleDateString('en', {
+    month: 'short',
+    day: 'numeric',
+    year: d.getFullYear() !== now.getFullYear() ? 'numeric' : undefined,
+  });
 }
 
 export const DatePicker: React.FC<Props> = ({ value, onChange, min }) => {
@@ -58,9 +62,8 @@ export const DatePicker: React.FC<Props> = ({ value, onChange, min }) => {
     return () => document.removeEventListener('mousedown', handler);
   }, [open]);
 
-  // Build calendar grid (Mon-first)
   const firstDay = new Date(view.year, view.month, 1);
-  const startDow = (firstDay.getDay() + 6) % 7; // 0=Mon
+  const startDow = (firstDay.getDay() + 6) % 7;
   const daysInMonth = new Date(view.year, view.month + 1, 0).getDate();
   const cells: (number | null)[] = [
     ...Array(startDow).fill(null),
@@ -68,12 +71,10 @@ export const DatePicker: React.FC<Props> = ({ value, onChange, min }) => {
   ];
   while (cells.length % 7 !== 0) cells.push(null);
 
-  const prevMonth = () => {
+  const prevMonth = () =>
     setView(v => v.month === 0 ? { year: v.year - 1, month: 11 } : { ...v, month: v.month - 1 });
-  };
-  const nextMonth = () => {
+  const nextMonth = () =>
     setView(v => v.month === 11 ? { year: v.year + 1, month: 0 } : { ...v, month: v.month + 1 });
-  };
 
   const selectDay = (day: number) => {
     const d = new Date(view.year, view.month, day);
@@ -83,26 +84,22 @@ export const DatePicker: React.FC<Props> = ({ value, onChange, min }) => {
 
   const isDisabled = (day: number) => {
     if (!minDate) return false;
-    const d = new Date(view.year, view.month, day);
-    return d < minDate;
+    return new Date(view.year, view.month, day) < minDate;
   };
 
-  const isSelected = (day: number) => {
-    if (!selected) return false;
-    return selected.getFullYear() === view.year &&
-           selected.getMonth() === view.month &&
-           selected.getDate() === day;
-  };
+  const isSelected = (day: number) =>
+    !!selected &&
+    selected.getFullYear() === view.year &&
+    selected.getMonth() === view.month &&
+    selected.getDate() === day;
 
   const isToday = (day: number) =>
     today.getFullYear() === view.year &&
     today.getMonth() === view.month &&
     today.getDate() === day;
 
-  const displayLabel = formatDisplay(value);
-
   return (
-    <div ref={containerRef} style={{ position: 'relative' }}>
+    <div ref={containerRef}>
       {/* Trigger button */}
       <button
         type="button"
@@ -125,14 +122,17 @@ export const DatePicker: React.FC<Props> = ({ value, onChange, min }) => {
           textAlign: 'left',
         }}
       >
-        <CalendarMinimalistic size={16} style={{ color: value ? 'var(--accent)' : 'var(--text-muted)', flexShrink: 0 }} />
+        <CalendarMinimalistic
+          size={16}
+          style={{ color: value ? 'var(--accent)' : 'var(--text-muted)', flexShrink: 0 }}
+        />
         <span style={{ flex: 1, opacity: value ? 1 : 0.6 }}>
-          {displayLabel || 'Pick a date...'}
+          {formatDisplay(value) || 'Pick a date...'}
         </span>
         {value && (
           <span
             role="button"
-            onClick={e => { e.stopPropagation(); onChange(''); }}
+            onClick={e => { e.stopPropagation(); onChange(''); setOpen(false); }}
             style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center', cursor: 'pointer' }}
           >
             <CloseCircle size={15} />
@@ -140,43 +140,44 @@ export const DatePicker: React.FC<Props> = ({ value, onChange, min }) => {
         )}
       </button>
 
-      {/* Dropdown calendar */}
+      {/* Inline calendar — in document flow, not absolute,
+          so modal overflow-hidden won't clip it */}
       {open && (
         <div
           style={{
-            position: 'absolute',
-            top: 'calc(100% + 8px)',
-            left: 0,
-            right: 0,
-            zIndex: 100,
-            background: 'var(--bg-card)',
+            marginTop: '8px',
+            background: 'var(--bg-panel)',
             border: '1.5px solid var(--border)',
             borderRadius: '18px',
-            boxShadow: '0 8px 40px rgba(80,55,30,0.15), 0 2px 10px rgba(80,55,30,0.08)',
-            padding: '16px',
-            animation: 'slideUp 0.22s cubic-bezier(0.34,1.56,0.64,1)',
+            padding: '14px',
+            animation: 'fadeIn 0.18s ease-out',
           }}
         >
           {/* Month nav */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
             <button
               type="button"
               onClick={prevMonth}
               style={{
-                width: '30px', height: '30px', borderRadius: '10px',
+                width: '28px', height: '28px', borderRadius: '9px',
                 border: '1.5px solid var(--border)',
-                background: 'var(--bg-panel)',
+                background: 'var(--bg-card)',
                 color: 'var(--text-muted)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 cursor: 'pointer', transition: 'background 0.15s',
               }}
               onMouseEnter={e => (e.currentTarget.style.background = 'var(--border)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'var(--bg-panel)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'var(--bg-card)')}
             >
-              <AltArrowLeft size={15} />
+              <AltArrowLeft size={14} />
             </button>
 
-            <span style={{ fontFamily: '"Fraunces", serif', fontWeight: 500, fontSize: '1rem', color: 'var(--text-main)' }}>
+            <span style={{
+              fontFamily: '"Fraunces", serif',
+              fontWeight: 500,
+              fontSize: '0.95rem',
+              color: 'var(--text-main)',
+            }}>
               {MONTHS[view.month]} {view.year}
             </span>
 
@@ -184,17 +185,17 @@ export const DatePicker: React.FC<Props> = ({ value, onChange, min }) => {
               type="button"
               onClick={nextMonth}
               style={{
-                width: '30px', height: '30px', borderRadius: '10px',
+                width: '28px', height: '28px', borderRadius: '9px',
                 border: '1.5px solid var(--border)',
-                background: 'var(--bg-panel)',
+                background: 'var(--bg-card)',
                 color: 'var(--text-muted)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 cursor: 'pointer', transition: 'background 0.15s',
               }}
               onMouseEnter={e => (e.currentTarget.style.background = 'var(--border)')}
-              onMouseLeave={e => (e.currentTarget.style.background = 'var(--bg-panel)')}
+              onMouseLeave={e => (e.currentTarget.style.background = 'var(--bg-card)')}
             >
-              <AltArrowRight size={15} />
+              <AltArrowRight size={14} />
             </button>
           </div>
 
@@ -202,8 +203,12 @@ export const DatePicker: React.FC<Props> = ({ value, onChange, min }) => {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '2px', marginBottom: '4px' }}>
             {DOW.map(d => (
               <div key={d} style={{
-                textAlign: 'center', fontSize: '0.7rem', fontWeight: 600,
-                color: 'var(--text-muted)', padding: '2px 0', letterSpacing: '0.04em',
+                textAlign: 'center',
+                fontSize: '0.65rem',
+                fontWeight: 600,
+                color: 'var(--text-muted)',
+                padding: '2px 0',
+                letterSpacing: '0.05em',
                 textTransform: 'uppercase',
               }}>
                 {d}
@@ -226,8 +231,8 @@ export const DatePicker: React.FC<Props> = ({ value, onChange, min }) => {
                   disabled={disabled}
                   onClick={() => !disabled && selectDay(day)}
                   style={{
-                    height: '34px',
-                    borderRadius: '10px',
+                    height: '32px',
+                    borderRadius: '9px',
                     border: tod && !sel ? '1.5px solid var(--accent)' : '1.5px solid transparent',
                     background: sel ? 'var(--text-main)' : 'transparent',
                     color: sel
@@ -242,11 +247,10 @@ export const DatePicker: React.FC<Props> = ({ value, onChange, min }) => {
                     fontWeight: sel || tod ? 600 : 400,
                     cursor: disabled ? 'default' : 'pointer',
                     transition: 'background 0.12s, color 0.12s, transform 0.1s',
-                    transform: 'scale(1)',
                   }}
                   onMouseEnter={e => {
                     if (!disabled && !sel) {
-                      (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-panel)';
+                      (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-card)';
                       (e.currentTarget as HTMLButtonElement).style.transform = 'scale(1.08)';
                     }
                   }}
@@ -264,7 +268,11 @@ export const DatePicker: React.FC<Props> = ({ value, onChange, min }) => {
           </div>
 
           {/* Quick picks */}
-          <div style={{ display: 'flex', gap: '6px', marginTop: '12px', paddingTop: '12px', borderTop: '1px solid var(--border)' }}>
+          <div style={{
+            display: 'flex', gap: '6px',
+            marginTop: '10px', paddingTop: '10px',
+            borderTop: '1px solid var(--border)',
+          }}>
             {[
               { label: 'Today', days: 0 },
               { label: 'Tomorrow', days: 1 },
@@ -281,9 +289,9 @@ export const DatePicker: React.FC<Props> = ({ value, onChange, min }) => {
                   style={{
                     flex: 1,
                     padding: '5px 4px',
-                    borderRadius: '10px',
+                    borderRadius: '9px',
                     border: `1.5px solid ${active ? 'var(--accent)' : 'var(--border)'}`,
-                    background: active ? 'rgba(201,144,58,0.12)' : 'var(--bg-panel)',
+                    background: active ? 'rgba(201,144,58,0.12)' : 'var(--bg-card)',
                     color: active ? 'var(--accent)' : 'var(--text-muted)',
                     fontSize: '0.72rem',
                     fontFamily: '"DM Sans", sans-serif',
