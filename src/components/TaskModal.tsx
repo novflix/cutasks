@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { Priority, Task } from '../types';
-import { CloseCircle, ArrowDown, ArrowRight, ArrowUp, CalendarMinimalistic } from '@solar-icons/react';
+import { CloseCircle, ArrowDown, ArrowRight, ArrowUp } from '@solar-icons/react';
+import { DatePicker } from './DatePicker';
 
 interface Props {
   mode: 'create' | 'edit';
@@ -128,20 +129,11 @@ export const TaskModal: React.FC<Props> = ({ mode, initial, onClose, onSubmit })
             <label className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
               Deadline <span className="normal-case opacity-60">(optional)</span>
             </label>
-            <div className="relative">
-              <CalendarMinimalistic
-                size={16}
-                className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"
-                style={{ color: 'var(--text-muted)' } as React.CSSProperties}
-              />
-              <input
-                type="date"
-                value={deadline}
-                onChange={e => setDeadline(e.target.value)}
-                min={new Date().toISOString().split('T')[0]}
-                className="input-field pl-9"
-              />
-            </div>
+            <DatePicker
+              value={deadline}
+              onChange={setDeadline}
+              min={new Date().toISOString().split('T')[0]}
+            />
           </div>
 
           {/* Actions */}
