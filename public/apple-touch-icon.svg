@@ -1,0 +1,9 @@
+<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background with rounded corners (iOS clips to its own shape, but we add bg) -->
+  <rect width="180" height="180" rx="38" fill="#2d2824"/>
+  <!-- logo-mini centered, scaled from 150x150 to ~110x110, offset 35,35 -->
+  <g transform="translate(15, 15) scale(1)">
+    <path d="M125 75V95C125 111.569 111.569 125 95 125H55C38.4315 125 25 111.569 25 95V55C25 38.4315 38.4315 25 55 25H75" stroke="#ED9B6D" stroke-width="15" stroke-linecap="round"/>
+    <path d="M50 62.4208L73.8187 89.6808C75.8761 92.0354 79.5693 91.9405 81.5091 89.4881C97.5694 69.1838 107.644 56.4469 124.679 34.9106" stroke="white" stroke-width="12" stroke-linecap="round"/>
+  </g>
+</svg>
