@@ -23,6 +23,15 @@
     --border: #3d3630;
     --accent: #ed9b6d;
   }
+  .slate {
+    --bg-main: #0f1117;
+    --bg-card: #1a1d27;
+    --bg-panel: #141720;
+    --text-main: #e2e8f0;
+    --text-muted: #8892a4;
+    --border: #252a38;
+    --accent: #ed9b6d;
+  }
   html { font-family: 'DM Sans', sans-serif; }
   body {
     background-color: var(--bg-main);
