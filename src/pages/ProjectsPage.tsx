@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useProjects } from '../hooks/useProjects';
+import { useDragDrop } from '../hooks/useDragDrop';
 import { useTheme } from '../hooks/useTheme';
 import type { Project, ProjectTask, Priority, ProjectColor } from '../types';
 import { resolveProjectColors } from '../types';
@@ -16,6 +17,7 @@ import {
   AddCircle,
   CloseCircle,
   CheckCircle,
+  HamburgerMenu,
 } from '@solar-icons/react';
 
 // ─── Project icon renderer ────────────────────────────────────────────────────
@@ -26,14 +28,14 @@ const ProjectIcon: React.FC<{ iconKey?: string; size?: number }> = ({ iconKey, s
   return <Icon size={size} />;
 };
 
-// ─── Priority options (same style as TaskModal on Tasks page) ─────────────────
+// ─── Priority options ─────────────────────────────────────────────────────────
 const PRIORITIES: { value: Priority; label: string; cls: string }[] = [
   { value: 'low',    label: 'Low',    cls: 'border-sage-200  text-sage-500  bg-sage-100  dark:bg-sage-500/10  dark:border-sage-500/30' },
   { value: 'medium', label: 'Medium', cls: 'border-amber-200 text-amber-500 bg-amber-100 dark:bg-amber-500/10 dark:border-amber-500/30' },
   { value: 'high',   label: 'High',   cls: 'border-blush-200 text-blush-500 bg-blush-100 dark:bg-blush-500/10 dark:border-blush-500/30' },
 ];
 
-// ─── Project task modal (create + edit, with priority, deadline & section) ────
+// ─── Project task modal ───────────────────────────────────────────────────────
 const ProjectTaskModal: React.FC<{
   mode: 'create' | 'edit';
   initial?: ProjectTask;
@@ -93,7 +95,6 @@ const ProjectTaskModal: React.FC<{
         className="w-full max-w-md animate-slide-up rounded-3xl shadow-cozy overflow-hidden"
         style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
       >
-        {/* Header */}
         <div className="flex items-center justify-between px-6 pt-6 pb-4" style={{ borderBottom: '1px solid var(--border)' }}>
           <h2 className="font-display text-xl font-semibold" style={{ color: 'var(--text-main)' }}>
             {mode === 'create' ? 'New task' : 'Edit task'}
@@ -108,7 +109,6 @@ const ProjectTaskModal: React.FC<{
         </div>
 
         <div className="p-6 flex flex-col gap-4">
-          {/* Title */}
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>Task name</label>
             <input
@@ -122,7 +122,6 @@ const ProjectTaskModal: React.FC<{
             />
           </div>
 
-          {/* Description */}
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
               Note <span className="normal-case opacity-60">(optional)</span>
@@ -137,7 +136,6 @@ const ProjectTaskModal: React.FC<{
             />
           </div>
 
-          {/* Priority */}
           <div className="flex flex-col gap-2">
             <label className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>Priority</label>
             <div className="flex gap-2">
@@ -159,7 +157,6 @@ const ProjectTaskModal: React.FC<{
             </div>
           </div>
 
-          {/* Deadline */}
           <div className="flex flex-col gap-1.5">
             <label className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
               Deadline <span className="normal-case opacity-60">(optional)</span>
@@ -171,7 +168,6 @@ const ProjectTaskModal: React.FC<{
             />
           </div>
 
-          {/* Section (only shown when project has sections) */}
           {sections.length > 0 && (
             <div className="flex flex-col gap-1.5">
               <label className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>Section</label>
@@ -209,7 +205,6 @@ const ProjectTaskModal: React.FC<{
             </div>
           )}
 
-          {/* Actions */}
           <div className="flex gap-2 mt-1">
             <button
               type="button"
@@ -234,6 +229,19 @@ const ProjectTaskModal: React.FC<{
   );
 };
 
+// ─── Drag handle ──────────────────────────────────────────────────────────────
+const DragHandle: React.FC<{ onPointerDown: (e: React.PointerEvent) => void }> = ({ onPointerDown }) => (
+  <div
+    onPointerDown={onPointerDown}
+    className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-lg cursor-grab active:cursor-grabbing touch-none select-none opacity-0 group-hover:opacity-40 transition-opacity duration-150"
+    style={{ color: 'var(--text-muted)' }}
+    data-drag-handle="true"
+    aria-label="Drag to reorder"
+  >
+    <HamburgerMenu size={13} />
+  </div>
+);
+
 // ─── Task row ─────────────────────────────────────────────────────────────────
 const ProjectTaskRow: React.FC<{
   task: ProjectTask;
@@ -241,7 +249,8 @@ const ProjectTaskRow: React.FC<{
   onToggle: () => void;
   onEdit: () => void;
   onDelete: () => void;
-}> = ({ task, dotColor, onToggle, onEdit, onDelete }) => {
+  onDragHandlePointerDown: (e: React.PointerEvent) => void;
+}> = ({ task, dotColor, onToggle, onEdit, onDelete, onDragHandlePointerDown }) => {
   const isOverdue = task.deadline && !task.completed && task.deadline < new Date().toISOString().split('T')[0];
 
   const priorityDot: Record<string, string> = {
@@ -251,7 +260,13 @@ const ProjectTaskRow: React.FC<{
   };
 
   return (
-    <div className="group flex items-start gap-3 px-1 py-2.5 rounded-xl transition-all duration-150 hover:bg-[var(--bg-panel)]">
+    <div
+      className="group flex items-start gap-2 px-1 py-2.5 rounded-xl transition-colors duration-100 hover:bg-[var(--bg-panel)]"
+      data-task-id={task.id}
+      data-task-section={task.sectionId ?? ''}
+    >
+      <DragHandle onPointerDown={onDragHandlePointerDown} />
+
       <button
         onClick={onToggle}
         className="flex-shrink-0 mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all duration-200 hover:scale-110"
@@ -312,9 +327,9 @@ const ProjectTaskRow: React.FC<{
   );
 };
 
-// ─── Section block (no per-section add button) ────────────────────────────────
+// ─── Section block ────────────────────────────────────────────────────────────
 const SectionBlock: React.FC<{
-  title: string;
+  section: { id: string; title: string; order: number };
   tasks: ProjectTask[];
   colors: { bg: string; text: string; border: string; dot: string };
   onToggleTask: (taskId: string) => void;
@@ -322,22 +337,49 @@ const SectionBlock: React.FC<{
   onDeleteTask: (taskId: string) => void;
   onEditSection: (newTitle: string) => void;
   onDeleteSection: () => void;
-}> = ({ title, tasks, colors, onToggleTask, onEditTask, onDeleteTask, onEditSection, onDeleteSection }) => {
+  onTaskDragPointerDown: (e: React.PointerEvent, taskId: string, sectionId: string | undefined) => void;
+  onSectionDragPointerDown: (e: React.PointerEvent, sectionId: string) => void;
+}> = ({
+  section,
+  tasks,
+  colors,
+  onToggleTask,
+  onEditTask,
+  onDeleteTask,
+  onEditSection,
+  onDeleteSection,
+  onTaskDragPointerDown,
+  onSectionDragPointerDown,
+}) => {
   const [collapsed, setCollapsed] = useState(false);
   const [editing, setEditing]     = useState(false);
-  const [editVal, setEditVal]     = useState(title);
+  const [editVal, setEditVal]     = useState(section.title);
 
   const done = tasks.filter(t => t.completed).length;
 
   const commitEdit = () => {
     if (editVal.trim()) onEditSection(editVal.trim());
-    else setEditVal(title);
+    else setEditVal(section.title);
     setEditing(false);
   };
 
   return (
-    <div className="mb-1">
-      <div className="flex items-center gap-2 mb-1 group/sec">
+    <div className="mb-1" data-section-id={section.id}>
+      {/* Section header */}
+      <div
+        className="group/sec flex items-center gap-2 mb-1 py-0.5 rounded-xl"
+        data-section-header-id={section.id}
+      >
+        {/* Section drag handle */}
+        <div
+          onPointerDown={(e) => onSectionDragPointerDown(e, section.id)}
+          className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded cursor-grab active:cursor-grabbing touch-none select-none opacity-0 group-hover/sec:opacity-40 transition-opacity duration-150"
+          style={{ color: 'var(--text-muted)' }}
+          data-drag-handle="true"
+        >
+          <HamburgerMenu size={12} />
+        </div>
+
         <button
           onClick={() => setCollapsed(c => !c)}
           className="transition-transform duration-200 flex-shrink-0"
@@ -355,7 +397,7 @@ const SectionBlock: React.FC<{
             onChange={e => setEditVal(e.target.value)}
             onKeyDown={e => {
               if (e.key === 'Enter')  commitEdit();
-              if (e.key === 'Escape') { setEditVal(title); setEditing(false); }
+              if (e.key === 'Escape') { setEditVal(section.title); setEditing(false); }
             }}
             onBlur={commitEdit}
             autoFocus
@@ -368,7 +410,7 @@ const SectionBlock: React.FC<{
             style={{ color: colors.text }}
             onClick={() => setEditing(true)}
           >
-            {title}
+            {section.title}
           </span>
         )}
 
@@ -391,9 +433,22 @@ const SectionBlock: React.FC<{
       </div>
 
       {!collapsed && (
-        <div className="ml-5">
+        <div
+          className="ml-7"
+          data-section-drop-zone={section.id}
+          style={{ minHeight: '8px' }}
+        >
           {tasks.length === 0 ? (
-            <p className="text-xs py-1.5 italic" style={{ color: 'var(--text-muted)', opacity: 0.55 }}>Empty section</p>
+            <div
+              className="py-2 px-2 rounded-lg border border-dashed text-xs italic"
+              style={{
+                color: 'var(--text-muted)',
+                borderColor: 'var(--border)',
+                opacity: 0.5,
+              }}
+            >
+              Empty — drop tasks here
+            </div>
           ) : (
             <div className="flex flex-col">
               {tasks.map(task => (
@@ -404,6 +459,7 @@ const SectionBlock: React.FC<{
                   onToggle={() => onToggleTask(task.id)}
                   onEdit={() => onEditTask(task)}
                   onDelete={() => onDeleteTask(task.id)}
+                  onDragHandlePointerDown={(e) => onTaskDragPointerDown(e, task.id, task.sectionId)}
                 />
               ))}
             </div>
@@ -422,11 +478,12 @@ const UnsectionedBlock: React.FC<{
   onToggleTask: (taskId: string) => void;
   onEditTask: (task: ProjectTask) => void;
   onDeleteTask: (taskId: string) => void;
-}> = ({ tasks, colors, hasSections, onToggleTask, onEditTask, onDeleteTask }) => {
+  onTaskDragPointerDown: (e: React.PointerEvent, taskId: string, sectionId: string | undefined) => void;
+}> = ({ tasks, colors, hasSections, onToggleTask, onEditTask, onDeleteTask, onTaskDragPointerDown }) => {
   if (hasSections && tasks.length === 0) return null;
 
   return (
-    <div className="mb-2">
+    <div className="mb-2" data-section-drop-zone="">
       {hasSections && tasks.length > 0 && (
         <p className="text-xs font-semibold font-body uppercase tracking-widest mb-1 ml-0.5" style={{ color: 'var(--text-muted)' }}>
           Unsorted
@@ -446,6 +503,7 @@ const UnsectionedBlock: React.FC<{
             onToggle={() => onToggleTask(task.id)}
             onEdit={() => onEditTask(task)}
             onDelete={() => onDeleteTask(task.id)}
+            onDragHandlePointerDown={(e) => onTaskDragPointerDown(e, task.id, undefined)}
           />
         ))}
       </div>
@@ -487,6 +545,46 @@ const ProjectDetail: React.FC<{
   useEffect(() => {
     if (showAddSection) setTimeout(() => sectionInputRef.current?.focus(), 60);
   }, [showAddSection]);
+
+  // ── Drag & drop ────────────────────────────────────────
+  const handleReorderTask = useCallback((
+    taskId: string,
+    targetSectionId: string | undefined,
+    beforeTaskId: string | undefined,
+  ) => {
+    ops.reorderTask(project.id, taskId, targetSectionId, beforeTaskId);
+  }, [ops, project.id]);
+
+  const handleReorderSection = useCallback((
+    sectionId: string,
+    beforeSectionId: string | undefined,
+  ) => {
+    ops.reorderSection(project.id, sectionId, beforeSectionId);
+  }, [ops, project.id]);
+
+  const { onPointerDown } = useDragDrop({
+    onReorderTask: handleReorderTask,
+    onReorderSection: handleReorderSection,
+  });
+
+  const handleTaskDragPointerDown = useCallback((
+    e: React.PointerEvent,
+    taskId: string,
+    sectionId: string | undefined,
+  ) => {
+    const rowEl = (e.currentTarget as HTMLElement).closest('[data-task-id]') as HTMLElement | null;
+    if (!rowEl) return;
+    onPointerDown(e, { type: 'task', id: taskId, sectionId }, rowEl);
+  }, [onPointerDown]);
+
+  const handleSectionDragPointerDown = useCallback((
+    e: React.PointerEvent,
+    sectionId: string,
+  ) => {
+    const headerEl = (e.currentTarget as HTMLElement).closest('[data-section-header-id]') as HTMLElement | null;
+    if (!headerEl) return;
+    onPointerDown(e, { type: 'section', id: sectionId }, headerEl);
+  }, [onPointerDown]);
 
   return (
     <div>
@@ -559,7 +657,7 @@ const ProjectDetail: React.FC<{
         </div>
       </div>
 
-      {/* Task lists — no card backgrounds */}
+      {/* Task list */}
       <UnsectionedBlock
         tasks={unsectioned}
         colors={colors}
@@ -567,12 +665,13 @@ const ProjectDetail: React.FC<{
         onToggleTask={(tid) => ops.toggleTask(project.id, tid)}
         onEditTask={(task) => setEditTask(task)}
         onDeleteTask={(tid) => ops.deleteTask(project.id, tid)}
+        onTaskDragPointerDown={handleTaskDragPointerDown}
       />
 
       {sortedSections.map(sec => (
         <SectionBlock
           key={sec.id}
-          title={sec.title}
+          section={sec}
           tasks={getSectionTasks(sec.id)}
           colors={colors}
           onToggleTask={(tid) => ops.toggleTask(project.id, tid)}
@@ -580,10 +679,12 @@ const ProjectDetail: React.FC<{
           onDeleteTask={(tid) => ops.deleteTask(project.id, tid)}
           onEditSection={(newTitle) => ops.editSection(project.id, sec.id, newTitle)}
           onDeleteSection={() => ops.deleteSection(project.id, sec.id)}
+          onTaskDragPointerDown={handleTaskDragPointerDown}
+          onSectionDragPointerDown={handleSectionDragPointerDown}
         />
       ))}
 
-      {/* Single toolbar at the bottom */}
+      {/* Toolbar */}
       <div
         className="flex items-center gap-3 mt-5 pt-4"
         style={{ borderTop: '1px solid var(--border)' }}

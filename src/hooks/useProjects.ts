@@ -143,6 +143,58 @@ export function useProjects() {
     }));
   }, [update]);
 
+  const reorderTask = useCallback((
+    projectId: string,
+    taskId: string,
+    targetSectionId: string | undefined,
+    beforeTaskId: string | undefined,
+  ) => {
+    update(prev => prev.map(p => {
+      if (p.id !== projectId) return p;
+      const task = p.tasks.find(t => t.id === taskId);
+      if (!task) return p;
+      const updatedTask = { ...task, sectionId: targetSectionId };
+      const remaining = p.tasks.filter(t => t.id !== taskId);
+      if (beforeTaskId) {
+        const idx = remaining.findIndex(t => t.id === beforeTaskId);
+        if (idx === -1) return { ...p, tasks: [...remaining, updatedTask] };
+        const next = [...remaining];
+        next.splice(idx, 0, updatedTask);
+        return { ...p, tasks: next };
+      } else {
+        const sectionTasks = remaining.filter(t => t.sectionId === targetSectionId);
+        const otherTasks = remaining.filter(t => t.sectionId !== targetSectionId);
+        return { ...p, tasks: [...otherTasks, ...sectionTasks, updatedTask] };
+      }
+    }));
+  }, [update]);
+
+  const reorderSection = useCallback((
+    projectId: string,
+    sectionId: string,
+    beforeSectionId: string | undefined,
+  ) => {
+    update(prev => prev.map(p => {
+      if (p.id !== projectId) return p;
+      const section = p.sections.find(s => s.id === sectionId);
+      if (!section) return p;
+      const remaining = p.sections.filter(s => s.id !== sectionId);
+      let reordered: typeof remaining;
+      if (beforeSectionId) {
+        const idx = remaining.findIndex(s => s.id === beforeSectionId);
+        if (idx === -1) {
+          reordered = [...remaining, section];
+        } else {
+          reordered = [...remaining];
+          reordered.splice(idx, 0, section);
+        }
+      } else {
+        reordered = [...remaining, section];
+      }
+      return { ...p, sections: reordered.map((s, i) => ({ ...s, order: i })) };
+    }));
+  }, [update]);
+
   return {
     projects,
     createProject,
@@ -155,5 +207,7 @@ export function useProjects() {
     editTask,
     deleteTask,
     toggleTask,
+    reorderTask,
+    reorderSection,
   };
 }
