@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useProjects } from '../hooks/useProjects';
+import { useTheme } from '../hooks/useTheme';
 import type { Project, ProjectTask, Priority, ProjectColor } from '../types';
-import { PROJECT_COLORS } from '../types';
+import { resolveProjectColors } from '../types';
 import { PROJECT_ICON_MAP } from '../projectIcons';
 import { ProjectModal } from '../components/ProjectModal';
 import { TaskModal } from '../components/TaskModal';
@@ -169,7 +170,7 @@ const ProjectTaskRow: React.FC<{
 const SectionBlock: React.FC<{
   title: string;
   tasks: ProjectTask[];
-  colors: typeof PROJECT_COLORS[ProjectColor];
+  colors: { bg: string; text: string; border: string; dot: string };
   onAddTask: (title: string) => void;
   onToggleTask: (taskId: string) => void;
   onEditTask: (task: ProjectTask) => void;
@@ -276,7 +277,7 @@ const SectionBlock: React.FC<{
 // ─── Unsectioned tasks block ──────────────────────────────────────────────────
 const UnsectionedBlock: React.FC<{
   tasks: ProjectTask[];
-  colors: typeof PROJECT_COLORS[ProjectColor];
+  colors: { bg: string; text: string; border: string; dot: string };
   hasSections: boolean;
   onAddTask: (title: string) => void;
   onToggleTask: (taskId: string) => void;
@@ -325,7 +326,8 @@ const ProjectDetail: React.FC<{
   onBack: () => void;
   ops: ReturnType<typeof useProjects>;
 }> = ({ project, onBack, ops }) => {
-  const colors = PROJECT_COLORS[project.color];
+  const { dark } = useTheme();
+  const colors = resolveProjectColors(project.color, dark);
   const [showEdit, setShowEdit]             = useState(false);
   const [editTask, setEditTask]             = useState<ProjectTask | null>(null);
   const [addSectionVal, setAddSectionVal]   = useState('');
@@ -508,7 +510,8 @@ const ProjectDetail: React.FC<{
 
 // ─── Project card ─────────────────────────────────────────────────────────────
 const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ project, onClick }) => {
-  const colors   = PROJECT_COLORS[project.color];
+  const { dark } = useTheme();
+  const colors   = resolveProjectColors(project.color, dark);
   const total    = project.tasks.length;
   const done     = project.tasks.filter(t => t.completed).length;
   const progress = total === 0 ? 0 : Math.round((done / total) * 100);

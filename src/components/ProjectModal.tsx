@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { Project, ProjectColor } from '../types';
-import { PROJECT_COLORS } from '../types';
+import { PROJECT_COLOR_TOKENS, resolveProjectColors } from '../types';
 import { PROJECT_ICON_OPTIONS, PROJECT_ICON_MAP } from '../projectIcons';
+import { useTheme } from '../hooks/useTheme';
 import { CloseCircle } from '@solar-icons/react';
 
-const COLOR_KEYS = Object.keys(PROJECT_COLORS) as ProjectColor[];
+const COLOR_KEYS = Object.keys(PROJECT_COLOR_TOKENS) as ProjectColor[];
 
 interface Props {
   mode: 'create' | 'edit';
@@ -38,7 +39,8 @@ export const ProjectModal: React.FC<Props> = ({ mode, initial, onClose, onSubmit
     onClose();
   };
 
-  const selectedColors = PROJECT_COLORS[color];
+  const { dark } = useTheme();
+  const selectedColors = resolveProjectColors(color, dark);
   const SelectedIcon = iconKey ? PROJECT_ICON_MAP[iconKey] : null;
 
   return (
@@ -107,9 +109,9 @@ export const ProjectModal: React.FC<Props> = ({ mode, initial, onClose, onSubmit
                   onClick={() => setColor(c)}
                   className="w-7 h-7 rounded-full transition-all duration-200"
                   style={{
-                    background: PROJECT_COLORS[c].dot,
+                    background: PROJECT_COLOR_TOKENS[c].dot,
                     boxShadow: color === c
-                      ? `0 0 0 2px var(--bg-card), 0 0 0 4px ${PROJECT_COLORS[c].dot}`
+                      ? `0 0 0 2px var(--bg-card), 0 0 0 4px ${PROJECT_COLOR_TOKENS[c].dot}`
                       : 'none',
                     transform: color === c ? 'scale(1.18)' : 'scale(1)',
                   }}
