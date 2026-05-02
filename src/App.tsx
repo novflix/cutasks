@@ -18,7 +18,7 @@ export default function App() {
           paddingLeft: 0,
           paddingBottom: '80px',
         }}
-        className="sm:pl-[72px] sm:pb-0"
+        className="sm:pl-[200px] sm:pb-0"
       >
         <div className="max-w-xl mx-auto px-4 py-8 sm:py-12">
           {page === 'tasks'    && <TasksPage dark={dark} />}
