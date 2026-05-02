@@ -5,7 +5,7 @@ import { TaskCard } from '../components/TaskCard';
 import { TaskModal } from '../components/TaskModal';
 import { EmptyState } from '../components/EmptyState';
 import { AddSquare, ListArrowDown, CheckCircle, ClipboardList } from '@solar-icons/react';
-import logoFull from '../assets/logo.svg';
+import { LogoSVG } from '../components/LogoSVG';
 
 const FILTERS: { value: FilterType; label: string; Icon: React.FC<{ size?: number }> }[] = [
   { value: 'all',       label: 'All',    Icon: ClipboardList },
@@ -51,12 +51,7 @@ export const TasksPage: React.FC<Props> = ({ dark }) => {
           <p className="text-xs font-body font-medium uppercase tracking-widest mb-3" style={{ color: 'var(--text-muted)' }}>
             {greeting}
           </p>
-          <div
-            className="h-9"
-            style={{ filter: dark ? 'none' : 'invert(1) brightness(0.22) sepia(0.15)' }}
-          >
-            <img src={logoFull} alt="Cutasks" className="h-full w-auto" draggable={false} />
-          </div>
+          <LogoSVG dark={dark} style={{ height: '36px', width: 'auto' }} />
           <p className="mt-2 text-sm font-body" style={{ color: 'var(--text-muted)' }}>
             {counts.active === 0
               ? 'Nothing pending — enjoy!'
