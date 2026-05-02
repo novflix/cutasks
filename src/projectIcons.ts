@@ -1,0 +1,50 @@
+import {
+  Rocket,
+  Lightbulb,
+  Palette,
+  Settings,
+  BookMinimalistic,
+  Target,
+  Leaf,
+  Bolt,
+  Telescope,
+  Home2,
+  Bag2,
+  MusicNote,
+  Atom,
+  Waterdrops,
+  Heart,
+  Star,
+  Code,
+  Crown,
+  Planet,
+  TestTube,
+} from '@solar-icons/react';
+import type React from 'react';
+
+export const PROJECT_ICON_OPTIONS: { key: string; Icon: React.FC<{ size?: number }> }[] = [
+  { key: 'rocket',     Icon: Rocket },
+  { key: 'lightbulb', Icon: Lightbulb },
+  { key: 'palette',   Icon: Palette },
+  { key: 'settings',  Icon: Settings },
+  { key: 'book',      Icon: BookMinimalistic },
+  { key: 'target',    Icon: Target },
+  { key: 'leaf',      Icon: Leaf },
+  { key: 'bolt',      Icon: Bolt },
+  { key: 'telescope', Icon: Telescope },
+  { key: 'home',      Icon: Home2 },
+  { key: 'bag',       Icon: Bag2 },
+  { key: 'music',     Icon: MusicNote },
+  { key: 'atom',      Icon: Atom },
+  { key: 'water',     Icon: Waterdrops },
+  { key: 'heart',     Icon: Heart },
+  { key: 'star',      Icon: Star },
+  { key: 'code',      Icon: Code },
+  { key: 'crown',     Icon: Crown },
+  { key: 'planet',    Icon: Planet },
+  { key: 'testtube',  Icon: TestTube },
+];
+
+export const PROJECT_ICON_MAP: Record<string, React.FC<{ size?: number }>> = Object.fromEntries(
+  PROJECT_ICON_OPTIONS.map(({ key, Icon }) => [key, Icon]),
+);
