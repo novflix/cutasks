@@ -2,8 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useProjects } from '../hooks/useProjects';
 import type { Project, ProjectTask, Priority, ProjectColor } from '../types';
 import { PROJECT_COLORS } from '../types';
+<<<<<<< HEAD
 import { PROJECT_ICON_MAP } from '../projectIcons';
 import { ProjectModal } from '../components/ProjectModal';
+=======
+import { ProjectModal, ICON_MAP } from '../components/ProjectModal';
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
 import { TaskModal } from '../components/TaskModal';
 import {
   AddSquare,
@@ -20,7 +24,11 @@ import {
 // ─── Project icon renderer ────────────────────────────────────────────────────
 const ProjectIcon: React.FC<{ iconKey?: string; size?: number }> = ({ iconKey, size = 18 }) => {
   if (!iconKey) return null;
+<<<<<<< HEAD
   const Icon = PROJECT_ICON_MAP[iconKey];
+=======
+  const Icon = ICON_MAP[iconKey];
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
   if (!Icon) return null;
   return <Icon size={size} />;
 };
@@ -50,7 +58,11 @@ const InlineAddTask: React.FC<{
     return (
       <button
         onClick={activate}
+<<<<<<< HEAD
         className="flex items-center gap-2 w-full px-3 py-2 rounded-xl text-sm transition-all duration-150 active:scale-[0.98]"
+=======
+        className="flex items-center gap-2 w-full px-3 py-2 rounded-xl text-sm transition-all duration-150 hover:opacity-100 active:scale-[0.98]"
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
         style={{ color: 'var(--text-muted)', opacity: 0.65 }}
       >
         <AddCircle size={15} />
@@ -78,8 +90,13 @@ const InlineAddTask: React.FC<{
         className="flex-1 bg-transparent text-sm font-body outline-none"
         style={{ color: 'var(--text-main)' }}
       />
+<<<<<<< HEAD
       <button onClick={commit} className="transition-opacity hover:opacity-70" style={{ color: dotColor }}><CheckCircle size={18} /></button>
       <button onClick={cancel} className="transition-opacity hover:opacity-70" style={{ color: 'var(--text-muted)' }}><CloseCircle size={18} /></button>
+=======
+      <button onClick={commit}  className="transition-opacity hover:opacity-70" style={{ color: dotColor }}><CheckCircle size={18} /></button>
+      <button onClick={cancel}  className="transition-opacity hover:opacity-70" style={{ color: 'var(--text-muted)' }}><CloseCircle size={18} /></button>
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
     </div>
   );
 };
@@ -168,6 +185,10 @@ const ProjectTaskRow: React.FC<{
 // ─── Section block ────────────────────────────────────────────────────────────
 const SectionBlock: React.FC<{
   title: string;
+<<<<<<< HEAD
+=======
+  sectionId: string;
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
   tasks: ProjectTask[];
   colors: typeof PROJECT_COLORS[ProjectColor];
   onAddTask: (title: string) => void;
@@ -176,7 +197,11 @@ const SectionBlock: React.FC<{
   onDeleteTask: (taskId: string) => void;
   onEditSection: (newTitle: string) => void;
   onDeleteSection: () => void;
+<<<<<<< HEAD
 }> = ({ title, tasks, colors, onAddTask, onToggleTask, onEditTask, onDeleteTask, onEditSection, onDeleteSection }) => {
+=======
+}> = ({ title, sectionId, tasks, colors, onAddTask, onToggleTask, onEditTask, onDeleteTask, onEditSection, onDeleteSection }) => {
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
   const [collapsed, setCollapsed] = useState(false);
   const [editing, setEditing]     = useState(false);
   const [editVal, setEditVal]     = useState(title);
@@ -191,6 +216,10 @@ const SectionBlock: React.FC<{
 
   return (
     <div className="mb-3">
+<<<<<<< HEAD
+=======
+      {/* Section header */}
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
       <div className="flex items-center gap-2 mb-2 group/sec">
         <button
           onClick={() => setCollapsed(c => !c)}
@@ -207,10 +236,14 @@ const SectionBlock: React.FC<{
           <input
             value={editVal}
             onChange={e => setEditVal(e.target.value)}
+<<<<<<< HEAD
             onKeyDown={e => {
               if (e.key === 'Enter')  commitEdit();
               if (e.key === 'Escape') { setEditVal(title); setEditing(false); }
             }}
+=======
+            onKeyDown={e => { if (e.key === 'Enter') commitEdit(); if (e.key === 'Escape') { setEditVal(title); setEditing(false); } }}
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
             onBlur={commitEdit}
             autoFocus
             className="flex-1 bg-transparent text-sm font-semibold font-body outline-none"
@@ -239,11 +272,19 @@ const SectionBlock: React.FC<{
           onClick={onDeleteSection}
           className="opacity-0 group-hover/sec:opacity-100 transition-opacity ml-auto w-6 h-6 flex items-center justify-center rounded-lg"
           style={{ color: 'var(--text-muted)' }}
+<<<<<<< HEAD
+=======
+          title={`Delete section "${title}"`}
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
         >
           <CloseCircle size={14} />
         </button>
       </div>
 
+<<<<<<< HEAD
+=======
+      {/* Tasks */}
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
       {!collapsed && (
         <div className="ml-5">
           <div
@@ -273,21 +314,40 @@ const SectionBlock: React.FC<{
   );
 };
 
+<<<<<<< HEAD
 // ─── Unsectioned tasks block ──────────────────────────────────────────────────
 const UnsectionedBlock: React.FC<{
   tasks: ProjectTask[];
   colors: typeof PROJECT_COLORS[ProjectColor];
   hasSections: boolean;
+=======
+// ─── Unsectioned tasks block (no header, always visible) ──────────────────────
+const UnsectionedBlock: React.FC<{
+  tasks: ProjectTask[];
+  colors: typeof PROJECT_COLORS[ProjectColor];
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
   onAddTask: (title: string) => void;
   onToggleTask: (taskId: string) => void;
   onEditTask: (task: ProjectTask) => void;
   onDeleteTask: (taskId: string) => void;
+<<<<<<< HEAD
 }> = ({ tasks, colors, hasSections, onAddTask, onToggleTask, onEditTask, onDeleteTask }) => {
   if (hasSections && tasks.length === 0) return null;
 
   return (
     <div className="mb-3">
       {hasSections && (
+=======
+  hasSections: boolean;
+}> = ({ tasks, colors, onAddTask, onToggleTask, onEditTask, onDeleteTask, hasSections }) => {
+  // Only render the block if there are tasks or no sections yet (show a default add-row)
+  const show = tasks.length > 0 || !hasSections;
+  if (!show) return null;
+
+  return (
+    <div className="mb-3">
+      {hasSections && tasks.length > 0 && (
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
         <p className="text-xs font-semibold font-body uppercase tracking-widest mb-2 ml-0.5" style={{ color: 'var(--text-muted)' }}>
           Unsorted
         </p>
@@ -296,7 +356,11 @@ const UnsectionedBlock: React.FC<{
         className="rounded-2xl overflow-hidden"
         style={{ border: `1px solid var(--border)`, background: 'var(--bg-card)' }}
       >
+<<<<<<< HEAD
         {tasks.length === 0 && (
+=======
+        {tasks.length === 0 && !hasSections && (
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
           <p className="text-xs px-3 py-2.5 italic" style={{ color: 'var(--text-muted)' }}>
             No tasks yet — add one below or create a section
           </p>
@@ -332,6 +396,7 @@ const ProjectDetail: React.FC<{
   const [showAddSection, setShowAddSection] = useState(false);
   const sectionInputRef = useRef<HTMLInputElement>(null);
 
+<<<<<<< HEAD
   const totalTasks     = project.tasks.length;
   const doneTasks      = project.tasks.filter(t => t.completed).length;
   const progress       = totalTasks === 0 ? 0 : Math.round((doneTasks / totalTasks) * 100);
@@ -339,6 +404,16 @@ const ProjectDetail: React.FC<{
   const getSectionTasks = (id: string) => project.tasks.filter(t => t.sectionId === id);
   const sortedSections  = [...project.sections].sort((a, b) => a.order - b.order);
   const hasSections     = sortedSections.length > 0;
+=======
+  const totalTasks = project.tasks.length;
+  const doneTasks  = project.tasks.filter(t => t.completed).length;
+  const progress   = totalTasks === 0 ? 0 : Math.round((doneTasks / totalTasks) * 100);
+
+  const unsectionedTasks = project.tasks.filter(t => !t.sectionId);
+  const getSectionTasks  = (sectionId: string) => project.tasks.filter(t => t.sectionId === sectionId);
+  const sortedSections   = [...project.sections].sort((a, b) => a.order - b.order);
+  const hasSections      = sortedSections.length > 0;
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
 
   const handleAddSection = () => {
     if (addSectionVal.trim()) {
@@ -354,6 +429,10 @@ const ProjectDetail: React.FC<{
 
   return (
     <div>
+<<<<<<< HEAD
+=======
+      {/* Back */}
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
       <button
         onClick={onBack}
         className="flex items-center gap-1.5 text-sm font-body mb-5 transition-opacity hover:opacity-70"
@@ -363,7 +442,11 @@ const ProjectDetail: React.FC<{
         All projects
       </button>
 
+<<<<<<< HEAD
       {/* Project header */}
+=======
+      {/* Project header card */}
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
       <div
         className="rounded-2xl p-5 mb-6"
         style={{ background: colors.bg, border: `1.5px solid ${colors.border}` }}
@@ -407,6 +490,10 @@ const ProjectDetail: React.FC<{
           </div>
         </div>
 
+<<<<<<< HEAD
+=======
+        {/* Progress */}
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
         <div className="mt-4">
           <div className="flex items-center justify-between mb-1.5">
             <span className="text-xs font-body" style={{ color: colors.text, opacity: 0.75 }}>
@@ -423,12 +510,21 @@ const ProjectDetail: React.FC<{
         </div>
       </div>
 
+<<<<<<< HEAD
       {/* Unsectioned tasks */}
       <UnsectionedBlock
         tasks={unsectioned}
         colors={colors}
         hasSections={hasSections}
         onAddTask={(title) => ops.addTask(project.id, title, 'medium')}
+=======
+      {/* Unsectioned tasks (always first) */}
+      <UnsectionedBlock
+        tasks={unsectionedTasks}
+        colors={colors}
+        hasSections={hasSections}
+        onAddTask={(title) => ops.addTask(project.id, title, 'medium', undefined, undefined, undefined)}
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
         onToggleTask={(tid) => ops.toggleTask(project.id, tid)}
         onEditTask={(task) => setEditTask(task)}
         onDeleteTask={(tid) => ops.deleteTask(project.id, tid)}
@@ -439,6 +535,10 @@ const ProjectDetail: React.FC<{
         <SectionBlock
           key={sec.id}
           title={sec.title}
+<<<<<<< HEAD
+=======
+          sectionId={sec.id}
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
           tasks={getSectionTasks(sec.id)}
           colors={colors}
           onAddTask={(title) => ops.addTask(project.id, title, 'medium', undefined, undefined, sec.id)}
@@ -461,10 +561,14 @@ const ProjectDetail: React.FC<{
               ref={sectionInputRef}
               value={addSectionVal}
               onChange={e => setAddSectionVal(e.target.value)}
+<<<<<<< HEAD
               onKeyDown={e => {
                 if (e.key === 'Enter')  handleAddSection();
                 if (e.key === 'Escape') { setShowAddSection(false); setAddSectionVal(''); }
               }}
+=======
+              onKeyDown={e => { if (e.key === 'Enter') handleAddSection(); if (e.key === 'Escape') { setShowAddSection(false); setAddSectionVal(''); } }}
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
               placeholder="Section name"
               className="flex-1 bg-transparent text-sm font-body outline-none"
               style={{ color: 'var(--text-main)' }}
@@ -492,6 +596,10 @@ const ProjectDetail: React.FC<{
           onSubmit={(data) => ops.editProject(project.id, data)}
         />
       )}
+<<<<<<< HEAD
+=======
+
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
       {editTask && (
         <TaskModal
           mode="edit"
@@ -527,13 +635,21 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
       }}
     >
       <div className="flex items-start gap-3">
+<<<<<<< HEAD
+=======
+        {/* Icon */}
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
         <div
           className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
           style={{ background: colors.bg, border: `1px solid ${colors.border}`, color: colors.dot }}
         >
           {project.emoji
             ? <ProjectIcon iconKey={project.emoji} size={18} />
+<<<<<<< HEAD
             : <span className="w-2.5 h-2.5 rounded-full block" style={{ background: colors.dot }} />
+=======
+            : <span className="w-2.5 h-2.5 rounded-full" style={{ background: colors.dot, display: 'block' }} />
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
           }
         </div>
 
@@ -575,7 +691,11 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
       </div>
 
       {project.sections.length > 0 && (
+<<<<<<< HEAD
         <div className="flex gap-1.5 mt-3 flex-wrap">
+=======
+        <div className="flex gap-1.5 mt-3 flex-wrap ml-13">
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
           {project.sections.map(sec => (
             <span
               key={sec.id}
@@ -594,7 +714,11 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export const ProjectsPage: React.FC = () => {
   const ops = useProjects();
+<<<<<<< HEAD
   const [showCreate, setShowCreate]         = useState(false);
+=======
+  const [showCreate, setShowCreate]       = useState(false);
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
 
   const liveProject = activeProjectId
@@ -613,6 +737,7 @@ export const ProjectsPage: React.FC = () => {
 
   return (
     <>
+<<<<<<< HEAD
       <header className="mb-8">
         <p className="text-xs font-body font-medium uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>
           Workspace
@@ -623,6 +748,20 @@ export const ProjectsPage: React.FC = () => {
             ? 'Create your first project to get started'
             : `${ops.projects.length} project${ops.projects.length === 1 ? '' : 's'}`}
         </p>
+=======
+      <header className="flex items-start justify-between mb-8">
+        <div>
+          <p className="text-xs font-body font-medium uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>
+            Workspace
+          </p>
+          <h1 className="font-display text-3xl font-semibold" style={{ color: 'var(--text-main)' }}>Projects</h1>
+          <p className="mt-1 text-sm font-body" style={{ color: 'var(--text-muted)' }}>
+            {ops.projects.length === 0
+              ? 'Create your first project to get started'
+              : `${ops.projects.length} project${ops.projects.length === 1 ? '' : 's'}`}
+          </p>
+        </div>
+>>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
       </header>
 
       {ops.projects.length === 0 ? (
