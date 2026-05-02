@@ -1,8 +1,8 @@
 import React from 'react';
 import { LogoSVG } from './LogoSVG';
-import { ClipboardList, CalendarMinimalistic, Settings } from '@solar-icons/react';
+import { ClipboardList, CalendarMinimalistic, Settings, FolderOpen } from '@solar-icons/react';
 
-export type Page = 'tasks' | 'calendar' | 'settings';
+export type Page = 'tasks' | 'calendar' | 'projects' | 'settings';
 
 interface NavItem {
   page: Page;
@@ -13,6 +13,7 @@ interface NavItem {
 const NAV: NavItem[] = [
   { page: 'tasks',    label: 'Tasks',    Icon: ClipboardList },
   { page: 'calendar', label: 'Calendar', Icon: CalendarMinimalistic },
+  { page: 'projects', label: 'Projects', Icon: FolderOpen },
   { page: 'settings', label: 'Settings', Icon: Settings },
 ];
 
