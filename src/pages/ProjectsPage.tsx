@@ -5,7 +5,7 @@ import type { Project, ProjectTask, Priority, ProjectColor } from '../types';
 import { resolveProjectColors } from '../types';
 import { PROJECT_ICON_MAP } from '../projectIcons';
 import { ProjectModal } from '../components/ProjectModal';
-import { TaskModal } from '../components/TaskModal';
+import { DatePicker } from '../components/DatePicker';
 import {
   AddSquare,
   FolderOpen,
@@ -26,61 +26,210 @@ const ProjectIcon: React.FC<{ iconKey?: string; size?: number }> = ({ iconKey, s
   return <Icon size={size} />;
 };
 
-// ─── Inline add task row ──────────────────────────────────────────────────────
-const InlineAddTask: React.FC<{
-  onAdd: (title: string) => void;
+// ─── Priority options (same style as TaskModal on Tasks page) ─────────────────
+const PRIORITIES: { value: Priority; label: string; cls: string }[] = [
+  { value: 'low',    label: 'Low',    cls: 'border-sage-200  text-sage-500  bg-sage-100  dark:bg-sage-500/10  dark:border-sage-500/30' },
+  { value: 'medium', label: 'Medium', cls: 'border-amber-200 text-amber-500 bg-amber-100 dark:bg-amber-500/10 dark:border-amber-500/30' },
+  { value: 'high',   label: 'High',   cls: 'border-blush-200 text-blush-500 bg-blush-100 dark:bg-blush-500/10 dark:border-blush-500/30' },
+];
+
+// ─── Project task modal (create + edit, with priority, deadline & section) ────
+const ProjectTaskModal: React.FC<{
+  mode: 'create' | 'edit';
+  initial?: ProjectTask;
+  sections: { id: string; title: string }[];
+  defaultSectionId?: string;
   dotColor: string;
-}> = ({ onAdd, dotColor }) => {
-  const [active, setActive] = useState(false);
-  const [value, setValue]   = useState('');
-  const inputRef            = useRef<HTMLInputElement>(null);
+  onClose: () => void;
+  onSubmit: (data: {
+    title: string;
+    description?: string;
+    priority: Priority;
+    deadline?: string;
+    sectionId?: string;
+  }) => void;
+}> = ({ mode, initial, sections, defaultSectionId, dotColor, onClose, onSubmit }) => {
+  const [title, setTitle]         = useState(initial?.title ?? '');
+  const [desc, setDesc]           = useState(initial?.description ?? '');
+  const [priority, setPriority]   = useState<Priority>(initial?.priority ?? 'medium');
+  const [deadline, setDeadline]   = useState(initial?.deadline ?? '');
+  const [sectionId, setSectionId] = useState<string | undefined>(
+    initial?.sectionId ?? defaultSectionId
+  );
+  const [shake, setShake]         = useState(false);
+  const titleRef                  = useRef<HTMLInputElement>(null);
+  const overlayRef                = useRef<HTMLDivElement>(null);
 
-  const activate = () => { setActive(true); setTimeout(() => inputRef.current?.focus(), 60); };
-  const cancel   = () => { setActive(false); setValue(''); };
+  useEffect(() => { setTimeout(() => titleRef.current?.focus(), 100); }, []);
 
-  const commit = () => {
-    if (value.trim()) { onAdd(value.trim()); setValue(''); inputRef.current?.focus(); }
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === overlayRef.current) onClose();
   };
 
-  const handleKey = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter')  commit();
-    if (e.key === 'Escape') cancel();
+  const handleSubmit = () => {
+    if (!title.trim()) {
+      setShake(true);
+      setTimeout(() => setShake(false), 400);
+      return;
+    }
+    onSubmit({
+      title,
+      description: desc || undefined,
+      priority,
+      deadline: deadline || undefined,
+      sectionId: sectionId || undefined,
+    });
+    onClose();
   };
-
-  if (!active) {
-    return (
-      <button
-        onClick={activate}
-        className="flex items-center gap-2 w-full px-3 py-2 rounded-xl text-sm transition-all duration-150 active:scale-[0.98]"
-        style={{ color: 'var(--text-muted)', opacity: 0.65 }}
-      >
-        <AddCircle size={15} />
-        <span className="font-body">Add task</span>
-      </button>
-    );
-  }
 
   return (
     <div
-      className="flex items-center gap-2 px-3 py-2 rounded-xl"
-      style={{
-        background: 'var(--bg-panel)',
-        border: `1.5px solid ${dotColor}`,
-        boxShadow: `0 0 0 3px ${dotColor}1a`,
-      }}
+      ref={overlayRef}
+      onClick={handleOverlayClick}
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 backdrop-blur-sm animate-fade-in"
+      style={{ background: 'rgba(26,22,20,0.35)' }}
     >
-      <div className="w-4 h-4 rounded-full border-2 flex-shrink-0" style={{ borderColor: dotColor }} />
-      <input
-        ref={inputRef}
-        value={value}
-        onChange={e => setValue(e.target.value)}
-        onKeyDown={handleKey}
-        placeholder="Task name, press Enter to add"
-        className="flex-1 bg-transparent text-sm font-body outline-none"
-        style={{ color: 'var(--text-main)' }}
-      />
-      <button onClick={commit} className="transition-opacity hover:opacity-70" style={{ color: dotColor }}><CheckCircle size={18} /></button>
-      <button onClick={cancel} className="transition-opacity hover:opacity-70" style={{ color: 'var(--text-muted)' }}><CloseCircle size={18} /></button>
+      <div
+        className="w-full max-w-md animate-slide-up rounded-3xl shadow-cozy overflow-hidden"
+        style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 pt-6 pb-4" style={{ borderBottom: '1px solid var(--border)' }}>
+          <h2 className="font-display text-xl font-semibold" style={{ color: 'var(--text-main)' }}>
+            {mode === 'create' ? 'New task' : 'Edit task'}
+          </h2>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 flex items-center justify-center rounded-xl transition-all hover:scale-105 active:scale-90"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            <CloseCircle size={20} />
+          </button>
+        </div>
+
+        <div className="p-6 flex flex-col gap-4">
+          {/* Title */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>Task name</label>
+            <input
+              ref={titleRef}
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') handleSubmit(); }}
+              placeholder="What needs to be done?"
+              className={`input-field ${shake ? 'animate-wiggle' : ''}`}
+              maxLength={120}
+            />
+          </div>
+
+          {/* Description */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
+              Note <span className="normal-case opacity-60">(optional)</span>
+            </label>
+            <textarea
+              value={desc}
+              onChange={e => setDesc(e.target.value)}
+              placeholder="Add a little note..."
+              rows={2}
+              className="input-field resize-none"
+              maxLength={300}
+            />
+          </div>
+
+          {/* Priority */}
+          <div className="flex flex-col gap-2">
+            <label className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>Priority</label>
+            <div className="flex gap-2">
+              {PRIORITIES.map(p => (
+                <button
+                  key={p.value}
+                  type="button"
+                  onClick={() => setPriority(p.value)}
+                  className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-2xl border-2 text-sm font-medium font-body transition-all duration-150 ${
+                    priority === p.value
+                      ? `${p.cls} shadow-soft scale-[1.03]`
+                      : 'hover:opacity-80'
+                  }`}
+                  style={priority !== p.value ? { borderColor: 'var(--border)', color: 'var(--text-muted)', background: 'var(--bg-panel)' } : {}}
+                >
+                  {p.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Deadline */}
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
+              Deadline <span className="normal-case opacity-60">(optional)</span>
+            </label>
+            <DatePicker
+              value={deadline}
+              onChange={setDeadline}
+              min={new Date().toISOString().split('T')[0]}
+            />
+          </div>
+
+          {/* Section (only shown when project has sections) */}
+          {sections.length > 0 && (
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>Section</label>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSectionId(undefined)}
+                  className="px-3 py-1.5 rounded-xl text-sm font-body border transition-all duration-150"
+                  style={{
+                    borderColor: !sectionId ? dotColor : 'var(--border)',
+                    color: !sectionId ? dotColor : 'var(--text-muted)',
+                    background: !sectionId ? `${dotColor}15` : 'var(--bg-panel)',
+                    fontWeight: !sectionId ? 600 : 400,
+                  }}
+                >
+                  No section
+                </button>
+                {sections.map(sec => (
+                  <button
+                    key={sec.id}
+                    type="button"
+                    onClick={() => setSectionId(sec.id)}
+                    className="px-3 py-1.5 rounded-xl text-sm font-body border transition-all duration-150"
+                    style={{
+                      borderColor: sectionId === sec.id ? dotColor : 'var(--border)',
+                      color: sectionId === sec.id ? dotColor : 'var(--text-muted)',
+                      background: sectionId === sec.id ? `${dotColor}15` : 'var(--bg-panel)',
+                      fontWeight: sectionId === sec.id ? 600 : 400,
+                    }}
+                  >
+                    {sec.title}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Actions */}
+          <div className="flex gap-2 mt-1">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 py-2.5 rounded-2xl text-sm font-medium font-body border transition-all active:scale-95 hover:opacity-80"
+              style={{ borderColor: 'var(--border)', color: 'var(--text-muted)', background: 'var(--bg-panel)' }}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleSubmit}
+              className="flex-1 py-2.5 rounded-2xl text-sm font-medium font-body transition-all active:scale-95 hover:opacity-90 shadow-soft"
+              style={{ background: 'var(--text-main)', color: 'var(--bg-main)' }}
+            >
+              {mode === 'create' ? 'Add task' : 'Save changes'}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
@@ -102,10 +251,7 @@ const ProjectTaskRow: React.FC<{
   };
 
   return (
-    <div
-      className="group flex items-start gap-3 px-3 py-2.5 transition-all duration-150 hover:bg-[var(--bg-panel)]"
-      style={{ borderBottom: '1px solid var(--border)' }}
-    >
+    <div className="group flex items-start gap-3 px-1 py-2.5 rounded-xl transition-all duration-150 hover:bg-[var(--bg-panel)]">
       <button
         onClick={onToggle}
         className="flex-shrink-0 mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all duration-200 hover:scale-110"
@@ -166,18 +312,17 @@ const ProjectTaskRow: React.FC<{
   );
 };
 
-// ─── Section block ────────────────────────────────────────────────────────────
+// ─── Section block (no per-section add button) ────────────────────────────────
 const SectionBlock: React.FC<{
   title: string;
   tasks: ProjectTask[];
   colors: { bg: string; text: string; border: string; dot: string };
-  onAddTask: (title: string) => void;
   onToggleTask: (taskId: string) => void;
   onEditTask: (task: ProjectTask) => void;
   onDeleteTask: (taskId: string) => void;
   onEditSection: (newTitle: string) => void;
   onDeleteSection: () => void;
-}> = ({ title, tasks, colors, onAddTask, onToggleTask, onEditTask, onDeleteTask, onEditSection, onDeleteSection }) => {
+}> = ({ title, tasks, colors, onToggleTask, onEditTask, onDeleteTask, onEditSection, onDeleteSection }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [editing, setEditing]     = useState(false);
   const [editVal, setEditVal]     = useState(title);
@@ -191,8 +336,8 @@ const SectionBlock: React.FC<{
   };
 
   return (
-    <div className="mb-3">
-      <div className="flex items-center gap-2 mb-2 group/sec">
+    <div className="mb-1">
+      <div className="flex items-center gap-2 mb-1 group/sec">
         <button
           onClick={() => setCollapsed(c => !c)}
           className="transition-transform duration-200 flex-shrink-0"
@@ -247,27 +392,22 @@ const SectionBlock: React.FC<{
 
       {!collapsed && (
         <div className="ml-5">
-          <div
-            className="rounded-2xl overflow-hidden"
-            style={{ border: `1px solid var(--border)`, background: 'var(--bg-card)' }}
-          >
-            {tasks.length === 0 && (
-              <p className="text-xs px-3 py-2.5 italic" style={{ color: 'var(--text-muted)' }}>No tasks yet</p>
-            )}
-            {tasks.map(task => (
-              <ProjectTaskRow
-                key={task.id}
-                task={task}
-                dotColor={colors.dot}
-                onToggle={() => onToggleTask(task.id)}
-                onEdit={() => onEditTask(task)}
-                onDelete={() => onDeleteTask(task.id)}
-              />
-            ))}
-            <div className="p-2">
-              <InlineAddTask onAdd={onAddTask} dotColor={colors.dot} />
+          {tasks.length === 0 ? (
+            <p className="text-xs py-1.5 italic" style={{ color: 'var(--text-muted)', opacity: 0.55 }}>Empty section</p>
+          ) : (
+            <div className="flex flex-col">
+              {tasks.map(task => (
+                <ProjectTaskRow
+                  key={task.id}
+                  task={task}
+                  dotColor={colors.dot}
+                  onToggle={() => onToggleTask(task.id)}
+                  onEdit={() => onEditTask(task)}
+                  onDelete={() => onDeleteTask(task.id)}
+                />
+              ))}
             </div>
-          </div>
+          )}
         </div>
       )}
     </div>
@@ -279,27 +419,23 @@ const UnsectionedBlock: React.FC<{
   tasks: ProjectTask[];
   colors: { bg: string; text: string; border: string; dot: string };
   hasSections: boolean;
-  onAddTask: (title: string) => void;
   onToggleTask: (taskId: string) => void;
   onEditTask: (task: ProjectTask) => void;
   onDeleteTask: (taskId: string) => void;
-}> = ({ tasks, colors, hasSections, onAddTask, onToggleTask, onEditTask, onDeleteTask }) => {
+}> = ({ tasks, colors, hasSections, onToggleTask, onEditTask, onDeleteTask }) => {
   if (hasSections && tasks.length === 0) return null;
 
   return (
-    <div className="mb-3">
-      {hasSections && (
-        <p className="text-xs font-semibold font-body uppercase tracking-widest mb-2 ml-0.5" style={{ color: 'var(--text-muted)' }}>
+    <div className="mb-2">
+      {hasSections && tasks.length > 0 && (
+        <p className="text-xs font-semibold font-body uppercase tracking-widest mb-1 ml-0.5" style={{ color: 'var(--text-muted)' }}>
           Unsorted
         </p>
       )}
-      <div
-        className="rounded-2xl overflow-hidden"
-        style={{ border: `1px solid var(--border)`, background: 'var(--bg-card)' }}
-      >
-        {tasks.length === 0 && (
-          <p className="text-xs px-3 py-2.5 italic" style={{ color: 'var(--text-muted)' }}>
-            No tasks yet — add one below or create a section
+      <div className="flex flex-col">
+        {tasks.length === 0 && !hasSections && (
+          <p className="text-xs py-1.5 italic" style={{ color: 'var(--text-muted)', opacity: 0.55 }}>
+            No tasks yet — hit "Add task" below
           </p>
         )}
         {tasks.map(task => (
@@ -312,9 +448,6 @@ const UnsectionedBlock: React.FC<{
             onDelete={() => onDeleteTask(task.id)}
           />
         ))}
-        <div className="p-2">
-          <InlineAddTask onAdd={onAddTask} dotColor={colors.dot} />
-        </div>
       </div>
     </div>
   );
@@ -330,14 +463,15 @@ const ProjectDetail: React.FC<{
   const colors = resolveProjectColors(project.color, dark);
   const [showEdit, setShowEdit]             = useState(false);
   const [editTask, setEditTask]             = useState<ProjectTask | null>(null);
+  const [showAddTask, setShowAddTask]       = useState(false);
   const [addSectionVal, setAddSectionVal]   = useState('');
   const [showAddSection, setShowAddSection] = useState(false);
   const sectionInputRef = useRef<HTMLInputElement>(null);
 
-  const totalTasks     = project.tasks.length;
-  const doneTasks      = project.tasks.filter(t => t.completed).length;
-  const progress       = totalTasks === 0 ? 0 : Math.round((doneTasks / totalTasks) * 100);
-  const unsectioned    = project.tasks.filter(t => !t.sectionId);
+  const totalTasks      = project.tasks.length;
+  const doneTasks       = project.tasks.filter(t => t.completed).length;
+  const progress        = totalTasks === 0 ? 0 : Math.round((doneTasks / totalTasks) * 100);
+  const unsectioned     = project.tasks.filter(t => !t.sectionId);
   const getSectionTasks = (id: string) => project.tasks.filter(t => t.sectionId === id);
   const sortedSections  = [...project.sections].sort((a, b) => a.order - b.order);
   const hasSections     = sortedSections.length > 0;
@@ -425,25 +559,22 @@ const ProjectDetail: React.FC<{
         </div>
       </div>
 
-      {/* Unsectioned tasks */}
+      {/* Task lists — no card backgrounds */}
       <UnsectionedBlock
         tasks={unsectioned}
         colors={colors}
         hasSections={hasSections}
-        onAddTask={(title) => ops.addTask(project.id, title, 'medium')}
         onToggleTask={(tid) => ops.toggleTask(project.id, tid)}
         onEditTask={(task) => setEditTask(task)}
         onDeleteTask={(tid) => ops.deleteTask(project.id, tid)}
       />
 
-      {/* Named sections */}
       {sortedSections.map(sec => (
         <SectionBlock
           key={sec.id}
           title={sec.title}
           tasks={getSectionTasks(sec.id)}
           colors={colors}
-          onAddTask={(title) => ops.addTask(project.id, title, 'medium', undefined, undefined, sec.id)}
           onToggleTask={(tid) => ops.toggleTask(project.id, tid)}
           onEditTask={(task) => setEditTask(task)}
           onDeleteTask={(tid) => ops.deleteTask(project.id, tid)}
@@ -452,11 +583,25 @@ const ProjectDetail: React.FC<{
         />
       ))}
 
-      {/* Add section */}
-      <div className="mt-2 mb-8">
+      {/* Single toolbar at the bottom */}
+      <div
+        className="flex items-center gap-3 mt-5 pt-4"
+        style={{ borderTop: '1px solid var(--border)' }}
+      >
+        <button
+          onClick={() => setShowAddTask(true)}
+          className="flex items-center gap-2 text-sm font-body font-medium transition-all hover:opacity-80 active:scale-95"
+          style={{ color: colors.dot }}
+        >
+          <AddCircle size={17} />
+          Add task
+        </button>
+
+        <span className="select-none" style={{ color: 'var(--border)' }}>·</span>
+
         {showAddSection ? (
           <div
-            className="flex items-center gap-2 px-3 py-2.5 rounded-xl"
+            className="flex items-center gap-2 flex-1 px-3 py-1.5 rounded-xl"
             style={{ background: 'var(--bg-panel)', border: `1.5px solid ${colors.border}` }}
           >
             <input
@@ -471,21 +616,22 @@ const ProjectDetail: React.FC<{
               className="flex-1 bg-transparent text-sm font-body outline-none"
               style={{ color: 'var(--text-main)' }}
             />
-            <button onClick={handleAddSection} style={{ color: colors.dot }}><CheckCircle size={18} /></button>
-            <button onClick={() => { setShowAddSection(false); setAddSectionVal(''); }} style={{ color: 'var(--text-muted)' }}><CloseCircle size={18} /></button>
+            <button onClick={handleAddSection} style={{ color: colors.dot }}><CheckCircle size={17} /></button>
+            <button onClick={() => { setShowAddSection(false); setAddSectionVal(''); }} style={{ color: 'var(--text-muted)' }}><CloseCircle size={17} /></button>
           </div>
         ) : (
           <button
             onClick={() => setShowAddSection(true)}
-            className="flex items-center gap-2 text-sm font-body transition-opacity hover:opacity-100"
-            style={{ color: 'var(--text-muted)', opacity: 0.6 }}
+            className="flex items-center gap-2 text-sm font-body transition-all hover:opacity-100 active:scale-95"
+            style={{ color: 'var(--text-muted)', opacity: 0.65 }}
           >
-            <AddCircle size={15} />
+            <AddSquare size={15} />
             Add section
           </button>
         )}
       </div>
 
+      {/* Modals */}
       {showEdit && (
         <ProjectModal
           mode="edit"
@@ -494,13 +640,28 @@ const ProjectDetail: React.FC<{
           onSubmit={(data) => ops.editProject(project.id, data)}
         />
       )}
+
+      {showAddTask && (
+        <ProjectTaskModal
+          mode="create"
+          sections={sortedSections}
+          dotColor={colors.dot}
+          onClose={() => setShowAddTask(false)}
+          onSubmit={({ title, description, priority, deadline, sectionId }) =>
+            ops.addTask(project.id, title, priority, deadline, description, sectionId)
+          }
+        />
+      )}
+
       {editTask && (
-        <TaskModal
+        <ProjectTaskModal
           mode="edit"
           initial={editTask}
+          sections={sortedSections}
+          dotColor={colors.dot}
           onClose={() => setEditTask(null)}
-          onSubmit={({ title, description, priority, deadline }) =>
-            ops.editTask(project.id, editTask.id, { title, description, priority: priority as Priority, deadline })
+          onSubmit={({ title, description, priority, deadline, sectionId }) =>
+            ops.editTask(project.id, editTask.id, { title, description, priority, deadline, sectionId })
           }
         />
       )}
@@ -597,7 +758,7 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export const ProjectsPage: React.FC = () => {
   const ops = useProjects();
-  const [showCreate, setShowCreate]         = useState(false);
+  const [showCreate, setShowCreate]           = useState(false);
   const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
 
   const liveProject = activeProjectId
