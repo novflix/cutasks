@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { useTasks } from '../hooks/useTasks';
-import type { Task } from '../types';
-import { AltArrowLeft, AltArrowRight, CalendarMinimalistic, Fire } from '@solar-icons/react';
+import type { Priority, Task } from '../types';
+import {
+  AltArrowLeft, AltArrowRight,
+  AddSquare, CheckCircle, TrashBinMinimalistic, PenNewSquare,
+  Fire, CalendarMinimalistic, ClipboardList,
+} from '@solar-icons/react';
+import { TaskModal } from '../components/TaskModal';
 
 const MONTHS = [
   'January','February','March','April','May','June',
@@ -10,9 +15,15 @@ const MONTHS = [
 const DOW = ['Mo','Tu','We','Th','Fr','Sa','Su'];
 
 const PRIORITY_COLOR: Record<string, string> = {
-  high:   '#d45c5c',
+  high:   '#e07070',
   medium: '#f5b800',
   low:    '#6da07a',
+};
+
+const PRIORITY_BG: Record<string, string> = {
+  high:   'rgba(224,112,112,0.12)',
+  medium: 'rgba(245,184,0,0.12)',
+  low:    'rgba(109,160,122,0.12)',
 };
 
 function toYMD(d: Date): string {
@@ -31,38 +42,65 @@ function formatDayLabel(ymd: string): string {
 
 interface TaskRowProps {
   task: Task;
+  onToggle: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
 }
 
-const TaskRow: React.FC<TaskRowProps> = ({ task }) => {
+const TaskRow: React.FC<TaskRowProps> = ({ task, onToggle, onEdit, onDelete }) => {
+  const [hovered, setHovered] = useState(false);
   const color = PRIORITY_COLOR[task.priority];
+  const bg = PRIORITY_BG[task.priority];
+  const today = new Date(); today.setHours(0,0,0,0);
   const isOverdue = !task.completed && task.deadline
-    ? new Date(task.deadline + 'T00:00:00') < new Date(new Date().setHours(0,0,0,0))
+    ? new Date(task.deadline + 'T00:00:00') < today
     : false;
 
   return (
     <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
         display: 'flex',
-        alignItems: 'flex-start',
-        gap: '10px',
-        padding: '10px 12px',
-        borderRadius: '12px',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '12px 14px',
+        borderRadius: '14px',
         background: 'var(--bg-card)',
         border: '1.5px solid var(--border)',
-        opacity: task.completed ? 0.5 : 1,
-        transition: 'opacity 0.2s',
+        opacity: task.completed ? 0.55 : 1,
+        transition: 'opacity 0.2s, box-shadow 0.15s, transform 0.15s',
+        boxShadow: hovered && !task.completed ? '0 2px 12px rgba(0,0,0,0.07)' : 'none',
+        transform: hovered && !task.completed ? 'translateY(-1px)' : 'none',
       }}
     >
-      {/* Priority dot */}
-      <span style={{
-        width: '8px', height: '8px', borderRadius: '50%',
-        background: task.completed ? 'var(--border)' : color,
-        flexShrink: 0, marginTop: '4px',
-      }} />
+      {/* Check button */}
+      <button
+        onClick={onToggle}
+        title={task.completed ? 'Mark incomplete' : 'Mark complete'}
+        style={{
+          flexShrink: 0,
+          width: '22px',
+          height: '22px',
+          borderRadius: '50%',
+          border: task.completed ? 'none' : `2px solid ${color}`,
+          background: task.completed ? color : bg,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          cursor: 'pointer',
+          transition: 'all 0.15s ease',
+          color: task.completed ? '#fff' : color,
+        }}
+      >
+        {task.completed && <CheckCircle size={14} />}
+      </button>
+
+      {/* Content */}
       <div style={{ flex: 1, minWidth: 0 }}>
         <p style={{
           fontFamily: '"DM Sans", sans-serif',
-          fontSize: '0.85rem',
+          fontSize: '0.875rem',
           fontWeight: 500,
           color: 'var(--text-main)',
           textDecoration: task.completed ? 'line-through' : 'none',
@@ -85,21 +123,88 @@ const TaskRow: React.FC<TaskRowProps> = ({ task }) => {
           </p>
         )}
       </div>
+
+      {/* Overdue badge */}
       {isOverdue && (
-        <span style={{ color: '#d45c5c', flexShrink: 0, marginTop: '2px' }}>
-          <Fire size={13} />
+        <span style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '3px',
+          fontSize: '0.7rem',
+          fontWeight: 600,
+          color: '#e07070',
+          background: 'rgba(224,112,112,0.1)',
+          padding: '2px 7px',
+          borderRadius: '999px',
+          flexShrink: 0,
+        }}>
+          <Fire size={11} /> Overdue
         </span>
       )}
+
+      {/* Actions — visible on hover */}
+      <div style={{
+        display: 'flex',
+        gap: '4px',
+        opacity: hovered ? 1 : 0,
+        transition: 'opacity 0.15s',
+        flexShrink: 0,
+      }}>
+        <button
+          onClick={onEdit}
+          title="Edit"
+          style={{
+            width: '28px', height: '28px',
+            borderRadius: '8px',
+            border: '1.5px solid var(--border)',
+            background: 'var(--bg-panel)',
+            color: 'var(--text-muted)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer',
+            transition: 'color 0.12s',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.color = 'var(--text-main)')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
+        >
+          <PenNewSquare size={13} />
+        </button>
+        <button
+          onClick={onDelete}
+          title="Delete"
+          style={{
+            width: '28px', height: '28px',
+            borderRadius: '8px',
+            border: '1.5px solid var(--border)',
+            background: 'var(--bg-panel)',
+            color: 'var(--text-muted)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'pointer',
+            transition: 'color 0.12s, background 0.12s',
+          }}
+          onMouseEnter={e => {
+            e.currentTarget.style.color = '#e07070';
+            e.currentTarget.style.background = 'rgba(224,112,112,0.08)';
+          }}
+          onMouseLeave={e => {
+            e.currentTarget.style.color = 'var(--text-muted)';
+            e.currentTarget.style.background = 'var(--bg-panel)';
+          }}
+        >
+          <TrashBinMinimalistic size={13} />
+        </button>
+      </div>
     </div>
   );
 };
 
 export const CalendarPage: React.FC = () => {
-  const { tasks } = useTasks();
+  const { tasks, addTask, editTask, deleteTask, toggleTask } = useTasks();
   const today = new Date(); today.setHours(0,0,0,0);
 
   const [view, setView] = useState({ year: today.getFullYear(), month: today.getMonth() });
   const [selected, setSelected] = useState<string>(toYMD(today));
+  const [showCreate, setShowCreate] = useState(false);
+  const [editTarget, setEditTarget] = useState<Task | null>(null);
 
   // Map deadline → tasks
   const byDate = tasks.reduce<Record<string, Task[]>>((acc, t) => {
@@ -112,7 +217,7 @@ export const CalendarPage: React.FC = () => {
 
   // Build grid
   const firstDay = new Date(view.year, view.month, 1);
-  const startDow = (firstDay.getDay() + 6) % 7; // Mon=0
+  const startDow = (firstDay.getDay() + 6) % 7;
   const daysInMonth = new Date(view.year, view.month + 1, 0).getDate();
   const cells: (number | null)[] = [
     ...Array(startDow).fill(null),
@@ -122,45 +227,76 @@ export const CalendarPage: React.FC = () => {
 
   const prevMonth = () => setView(v => v.month === 0 ? { year: v.year-1, month: 11 } : { ...v, month: v.month-1 });
   const nextMonth = () => setView(v => v.month === 11 ? { year: v.year+1, month: 0 } : { ...v, month: v.month+1 });
+  const goToday  = () => {
+    setView({ year: today.getFullYear(), month: today.getMonth() });
+    setSelected(toYMD(today));
+  };
 
   const selectedTasks = byDate[selected] ?? [];
   const todayYMD = toYMD(today);
 
+  const dayLabel = formatDayLabel(selected);
+  const isSelectedPast = new Date(selected + 'T00:00:00') < today;
+
   return (
     <div style={{ opacity: 0, animation: 'fadeIn 0.22s ease-out forwards' }}>
-      {/* Page title */}
-      <h1 style={{
-        fontFamily: '"Fraunces", serif',
-        fontSize: '1.75rem',
-        fontWeight: 500,
-        color: 'var(--text-main)',
-        marginBottom: '24px',
-      }}>
-        Calendar
-      </h1>
+
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '24px' }}>
+        <h1 style={{
+          fontFamily: '"Fraunces", serif',
+          fontSize: '1.75rem',
+          fontWeight: 500,
+          color: 'var(--text-main)',
+          lineHeight: 1,
+        }}>
+          Calendar
+        </h1>
+        {selected !== todayYMD && (
+          <button
+            onClick={goToday}
+            style={{
+              fontSize: '0.75rem',
+              fontFamily: '"DM Sans", sans-serif',
+              fontWeight: 600,
+              color: 'var(--accent)',
+              background: 'rgba(237,155,109,0.1)',
+              border: '1.5px solid rgba(237,155,109,0.25)',
+              borderRadius: '999px',
+              padding: '4px 12px',
+              cursor: 'pointer',
+              transition: 'opacity 0.15s',
+            }}
+            onMouseEnter={e => (e.currentTarget.style.opacity = '0.75')}
+            onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+          >
+            Today
+          </button>
+        )}
+      </div>
 
       {/* Calendar card */}
       <div style={{
         background: 'var(--bg-card)',
         border: '1.5px solid var(--border)',
-        borderRadius: '20px',
+        borderRadius: '22px',
         padding: '20px',
         marginBottom: '20px',
       }}>
         {/* Month nav */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
           <button
             onClick={prevMonth}
             style={{
-              width: '32px', height: '32px', borderRadius: '10px',
+              width: '34px', height: '34px', borderRadius: '11px',
               border: '1.5px solid var(--border)',
               background: 'var(--bg-panel)',
               color: 'var(--text-muted)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', transition: 'background 0.15s',
+              cursor: 'pointer', transition: 'background 0.15s, color 0.15s',
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--border)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'var(--bg-panel)')}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--border)'; e.currentTarget.style.color = 'var(--text-main)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-panel)'; e.currentTarget.style.color = 'var(--text-muted)'; }}
           >
             <AltArrowLeft size={16} />
           </button>
@@ -170,6 +306,7 @@ export const CalendarPage: React.FC = () => {
             fontSize: '1.1rem',
             fontWeight: 500,
             color: 'var(--text-main)',
+            letterSpacing: '-0.01em',
           }}>
             {MONTHS[view.month]} {view.year}
           </span>
@@ -177,22 +314,22 @@ export const CalendarPage: React.FC = () => {
           <button
             onClick={nextMonth}
             style={{
-              width: '32px', height: '32px', borderRadius: '10px',
+              width: '34px', height: '34px', borderRadius: '11px',
               border: '1.5px solid var(--border)',
               background: 'var(--bg-panel)',
               color: 'var(--text-muted)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer', transition: 'background 0.15s',
+              cursor: 'pointer', transition: 'background 0.15s, color 0.15s',
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'var(--border)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'var(--bg-panel)')}
+            onMouseEnter={e => { e.currentTarget.style.background = 'var(--border)'; e.currentTarget.style.color = 'var(--text-main)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'var(--bg-panel)'; e.currentTarget.style.color = 'var(--text-muted)'; }}
           >
             <AltArrowRight size={16} />
           </button>
         </div>
 
-        {/* Day-of-week headers */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '6px' }}>
+        {/* DOW headers */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '4px', marginBottom: '8px' }}>
           {DOW.map(d => (
             <div key={d} style={{
               textAlign: 'center',
@@ -200,7 +337,7 @@ export const CalendarPage: React.FC = () => {
               fontWeight: 600,
               color: 'var(--text-muted)',
               textTransform: 'uppercase',
-              letterSpacing: '0.05em',
+              letterSpacing: '0.06em',
               padding: '2px 0',
             }}>
               {d}
@@ -218,8 +355,6 @@ export const CalendarPage: React.FC = () => {
             const isSelected = ymd === selected;
             const dayTasks = byDate[ymd] ?? [];
             const isPast = new Date(ymd + 'T00:00:00') < today;
-
-            // Dot colors: up to 3 dots for tasks
             const dots = dayTasks.slice(0, 3);
             const hasOverdue = dayTasks.some(t => !t.completed && isPast);
 
@@ -229,8 +364,8 @@ export const CalendarPage: React.FC = () => {
                 onClick={() => setSelected(ymd)}
                 style={{
                   position: 'relative',
-                  height: '44px',
-                  borderRadius: '11px',
+                  height: '46px',
+                  borderRadius: '12px',
                   border: isToday && !isSelected
                     ? '1.5px solid var(--accent)'
                     : '1.5px solid transparent',
@@ -241,7 +376,7 @@ export const CalendarPage: React.FC = () => {
                     ? 'var(--text-muted)'
                     : 'var(--text-main)',
                   fontFamily: '"DM Sans", sans-serif',
-                  fontSize: '0.85rem',
+                  fontSize: '0.875rem',
                   fontWeight: isToday || isSelected ? 600 : 400,
                   cursor: 'pointer',
                   display: 'flex',
@@ -265,32 +400,24 @@ export const CalendarPage: React.FC = () => {
                 }}
               >
                 <span>{day}</span>
-
-                {/* Task dots */}
                 {dots.length > 0 && (
                   <span style={{ display: 'flex', gap: '2px', alignItems: 'center' }}>
                     {dots.map((t, di) => (
-                      <span
-                        key={di}
-                        style={{
-                          width: '4px',
-                          height: '4px',
-                          borderRadius: '50%',
-                          background: isSelected
-                            ? 'rgba(255,255,255,0.7)'
-                            : hasOverdue && !t.completed
-                            ? '#d45c5c'
-                            : PRIORITY_COLOR[t.priority],
-                          opacity: t.completed ? 0.4 : 1,
-                        }}
-                      />
+                      <span key={di} style={{
+                        width: '4px', height: '4px', borderRadius: '50%',
+                        background: isSelected
+                          ? 'rgba(255,255,255,0.65)'
+                          : hasOverdue && !t.completed
+                          ? '#e07070'
+                          : PRIORITY_COLOR[t.priority],
+                        opacity: t.completed ? 0.35 : 1,
+                      }} />
                     ))}
                     {dayTasks.length > 3 && (
                       <span style={{
                         fontSize: '8px',
-                        color: isSelected ? 'rgba(255,255,255,0.7)' : 'var(--text-muted)',
-                        lineHeight: 1,
-                        marginLeft: '1px',
+                        color: isSelected ? 'rgba(255,255,255,0.65)' : 'var(--text-muted)',
+                        lineHeight: 1, marginLeft: '1px',
                       }}>
                         +{dayTasks.length - 3}
                       </span>
@@ -303,57 +430,149 @@ export const CalendarPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Selected day tasks */}
+      {/* Selected day section */}
       <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-          <CalendarMinimalistic size={14} style={{ color: 'var(--text-muted)' } as React.CSSProperties} />
-          <span style={{
-            fontSize: '0.8rem',
-            fontFamily: '"DM Sans", sans-serif',
-            fontWeight: 600,
-            color: 'var(--text-muted)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.06em',
-          }}>
-            {formatDayLabel(selected)}
-          </span>
-          {selectedTasks.length > 0 && (
+        {/* Section header */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <CalendarMinimalistic size={14} style={{ color: 'var(--accent)' } as React.CSSProperties} />
             <span style={{
-              fontSize: '0.7rem',
+              fontSize: '0.8rem',
               fontFamily: '"DM Sans", sans-serif',
-              fontWeight: 600,
-              padding: '1px 7px',
-              borderRadius: '999px',
-              background: 'var(--bg-panel)',
-              color: 'var(--text-muted)',
-              border: '1px solid var(--border)',
+              fontWeight: 700,
+              color: 'var(--text-main)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.07em',
             }}>
-              {selectedTasks.length}
+              {dayLabel}
             </span>
+            {selectedTasks.length > 0 && (
+              <span style={{
+                fontSize: '0.7rem',
+                fontFamily: '"DM Sans", sans-serif',
+                fontWeight: 600,
+                padding: '2px 8px',
+                borderRadius: '999px',
+                background: 'var(--bg-panel)',
+                color: 'var(--text-muted)',
+                border: '1px solid var(--border)',
+              }}>
+                {selectedTasks.length}
+              </span>
+            )}
+          </div>
+
+          {/* Add task button */}
+          {!isSelectedPast && (
+            <button
+              onClick={() => setShowCreate(true)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '5px',
+                fontSize: '0.78rem',
+                fontFamily: '"DM Sans", sans-serif',
+                fontWeight: 600,
+                color: 'var(--accent)',
+                background: 'rgba(237,155,109,0.1)',
+                border: '1.5px solid rgba(237,155,109,0.25)',
+                borderRadius: '999px',
+                padding: '5px 12px',
+                cursor: 'pointer',
+                transition: 'opacity 0.15s',
+              }}
+              onMouseEnter={e => (e.currentTarget.style.opacity = '0.75')}
+              onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
+            >
+              <AddSquare size={14} />
+              Add task
+            </button>
           )}
         </div>
 
+        {/* Task list */}
         {selectedTasks.length === 0 ? (
           <div style={{
-            textAlign: 'center',
-            padding: '32px 16px',
-            color: 'var(--text-muted)',
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: '0.875rem',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '10px',
+            padding: '36px 16px',
             background: 'var(--bg-card)',
             border: '1.5px solid var(--border)',
-            borderRadius: '16px',
+            borderRadius: '18px',
           }}>
-            No tasks due this day
+            <span style={{ color: 'var(--text-muted)', opacity: 0.5 }}>
+              {isSelectedPast ? <CheckCircle size={32} /> : <ClipboardList size={32} />}
+            </span>
+            <p style={{
+              fontFamily: '"DM Sans", sans-serif',
+              fontSize: '0.875rem',
+              color: 'var(--text-muted)',
+              textAlign: 'center',
+            }}>
+              {isSelectedPast
+                ? 'No tasks were due this day'
+                : 'No tasks for this day yet'}
+            </p>
+            {!isSelectedPast && (
+              <button
+                onClick={() => setShowCreate(true)}
+                style={{
+                  marginTop: '4px',
+                  fontSize: '0.8rem',
+                  fontFamily: '"DM Sans", sans-serif',
+                  fontWeight: 600,
+                  color: 'var(--accent)',
+                  background: 'rgba(237,155,109,0.1)',
+                  border: '1.5px solid rgba(237,155,109,0.25)',
+                  borderRadius: '999px',
+                  padding: '6px 16px',
+                  cursor: 'pointer',
+                }}
+              >
+                Add a task
+              </button>
+            )}
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {selectedTasks.map(task => (
-              <TaskRow key={task.id} task={task} />
+              <div key={task.id} style={{ animation: 'fadeIn 0.18s ease-out' }}>
+                <TaskRow
+                  task={task}
+                  onToggle={() => toggleTask(task.id)}
+                  onEdit={() => setEditTarget(task)}
+                  onDelete={() => deleteTask(task.id)}
+                />
+              </div>
             ))}
           </div>
         )}
       </div>
+
+      {/* Modals */}
+      {showCreate && (
+        <TaskModal
+          mode="create"
+          initial={{ id: '', title: '', priority: 'medium', deadline: selected, completed: false, createdAt: '' }}
+          onClose={() => setShowCreate(false)}
+          onSubmit={({ title, description, priority, deadline }) =>
+            addTask(title, priority as Priority, deadline ?? selected, description)
+          }
+        />
+      )}
+      {editTarget && (
+        <TaskModal
+          mode="edit"
+          initial={editTarget}
+          onClose={() => setEditTarget(null)}
+          onSubmit={({ title, description, priority, deadline }) =>
+            editTask(editTarget.id, { title, description, priority: priority as Priority, deadline })
+          }
+        />
+      )}
     </div>
   );
 };
