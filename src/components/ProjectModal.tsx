@@ -1,60 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { Project, ProjectColor } from '../types';
 import { PROJECT_COLORS } from '../types';
-<<<<<<< HEAD
 import { PROJECT_ICON_OPTIONS, PROJECT_ICON_MAP } from '../projectIcons';
 import { CloseCircle } from '@solar-icons/react';
-=======
-import {
-  CloseCircle,
-  Rocket,
-  Lightbulb,
-  Palette,
-  Settings,
-  Book,
-  Target,
-  Leaf,
-  Bolt,
-  Microscope,
-  Home2,
-  Bag2,
-  MusicNote,
-  Airplane,
-  Waterdrops,
-  Heart,
-  Star,
-  Code,
-  Crown,
-  Planet,
-} from '@solar-icons/react';
-
-// Shared icon registry — also exported for use in other components
-export const ICON_OPTIONS: { key: string; Icon: React.FC<{ size?: number }> }[] = [
-  { key: 'rocket',      Icon: Rocket },
-  { key: 'lightbulb',  Icon: Lightbulb },
-  { key: 'palette',    Icon: Palette },
-  { key: 'settings',   Icon: Settings },
-  { key: 'book',       Icon: Book },
-  { key: 'target',     Icon: Target },
-  { key: 'leaf',       Icon: Leaf },
-  { key: 'bolt',       Icon: Bolt },
-  { key: 'microscope', Icon: Microscope },
-  { key: 'home',       Icon: Home2 },
-  { key: 'bag',        Icon: Bag2 },
-  { key: 'music',      Icon: MusicNote },
-  { key: 'airplane',   Icon: Airplane },
-  { key: 'water',      Icon: Waterdrops },
-  { key: 'heart',      Icon: Heart },
-  { key: 'star',       Icon: Star },
-  { key: 'code',       Icon: Code },
-  { key: 'crown',      Icon: Crown },
-  { key: 'planet',     Icon: Planet },
-];
-
-export const ICON_MAP: Record<string, React.FC<{ size?: number }>> = Object.fromEntries(
-  ICON_OPTIONS.map(({ key, Icon }) => [key, Icon]),
-);
->>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
 
 const COLOR_KEYS = Object.keys(PROJECT_COLORS) as ProjectColor[];
 
@@ -91,11 +39,7 @@ export const ProjectModal: React.FC<Props> = ({ mode, initial, onClose, onSubmit
   };
 
   const selectedColors = PROJECT_COLORS[color];
-<<<<<<< HEAD
   const SelectedIcon = iconKey ? PROJECT_ICON_MAP[iconKey] : null;
-=======
-  const SelectedIcon = iconKey ? ICON_MAP[iconKey] : null;
->>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
 
   return (
     <div
@@ -130,11 +74,7 @@ export const ProjectModal: React.FC<Props> = ({ mode, initial, onClose, onSubmit
           <div className="flex flex-col gap-2">
             <label className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>Icon</label>
             <div className="flex flex-wrap gap-1.5">
-<<<<<<< HEAD
               {PROJECT_ICON_OPTIONS.map(({ key, Icon }) => {
-=======
-              {ICON_OPTIONS.map(({ key, Icon }) => {
->>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
                 const active = iconKey === key;
                 return (
                   <button
@@ -208,11 +148,7 @@ export const ProjectModal: React.FC<Props> = ({ mode, initial, onClose, onSubmit
             />
           </div>
 
-<<<<<<< HEAD
           {/* Preview */}
-=======
-          {/* Preview pill */}
->>>>>>> d5dae2bc79b8728d6429d3676700c6b0a7160013
           <div
             className="flex items-center gap-2 px-3 py-2 rounded-xl"
             style={{ background: 'var(--bg-panel)', border: '1px solid var(--border)' }}
