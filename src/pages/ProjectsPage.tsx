@@ -626,6 +626,52 @@ const ProjectDetail: React.FC<{
             <div className="h-full rounded-full transition-all duration-700" style={{ width: `${progress}%`, background: colors.dot }} />
           </div>
         </div>
+
+      </div>
+
+      {/* ── Action buttons under header ── */}
+      <div className="flex items-center gap-2 mb-5">
+        {/* Add task button */}
+        <button
+          onClick={() => openAddTaskModal(undefined)}
+          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-sm font-body font-medium transition-all hover:opacity-90 active:scale-95"
+          style={{ background: colors.bg, color: colors.text, border: `1.5px solid ${colors.border}` }}
+        >
+          <AddCircle size={15} />
+          Add task
+        </button>
+
+        {/* Add section */}
+        {showAddSection ? (
+          <div
+            className="flex-1 flex items-center gap-2 px-3 py-1.5 rounded-xl"
+            style={{ background: 'var(--bg-panel)', border: `1.5px solid ${colors.border}` }}
+          >
+            <input
+              ref={sectionInputRef}
+              value={addSectionVal}
+              onChange={e => setAddSectionVal(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter')  handleAddSection();
+                if (e.key === 'Escape') { setShowAddSection(false); setAddSectionVal(''); }
+              }}
+              placeholder="Section name"
+              className="flex-1 bg-transparent text-sm font-body outline-none"
+              style={{ color: 'var(--text-main)' }}
+            />
+            <button onClick={handleAddSection} style={{ color: colors.dot }}><CheckCircle size={16} /></button>
+            <button onClick={() => { setShowAddSection(false); setAddSectionVal(''); }} style={{ color: 'var(--text-muted)' }}><CloseCircle size={16} /></button>
+          </div>
+        ) : (
+          <button
+            onClick={() => setShowAddSection(true)}
+            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-sm font-body transition-all hover:opacity-80 active:scale-95"
+            style={{ color: 'var(--text-muted)', border: '1.5px solid var(--border)' }}
+          >
+            <AddSquare size={14} />
+            Add section
+          </button>
+        )}
       </div>
 
       {/* ── Task list ── */}
@@ -678,51 +724,6 @@ const ProjectDetail: React.FC<{
             onSectionDragPointerDown={handleSectionDragPointerDown}
           />
         ))}
-      </div>
-
-      {/* ── Bottom toolbar ── */}
-      <div className="flex items-center gap-2 mt-4 pt-4" style={{ borderTop: '1px solid var(--border)' }}>
-        {/* Add task button */}
-        <button
-          onClick={() => openAddTaskModal(undefined)}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-body font-medium transition-all hover:opacity-90 active:scale-95"
-          style={{ background: colors.bg, color: colors.text, border: `1.5px solid ${colors.border}` }}
-        >
-          <AddCircle size={15} />
-          Add task
-        </button>
-
-        {/* Add section */}
-        {showAddSection ? (
-          <div
-            className="flex items-center gap-2 flex-1 px-3 py-1.5 rounded-xl"
-            style={{ background: 'var(--bg-panel)', border: `1.5px solid ${colors.border}` }}
-          >
-            <input
-              ref={sectionInputRef}
-              value={addSectionVal}
-              onChange={e => setAddSectionVal(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === 'Enter')  handleAddSection();
-                if (e.key === 'Escape') { setShowAddSection(false); setAddSectionVal(''); }
-              }}
-              placeholder="Section name"
-              className="flex-1 bg-transparent text-sm font-body outline-none"
-              style={{ color: 'var(--text-main)' }}
-            />
-            <button onClick={handleAddSection} style={{ color: colors.dot }}><CheckCircle size={16} /></button>
-            <button onClick={() => { setShowAddSection(false); setAddSectionVal(''); }} style={{ color: 'var(--text-muted)' }}><CloseCircle size={16} /></button>
-          </div>
-        ) : (
-          <button
-            onClick={() => setShowAddSection(true)}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-body transition-all hover:opacity-80 active:scale-95"
-            style={{ color: 'var(--text-muted)', border: '1.5px solid var(--border)' }}
-          >
-            <AddSquare size={14} />
-            Add section
-          </button>
-        )}
       </div>
 
       {/* Modals */}
