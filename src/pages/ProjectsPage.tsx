@@ -14,12 +14,12 @@ import {
   PenNewSquare,
   AltArrowLeft,
   AltArrowDown,
-  AddCircle,
   CloseCircle,
   CheckCircle,
+  AddCircle,
 } from '@solar-icons/react';
 
-// ─── Drag dots icon (2×4 grid, standard in Notion / Linear / Todoist) ─────────
+// ─── Drag dots icon ───────────────────────────────────────────────────────────
 const DragDotsIcon: React.FC<{ size?: number }> = ({ size = 14 }) => (
   <svg width={size * 0.57} height={size} viewBox="0 0 8 14" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
     <circle cx="2" cy="2"  r="1.5" />
@@ -31,7 +31,7 @@ const DragDotsIcon: React.FC<{ size?: number }> = ({ size = 14 }) => (
   </svg>
 );
 
-// ─── Project icon renderer ────────────────────────────────────────────────────
+// ─── Project icon ─────────────────────────────────────────────────────────────
 const ProjectIcon: React.FC<{ iconKey?: string; size?: number }> = ({ iconKey, size = 18 }) => {
   if (!iconKey) return null;
   const Icon = PROJECT_ICON_MAP[iconKey];
@@ -39,14 +39,14 @@ const ProjectIcon: React.FC<{ iconKey?: string; size?: number }> = ({ iconKey, s
   return <Icon size={size} />;
 };
 
-// ─── Priority options ─────────────────────────────────────────────────────────
+// ─── Priority config ──────────────────────────────────────────────────────────
 const PRIORITIES: { value: Priority; label: string; cls: string }[] = [
   { value: 'low',    label: 'Low',    cls: 'border-sage-200  text-sage-500  bg-sage-100  dark:bg-sage-500/10  dark:border-sage-500/30' },
   { value: 'medium', label: 'Medium', cls: 'border-amber-200 text-amber-500 bg-amber-100 dark:bg-amber-500/10 dark:border-amber-500/30' },
   { value: 'high',   label: 'High',   cls: 'border-blush-200 text-blush-500 bg-blush-100 dark:bg-blush-500/10 dark:border-blush-500/30' },
 ];
 
-// ─── Project task modal ───────────────────────────────────────────────────────
+// ─── Task modal ───────────────────────────────────────────────────────────────
 const ProjectTaskModal: React.FC<{
   mode: 'create' | 'edit';
   initial?: ProjectTask;
@@ -65,9 +65,9 @@ const ProjectTaskModal: React.FC<{
   const [priority, setPriority] = useState<Priority>(initial?.priority ?? 'medium');
   const [deadline, setDeadline] = useState(initial?.deadline ?? '');
   const sectionId               = initial?.sectionId ?? defaultSectionId;
-  const [shake, setShake]         = useState(false);
-  const titleRef                  = useRef<HTMLInputElement>(null);
-  const overlayRef                = useRef<HTMLDivElement>(null);
+  const [shake, setShake]       = useState(false);
+  const titleRef                = useRef<HTMLInputElement>(null);
+  const overlayRef              = useRef<HTMLDivElement>(null);
 
   useEffect(() => { setTimeout(() => titleRef.current?.focus(), 100); }, []);
 
@@ -81,13 +81,7 @@ const ProjectTaskModal: React.FC<{
       setTimeout(() => setShake(false), 400);
       return;
     }
-    onSubmit({
-      title,
-      description: desc || undefined,
-      priority,
-      deadline: deadline || undefined,
-      sectionId: sectionId || undefined,
-    });
+    onSubmit({ title, description: desc || undefined, priority, deadline: deadline || undefined, sectionId: sectionId || undefined });
     onClose();
   };
 
@@ -106,11 +100,7 @@ const ProjectTaskModal: React.FC<{
           <h2 className="font-display text-xl font-semibold" style={{ color: 'var(--text-main)' }}>
             {mode === 'create' ? 'New task' : 'Edit task'}
           </h2>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-xl transition-all hover:scale-105 active:scale-90"
-            style={{ color: 'var(--text-muted)' }}
-          >
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-xl transition-all hover:scale-105 active:scale-90" style={{ color: 'var(--text-muted)' }}>
             <CloseCircle size={20} />
           </button>
         </div>
@@ -152,9 +142,7 @@ const ProjectTaskModal: React.FC<{
                   type="button"
                   onClick={() => setPriority(p.value)}
                   className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-2xl border-2 text-sm font-medium font-body transition-all duration-150 ${
-                    priority === p.value
-                      ? `${p.cls} shadow-soft scale-[1.03]`
-                      : 'hover:opacity-80'
+                    priority === p.value ? `${p.cls} shadow-soft scale-[1.03]` : 'hover:opacity-80'
                   }`}
                   style={priority !== p.value ? { borderColor: 'var(--border)', color: 'var(--text-muted)', background: 'var(--bg-panel)' } : {}}
                 >
@@ -168,11 +156,7 @@ const ProjectTaskModal: React.FC<{
             <label className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
               Deadline <span className="normal-case opacity-60">(optional)</span>
             </label>
-            <DatePicker
-              value={deadline}
-              onChange={setDeadline}
-              min={new Date().toISOString().split('T')[0]}
-            />
+            <DatePicker value={deadline} onChange={setDeadline} min={new Date().toISOString().split('T')[0]} />
           </div>
 
           <div className="flex gap-2 mt-1">
@@ -190,7 +174,7 @@ const ProjectTaskModal: React.FC<{
               className="flex-1 py-2.5 rounded-2xl text-sm font-medium font-body transition-all active:scale-95 hover:opacity-90 shadow-soft"
               style={{ background: 'var(--text-main)', color: 'var(--bg-main)' }}
             >
-              {mode === 'create' ? 'Add task' : 'Save changes'}
+              {mode === 'create' ? 'Add task' : 'Save'}
             </button>
           </div>
         </div>
@@ -199,20 +183,11 @@ const ProjectTaskModal: React.FC<{
   );
 };
 
-// ─── Drag handle ──────────────────────────────────────────────────────────────
-const DragHandle: React.FC<{ onPointerDown: (e: React.PointerEvent) => void }> = ({ onPointerDown }) => (
-  <div
-    onPointerDown={onPointerDown}
-    className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-lg cursor-grab active:cursor-grabbing select-none opacity-20 group-hover:opacity-40 sm:opacity-0 sm:group-hover:opacity-40 transition-opacity duration-150"
-    style={{ color: 'var(--text-muted)', touchAction: 'none' }}
-    data-drag-handle="true"
-    aria-label="Drag to reorder"
-  >
-    <DragDotsIcon size={14} />
-  </div>
-);
-
 // ─── Task row ─────────────────────────────────────────────────────────────────
+const PRIORITY_DOT: Record<string, string> = {
+  high: '#c45a69', medium: '#be8c32', low: '#649158',
+};
+
 const ProjectTaskRow: React.FC<{
   task: ProjectTask;
   dotColor: string;
@@ -223,27 +198,28 @@ const ProjectTaskRow: React.FC<{
 }> = ({ task, dotColor, onToggle, onEdit, onDelete, onDragHandlePointerDown }) => {
   const isOverdue = task.deadline && !task.completed && task.deadline < new Date().toISOString().split('T')[0];
 
-  const priorityDot: Record<string, string> = {
-    high: '#c45a69',
-    medium: '#be8c32',
-    low: '#649158',
-  };
-
   return (
     <div
-      className="group flex items-start gap-2 px-1 py-2.5 rounded-xl transition-colors duration-100 hover:bg-[var(--bg-panel)]"
+      className="group flex items-center gap-2 px-2 py-2 rounded-xl transition-colors duration-100 hover:bg-[var(--bg-panel)]"
       data-task-id={task.id}
       data-task-section={task.sectionId ?? ''}
     >
-      <DragHandle onPointerDown={onDragHandlePointerDown} />
+      {/* Drag handle */}
+      <div
+        onPointerDown={onDragHandlePointerDown}
+        className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded cursor-grab active:cursor-grabbing select-none opacity-20 group-hover:opacity-50 sm:opacity-0 sm:group-hover:opacity-40 transition-opacity duration-150"
+        style={{ color: 'var(--text-muted)', touchAction: 'none' }}
+        data-drag-handle="true"
+        aria-label="Drag to reorder"
+      >
+        <DragDotsIcon size={13} />
+      </div>
 
+      {/* Checkbox */}
       <button
         onClick={onToggle}
-        className="flex-shrink-0 mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all duration-200 hover:scale-110"
-        style={{
-          borderColor: task.completed ? dotColor : 'var(--border)',
-          background: task.completed ? dotColor : 'transparent',
-        }}
+        className="flex-shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all duration-200 hover:scale-110"
+        style={{ borderColor: task.completed ? dotColor : 'var(--border)', background: task.completed ? dotColor : 'transparent' }}
       >
         {task.completed && (
           <svg width="8" height="6" viewBox="0 0 8 6" fill="none">
@@ -252,47 +228,106 @@ const ProjectTaskRow: React.FC<{
         )}
       </button>
 
+      {/* Content */}
       <div className="flex-1 min-w-0">
-        <p
-          className="text-sm font-body leading-snug"
-          style={{
-            color: task.completed ? 'var(--text-muted)' : 'var(--text-main)',
-            textDecoration: task.completed ? 'line-through' : 'none',
-          }}
-        >
+        <p className="text-sm font-body leading-snug" style={{ color: task.completed ? 'var(--text-muted)' : 'var(--text-main)', textDecoration: task.completed ? 'line-through' : 'none' }}>
           {task.title}
         </p>
-        {task.description && (
-          <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--text-muted)' }}>{task.description}</p>
+        {(task.description || task.deadline) && (
+          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+            {task.deadline && (
+              <span className="text-xs font-body" style={{ color: isOverdue ? '#c45a69' : 'var(--text-muted)' }}>
+                {isOverdue ? '⚠ ' : ''}
+                {new Date(task.deadline + 'T00:00:00').toLocaleDateString('en', { month: 'short', day: 'numeric' })}
+              </span>
+            )}
+            {task.description && (
+              <span className="text-xs truncate max-w-[140px]" style={{ color: 'var(--text-muted)' }}>{task.description}</span>
+            )}
+          </div>
         )}
-        <div className="flex items-center gap-2 mt-1 flex-wrap">
-          {task.deadline && (
-            <span className="text-xs font-body" style={{ color: isOverdue ? '#c45a69' : 'var(--text-muted)' }}>
-              {isOverdue ? '! ' : ''}
-              {new Date(task.deadline + 'T00:00:00').toLocaleDateString('en', { month: 'short', day: 'numeric' })}
-            </span>
-          )}
-          <span className="w-1.5 h-1.5 rounded-full" style={{ background: priorityDot[task.priority] }} />
-          <span className="text-xs capitalize" style={{ color: 'var(--text-muted)' }}>{task.priority}</span>
-        </div>
       </div>
 
+      {/* Priority dot */}
+      <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full" style={{ background: PRIORITY_DOT[task.priority] }} />
+
+      {/* Actions */}
       <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
         <button
           onClick={onEdit}
-          className="w-7 h-7 rounded-lg flex items-center justify-center transition-all hover:scale-105 active:scale-90"
-          style={{ color: 'var(--text-muted)', background: 'var(--bg-panel)' }}
+          className="w-6 h-6 rounded-lg flex items-center justify-center transition-all hover:scale-105 active:scale-90"
+          style={{ color: 'var(--text-muted)' }}
         >
-          <PenNewSquare size={14} />
+          <PenNewSquare size={13} />
         </button>
         <button
           onClick={onDelete}
-          className="w-7 h-7 rounded-lg flex items-center justify-center transition-all hover:scale-105 active:scale-90"
-          style={{ color: '#c45a69', background: 'rgba(196,90,105,0.1)' }}
+          className="w-6 h-6 rounded-lg flex items-center justify-center transition-all hover:scale-105 active:scale-90"
+          style={{ color: '#c45a69' }}
         >
-          <TrashBinMinimalistic size={14} />
+          <TrashBinMinimalistic size={13} />
         </button>
       </div>
+    </div>
+  );
+};
+
+// ─── Inline add task row ──────────────────────────────────────────────────────
+const InlineAddTask: React.FC<{
+  accentColor: string;
+  onAdd: (title: string) => void;
+  onOpenModal: () => void;
+}> = ({ accentColor, onAdd, onOpenModal }) => {
+  const [active, setActive] = useState(false);
+  const [val, setVal]       = useState('');
+  const inputRef            = useRef<HTMLInputElement>(null);
+
+  const activate = () => { setActive(true); setTimeout(() => inputRef.current?.focus(), 50); };
+  const cancel   = () => { setActive(false); setVal(''); };
+
+  const commit = () => {
+    if (val.trim()) { onAdd(val.trim()); setVal(''); inputRef.current?.focus(); }
+    else cancel();
+  };
+
+  if (!active) {
+    return (
+      <button
+        onClick={activate}
+        className="w-full flex items-center gap-2 px-2 py-2 rounded-xl text-sm font-body transition-all duration-150 opacity-0 group-hover:opacity-100 hover:opacity-100 focus:opacity-100"
+        style={{ color: accentColor }}
+      >
+        <AddCircle size={15} />
+        <span>Add task</span>
+      </button>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2 px-2 py-1.5 rounded-xl" style={{ background: 'var(--bg-panel)', border: `1.5px solid ${accentColor}40` }}>
+      <input
+        ref={inputRef}
+        value={val}
+        onChange={e => setVal(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === 'Enter')  commit();
+          if (e.key === 'Escape') cancel();
+        }}
+        placeholder="Task name…"
+        className="flex-1 bg-transparent text-sm font-body outline-none"
+        style={{ color: 'var(--text-main)' }}
+        maxLength={120}
+      />
+      <button
+        onClick={onOpenModal}
+        className="text-xs font-body px-2 py-0.5 rounded-lg transition-all hover:opacity-80"
+        style={{ color: 'var(--text-muted)' }}
+        title="More options"
+      >
+        ···
+      </button>
+      <button onClick={commit} style={{ color: accentColor }}><CheckCircle size={16} /></button>
+      <button onClick={cancel} style={{ color: 'var(--text-muted)' }}><CloseCircle size={16} /></button>
     </div>
   );
 };
@@ -307,19 +342,16 @@ const SectionBlock: React.FC<{
   onDeleteTask: (taskId: string) => void;
   onEditSection: (newTitle: string) => void;
   onDeleteSection: () => void;
+  onAddTask: (title: string) => void;
+  onOpenAddTaskModal: () => void;
   onTaskDragPointerDown: (e: React.PointerEvent, taskId: string, sectionId: string | undefined) => void;
   onSectionDragPointerDown: (e: React.PointerEvent, sectionId: string) => void;
 }> = ({
-  section,
-  tasks,
-  colors,
-  onToggleTask,
-  onEditTask,
-  onDeleteTask,
-  onEditSection,
-  onDeleteSection,
-  onTaskDragPointerDown,
-  onSectionDragPointerDown,
+  section, tasks, colors,
+  onToggleTask, onEditTask, onDeleteTask,
+  onEditSection, onDeleteSection,
+  onAddTask, onOpenAddTaskModal,
+  onTaskDragPointerDown, onSectionDragPointerDown,
 }) => {
   const [collapsed, setCollapsed] = useState(false);
   const [editing, setEditing]     = useState(false);
@@ -334,33 +366,32 @@ const SectionBlock: React.FC<{
   };
 
   return (
-    <div className="mb-1" data-section-id={section.id}>
+    <div className="group mb-1" data-section-id={section.id}>
       {/* Section header */}
       <div
-        className="group/sec flex items-center gap-2 mb-1 py-0.5 rounded-xl"
+        className="group/sec flex items-center gap-1.5 py-1 px-1 rounded-xl hover:bg-[var(--bg-panel)] transition-colors duration-100"
         data-section-header-id={section.id}
       >
         {/* Section drag handle */}
         <div
           onPointerDown={(e) => onSectionDragPointerDown(e, section.id)}
-          className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded cursor-grab active:cursor-grabbing select-none opacity-20 group-hover/sec:opacity-40 sm:opacity-0 sm:group-hover/sec:opacity-40 transition-opacity duration-150"
+          className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded cursor-grab active:cursor-grabbing select-none opacity-0 group-hover/sec:opacity-40 sm:opacity-0 sm:group-hover/sec:opacity-40 transition-opacity duration-150"
           style={{ color: 'var(--text-muted)', touchAction: 'none' }}
           data-drag-handle="true"
         >
-          <DragDotsIcon size={13} />
+          <DragDotsIcon size={12} />
         </div>
 
+        {/* Collapse toggle */}
         <button
           onClick={() => setCollapsed(c => !c)}
-          className="transition-transform duration-200 flex-shrink-0"
-          style={{
-            color: 'var(--text-muted)',
-            transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)',
-          }}
+          className="flex-shrink-0 w-5 h-5 flex items-center justify-center transition-all duration-200 rounded hover:bg-[var(--bg-panel)]"
+          style={{ color: 'var(--text-muted)', transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }}
         >
-          <AltArrowDown size={14} />
+          <AltArrowDown size={13} />
         </button>
 
+        {/* Title */}
         {editing ? (
           <input
             value={editVal}
@@ -371,53 +402,52 @@ const SectionBlock: React.FC<{
             }}
             onBlur={commitEdit}
             autoFocus
-            className="flex-1 bg-transparent text-sm font-semibold font-body outline-none"
+            className="flex-1 bg-transparent text-xs font-semibold font-body uppercase tracking-widest outline-none"
             style={{ color: colors.text, borderBottom: `1px solid ${colors.dot}` }}
           />
         ) : (
-          <span
-            className="text-sm font-semibold font-body tracking-wide cursor-pointer hover:opacity-70 transition-opacity"
+          <button
+            className="flex-1 text-left text-xs font-semibold font-body uppercase tracking-widest hover:opacity-70 transition-opacity"
             style={{ color: colors.text }}
             onClick={() => setEditing(true)}
           >
             {section.title}
-          </span>
+          </button>
         )}
 
+        {/* Task count badge */}
         {tasks.length > 0 && (
           <span
-            className="text-xs px-1.5 py-0.5 rounded-full font-body tabular-nums"
+            className="text-xs px-1.5 py-0.5 rounded-full font-body tabular-nums flex-shrink-0"
             style={{ background: colors.bg, color: colors.text }}
           >
             {done}/{tasks.length}
           </span>
         )}
 
+        {/* Delete section */}
         <button
           onClick={onDeleteSection}
-          className="opacity-0 group-hover/sec:opacity-100 transition-opacity ml-auto w-6 h-6 flex items-center justify-center rounded-lg"
+          className="flex-shrink-0 opacity-0 group-hover/sec:opacity-100 transition-opacity w-5 h-5 flex items-center justify-center rounded-lg hover:text-red-400"
           style={{ color: 'var(--text-muted)' }}
         >
-          <CloseCircle size={14} />
+          <CloseCircle size={13} />
         </button>
       </div>
 
+      {/* Section body */}
       {!collapsed && (
         <div
-          className="ml-7"
+          className="ml-6 mt-0.5 rounded-xl"
           data-section-drop-zone={section.id}
           style={{ minHeight: '8px' }}
         >
           {tasks.length === 0 ? (
             <div
-              className="py-2 px-2 rounded-lg border border-dashed text-xs italic"
-              style={{
-                color: 'var(--text-muted)',
-                borderColor: 'var(--border)',
-                opacity: 0.5,
-              }}
+              className="py-3 px-3 rounded-xl border border-dashed text-xs italic text-center"
+              style={{ color: 'var(--text-muted)', borderColor: 'var(--border)', opacity: 0.45 }}
             >
-              Empty — drop tasks here
+              Drop tasks here
             </div>
           ) : (
             <div className="flex flex-col">
@@ -434,66 +464,35 @@ const SectionBlock: React.FC<{
               ))}
             </div>
           )}
+          {/* Inline add task */}
+          <div className="mt-0.5">
+            <InlineAddTask
+              accentColor={colors.dot}
+              onAdd={onAddTask}
+              onOpenModal={onOpenAddTaskModal}
+            />
+          </div>
         </div>
       )}
     </div>
   );
 };
 
-// ─── Unsectioned tasks block ──────────────────────────────────────────────────
-const UnsectionedBlock: React.FC<{
-  tasks: ProjectTask[];
-  colors: { bg: string; text: string; border: string; dot: string };
-  hasSections: boolean;
-  onToggleTask: (taskId: string) => void;
-  onEditTask: (task: ProjectTask) => void;
-  onDeleteTask: (taskId: string) => void;
-  onTaskDragPointerDown: (e: React.PointerEvent, taskId: string, sectionId: string | undefined) => void;
-}> = ({ tasks, colors, hasSections, onToggleTask, onEditTask, onDeleteTask, onTaskDragPointerDown }) => {
-  if (hasSections && tasks.length === 0) return null;
-
-  return (
-    <div className="mb-2" data-section-drop-zone="">
-      {hasSections && tasks.length > 0 && (
-        <p className="text-xs font-semibold font-body uppercase tracking-widest mb-1 ml-0.5" style={{ color: 'var(--text-muted)' }}>
-          Unsorted
-        </p>
-      )}
-      <div className="flex flex-col">
-        {tasks.length === 0 && !hasSections && (
-          <p className="text-xs py-1.5 italic" style={{ color: 'var(--text-muted)', opacity: 0.55 }}>
-            No tasks yet — hit "Add task" below
-          </p>
-        )}
-        {tasks.map(task => (
-          <ProjectTaskRow
-            key={task.id}
-            task={task}
-            dotColor={colors.dot}
-            onToggle={() => onToggleTask(task.id)}
-            onEdit={() => onEditTask(task)}
-            onDelete={() => onDeleteTask(task.id)}
-            onDragHandlePointerDown={(e) => onTaskDragPointerDown(e, task.id, undefined)}
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// ─── Project Detail ───────────────────────────────────────────────────────────
+// ─── Project detail ───────────────────────────────────────────────────────────
 const ProjectDetail: React.FC<{
   project: Project;
   onBack: () => void;
   ops: ReturnType<typeof useProjects>;
 }> = ({ project, onBack, ops }) => {
-  const { dark } = useTheme();
-  const colors = resolveProjectColors(project.color, dark);
+  const { dark }  = useTheme();
+  const colors    = resolveProjectColors(project.color, dark);
+
   const [showEdit, setShowEdit]             = useState(false);
   const [editTask, setEditTask]             = useState<ProjectTask | null>(null);
   const [showAddTask, setShowAddTask]       = useState(false);
-  const [addSectionVal, setAddSectionVal]   = useState('');
+  const [addTaskSectionId, setAddTaskSectionId] = useState<string | undefined>(undefined);
   const [showAddSection, setShowAddSection] = useState(false);
+  const [addSectionVal, setAddSectionVal]   = useState('');
   const sectionInputRef = useRef<HTMLInputElement>(null);
 
   const totalTasks      = project.tasks.length;
@@ -502,7 +501,6 @@ const ProjectDetail: React.FC<{
   const unsectioned     = project.tasks.filter(t => !t.sectionId);
   const getSectionTasks = (id: string) => project.tasks.filter(t => t.sectionId === id);
   const sortedSections  = [...project.sections].sort((a, b) => a.order - b.order);
-  const hasSections     = sortedSections.length > 0;
 
   const handleAddSection = () => {
     if (addSectionVal.trim()) {
@@ -516,7 +514,7 @@ const ProjectDetail: React.FC<{
     if (showAddSection) setTimeout(() => sectionInputRef.current?.focus(), 60);
   }, [showAddSection]);
 
-  // ── Drag & drop ────────────────────────────────────────
+  // ── Drag & drop ────────────────────────────────────
   const handleReorderTask = useCallback((
     taskId: string,
     targetSectionId: string | undefined,
@@ -556,8 +554,14 @@ const ProjectDetail: React.FC<{
     onPointerDown(e, { type: 'section', id: sectionId }, headerEl);
   }, [onPointerDown]);
 
+  const openAddTaskModal = useCallback((sectionId?: string) => {
+    setAddTaskSectionId(sectionId);
+    setShowAddTask(true);
+  }, []);
+
   return (
     <div>
+      {/* Back */}
       <button
         onClick={onBack}
         className="flex items-center gap-1.5 text-sm font-body mb-5 transition-opacity hover:opacity-70"
@@ -569,7 +573,7 @@ const ProjectDetail: React.FC<{
 
       {/* Project header */}
       <div
-        className="rounded-2xl p-5 mb-6"
+        className="rounded-2xl p-5 mb-5"
         style={{ background: colors.bg, border: `1.5px solid ${colors.border}` }}
       >
         <div className="flex items-start justify-between gap-3">
@@ -619,57 +623,76 @@ const ProjectDetail: React.FC<{
             <span className="text-xs font-semibold font-body" style={{ color: colors.text }}>{progress}%</span>
           </div>
           <div className="h-1.5 rounded-full overflow-hidden" style={{ background: `${colors.dot}25` }}>
-            <div
-              className="h-full rounded-full transition-all duration-700"
-              style={{ width: `${progress}%`, background: colors.dot }}
-            />
+            <div className="h-full rounded-full transition-all duration-700" style={{ width: `${progress}%`, background: colors.dot }} />
           </div>
         </div>
       </div>
 
-      {/* Task list */}
-      <UnsectionedBlock
-        tasks={unsectioned}
-        colors={colors}
-        hasSections={hasSections}
-        onToggleTask={(tid) => ops.toggleTask(project.id, tid)}
-        onEditTask={(task) => setEditTask(task)}
-        onDeleteTask={(tid) => ops.deleteTask(project.id, tid)}
-        onTaskDragPointerDown={handleTaskDragPointerDown}
-      />
+      {/* ── Task list ── */}
+      <div className="flex flex-col gap-0.5">
 
-      {sortedSections.map(sec => (
-        <SectionBlock
-          key={sec.id}
-          section={sec}
-          tasks={getSectionTasks(sec.id)}
-          colors={colors}
-          onToggleTask={(tid) => ops.toggleTask(project.id, tid)}
-          onEditTask={(task) => setEditTask(task)}
-          onDeleteTask={(tid) => ops.deleteTask(project.id, tid)}
-          onEditSection={(newTitle) => ops.editSection(project.id, sec.id, newTitle)}
-          onDeleteSection={() => ops.deleteSection(project.id, sec.id)}
-          onTaskDragPointerDown={handleTaskDragPointerDown}
-          onSectionDragPointerDown={handleSectionDragPointerDown}
-        />
-      ))}
+        {/* Unsectioned tasks */}
+        {(unsectioned.length > 0 || sortedSections.length === 0) && (
+          <div className="group mb-2" data-section-drop-zone="">
+            <div className="flex flex-col">
+              {unsectioned.length === 0 && sortedSections.length === 0 && (
+                <p className="text-sm py-2 italic px-2" style={{ color: 'var(--text-muted)', opacity: 0.5 }}>
+                  No tasks yet
+                </p>
+              )}
+              {unsectioned.map(task => (
+                <ProjectTaskRow
+                  key={task.id}
+                  task={task}
+                  dotColor={colors.dot}
+                  onToggle={() => ops.toggleTask(project.id, task.id)}
+                  onEdit={() => setEditTask(task)}
+                  onDelete={() => ops.deleteTask(project.id, task.id)}
+                  onDragHandlePointerDown={(e) => handleTaskDragPointerDown(e, task.id, undefined)}
+                />
+              ))}
+            </div>
+            <InlineAddTask
+              accentColor={colors.dot}
+              onAdd={(title) => ops.addTask(project.id, title, 'medium', undefined, undefined, undefined)}
+              onOpenModal={() => openAddTaskModal(undefined)}
+            />
+          </div>
+        )}
 
-      {/* Toolbar */}
-      <div
-        className="flex items-center gap-3 mt-5 pt-4"
-        style={{ borderTop: '1px solid var(--border)' }}
-      >
+        {/* Sections */}
+        {sortedSections.map(sec => (
+          <SectionBlock
+            key={sec.id}
+            section={sec}
+            tasks={getSectionTasks(sec.id)}
+            colors={colors}
+            onToggleTask={(tid) => ops.toggleTask(project.id, tid)}
+            onEditTask={(task) => setEditTask(task)}
+            onDeleteTask={(tid) => ops.deleteTask(project.id, tid)}
+            onEditSection={(newTitle) => ops.editSection(project.id, sec.id, newTitle)}
+            onDeleteSection={() => ops.deleteSection(project.id, sec.id)}
+            onAddTask={(title) => ops.addTask(project.id, title, 'medium', undefined, undefined, sec.id)}
+            onOpenAddTaskModal={() => openAddTaskModal(sec.id)}
+            onTaskDragPointerDown={handleTaskDragPointerDown}
+            onSectionDragPointerDown={handleSectionDragPointerDown}
+          />
+        ))}
+      </div>
+
+      {/* ── Bottom toolbar ── */}
+      <div className="flex items-center gap-2 mt-4 pt-4" style={{ borderTop: '1px solid var(--border)' }}>
+        {/* Add task button */}
         <button
-          onClick={() => setShowAddTask(true)}
-          className="flex items-center gap-2 text-sm font-body font-medium transition-all hover:opacity-80 active:scale-95"
-          style={{ color: colors.dot }}
+          onClick={() => openAddTaskModal(undefined)}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-body font-medium transition-all hover:opacity-90 active:scale-95"
+          style={{ background: colors.bg, color: colors.text, border: `1.5px solid ${colors.border}` }}
         >
-          <AddCircle size={17} />
+          <AddCircle size={15} />
           Add task
         </button>
 
-        <span className="select-none" style={{ color: 'var(--border)' }}>·</span>
-
+        {/* Add section */}
         {showAddSection ? (
           <div
             className="flex items-center gap-2 flex-1 px-3 py-1.5 rounded-xl"
@@ -687,16 +710,16 @@ const ProjectDetail: React.FC<{
               className="flex-1 bg-transparent text-sm font-body outline-none"
               style={{ color: 'var(--text-main)' }}
             />
-            <button onClick={handleAddSection} style={{ color: colors.dot }}><CheckCircle size={17} /></button>
-            <button onClick={() => { setShowAddSection(false); setAddSectionVal(''); }} style={{ color: 'var(--text-muted)' }}><CloseCircle size={17} /></button>
+            <button onClick={handleAddSection} style={{ color: colors.dot }}><CheckCircle size={16} /></button>
+            <button onClick={() => { setShowAddSection(false); setAddSectionVal(''); }} style={{ color: 'var(--text-muted)' }}><CloseCircle size={16} /></button>
           </div>
         ) : (
           <button
             onClick={() => setShowAddSection(true)}
-            className="flex items-center gap-2 text-sm font-body transition-all hover:opacity-100 active:scale-95"
-            style={{ color: 'var(--text-muted)', opacity: 0.65 }}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-body transition-all hover:opacity-80 active:scale-95"
+            style={{ color: 'var(--text-muted)', border: '1.5px solid var(--border)' }}
           >
-            <AddSquare size={15} />
+            <AddSquare size={14} />
             Add section
           </button>
         )}
@@ -715,6 +738,7 @@ const ProjectDetail: React.FC<{
       {showAddTask && (
         <ProjectTaskModal
           mode="create"
+          defaultSectionId={addTaskSectionId}
           onClose={() => setShowAddTask(false)}
           onSubmit={({ title, description, priority, deadline, sectionId }) =>
             ops.addTask(project.id, title, priority, deadline, description, sectionId)
@@ -751,11 +775,7 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
     <button
       onClick={onClick}
       className="w-full text-left rounded-2xl p-4 transition-all duration-200 hover:scale-[1.01] active:scale-[0.99]"
-      style={{
-        background: 'var(--bg-card)',
-        border: '1.5px solid var(--border)',
-        boxShadow: '0 1px 6px rgba(0,0,0,0.04)',
-      }}
+      style={{ background: 'var(--bg-card)', border: '1.5px solid var(--border)', boxShadow: '0 1px 6px rgba(0,0,0,0.04)' }}
     >
       <div className="flex items-start gap-3">
         <div
@@ -787,7 +807,6 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
               {project.description}
             </p>
           )}
-
           <div className="mt-3">
             <div className="flex items-center justify-between mb-1">
               <span className="text-xs font-body" style={{ color: 'var(--text-muted)' }}>
@@ -796,10 +815,7 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
               <span className="text-xs font-semibold font-body" style={{ color: colors.text }}>{progress}%</span>
             </div>
             <div className="h-1 rounded-full overflow-hidden" style={{ background: `${colors.dot}20` }}>
-              <div
-                className="h-full rounded-full transition-all duration-500"
-                style={{ width: `${progress}%`, background: colors.dot }}
-              />
+              <div className="h-full rounded-full transition-all duration-500" style={{ width: `${progress}%`, background: colors.dot }} />
             </div>
           </div>
         </div>
@@ -808,11 +824,7 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
       {project.sections.length > 0 && (
         <div className="flex gap-1.5 mt-3 flex-wrap">
           {project.sections.map(sec => (
-            <span
-              key={sec.id}
-              className="text-xs px-2 py-0.5 rounded-full font-body"
-              style={{ background: colors.bg, color: colors.text }}
-            >
+            <span key={sec.id} className="text-xs px-2 py-0.5 rounded-full font-body" style={{ background: colors.bg, color: colors.text }}>
               {sec.title}
             </span>
           ))}
@@ -857,14 +869,8 @@ export const ProjectsPage: React.FC = () => {
       </header>
 
       {ops.projects.length === 0 ? (
-        <div
-          className="flex flex-col items-center justify-center py-16 rounded-2xl"
-          style={{ border: '1.5px dashed var(--border)' }}
-        >
-          <div
-            className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4"
-            style={{ background: 'var(--bg-panel)' }}
-          >
+        <div className="flex flex-col items-center justify-center py-16 rounded-2xl" style={{ border: '1.5px dashed var(--border)' }}>
+          <div className="w-14 h-14 rounded-2xl flex items-center justify-center mb-4" style={{ background: 'var(--bg-panel)' }}>
             <FolderOpen size={28} style={{ color: 'var(--text-muted)' }} />
           </div>
           <p className="font-display text-lg font-medium mb-1" style={{ color: 'var(--text-main)' }}>No projects yet</p>
