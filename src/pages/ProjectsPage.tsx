@@ -402,12 +402,12 @@ const SectionBlock: React.FC<{
             }}
             onBlur={commitEdit}
             autoFocus
-            className="flex-1 bg-transparent text-xs font-semibold font-body uppercase tracking-widest outline-none"
+            className="flex-1 bg-transparent text-xs font-semibold font-body outline-none"
             style={{ color: colors.text, borderBottom: `1px solid ${colors.dot}` }}
           />
         ) : (
           <button
-            className="flex-1 text-left text-xs font-semibold font-body uppercase tracking-widest hover:opacity-70 transition-opacity"
+            className="flex-1 text-left text-xs font-semibold font-body hover:opacity-70 transition-opacity"
             style={{ color: colors.text }}
             onClick={() => setEditing(true)}
           >
@@ -493,7 +493,7 @@ const ProjectDetail: React.FC<{
   const [addTaskSectionId, setAddTaskSectionId] = useState<string | undefined>(undefined);
   const [showAddSection, setShowAddSection] = useState(false);
   const [addSectionVal, setAddSectionVal]   = useState('');
-  const sectionInputRef = useRef<HTMLInputElement>(null);
+  const sectionInputRef = useRef<HTMLDivElement>(null);
 
   const totalTasks      = project.tasks.length;
   const doneTasks       = project.tasks.filter(t => t.completed).length;
@@ -511,7 +511,9 @@ const ProjectDetail: React.FC<{
   };
 
   useEffect(() => {
-    if (showAddSection) setTimeout(() => sectionInputRef.current?.focus(), 60);
+    if (showAddSection) {
+      setTimeout(() => sectionInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60);
+    }
   }, [showAddSection]);
 
   // ── Drag & drop ────────────────────────────────────
@@ -642,36 +644,14 @@ const ProjectDetail: React.FC<{
         </button>
 
         {/* Add section */}
-        {showAddSection ? (
-          <div
-            className="flex-1 flex items-center gap-2 px-3 py-1.5 rounded-xl"
-            style={{ background: 'var(--bg-panel)', border: `1.5px solid ${colors.border}` }}
-          >
-            <input
-              ref={sectionInputRef}
-              value={addSectionVal}
-              onChange={e => setAddSectionVal(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === 'Enter')  handleAddSection();
-                if (e.key === 'Escape') { setShowAddSection(false); setAddSectionVal(''); }
-              }}
-              placeholder="Section name"
-              className="flex-1 bg-transparent text-sm font-body outline-none"
-              style={{ color: 'var(--text-main)' }}
-            />
-            <button onClick={handleAddSection} style={{ color: colors.dot }}><CheckCircle size={16} /></button>
-            <button onClick={() => { setShowAddSection(false); setAddSectionVal(''); }} style={{ color: 'var(--text-muted)' }}><CloseCircle size={16} /></button>
-          </div>
-        ) : (
-          <button
-            onClick={() => setShowAddSection(true)}
-            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-sm font-body transition-all hover:opacity-80 active:scale-95"
-            style={{ color: 'var(--text-muted)', border: '1.5px solid var(--border)' }}
-          >
-            <AddSquare size={14} />
-            Add section
-          </button>
-        )}
+        <button
+          onClick={() => setShowAddSection(true)}
+          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-sm font-body transition-all hover:opacity-80 active:scale-95"
+          style={{ color: 'var(--text-muted)', border: '1.5px solid var(--border)' }}
+        >
+          <AddSquare size={14} />
+          Add section
+        </button>
       </div>
 
       {/* ── Task list ── */}
@@ -724,6 +704,32 @@ const ProjectDetail: React.FC<{
             onSectionDragPointerDown={handleSectionDragPointerDown}
           />
         ))}
+
+        {/* Inline new section input */}
+        {showAddSection && (
+          <div
+            ref={sectionInputRef}
+            className="flex items-center gap-2 px-3 py-2.5 rounded-xl mt-1"
+            style={{ background: 'var(--bg-panel)', border: `1.5px solid ${colors.border}` }}
+          >
+            <AddSquare size={14} style={{ color: colors.dot, flexShrink: 0 }} />
+            <input
+              autoFocus
+              value={addSectionVal}
+              onChange={e => setAddSectionVal(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter')  handleAddSection();
+                if (e.key === 'Escape') { setShowAddSection(false); setAddSectionVal(''); }
+              }}
+              placeholder="Section name…"
+              className="flex-1 bg-transparent text-sm font-body font-semibold outline-none"
+              style={{ color: 'var(--text-main)' }}
+              maxLength={60}
+            />
+            <button onClick={handleAddSection} style={{ color: colors.dot }}><CheckCircle size={16} /></button>
+            <button onClick={() => { setShowAddSection(false); setAddSectionVal(''); }} style={{ color: 'var(--text-muted)' }}><CloseCircle size={16} /></button>
+          </div>
+        )}
       </div>
 
       {/* Modals */}
