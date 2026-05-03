@@ -85,6 +85,7 @@ export interface ProjectSection {
   id: string;
   title: string;
   order: number;
+  icon?: string;
 }
 
 export interface Project {
@@ -92,7 +93,7 @@ export interface Project {
   name: string;
   description?: string;
   color: ProjectColor;
-  emoji?: string; // stores icon key string, not actual emoji
+  emoji?: string; 
   sections: ProjectSection[];
   tasks: ProjectTask[];
   createdAt: string;

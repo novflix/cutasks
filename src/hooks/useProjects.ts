@@ -65,22 +65,23 @@ export function useProjects() {
   }, [update]);
 
   // ── Section CRUD ────────────────────────────────────
-  const addSection = useCallback((projectId: string, title: string) => {
+  const addSection = useCallback((projectId: string, title: string, icon?: string) => {
     update(prev => prev.map(p => {
       if (p.id !== projectId) return p;
       const section: ProjectSection = {
         id: generateId('sec'),
         title: title.trim(),
         order: p.sections.length,
+        icon,
       };
       return { ...p, sections: [...p.sections, section] };
     }));
   }, [update]);
 
-  const editSection = useCallback((projectId: string, sectionId: string, title: string) => {
+  const editSection = useCallback((projectId: string, sectionId: string, title: string, icon?: string) => {
     update(prev => prev.map(p => {
       if (p.id !== projectId) return p;
-      return { ...p, sections: p.sections.map(s => s.id === sectionId ? { ...s, title } : s) };
+      return { ...p, sections: p.sections.map(s => s.id === sectionId ? { ...s, title, icon } : s) };
     }));
   }, [update]);
 

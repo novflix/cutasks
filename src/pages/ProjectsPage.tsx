@@ -4,7 +4,7 @@ import { useDragDrop } from '../hooks/useDragDrop';
 import { useTheme } from '../hooks/useTheme';
 import type { Project, ProjectTask, Priority, ProjectColor } from '../types';
 import { resolveProjectColors } from '../types';
-import { PROJECT_ICON_MAP } from '../projectIcons';
+import { PROJECT_ICON_MAP, PROJECT_ICON_OPTIONS } from '../projectIcons';
 import { ProjectModal } from '../components/ProjectModal';
 import { DatePicker } from '../components/DatePicker';
 import {
@@ -334,13 +334,13 @@ const InlineAddTask: React.FC<{
 
 // ─── Section block ────────────────────────────────────────────────────────────
 const SectionBlock: React.FC<{
-  section: { id: string; title: string; order: number };
+  section: { id: string; title: string; order: number; icon?: string };
   tasks: ProjectTask[];
   colors: { bg: string; text: string; border: string; dot: string };
   onToggleTask: (taskId: string) => void;
   onEditTask: (task: ProjectTask) => void;
   onDeleteTask: (taskId: string) => void;
-  onEditSection: (newTitle: string) => void;
+  onEditSection: (newTitle: string, icon?: string) => void;
   onDeleteSection: () => void;
   onAddTask: (title: string) => void;
   onOpenAddTaskModal: () => void;
@@ -353,29 +353,49 @@ const SectionBlock: React.FC<{
   onAddTask, onOpenAddTaskModal,
   onTaskDragPointerDown, onSectionDragPointerDown,
 }) => {
-  const [collapsed, setCollapsed] = useState(false);
-  const [editing, setEditing]     = useState(false);
-  const [editVal, setEditVal]     = useState(section.title);
+  const [collapsed, setCollapsed]         = useState(false);
+  const [editing, setEditing]             = useState(false);
+  const [editVal, setEditVal]             = useState(section.title);
+  const [showIconPicker, setShowIconPicker] = useState(false);
+  const pickerRef = useRef<HTMLDivElement>(null);
 
   const done = tasks.filter(t => t.completed).length;
+  const SectionIcon = section.icon ? PROJECT_ICON_MAP[section.icon] : null;
+
+  // Close picker on outside click
+  useEffect(() => {
+    if (!showIconPicker) return;
+    const handler = (e: MouseEvent) => {
+      if (pickerRef.current && !pickerRef.current.contains(e.target as Node)) {
+        setShowIconPicker(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showIconPicker]);
 
   const commitEdit = () => {
-    if (editVal.trim()) onEditSection(editVal.trim());
+    if (editVal.trim()) onEditSection(editVal.trim(), section.icon);
     else setEditVal(section.title);
     setEditing(false);
+  };
+
+  const handleIconSelect = (key: string) => {
+    onEditSection(section.title, key === section.icon ? undefined : key);
+    setShowIconPicker(false);
   };
 
   return (
     <div className="group mb-1" data-section-id={section.id}>
       {/* Section header */}
       <div
-        className="group/sec flex items-center gap-1.5 py-1 px-1 rounded-xl hover:bg-[var(--bg-panel)] transition-colors duration-100"
+        className="group/sec flex items-center gap-1.5 py-1.5 px-1 rounded-xl hover:bg-[var(--bg-panel)] transition-colors duration-100"
         data-section-header-id={section.id}
       >
-        {/* Section drag handle */}
+        {/* Drag handle */}
         <div
           onPointerDown={(e) => onSectionDragPointerDown(e, section.id)}
-          className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded cursor-grab active:cursor-grabbing select-none opacity-0 group-hover/sec:opacity-40 sm:opacity-0 sm:group-hover/sec:opacity-40 transition-opacity duration-150"
+          className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded cursor-grab active:cursor-grabbing select-none opacity-0 group-hover/sec:opacity-40 transition-opacity duration-150"
           style={{ color: 'var(--text-muted)', touchAction: 'none' }}
           data-drag-handle="true"
         >
@@ -385,11 +405,92 @@ const SectionBlock: React.FC<{
         {/* Collapse toggle */}
         <button
           onClick={() => setCollapsed(c => !c)}
-          className="flex-shrink-0 w-5 h-5 flex items-center justify-center transition-all duration-200 rounded hover:bg-[var(--bg-panel)]"
+          className="flex-shrink-0 w-5 h-5 flex items-center justify-center transition-all duration-200 rounded"
           style={{ color: 'var(--text-muted)', transform: collapsed ? 'rotate(-90deg)' : 'rotate(0deg)' }}
         >
           <AltArrowDown size={13} />
         </button>
+
+        {/* Icon + picker — only takes space when icon is set */}
+        {SectionIcon ? (
+          <div ref={pickerRef} className="relative flex-shrink-0">
+            <button
+              onClick={() => setShowIconPicker(p => !p)}
+              className="w-6 h-6 flex items-center justify-center rounded-lg transition-all hover:scale-110 active:scale-90"
+              style={{ background: `${colors.dot}20`, color: colors.dot }}
+              title="Change icon"
+            >
+              <SectionIcon size={13} />
+            </button>
+
+            {showIconPicker && (
+              <div
+                className="absolute left-0 top-8 z-50 rounded-2xl p-2.5 shadow-cozy"
+                style={{
+                  background: 'var(--bg-card)',
+                  border: '1.5px solid var(--border)',
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(5, 1fr)',
+                  gap: '4px',
+                  width: '196px',
+                }}
+              >
+                <button
+                  onClick={() => handleIconSelect(section.icon!)}
+                  className="col-span-5 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-body transition-all hover:opacity-80 mb-1"
+                  style={{ color: 'var(--text-muted)', background: 'var(--bg-panel)' }}
+                >
+                  <CloseCircle size={12} />
+                  Remove icon
+                </button>
+                {PROJECT_ICON_OPTIONS.map(({ key, Icon }) => (
+                  <button
+                    key={key}
+                    onClick={() => handleIconSelect(key)}
+                    className="w-8 h-8 flex items-center justify-center rounded-xl transition-all hover:scale-110 active:scale-90"
+                    style={{
+                      background: section.icon === key ? `${colors.dot}25` : 'var(--bg-panel)',
+                      color: section.icon === key ? colors.dot : 'var(--text-muted)',
+                    }}
+                  >
+                    <Icon size={15} />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          /* No icon — picker ref still needed for dropdown positioning */
+          <div ref={pickerRef} className="relative flex-shrink-0" style={{ width: 0, overflow: 'visible' }}>
+            {showIconPicker && (
+              <div
+                className="absolute left-0 top-2 z-50 rounded-2xl p-2.5 shadow-cozy"
+                style={{
+                  background: 'var(--bg-card)',
+                  border: '1.5px solid var(--border)',
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(5, 1fr)',
+                  gap: '4px',
+                  width: '196px',
+                }}
+              >
+                {PROJECT_ICON_OPTIONS.map(({ key, Icon }) => (
+                  <button
+                    key={key}
+                    onClick={() => handleIconSelect(key)}
+                    className="w-8 h-8 flex items-center justify-center rounded-xl transition-all hover:scale-110 active:scale-90"
+                    style={{
+                      background: 'var(--bg-panel)',
+                      color: 'var(--text-muted)',
+                    }}
+                  >
+                    <Icon size={15} />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Title */}
         {editing ? (
@@ -402,12 +503,12 @@ const SectionBlock: React.FC<{
             }}
             onBlur={commitEdit}
             autoFocus
-            className="flex-1 bg-transparent text-xs font-semibold font-body outline-none"
+            className="flex-1 bg-transparent text-sm font-semibold font-body outline-none"
             style={{ color: colors.text, borderBottom: `1px solid ${colors.dot}` }}
           />
         ) : (
           <button
-            className="flex-1 text-left text-xs font-semibold font-body hover:opacity-70 transition-opacity"
+            className="flex-1 text-left text-sm font-semibold font-body hover:opacity-70 transition-opacity"
             style={{ color: colors.text }}
             onClick={() => setEditing(true)}
           >
@@ -425,31 +526,40 @@ const SectionBlock: React.FC<{
           </span>
         )}
 
+        {/* Add icon hint — hover only, when no icon */}
+        {!SectionIcon && (
+          <button
+            onClick={() => setShowIconPicker(p => !p)}
+            className="flex-shrink-0 opacity-0 group-hover/sec:opacity-100 transition-all w-7 h-7 flex items-center justify-center rounded-xl"
+            style={{ color: 'var(--text-muted)' }}
+            onMouseOver={e => { e.currentTarget.style.background = 'var(--bg-panel)'; e.currentTarget.style.color = 'var(--text-main)'; }}
+            onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+            title="Add icon"
+          >
+            <AddSquare size={16} />
+          </button>
+        )}
+
         {/* Delete section */}
         <button
           onClick={onDeleteSection}
-          className="flex-shrink-0 opacity-0 group-hover/sec:opacity-100 transition-opacity w-5 h-5 flex items-center justify-center rounded-lg hover:text-red-400"
+          className="flex-shrink-0 opacity-0 group-hover/sec:opacity-100 transition-all w-7 h-7 flex items-center justify-center rounded-xl"
           style={{ color: 'var(--text-muted)' }}
+          onMouseOver={e => { e.currentTarget.style.background = 'rgba(196,90,105,0.12)'; e.currentTarget.style.color = '#c45a69'; }}
+          onMouseOut={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
         >
-          <CloseCircle size={13} />
+          <TrashBinMinimalistic size={15} />
         </button>
       </div>
 
       {/* Section body */}
       {!collapsed && (
         <div
-          className="ml-6 mt-0.5 rounded-xl"
+          className="ml-6 rounded-xl"
           data-section-drop-zone={section.id}
-          style={{ minHeight: '8px' }}
+          style={{ minHeight: tasks.length === 0 ? '0' : undefined }}
         >
-          {tasks.length === 0 ? (
-            <div
-              className="py-3 px-3 rounded-xl border border-dashed text-xs italic text-center"
-              style={{ color: 'var(--text-muted)', borderColor: 'var(--border)', opacity: 0.45 }}
-            >
-              Drop tasks here
-            </div>
-          ) : (
+          {tasks.length === 0 ? null : (
             <div className="flex flex-col">
               {tasks.map(task => (
                 <ProjectTaskRow
@@ -493,7 +603,10 @@ const ProjectDetail: React.FC<{
   const [addTaskSectionId, setAddTaskSectionId] = useState<string | undefined>(undefined);
   const [showAddSection, setShowAddSection] = useState(false);
   const [addSectionVal, setAddSectionVal]   = useState('');
+  const [addSectionIcon, setAddSectionIcon] = useState<string | undefined>(undefined);
+  const [showNewSectionIconPicker, setShowNewSectionIconPicker] = useState(false);
   const sectionInputRef = useRef<HTMLDivElement>(null);
+  const newSectionPickerRef = useRef<HTMLDivElement>(null);
 
   const totalTasks      = project.tasks.length;
   const doneTasks       = project.tasks.filter(t => t.completed).length;
@@ -504,10 +617,19 @@ const ProjectDetail: React.FC<{
 
   const handleAddSection = () => {
     if (addSectionVal.trim()) {
-      ops.addSection(project.id, addSectionVal.trim());
+      ops.addSection(project.id, addSectionVal.trim(), addSectionIcon);
       setAddSectionVal('');
+      setAddSectionIcon(undefined);
+      setShowNewSectionIconPicker(false);
       setShowAddSection(false);
     }
+  };
+
+  const cancelAddSection = () => {
+    setShowAddSection(false);
+    setAddSectionVal('');
+    setAddSectionIcon(undefined);
+    setShowNewSectionIconPicker(false);
   };
 
   useEffect(() => {
@@ -515,6 +637,17 @@ const ProjectDetail: React.FC<{
       setTimeout(() => sectionInputRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 60);
     }
   }, [showAddSection]);
+
+  useEffect(() => {
+    if (!showNewSectionIconPicker) return;
+    const handler = (e: MouseEvent) => {
+      if (newSectionPickerRef.current && !newSectionPickerRef.current.contains(e.target as Node)) {
+        setShowNewSectionIconPicker(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showNewSectionIconPicker]);
 
   // ── Drag & drop ────────────────────────────────────
   const handleReorderTask = useCallback((
@@ -696,7 +829,7 @@ const ProjectDetail: React.FC<{
             onToggleTask={(tid) => ops.toggleTask(project.id, tid)}
             onEditTask={(task) => setEditTask(task)}
             onDeleteTask={(tid) => ops.deleteTask(project.id, tid)}
-            onEditSection={(newTitle) => ops.editSection(project.id, sec.id, newTitle)}
+            onEditSection={(newTitle, icon) => ops.editSection(project.id, sec.id, newTitle, icon)}
             onDeleteSection={() => ops.deleteSection(project.id, sec.id)}
             onAddTask={(title) => ops.addTask(project.id, title, 'medium', undefined, undefined, sec.id)}
             onOpenAddTaskModal={() => openAddTaskModal(sec.id)}
@@ -712,14 +845,70 @@ const ProjectDetail: React.FC<{
             className="flex items-center gap-2 px-3 py-2.5 rounded-xl mt-1"
             style={{ background: 'var(--bg-panel)', border: `1.5px solid ${colors.border}` }}
           >
-            <AddSquare size={14} style={{ color: colors.dot, flexShrink: 0 }} />
+            {/* Icon picker for new section */}
+            <div ref={newSectionPickerRef} className="relative flex-shrink-0">
+              <button
+                onClick={() => setShowNewSectionIconPicker(p => !p)}
+                className="w-6 h-6 flex items-center justify-center rounded-lg transition-all hover:scale-110 active:scale-90"
+                style={{
+                  background: addSectionIcon ? `${colors.dot}20` : 'var(--bg-card)',
+                  color: addSectionIcon ? colors.dot : 'var(--text-muted)',
+                  border: addSectionIcon ? 'none' : '1px dashed var(--border)',
+                }}
+                title={addSectionIcon ? 'Change icon' : 'Add icon'}
+              >
+                {addSectionIcon
+                  ? (() => { const I = PROJECT_ICON_MAP[addSectionIcon]; return <I size={13} />; })()
+                  : <AddSquare size={12} />
+                }
+              </button>
+
+              {showNewSectionIconPicker && (
+                <div
+                  className="absolute left-0 top-8 z-50 rounded-2xl p-2.5 shadow-cozy"
+                  style={{
+                    background: 'var(--bg-card)',
+                    border: '1.5px solid var(--border)',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(5, 1fr)',
+                    gap: '4px',
+                    width: '196px',
+                  }}
+                >
+                  {addSectionIcon && (
+                    <button
+                      onClick={() => { setAddSectionIcon(undefined); setShowNewSectionIconPicker(false); }}
+                      className="col-span-5 flex items-center justify-center gap-1.5 py-1.5 rounded-xl text-xs font-body transition-all hover:opacity-80 mb-1"
+                      style={{ color: 'var(--text-muted)', background: 'var(--bg-panel)' }}
+                    >
+                      <CloseCircle size={12} />
+                      Remove icon
+                    </button>
+                  )}
+                  {PROJECT_ICON_OPTIONS.map(({ key, Icon }) => (
+                    <button
+                      key={key}
+                      onClick={() => { setAddSectionIcon(key === addSectionIcon ? undefined : key); setShowNewSectionIconPicker(false); }}
+                      className="w-8 h-8 flex items-center justify-center rounded-xl transition-all hover:scale-110 active:scale-90"
+                      style={{
+                        background: addSectionIcon === key ? `${colors.dot}25` : 'var(--bg-panel)',
+                        color: addSectionIcon === key ? colors.dot : 'var(--text-muted)',
+                      }}
+                    >
+                      <Icon size={15} />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <input
               autoFocus
               value={addSectionVal}
               onChange={e => setAddSectionVal(e.target.value)}
               onKeyDown={e => {
                 if (e.key === 'Enter')  handleAddSection();
-                if (e.key === 'Escape') { setShowAddSection(false); setAddSectionVal(''); }
+                if (e.key === 'Escape') cancelAddSection();
               }}
               placeholder="Section name…"
               className="flex-1 bg-transparent text-sm font-body font-semibold outline-none"
@@ -727,7 +916,7 @@ const ProjectDetail: React.FC<{
               maxLength={60}
             />
             <button onClick={handleAddSection} style={{ color: colors.dot }}><CheckCircle size={16} /></button>
-            <button onClick={() => { setShowAddSection(false); setAddSectionVal(''); }} style={{ color: 'var(--text-muted)' }}><CloseCircle size={16} /></button>
+            <button onClick={cancelAddSection} style={{ color: 'var(--text-muted)' }}><CloseCircle size={16} /></button>
           </div>
         )}
       </div>
