@@ -227,8 +227,9 @@ export function useDragDrop({ onReorderTask, onReorderSection }: UseDragDropOpti
       pending.sourceEl.style.transition = 'opacity 0.15s';
       pendingRef.current = null;
 
+      document.body.classList.add('dragging');
       document.body.style.userSelect = 'none';
-      document.body.style.webkitUserSelect = 'none';
+      (document.body.style as CSSStyleDeclaration & { webkitUserSelect: string }).webkitUserSelect = 'none';
       document.body.style.touchAction = 'none';
 
       moveGhost(ghost, ddx, ddy, rect);
@@ -236,6 +237,9 @@ export function useDragDrop({ onReorderTask, onReorderSection }: UseDragDropOpti
     }
 
     if (!state || !state.ghost) return;
+
+    // Block page scroll while actively dragging on touch devices
+    e.preventDefault();
 
     if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     animFrameRef.current = requestAnimationFrame(() => {
@@ -259,8 +263,9 @@ export function useDragDrop({ onReorderTask, onReorderSection }: UseDragDropOpti
     const state = stateRef.current;
     pendingRef.current = null;
 
+    document.body.classList.remove('dragging');
     document.body.style.userSelect = '';
-    document.body.style.webkitUserSelect = '';
+    (document.body.style as CSSStyleDeclaration & { webkitUserSelect: string }).webkitUserSelect = '';
     document.body.style.touchAction = '';
 
     if (!state) return;
@@ -330,13 +335,14 @@ export function useDragDrop({ onReorderTask, onReorderSection }: UseDragDropOpti
     showIndicator(null);
     stateRef.current = null;
     pendingRef.current = null;
+    document.body.classList.remove('dragging');
     document.body.style.userSelect = '';
     document.body.style.touchAction = '';
     if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
   }, [showIndicator]);
 
   useEffect(() => {
-    window.addEventListener('pointermove', onPointerMove, { passive: true });
+    window.addEventListener('pointermove', onPointerMove, { passive: false });
     window.addEventListener('pointerup', onPointerUp);
     window.addEventListener('pointercancel', onPointerCancel);
 

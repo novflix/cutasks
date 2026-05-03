@@ -233,8 +233,8 @@ const ProjectTaskModal: React.FC<{
 const DragHandle: React.FC<{ onPointerDown: (e: React.PointerEvent) => void }> = ({ onPointerDown }) => (
   <div
     onPointerDown={onPointerDown}
-    className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-lg cursor-grab active:cursor-grabbing touch-none select-none opacity-0 group-hover:opacity-40 transition-opacity duration-150"
-    style={{ color: 'var(--text-muted)' }}
+    className="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-lg cursor-grab active:cursor-grabbing select-none opacity-20 group-hover:opacity-40 sm:opacity-0 sm:group-hover:opacity-40 transition-opacity duration-150"
+    style={{ color: 'var(--text-muted)', touchAction: 'none' }}
     data-drag-handle="true"
     aria-label="Drag to reorder"
   >
@@ -373,8 +373,8 @@ const SectionBlock: React.FC<{
         {/* Section drag handle */}
         <div
           onPointerDown={(e) => onSectionDragPointerDown(e, section.id)}
-          className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded cursor-grab active:cursor-grabbing touch-none select-none opacity-0 group-hover/sec:opacity-40 transition-opacity duration-150"
-          style={{ color: 'var(--text-muted)' }}
+          className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded cursor-grab active:cursor-grabbing select-none opacity-20 group-hover/sec:opacity-40 sm:opacity-0 sm:group-hover/sec:opacity-40 transition-opacity duration-150"
+          style={{ color: 'var(--text-muted)', touchAction: 'none' }}
           data-drag-handle="true"
         >
           <HamburgerMenu size={12} />

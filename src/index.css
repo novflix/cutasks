@@ -32,13 +32,40 @@
     --border: #252a38;
     --accent: #ed9b6d;
   }
-  html { font-family: 'DM Sans', sans-serif; }
+  html {
+    font-family: 'DM Sans', sans-serif;
+    overscroll-behavior: none;
+  }
   body {
     background-color: var(--bg-main);
     color: var(--text-main);
     transition: background-color 0.35s ease, color 0.35s ease;
     min-height: 100vh;
+    min-height: 100dvh;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    overscroll-behavior-y: none;
   }
+
+  /* Prevent text selection everywhere except inputs */
+  * {
+    -webkit-user-select: none;
+    user-select: none;
+    /* Eliminate 300ms tap delay on mobile */
+    touch-action: manipulation;
+  }
+
+  /* Re-enable text selection inside input fields */
+  input, textarea, [contenteditable="true"] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
+  /* Prevent iOS long-press callout menu on non-input elements */
+  *:not(input):not(textarea):not([contenteditable]) {
+    -webkit-touch-callout: none;
+  }
+
   ::selection { background: #f9c6c6; color: #2d2824; }
   ::-webkit-scrollbar { width: 5px; }
   ::-webkit-scrollbar-track { background: transparent; }
@@ -242,8 +269,19 @@
   pointer-events: none !important;
 }
 
-/* Prevent text selection during drag on all elements */
+/* Drag handles must disable touch scroll so pointer events work on mobile */
+[data-drag-handle] {
+  touch-action: none !important;
+}
+
+/* During active drag: keep ghost crisp, prevent scroll */
+body.dragging {
+  overflow: hidden;
+  touch-action: none;
+}
+
 body.dragging * {
   user-select: none !important;
   -webkit-user-select: none !important;
+  cursor: grabbing !important;
 }
