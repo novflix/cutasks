@@ -17,8 +17,19 @@ import {
   AddCircle,
   CloseCircle,
   CheckCircle,
-  HamburgerMenu,
 } from '@solar-icons/react';
+
+// ─── Drag dots icon (2×4 grid, standard in Notion / Linear / Todoist) ─────────
+const DragDotsIcon: React.FC<{ size?: number }> = ({ size = 14 }) => (
+  <svg width={size * 0.57} height={size} viewBox="0 0 8 14" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="2" cy="2"  r="1.5" />
+    <circle cx="6" cy="2"  r="1.5" />
+    <circle cx="2" cy="7"  r="1.5" />
+    <circle cx="6" cy="7"  r="1.5" />
+    <circle cx="2" cy="12" r="1.5" />
+    <circle cx="6" cy="12" r="1.5" />
+  </svg>
+);
 
 // ─── Project icon renderer ────────────────────────────────────────────────────
 const ProjectIcon: React.FC<{ iconKey?: string; size?: number }> = ({ iconKey, size = 18 }) => {
@@ -39,9 +50,7 @@ const PRIORITIES: { value: Priority; label: string; cls: string }[] = [
 const ProjectTaskModal: React.FC<{
   mode: 'create' | 'edit';
   initial?: ProjectTask;
-  sections: { id: string; title: string }[];
   defaultSectionId?: string;
-  dotColor: string;
   onClose: () => void;
   onSubmit: (data: {
     title: string;
@@ -50,14 +59,12 @@ const ProjectTaskModal: React.FC<{
     deadline?: string;
     sectionId?: string;
   }) => void;
-}> = ({ mode, initial, sections, defaultSectionId, dotColor, onClose, onSubmit }) => {
-  const [title, setTitle]         = useState(initial?.title ?? '');
-  const [desc, setDesc]           = useState(initial?.description ?? '');
-  const [priority, setPriority]   = useState<Priority>(initial?.priority ?? 'medium');
-  const [deadline, setDeadline]   = useState(initial?.deadline ?? '');
-  const [sectionId, setSectionId] = useState<string | undefined>(
-    initial?.sectionId ?? defaultSectionId
-  );
+}> = ({ mode, initial, defaultSectionId, onClose, onSubmit }) => {
+  const [title, setTitle]       = useState(initial?.title ?? '');
+  const [desc, setDesc]         = useState(initial?.description ?? '');
+  const [priority, setPriority] = useState<Priority>(initial?.priority ?? 'medium');
+  const [deadline, setDeadline] = useState(initial?.deadline ?? '');
+  const sectionId               = initial?.sectionId ?? defaultSectionId;
   const [shake, setShake]         = useState(false);
   const titleRef                  = useRef<HTMLInputElement>(null);
   const overlayRef                = useRef<HTMLDivElement>(null);
@@ -168,43 +175,6 @@ const ProjectTaskModal: React.FC<{
             />
           </div>
 
-          {sections.length > 0 && (
-            <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>Section</label>
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => setSectionId(undefined)}
-                  className="px-3 py-1.5 rounded-xl text-sm font-body border transition-all duration-150"
-                  style={{
-                    borderColor: !sectionId ? dotColor : 'var(--border)',
-                    color: !sectionId ? dotColor : 'var(--text-muted)',
-                    background: !sectionId ? `${dotColor}15` : 'var(--bg-panel)',
-                    fontWeight: !sectionId ? 600 : 400,
-                  }}
-                >
-                  No section
-                </button>
-                {sections.map(sec => (
-                  <button
-                    key={sec.id}
-                    type="button"
-                    onClick={() => setSectionId(sec.id)}
-                    className="px-3 py-1.5 rounded-xl text-sm font-body border transition-all duration-150"
-                    style={{
-                      borderColor: sectionId === sec.id ? dotColor : 'var(--border)',
-                      color: sectionId === sec.id ? dotColor : 'var(--text-muted)',
-                      background: sectionId === sec.id ? `${dotColor}15` : 'var(--bg-panel)',
-                      fontWeight: sectionId === sec.id ? 600 : 400,
-                    }}
-                  >
-                    {sec.title}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
           <div className="flex gap-2 mt-1">
             <button
               type="button"
@@ -238,7 +208,7 @@ const DragHandle: React.FC<{ onPointerDown: (e: React.PointerEvent) => void }> =
     data-drag-handle="true"
     aria-label="Drag to reorder"
   >
-    <HamburgerMenu size={13} />
+    <DragDotsIcon size={14} />
   </div>
 );
 
@@ -377,7 +347,7 @@ const SectionBlock: React.FC<{
           style={{ color: 'var(--text-muted)', touchAction: 'none' }}
           data-drag-handle="true"
         >
-          <HamburgerMenu size={12} />
+          <DragDotsIcon size={13} />
         </div>
 
         <button
@@ -745,8 +715,6 @@ const ProjectDetail: React.FC<{
       {showAddTask && (
         <ProjectTaskModal
           mode="create"
-          sections={sortedSections}
-          dotColor={colors.dot}
           onClose={() => setShowAddTask(false)}
           onSubmit={({ title, description, priority, deadline, sectionId }) =>
             ops.addTask(project.id, title, priority, deadline, description, sectionId)
@@ -758,8 +726,6 @@ const ProjectDetail: React.FC<{
         <ProjectTaskModal
           mode="edit"
           initial={editTask}
-          sections={sortedSections}
-          dotColor={colors.dot}
           onClose={() => setEditTask(null)}
           onSubmit={({ title, description, priority, deadline, sectionId }) =>
             ops.editTask(project.id, editTask.id, { title, description, priority, deadline, sectionId })
