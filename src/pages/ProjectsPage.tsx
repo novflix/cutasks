@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useProjects } from '../hooks/useProjects';
 import { useDragDrop } from '../hooks/useDragDrop';
 import { useTheme } from '../hooks/useTheme';
@@ -589,7 +590,7 @@ const SectionBlock: React.FC<{
 };
 
 // ─── Project detail ───────────────────────────────────────────────────────────
-const ProjectDetail: React.FC<{
+export const ProjectDetail: React.FC<{
   project: Project;
   onBack: () => void;
   ops: ReturnType<typeof useProjects>;
@@ -1033,22 +1034,8 @@ const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ proj
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export const ProjectsPage: React.FC = () => {
   const ops = useProjects();
-  const [showCreate, setShowCreate]           = useState(false);
-  const [activeProjectId, setActiveProjectId] = useState<string | null>(null);
-
-  const liveProject = activeProjectId
-    ? ops.projects.find(p => p.id === activeProjectId) ?? null
-    : null;
-
-  if (liveProject) {
-    return (
-      <ProjectDetail
-        project={liveProject}
-        onBack={() => setActiveProjectId(null)}
-        ops={ops}
-      />
-    );
-  }
+  const navigate = useNavigate();
+  const [showCreate, setShowCreate] = useState(false);
 
   return (
     <>
@@ -1088,7 +1075,7 @@ export const ProjectsPage: React.FC = () => {
             <ProjectCard
               key={project.id}
               project={project}
-              onClick={() => setActiveProjectId(project.id)}
+              onClick={() => navigate(`/projects/${project.id}`)}
             />
           ))}
         </div>
@@ -1113,7 +1100,7 @@ export const ProjectsPage: React.FC = () => {
           onClose={() => setShowCreate(false)}
           onSubmit={({ name, description, color, emoji }) => {
             const id = ops.createProject(name, color as ProjectColor, emoji, description);
-            setTimeout(() => setActiveProjectId(id), 30);
+            setTimeout(() => navigate(`/projects/${id}`), 30);
           }}
         />
       )}
