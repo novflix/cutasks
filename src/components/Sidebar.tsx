@@ -161,7 +161,7 @@ export const Sidebar: React.FC<Props> = ({ dark }) => {
             }}
           >
             <Logout size={16} />
-            {loggingOut ? 'Выход...' : 'Выйти'}
+            {loggingOut ? 'Logging out...' : 'Log Out'}
           </button>
         </div>
       </aside>
