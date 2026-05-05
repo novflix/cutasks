@@ -97,4 +97,5 @@ export interface Project {
   sections: ProjectSection[];
   tasks: ProjectTask[];
   createdAt: string;
+  order?: number;
 }

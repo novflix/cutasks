@@ -54,7 +54,15 @@ export function useProjects() {
           sections: data.sections ?? [],
           tasks: data.tasks ?? [],
           createdAt: data.createdAt?.toDate?.()?.toISOString() ?? new Date().toISOString(),
+          order: data.order ?? null,
         } as Project;
+      });
+      // Sort by explicit order first, fallback to createdAt desc
+      loaded.sort((a, b) => {
+        if (a.order != null && b.order != null) return a.order - b.order;
+        if (a.order != null) return -1;
+        if (b.order != null) return 1;
+        return b.createdAt.localeCompare(a.createdAt);
       });
       setProjects(loaded);
       setLoading(false);
@@ -249,6 +257,28 @@ export function useProjects() {
     });
   }, [projects, updateProject]);
 
+  const reorderProject = useCallback(async (
+    projectId: string,
+    beforeProjectId: string | undefined,
+  ) => {
+    const current = [...projects];
+    const idx = current.findIndex(p => p.id === projectId);
+    if (idx === -1) return;
+    const [moved] = current.splice(idx, 1);
+    if (beforeProjectId) {
+      const targetIdx = current.findIndex(p => p.id === beforeProjectId);
+      current.splice(targetIdx === -1 ? current.length : targetIdx, 0, moved);
+    } else {
+      current.push(moved);
+    }
+    // Persist order for all projects in one batch
+    await Promise.all(current.map((p, i) => {
+      const ref = projectDoc(p.id);
+      if (!ref) return Promise.resolve();
+      return updateDoc(ref, { order: i });
+    }));
+  }, [projects, projectDoc]);
+
   return {
     projects,
     loading,
@@ -264,5 +294,6 @@ export function useProjects() {
     toggleTask,
     reorderTask,
     reorderSection,
+    reorderProject,
   };
 }
