@@ -25,9 +25,9 @@ const THEMES: {
   {
     value: 'slate',
     label: 'Slate',
-    description: 'Cool dark greys',
+    description: 'Neutral dark greys',
     Icon: CloudStorm,
-    preview: { bg: '#0f1117', card: '#1a1d27', text: '#e2e8f0', accent: '#ed9b6d' },
+    preview: { bg: '#111111', card: '#1c1c1c', text: '#e4e4e4', accent: '#ed9b6d' },
   },
   {
     value: 'dark',
