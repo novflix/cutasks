@@ -809,67 +809,110 @@ export const ProjectDetail: React.FC<{
 
       {/* Project header */}
       <div
-        className="rounded-2xl p-5 mb-5"
-        style={{ background: colors.bg, border: `1.5px solid ${colors.border}` }}
+        className="rounded-2xl mb-5 overflow-hidden"
+        style={{ background: 'var(--bg-card)', border: '1.5px solid var(--border)' }}
       >
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3">
-            {project.emoji && (
-              <div
-                className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                style={{ background: `${colors.dot}22`, color: colors.dot }}
-              >
-                <ProjectIcon iconKey={project.emoji} size={20} />
-              </div>
-            )}
-            <div>
-              <h1 className="font-display text-2xl font-semibold leading-tight" style={{ color: colors.text }}>
-                {project.name}
-              </h1>
-              {project.description && (
-                <p className="text-sm mt-0.5 font-body" style={{ color: colors.text, opacity: 0.7 }}>
-                  {project.description}
-                </p>
+        {/* Accent top stripe */}
+        <div style={{ height: '4px', background: colors.dot, opacity: 0.85 }} />
+
+        <div className="p-5">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              {project.emoji && (
+                <div
+                  className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                  style={{ background: colors.bg, border: `1.5px solid ${colors.border}`, color: colors.dot }}
+                >
+                  <ProjectIcon iconKey={project.emoji} size={20} />
+                </div>
               )}
+              <div>
+                <h1 className="font-display text-2xl font-semibold leading-tight" style={{ color: 'var(--text-main)' }}>
+                  {project.name}
+                </h1>
+                {project.description && (
+                  <p className="text-sm mt-0.5 font-body" style={{ color: 'var(--text-muted)' }}>
+                    {project.description}
+                  </p>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 flex-shrink-0">
+              <button
+                onClick={() => setShowEdit(true)}
+                className="w-8 h-8 rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-90"
+                style={{ color: 'var(--text-muted)', background: 'var(--bg-panel)', border: '1.5px solid var(--border)' }}
+              >
+                <PenNewSquare size={15} />
+              </button>
+              <button
+                onClick={() => {
+                  if (project.tasks.length > 1) {
+                    setShowDeleteConfirm(true);
+                  } else {
+                    ops.deleteProject(project.id);
+                    onBack();
+                  }
+                }}
+                className="w-8 h-8 rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-90"
+                style={{ color: '#c45a69', background: 'rgba(196,90,105,0.08)', border: '1.5px solid rgba(196,90,105,0.2)' }}
+              >
+                <TrashBinMinimalistic size={15} />
+              </button>
             </div>
           </div>
-          <div className="flex items-center gap-1.5 flex-shrink-0">
-            <button
-              onClick={() => setShowEdit(true)}
-              className="w-8 h-8 rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-90"
-              style={{ color: colors.text, background: `${colors.dot}1a` }}
-            >
-              <PenNewSquare size={15} />
-            </button>
-            <button
-              onClick={() => {
-                if (project.tasks.length > 1) {
-                  setShowDeleteConfirm(true);
-                } else {
-                  ops.deleteProject(project.id);
-                  onBack();
-                }
-              }}
-              className="w-8 h-8 rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-90"
-              style={{ color: '#c45a69', background: 'rgba(196,90,105,0.1)' }}
-            >
-              <TrashBinMinimalistic size={15} />
-            </button>
+
+          {/* Progress */}
+          <div className="mt-4 flex items-center gap-3">
+            {/* Circular progress */}
+            <div style={{ position: 'relative', width: 36, height: 36, flexShrink: 0 }}>
+              <svg width="36" height="36" viewBox="0 0 36 36" style={{ transform: 'rotate(-90deg)' }}>
+                <circle cx="18" cy="18" r="14" fill="none" stroke="var(--border)" strokeWidth="3" />
+                <circle
+                  cx="18" cy="18" r="14" fill="none"
+                  stroke={colors.dot} strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeDasharray={`${2 * Math.PI * 14}`}
+                  strokeDashoffset={`${2 * Math.PI * 14 * (1 - progress / 100)}`}
+                  style={{ transition: 'stroke-dashoffset 0.7s ease' }}
+                />
+              </svg>
+              <span style={{
+                position: 'absolute', inset: 0,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: '8px', fontWeight: 700, fontFamily: '"DM Sans", sans-serif',
+                color: 'var(--text-main)',
+              }}>
+                {progress}%
+              </span>
+            </div>
+
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
+                <span className="text-xs font-body" style={{ color: 'var(--text-muted)' }}>
+                  {doneTasks} of {totalTasks} task{totalTasks !== 1 ? 's' : ''} done
+                </span>
+                {totalTasks > 0 && doneTasks === totalTasks && (
+                  <span style={{
+                    fontSize: '0.65rem', fontWeight: 700, fontFamily: '"DM Sans", sans-serif',
+                    color: colors.dot,
+                    background: colors.bg,
+                    border: `1px solid ${colors.border}`,
+                    borderRadius: '999px', padding: '1px 7px',
+                  }}>
+                    All done ✓
+                  </span>
+                )}
+              </div>
+              <div className="h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--bg-panel)' }}>
+                <div
+                  className="h-full rounded-full transition-all duration-700"
+                  style={{ width: `${progress}%`, background: colors.dot, opacity: 0.85 }}
+                />
+              </div>
+            </div>
           </div>
         </div>
-
-        <div className="mt-4">
-          <div className="flex items-center justify-between mb-1.5">
-            <span className="text-xs font-body" style={{ color: colors.text, opacity: 0.75 }}>
-              {doneTasks} of {totalTasks} task{totalTasks !== 1 ? 's' : ''} done
-            </span>
-            <span className="text-xs font-semibold font-body" style={{ color: colors.text }}>{progress}%</span>
-          </div>
-          <div className="h-1.5 rounded-full overflow-hidden" style={{ background: `${colors.dot}25` }}>
-            <div className="h-full rounded-full transition-all duration-700" style={{ width: `${progress}%`, background: colors.dot }} />
-          </div>
-        </div>
-
       </div>
 
       {/* ── Action buttons under header ── */}
