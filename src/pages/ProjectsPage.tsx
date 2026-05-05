@@ -706,6 +706,7 @@ export const ProjectDetail: React.FC<{
   const [addSectionVal, setAddSectionVal]   = useState('');
   const [addSectionIcon, setAddSectionIcon] = useState<string | undefined>(undefined);
   const [showNewSectionIconPicker, setShowNewSectionIconPicker] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const sectionInputRef = useRef<HTMLDivElement>(null);
   const newSectionPickerRef = useRef<HTMLDivElement>(null);
 
@@ -843,7 +844,14 @@ export const ProjectDetail: React.FC<{
               <PenNewSquare size={15} />
             </button>
             <button
-              onClick={() => { ops.deleteProject(project.id); onBack(); }}
+              onClick={() => {
+                if (project.tasks.length >= 1) {
+                  setShowDeleteConfirm(true);
+                } else {
+                  ops.deleteProject(project.id);
+                  onBack();
+                }
+              }}
               className="w-8 h-8 rounded-xl flex items-center justify-center transition-all hover:scale-105 active:scale-90"
               style={{ color: '#c45a69', background: 'rgba(196,90,105,0.1)' }}
             >
@@ -1053,6 +1061,45 @@ export const ProjectDetail: React.FC<{
             ops.editTask(project.id, editTask.id, { title, description, priority, deadline, sectionId })
           }
         />
+      )}
+
+      {showDeleteConfirm && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: 'rgba(0,0,0,0.35)', backdropFilter: 'blur(4px)' }}
+          onClick={() => setShowDeleteConfirm(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl p-6 flex flex-col gap-4"
+            style={{ background: 'var(--bg-card)', border: '1.5px solid var(--border)', boxShadow: '0 8px 32px rgba(0,0,0,0.16)' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex flex-col gap-1">
+              <p className="font-display text-base font-semibold" style={{ color: 'var(--text-main)' }}>
+                Delete «{project.name}»?
+              </p>
+              <p className="text-sm font-body" style={{ color: 'var(--text-muted)' }}>
+                This will permanently delete the project and all {project.tasks.length} tasks. This action cannot be undone.
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="flex-1 py-2.5 rounded-xl text-sm font-medium font-body transition-all hover:opacity-80 active:scale-95"
+                style={{ background: 'var(--bg-panel)', color: 'var(--text-muted)', border: '1.5px solid var(--border)' }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => { ops.deleteProject(project.id); onBack(); }}
+                className="flex-1 py-2.5 rounded-xl text-sm font-medium font-body transition-all hover:opacity-90 active:scale-95"
+                style={{ background: '#c45a69', color: '#fff' }}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
