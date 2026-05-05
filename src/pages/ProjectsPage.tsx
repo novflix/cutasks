@@ -929,7 +929,7 @@ export const ProjectDetail: React.FC<{
           mode="edit"
           initial={project}
           onClose={() => setShowEdit(false)}
-          onSubmit={(data) => ops.editProject(project.id, data)}
+          onSubmit={(data) => ops.editProject(project.id, { ...data, description: data.description ?? undefined })}
         />
       )}
 
@@ -1115,7 +1115,7 @@ export const ProjectsPage: React.FC = () => {
           mode="create"
           onClose={() => setShowCreate(false)}
           onSubmit={async ({ name, description, color, emoji }) => {
-            const id = await ops.createProject(name, color as ProjectColor, emoji, description);
+            const id = await ops.createProject(name, color as ProjectColor, emoji, description ?? undefined);
             if (id) navigate(`/projects/${id}`);
           }}
         />
