@@ -55,6 +55,7 @@ export default function App() {
         <div className="max-w-xl mx-auto px-4 py-8 sm:py-12">
           <Routes>
             <Route path="/"                       element={<TasksPage dark={dark} />} />
+            <Route path="/tasks"                  element={<TasksPage dark={dark} />} />
             <Route path="/calendar"               element={<CalendarPage />} />
             <Route path="/projects"               element={<ProjectsPage />} />
             <Route path="/projects/:projectId"    element={<ProjectDetailPage />} />

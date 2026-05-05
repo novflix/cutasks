@@ -11,7 +11,7 @@ interface NavItem {
 }
 
 const NAV: NavItem[] = [
-  { path: '/',         label: 'Tasks',    Icon: ClipboardList },
+  { path: '/tasks',         label: 'Tasks',    Icon: ClipboardList },
   { path: '/calendar', label: 'Calendar', Icon: CalendarMinimalistic },
   { path: '/projects', label: 'Projects', Icon: FolderOpen },
   { path: '/settings', label: 'Settings', Icon: Settings },
