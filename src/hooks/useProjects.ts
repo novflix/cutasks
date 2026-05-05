@@ -66,7 +66,11 @@ export function useProjects() {
   const updateProject = useCallback(async (id: string, data: Partial<Omit<Project, 'id' | 'createdAt'>>) => {
     const ref = projectDoc(id);
     if (!ref) return;
-    await updateDoc(ref, data as Record<string, unknown>);
+    // Sanitize: replace undefined values with null so Firestore doesn't throw
+    const sanitized = Object.fromEntries(
+      Object.entries(data as Record<string, unknown>).map(([k, v]) => [k, v === undefined ? null : v])
+    );
+    await updateDoc(ref, sanitized);
   }, [projectDoc]);
 
   // ── Project CRUD ────────────────────────────────────

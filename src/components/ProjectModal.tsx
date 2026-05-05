@@ -11,7 +11,7 @@ interface Props {
   mode: 'create' | 'edit';
   initial?: Project;
   onClose: () => void;
-  onSubmit: (data: { name: string; description?: string; color: ProjectColor; emoji?: string }) => void;
+  onSubmit: (data: { name: string; description?: string | null; color: ProjectColor; emoji?: string }) => void;
 }
 
 export const ProjectModal: React.FC<Props> = ({ mode, initial, onClose, onSubmit }) => {
@@ -35,7 +35,7 @@ export const ProjectModal: React.FC<Props> = ({ mode, initial, onClose, onSubmit
       setTimeout(() => setShake(false), 400);
       return;
     }
-    onSubmit({ name, description: desc || undefined, color, emoji: iconKey });
+    onSubmit({ name, description: desc || null, color, emoji: iconKey });
     onClose();
   };
 
