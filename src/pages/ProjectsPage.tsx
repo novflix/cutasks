@@ -311,7 +311,7 @@ const ProjectTaskRow: React.FC<{
         )}
 
         {/* Meta: deadline + priority */}
-        {(deadline || task.priority !== 'low') && (
+        {(deadline || task.priority) && (
           <div className="flex items-center gap-2.5 mt-1">
             {deadline && (
               <span
@@ -331,17 +331,15 @@ const ProjectTaskRow: React.FC<{
                 {deadline.label}
               </span>
             )}
-            {task.priority !== 'low' && (
-              <span
-                className="inline-flex items-center gap-1 text-xs"
-                style={{ color: priorityColor }}
-              >
-                <svg width="9" height="9" viewBox="0 0 10 10" fill="none">
-                  <path d="M2 9V5M5 9V2M8 9V6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
-                </svg>
-                {PRIORITY_LABEL[task.priority]}
-              </span>
-            )}
+            <span
+              className="inline-flex items-center gap-1 text-xs"
+              style={{ color: priorityColor }}
+            >
+              <svg width="9" height="9" viewBox="0 0 10 10" fill="none">
+                <path d="M2 9V5M5 9V2M8 9V6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+              </svg>
+              {PRIORITY_LABEL[task.priority]}
+            </span>
           </div>
         )}
       </div>
