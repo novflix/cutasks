@@ -190,6 +190,26 @@ const PRIORITY_DOT: Record<string, string> = {
   high: '#c45a69', medium: '#be8c32', low: '#649158',
 };
 
+const PRIORITY_LABEL: Record<string, string> = {
+  high: 'High', medium: 'Medium', low: 'Low',
+};
+
+
+function formatTaskDeadline(date: string): { label: string; overdue: boolean; soon: boolean } {
+  const d = new Date(date + 'T00:00:00');
+  const now = new Date(); now.setHours(0, 0, 0, 0);
+  const diff = Math.round((d.getTime() - now.getTime()) / 86400000);
+  const overdue = diff < 0;
+  const soon = diff >= 0 && diff <= 2;
+  let label: string;
+  if (diff === 0)       label = 'Today';
+  else if (diff === 1)  label = 'Tomorrow';
+  else if (diff === -1) label = 'Yesterday';
+  else if (diff < -1)   label = `${Math.abs(diff)}d overdue`;
+  else                  label = d.toLocaleDateString('en', { month: 'short', day: 'numeric' });
+  return { label, overdue, soon };
+}
+
 const ProjectTaskRow: React.FC<{
   task: ProjectTask;
   dotColor: string;
@@ -198,30 +218,63 @@ const ProjectTaskRow: React.FC<{
   onDelete: () => void;
   onDragHandlePointerDown: (e: React.PointerEvent) => void;
 }> = ({ task, dotColor, onToggle, onEdit, onDelete, onDragHandlePointerDown }) => {
-  const isOverdue = task.deadline && !task.completed && task.deadline < new Date().toISOString().split('T')[0];
+  const [deleting, setDeleting] = useState(false);
+  const deadline = task.deadline ? formatTaskDeadline(task.deadline) : null;
+  const priorityColor = PRIORITY_DOT[task.priority] ?? dotColor;
+
+  const handleDelete = () => {
+    setDeleting(true);
+    setTimeout(onDelete, 250);
+  };
 
   return (
     <div
-      className="group flex items-center gap-2 px-2 py-2 rounded-xl transition-colors duration-100 hover:bg-[var(--bg-panel)]"
+      className={`group flex items-start gap-2 px-1 py-2 transition-all duration-200 ${
+        deleting ? 'opacity-0 -translate-x-1' : ''
+      }`}
       data-task-id={task.id}
       data-task-section={task.sectionId ?? ''}
+      style={{
+        borderBottom: '1px solid var(--border)',
+        opacity: deleting ? 0 : task.completed ? 0.5 : 1,
+      }}
     >
       {/* Drag handle */}
       <div
         onPointerDown={onDragHandlePointerDown}
-        className="flex-shrink-0 flex items-center justify-center w-5 h-5 rounded cursor-grab active:cursor-grabbing select-none opacity-20 group-hover:opacity-50 sm:opacity-0 sm:group-hover:opacity-40 transition-opacity duration-150"
+        className="flex-shrink-0 flex items-center justify-center w-4 h-5 mt-0.5 cursor-grab active:cursor-grabbing select-none opacity-0 group-hover:opacity-30 transition-opacity"
         style={{ color: 'var(--text-muted)', touchAction: 'none' }}
         data-drag-handle="true"
         aria-label="Drag to reorder"
       >
-        <DragDotsIcon size={13} />
+        <DragDotsIcon size={11} />
       </div>
 
       {/* Checkbox */}
       <button
         onClick={onToggle}
-        className="flex-shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all duration-200 hover:scale-110"
-        style={{ borderColor: task.completed ? dotColor : 'var(--border)', background: task.completed ? dotColor : 'transparent' }}
+        className="flex-shrink-0 flex items-center justify-center mt-0.5 transition-all duration-150"
+        style={{
+          width: '18px', height: '18px',
+          borderRadius: '50%',
+          border: `2px solid ${task.completed ? priorityColor : priorityColor + '80'}`,
+          background: task.completed ? priorityColor : 'transparent',
+          flexShrink: 0,
+          transition: 'border-color 0.15s, background 0.15s',
+        }}
+        onMouseEnter={e => {
+          if (!task.completed) {
+            (e.currentTarget as HTMLButtonElement).style.borderColor = priorityColor;
+            (e.currentTarget as HTMLButtonElement).style.background = priorityColor + '18';
+          }
+        }}
+        onMouseLeave={e => {
+          if (!task.completed) {
+            (e.currentTarget as HTMLButtonElement).style.borderColor = priorityColor + '80';
+            (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+          }
+        }}
+        aria-label="Toggle task"
       >
         {task.completed && (
           <svg width="8" height="6" viewBox="0 0 8 6" fill="none">
@@ -231,41 +284,87 @@ const ProjectTaskRow: React.FC<{
       </button>
 
       {/* Content */}
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-body leading-snug" style={{ color: task.completed ? 'var(--text-muted)' : 'var(--text-main)', textDecoration: task.completed ? 'line-through' : 'none' }}>
+      <div className="flex-1 min-w-0 py-0.5">
+        <p
+          className="font-body text-sm leading-snug"
+          style={{
+            color: task.completed ? 'var(--text-muted)' : 'var(--text-main)',
+            textDecoration: task.completed ? 'line-through' : 'none',
+          }}
+        >
           {task.title}
         </p>
-        {(task.description || task.deadline) && (
-          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-            {task.deadline && (
-              <span className="text-xs font-body" style={{ color: isOverdue ? '#c45a69' : 'var(--text-muted)' }}>
-                {isOverdue ? '⚠ ' : ''}
-                {new Date(task.deadline + 'T00:00:00').toLocaleDateString('en', { month: 'short', day: 'numeric' })}
+
+        {task.description && (
+          <p
+            className="text-xs mt-0.5"
+            style={{
+              color: 'var(--text-muted)',
+              overflow: 'hidden',
+              display: '-webkit-box',
+              WebkitLineClamp: 1,
+              WebkitBoxOrient: 'vertical',
+            }}
+          >
+            {task.description}
+          </p>
+        )}
+
+        {/* Meta: deadline + priority */}
+        {(deadline || task.priority !== 'low') && (
+          <div className="flex items-center gap-2.5 mt-1">
+            {deadline && (
+              <span
+                className="inline-flex items-center gap-1 text-xs"
+                style={
+                  deadline.overdue
+                    ? { color: '#c45a69' }
+                    : deadline.soon
+                    ? { color: '#c08a20' }
+                    : { color: 'var(--text-muted)' }
+                }
+              >
+                <svg width="9" height="9" viewBox="0 0 10 10" fill="none">
+                  <rect x="1" y="2" width="8" height="7" rx="1.5" stroke="currentColor" strokeWidth="1.3" />
+                  <path d="M3.5 1v2M6.5 1v2M1 5h8" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" />
+                </svg>
+                {deadline.label}
               </span>
             )}
-            {task.description && (
-              <span className="text-xs truncate max-w-[140px]" style={{ color: 'var(--text-muted)' }}>{task.description}</span>
+            {task.priority !== 'low' && (
+              <span
+                className="inline-flex items-center gap-1 text-xs"
+                style={{ color: priorityColor }}
+              >
+                <svg width="9" height="9" viewBox="0 0 10 10" fill="none">
+                  <path d="M2 9V5M5 9V2M8 9V6" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+                </svg>
+                {PRIORITY_LABEL[task.priority]}
+              </span>
             )}
           </div>
         )}
       </div>
 
-      {/* Priority dot */}
-      <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full" style={{ background: PRIORITY_DOT[task.priority] }} />
-
-      {/* Actions */}
-      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
+      {/* Actions — appear on hover */}
+      <div className="flex-shrink-0 flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
         <button
           onClick={onEdit}
-          className="w-6 h-6 rounded-lg flex items-center justify-center transition-all hover:scale-105 active:scale-90"
+          className="w-6 h-6 rounded-md flex items-center justify-center transition-colors"
           style={{ color: 'var(--text-muted)' }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-main)'; (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-panel)'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-muted)'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+          aria-label="Edit"
         >
           <PenNewSquare size={13} />
         </button>
         <button
-          onClick={onDelete}
-          className="w-6 h-6 rounded-lg flex items-center justify-center transition-all hover:scale-105 active:scale-90"
-          style={{ color: '#c45a69' }}
+          onClick={handleDelete}
+          className="w-6 h-6 rounded-md flex items-center justify-center transition-colors"
+          style={{ color: 'var(--text-muted)' }}
+          onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.color = '#c45a69'; (e.currentTarget as HTMLButtonElement).style.background = 'rgba(196,90,105,0.08)'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.color = 'var(--text-muted)'; (e.currentTarget as HTMLButtonElement).style.background = 'transparent'; }}
+          aria-label="Delete"
         >
           <TrashBinMinimalistic size={13} />
         </button>
