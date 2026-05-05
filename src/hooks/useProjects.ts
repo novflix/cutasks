@@ -111,7 +111,7 @@ export function useProjects() {
       id: generateId('sec'),
       title: title.trim(),
       order: project.sections.length,
-      icon,
+      icon: icon ?? null,
     };
     await updateProject(projectId, { sections: [...project.sections, section] });
   }, [projects, updateProject]);
@@ -120,7 +120,7 @@ export function useProjects() {
     const project = projects.find(p => p.id === projectId);
     if (!project) return;
     const sections = project.sections.map(s =>
-      s.id === sectionId ? { ...s, title, icon } : s
+      s.id === sectionId ? { ...s, title, icon: icon ?? null } : s
     );
     await updateProject(projectId, { sections });
   }, [projects, updateProject]);
@@ -130,7 +130,7 @@ export function useProjects() {
     if (!project) return;
     const sections = project.sections.filter(s => s.id !== sectionId);
     const tasks = project.tasks.map(t =>
-      t.sectionId === sectionId ? { ...t, sectionId: undefined } : t
+      t.sectionId === sectionId ? { ...t, sectionId: null } : t
     );
     await updateProject(projectId, { sections, tasks });
   }, [projects, updateProject]);
@@ -146,15 +146,15 @@ export function useProjects() {
   ) => {
     const project = projects.find(p => p.id === projectId);
     if (!project) return;
-    const task: ProjectTask = {
+    const task = {
       id: generateId('ptask'),
       title: title.trim(),
-      description: description?.trim(),
+      description: description?.trim() ?? null,
       priority,
-      deadline,
+      deadline: deadline ?? null,
       completed: false,
       createdAt: new Date().toISOString(),
-      sectionId,
+      sectionId: sectionId ?? null,
     };
     await updateProject(projectId, { tasks: [task, ...project.tasks] });
   }, [projects, updateProject]);
@@ -166,7 +166,10 @@ export function useProjects() {
   ) => {
     const project = projects.find(p => p.id === projectId);
     if (!project) return;
-    const tasks = project.tasks.map(t => t.id === taskId ? { ...t, ...fields } : t);
+    const sanitized = Object.fromEntries(
+      Object.entries(fields).map(([k, v]) => [k, v === undefined ? null : v])
+    );
+    const tasks = project.tasks.map(t => t.id === taskId ? { ...t, ...sanitized } : t);
     await updateProject(projectId, { tasks });
   }, [projects, updateProject]);
 
@@ -196,7 +199,7 @@ export function useProjects() {
     if (!project) return;
     const task = project.tasks.find(t => t.id === taskId);
     if (!task) return;
-    const updatedTask = { ...task, sectionId: targetSectionId };
+    const updatedTask = { ...task, sectionId: targetSectionId ?? null };
     const remaining = project.tasks.filter(t => t.id !== taskId);
     let reordered: ProjectTask[];
     if (beforeTaskId) {

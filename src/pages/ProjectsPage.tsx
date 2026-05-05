@@ -336,7 +336,7 @@ const InlineAddTask: React.FC<{
 
 // ─── Section block ────────────────────────────────────────────────────────────
 const SectionBlock: React.FC<{
-  section: { id: string; title: string; order: number; icon?: string };
+  section: { id: string; title: string; order: number; icon?: string | null };
   tasks: ProjectTask[];
   colors: { bg: string; text: string; border: string; dot: string };
   onToggleTask: (taskId: string) => void;
@@ -377,7 +377,7 @@ const SectionBlock: React.FC<{
   }, [showIconPicker]);
 
   const commitEdit = () => {
-    if (editVal.trim()) onEditSection(editVal.trim(), section.icon);
+    if (editVal.trim()) onEditSection(editVal.trim(), section.icon ?? undefined);
     else setEditVal(section.title);
     setEditing(false);
   };
@@ -571,7 +571,7 @@ const SectionBlock: React.FC<{
                   onToggle={() => onToggleTask(task.id)}
                   onEdit={() => onEditTask(task)}
                   onDelete={() => onDeleteTask(task.id)}
-                  onDragHandlePointerDown={(e) => onTaskDragPointerDown(e, task.id, task.sectionId)}
+                  onDragHandlePointerDown={(e) => onTaskDragPointerDown(e, task.id, task.sectionId ?? undefined)}
                 />
               ))}
             </div>
@@ -1114,9 +1114,9 @@ export const ProjectsPage: React.FC = () => {
         <ProjectModal
           mode="create"
           onClose={() => setShowCreate(false)}
-          onSubmit={({ name, description, color, emoji }) => {
-            const id = ops.createProject(name, color as ProjectColor, emoji, description);
-            setTimeout(() => navigate(`/projects/${id}`), 30);
+          onSubmit={async ({ name, description, color, emoji }) => {
+            const id = await ops.createProject(name, color as ProjectColor, emoji, description);
+            if (id) navigate(`/projects/${id}`);
           }}
         />
       )}

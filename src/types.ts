@@ -73,19 +73,19 @@ export const PROJECT_COLORS: Record<ProjectColor, { bg: string; text: string; bo
 export interface ProjectTask {
   id: string;
   title: string;
-  description?: string;
+  description?: string | null;
   priority: Priority;
-  deadline?: string;
+  deadline?: string | null;
   completed: boolean;
   createdAt: string;
-  sectionId?: string;
+  sectionId?: string | null;
 }
 
 export interface ProjectSection {
   id: string;
   title: string;
   order: number;
-  icon?: string;
+  icon?: string | null;
 }
 
 export interface Project {
