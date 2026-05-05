@@ -8,6 +8,7 @@ import { SettingsPage } from './pages/SettingsPage';
 import { ProjectsPage } from './pages/ProjectsPage';
 import { ProjectDetailPage } from './pages/ProjectDetailPage';
 import { AuthPage } from './pages/AuthPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 
 export default function App() {
   const { theme, setTheme, dark } = useTheme();
@@ -42,6 +43,15 @@ export default function App() {
 
   if (!user) {
     return <AuthPage dark={dark} />;
+  }
+
+  // 404 — rendered outside the main shell (no sidebar, full-screen)
+  const is404 = ![
+    '/', '/tasks', '/calendar', '/projects', '/settings',
+  ].some(p => location.pathname === p || location.pathname.startsWith('/projects/'));
+
+  if (is404) {
+    return <NotFoundPage />;
   }
 
   return (
