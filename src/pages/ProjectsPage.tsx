@@ -712,8 +712,9 @@ export const ProjectDetail: React.FC<{
   const totalTasks      = project.tasks.length;
   const doneTasks       = project.tasks.filter(t => t.completed).length;
   const progress        = totalTasks === 0 ? 0 : Math.round((doneTasks / totalTasks) * 100);
-  const unsectioned     = project.tasks.filter(t => !t.sectionId);
-  const getSectionTasks = (id: string) => project.tasks.filter(t => t.sectionId === id);
+  const sortByCompletion = (tasks: ProjectTask[]) => [...tasks.filter(t => !t.completed), ...tasks.filter(t => t.completed)];
+  const unsectioned     = sortByCompletion(project.tasks.filter(t => !t.sectionId));
+  const getSectionTasks = (id: string) => sortByCompletion(project.tasks.filter(t => t.sectionId === id));
   const sortedSections  = [...project.sections].sort((a, b) => a.order - b.order);
 
   const handleAddSection = () => {
