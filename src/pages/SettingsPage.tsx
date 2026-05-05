@@ -1,6 +1,7 @@
 import React from 'react';
-import { Sun, Moon, CloudStorm } from '@solar-icons/react';
+import { Sun, Moon, CloudStorm, Logout } from '@solar-icons/react';
 import type { Theme } from '../hooks/useTheme';
+import { useAuth } from '../context/useAuth';
 
 interface Props {
   theme: Theme;
@@ -37,70 +38,206 @@ const THEMES: {
   },
 ];
 
-const ThemePreview: React.FC<{ colors: typeof THEMES[0]['preview']; active: boolean }> = ({ colors, active }) => (
-  <div style={{
-    width: '100%',
-    height: '54px',
-    borderRadius: '10px',
-    background: colors.bg,
-    border: active ? `2px solid ${colors.accent}` : '2px solid transparent',
-    padding: '8px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '5px',
-    transition: 'border-color 0.15s',
-    boxSizing: 'border-box',
-  }}>
-    {/* Fake header bar */}
-    <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-      <div style={{ width: '14px', height: '6px', borderRadius: '3px', background: colors.accent, opacity: 0.9 }} />
-      <div style={{ flex: 1, height: '4px', borderRadius: '2px', background: colors.card, opacity: 0.6 }} />
-    </div>
-    {/* Fake card */}
-    <div style={{
-      flex: 1,
-      borderRadius: '5px',
-      background: colors.card,
+const ThemePreview: React.FC<{ colors: (typeof THEMES)[0]['preview']; active: boolean }> = ({
+  colors,
+  active,
+}) => (
+  <div
+    style={{
+      width: '100%',
+      height: '54px',
+      borderRadius: '10px',
+      background: colors.bg,
+      border: active ? `2px solid ${colors.accent}` : '2px solid transparent',
+      padding: '8px',
       display: 'flex',
-      alignItems: 'center',
-      gap: '4px',
-      padding: '0 5px',
-    }}>
+      flexDirection: 'column',
+      gap: '5px',
+      transition: 'border-color 0.15s',
+      boxSizing: 'border-box',
+    }}
+  >
+    <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+      <div
+        style={{ width: '14px', height: '6px', borderRadius: '3px', background: colors.accent, opacity: 0.9 }}
+      />
+      <div
+        style={{ flex: 1, height: '4px', borderRadius: '2px', background: colors.card, opacity: 0.6 }}
+      />
+    </div>
+    <div
+      style={{
+        flex: 1,
+        borderRadius: '5px',
+        background: colors.card,
+        display: 'flex',
+        alignItems: 'center',
+        gap: '4px',
+        padding: '0 5px',
+      }}
+    >
       <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: colors.accent }} />
-      <div style={{ flex: 1, height: '3px', borderRadius: '2px', background: colors.text, opacity: 0.3 }} />
+      <div
+        style={{ flex: 1, height: '3px', borderRadius: '2px', background: colors.text, opacity: 0.3 }}
+      />
     </div>
   </div>
 );
 
 export const SettingsPage: React.FC<Props> = ({ theme, onThemeChange }) => {
+  const { user, logOut } = useAuth();
+
+  const displayName = user?.displayName ?? user?.email ?? 'Пользователь';
+  const avatarLetter = user?.displayName?.[0] ?? user?.email?.[0] ?? '?';
+
   return (
-    <div style={{
-      maxWidth: '480px',
-      margin: '0 auto',
-      opacity: 0,
-      animation: 'fadeIn 0.22s ease-out forwards',
-    }}>
-      <h1 style={{
-        fontFamily: '"Fraunces", serif',
-        fontSize: '1.75rem',
-        fontWeight: 500,
-        color: 'var(--text-main)',
-        marginBottom: '24px',
-      }}>
+    <div
+      style={{
+        maxWidth: '480px',
+        margin: '0 auto',
+        opacity: 0,
+        animation: 'fadeIn 0.22s ease-out forwards',
+      }}
+    >
+      <h1
+        style={{
+          fontFamily: '"Fraunces", serif',
+          fontSize: '1.75rem',
+          fontWeight: 500,
+          color: 'var(--text-main)',
+          marginBottom: '24px',
+        }}
+      >
         Settings
       </h1>
 
-      {/* Section: Appearance */}
+      {/* Account section */}
+      <section style={{ marginBottom: '28px' }}>
+        <p
+          style={{
+            fontSize: '0.7rem',
+            fontFamily: '"DM Sans", sans-serif',
+            fontWeight: 600,
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            color: 'var(--text-muted)',
+            marginBottom: '10px',
+          }}
+        >
+          Account
+        </p>
+
+        <div
+          style={{
+            background: 'var(--bg-card)',
+            borderRadius: '16px',
+            border: '1px solid var(--border)',
+            padding: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '12px',
+          }}
+        >
+          {user?.photoURL ? (
+            <img
+              src={user.photoURL}
+              alt="avatar"
+              style={{ width: '40px', height: '40px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+            />
+          ) : (
+            <div
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '50%',
+                background: 'var(--accent)',
+                color: 'var(--bg-main)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '1rem',
+                fontWeight: 700,
+                fontFamily: '"DM Sans", sans-serif',
+                flexShrink: 0,
+                textTransform: 'uppercase',
+              }}
+            >
+              {avatarLetter}
+            </div>
+          )}
+
+          <div style={{ flex: 1, overflow: 'hidden' }}>
+            <p
+              style={{
+                fontFamily: '"DM Sans", sans-serif',
+                fontWeight: 600,
+                fontSize: '0.9rem',
+                color: 'var(--text-main)',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {displayName}
+            </p>
+            {user?.displayName && user?.email && (
+              <p
+                style={{
+                  fontFamily: '"DM Sans", sans-serif',
+                  fontSize: '0.75rem',
+                  color: 'var(--text-muted)',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  marginTop: '2px',
+                }}
+              >
+                {user.email}
+              </p>
+            )}
+          </div>
+
+          <button
+            onClick={() => logOut()}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '8px 12px',
+              borderRadius: '12px',
+              border: '1px solid var(--border)',
+              background: 'var(--bg-panel)',
+              color: 'var(--text-muted)',
+              fontFamily: '"DM Sans", sans-serif',
+              fontSize: '0.8rem',
+              fontWeight: 500,
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              transition: 'color 0.15s, border-color 0.15s',
+              flexShrink: 0,
+            }}
+            onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-main)'; }}
+            onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)'; }}
+          >
+            <Logout size={14} />
+            Выйти
+          </button>
+        </div>
+      </section>
+
+      {/* Appearance section */}
       <section>
-        <p style={{
-          fontSize: '0.7rem',
-          fontFamily: '"DM Sans", sans-serif',
-          fontWeight: 600,
-          textTransform: 'uppercase',
-          letterSpacing: '0.08em',
-          color: 'var(--text-muted)',
-          marginBottom: '10px',
-        }}>
+        <p
+          style={{
+            fontSize: '0.7rem',
+            fontFamily: '"DM Sans", sans-serif',
+            fontWeight: 600,
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            color: 'var(--text-muted)',
+            marginBottom: '10px',
+          }}
+        >
           Appearance
         </p>
 
@@ -117,46 +254,54 @@ export const SettingsPage: React.FC<Props> = ({ theme, onThemeChange }) => {
                   gap: '10px',
                   padding: '12px',
                   borderRadius: '16px',
-                  border: active
-                    ? '2px solid var(--accent)'
-                    : '2px solid var(--border)',
+                  border: active ? '2px solid var(--accent)' : '2px solid var(--border)',
                   background: active ? 'var(--bg-panel)' : 'var(--bg-card)',
                   cursor: 'pointer',
                   transition: 'border-color 0.15s, background 0.15s, transform 0.12s',
                   transform: active ? 'scale(1.02)' : 'scale(1)',
                   textAlign: 'left',
                 }}
-                onMouseEnter={e => { if (!active) (e.currentTarget as HTMLElement).style.transform = 'scale(1.02)'; }}
-                onMouseLeave={e => { if (!active) (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; }}
+                onMouseEnter={e => {
+                  if (!active) (e.currentTarget as HTMLElement).style.transform = 'scale(1.02)';
+                }}
+                onMouseLeave={e => {
+                  if (!active) (e.currentTarget as HTMLElement).style.transform = 'scale(1)';
+                }}
               >
                 <ThemePreview colors={preview} active={active} />
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                  <span style={{
-                    color: active ? 'var(--accent)' : 'var(--text-muted)',
-                    transition: 'color 0.15s',
-                    display: 'flex',
-                  }}>
+                  <span
+                    style={{
+                      color: active ? 'var(--accent)' : 'var(--text-muted)',
+                      transition: 'color 0.15s',
+                      display: 'flex',
+                    }}
+                  >
                     <Icon size={14} />
                   </span>
                   <div>
-                    <p style={{
-                      fontFamily: '"DM Sans", sans-serif',
-                      fontWeight: 600,
-                      fontSize: '0.8rem',
-                      color: active ? 'var(--text-main)' : 'var(--text-muted)',
-                      lineHeight: 1.2,
-                      transition: 'color 0.15s',
-                    }}>
+                    <p
+                      style={{
+                        fontFamily: '"DM Sans", sans-serif',
+                        fontWeight: 600,
+                        fontSize: '0.8rem',
+                        color: active ? 'var(--text-main)' : 'var(--text-muted)',
+                        lineHeight: 1.2,
+                        transition: 'color 0.15s',
+                      }}
+                    >
                       {label}
                     </p>
-                    <p style={{
-                      fontFamily: '"DM Sans", sans-serif',
-                      fontSize: '0.65rem',
-                      color: 'var(--text-muted)',
-                      marginTop: '1px',
-                      lineHeight: 1.2,
-                    }}>
+                    <p
+                      style={{
+                        fontFamily: '"DM Sans", sans-serif',
+                        fontSize: '0.65rem',
+                        color: 'var(--text-muted)',
+                        marginTop: '1px',
+                        lineHeight: 1.2,
+                      }}
+                    >
                       {description}
                     </p>
                   </div>

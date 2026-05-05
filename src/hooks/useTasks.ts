@@ -1,60 +1,105 @@
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import {
+  collection,
+  onSnapshot,
+  addDoc,
+  updateDoc,
+  deleteDoc,
+  doc,
+  query,
+  orderBy,
+  serverTimestamp,
+} from 'firebase/firestore';
+import { db } from '../firebase/config';
+import { useAuth } from '../context/useAuth';
 import type { Task, Priority } from '../types';
 
-function generateId() {
-  return `task_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
-}
-
-const STORAGE_KEY = 'cutasks-tasks';
-
-function loadTasks(): Task[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Task[]) : [];
-  } catch {
-    return [];
-  }
-}
-
-function saveTasks(tasks: Task[]) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-}
-
 export function useTasks() {
-  const [tasks, setTasks] = useState<Task[]>(loadTasks);
+  const { user } = useAuth();
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [initialized, setInitialized] = useState(false);
 
-  const update = useCallback((updater: (prev: Task[]) => Task[]) => {
-    setTasks(prev => {
-      const next = updater(prev);
-      saveTasks(next);
-      return next;
+  const tasksRef = useCallback(() => {
+    if (!user) return null;
+    return collection(db, 'users', user.uid, 'tasks');
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) {
+      return () => {
+        setTasks([]);
+        setInitialized(false);
+      };
+    }
+
+    const ref = tasksRef();
+    if (!ref) return;
+
+    const q = query(ref, orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const loaded: Task[] = snapshot.docs.map((d) => {
+        const data = d.data();
+        return {
+          id: d.id,
+          title: data.title ?? '',
+          description: data.description,
+          priority: data.priority ?? 'medium',
+          deadline: data.deadline,
+          completed: data.completed ?? false,
+          createdAt: data.createdAt?.toDate?.()?.toISOString() ?? new Date().toISOString(),
+        } as Task;
+      });
+      setTasks(loaded);
+      setInitialized(true);
     });
-  }, []);
 
-  const addTask = useCallback((title: string, priority: Priority, deadline?: string, description?: string) => {
-    const task: Task = {
-      id: generateId(),
+    return unsubscribe;
+  }, [user, tasksRef]);
+
+  const addTask = useCallback(async (
+    title: string,
+    priority: Priority,
+    deadline?: string,
+    description?: string,
+  ) => {
+    const ref = tasksRef();
+    if (!ref) return;
+
+    await addDoc(ref, {
       title: title.trim(),
-      description: description?.trim(),
+      description: description?.trim() ?? null,
       priority,
-      deadline,
+      deadline: deadline ?? null,
       completed: false,
-      createdAt: new Date().toISOString(),
-    };
-    update(prev => [task, ...prev]);
-  }, [update]);
+      createdAt: serverTimestamp(),
+    });
+  }, [tasksRef]);
 
-  const editTask = useCallback((id: string, fields: Partial<Pick<Task, 'title' | 'description' | 'priority' | 'deadline'>>) => {
-    update(prev => prev.map(t => t.id === id ? { ...t, ...fields } : t));
-  }, [update]);
+  const editTask = useCallback(async (
+    id: string,
+    fields: Partial<Pick<Task, 'title' | 'description' | 'priority' | 'deadline'>>,
+  ) => {
+    if (!user) return;
+    const ref = doc(db, 'users', user.uid, 'tasks', id);
+    await updateDoc(ref, {
+      ...fields,
+      description: fields.description?.trim() ?? null,
+    });
+  }, [user]);
 
-  const deleteTask = useCallback((id: string) => {
-    update(prev => prev.filter(t => t.id !== id));
-  }, [update]);
+  const deleteTask = useCallback(async (id: string) => {
+    if (!user) return;
+    const ref = doc(db, 'users', user.uid, 'tasks', id);
+    await deleteDoc(ref);
+  }, [user]);
 
-  const toggleTask = useCallback((id: string) => {
-    update(prev => prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
-  }, [update]);
+  const toggleTask = useCallback(async (id: string) => {
+    if (!user) return;
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+    const ref = doc(db, 'users', user.uid, 'tasks', id);
+    await updateDoc(ref, { completed: !task.completed });
+  }, [user, tasks]);
 
-  return { tasks, addTask, editTask, deleteTask, toggleTask };
+  return { tasks, addTask, editTask, deleteTask, toggleTask, initialized };
 }
