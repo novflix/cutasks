@@ -7,6 +7,7 @@ import type { Project, ProjectTask, Priority, ProjectColor } from '../types';
 import { resolveProjectColors } from '../types';
 import { PROJECT_ICON_MAP, PROJECT_ICON_OPTIONS } from '../projectIcons';
 import { ProjectModal } from '../components/ProjectModal';
+import { ProjectsPageSkeleton, SkeletonStyles } from '../components/SkeletonLoader';
 import { DatePicker } from '../components/DatePicker';
 import {
   AddSquare,
@@ -1036,6 +1037,21 @@ export const ProjectsPage: React.FC = () => {
   const ops = useProjects();
   const navigate = useNavigate();
   const [showCreate, setShowCreate] = useState(false);
+
+  if (ops.loading) {
+    return (
+      <>
+        <SkeletonStyles />
+        <header className="mb-8">
+          <p className="text-xs font-body font-medium uppercase tracking-widest mb-1" style={{ color: 'var(--text-muted)' }}>
+            Workspace
+          </p>
+          <h1 className="font-display text-3xl font-semibold" style={{ color: 'var(--text-main)' }}>Projects</h1>
+        </header>
+        <ProjectsPageSkeleton />
+      </>
+    );
+  }
 
   return (
     <>

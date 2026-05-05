@@ -21,6 +21,7 @@ function generateId(prefix: string) {
 export function useProjects() {
   const { user } = useAuth();
   const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const projectsRef = useCallback(() => {
     if (!user) return null;
@@ -34,7 +35,7 @@ export function useProjects() {
 
   useEffect(() => {
     if (!user) {
-      return () => setProjects([]);
+      return;
     }
 
     const ref = projectsRef();
@@ -56,6 +57,7 @@ export function useProjects() {
         } as Project;
       });
       setProjects(loaded);
+      setLoading(false);
     });
 
     return unsubscribe;
@@ -76,7 +78,6 @@ export function useProjects() {
   ): Promise<string> => {
     const ref = projectsRef();
     if (!ref) return '';
-
     const docRef = await addDoc(ref, {
       name: name.trim(),
       description: description?.trim() ?? null,
@@ -86,7 +87,6 @@ export function useProjects() {
       tasks: [],
       createdAt: serverTimestamp(),
     });
-
     return docRef.id;
   }, [projectsRef]);
 
@@ -107,7 +107,6 @@ export function useProjects() {
   const addSection = useCallback(async (projectId: string, title: string, icon?: string) => {
     const project = projects.find(p => p.id === projectId);
     if (!project) return;
-
     const section: ProjectSection = {
       id: generateId('sec'),
       title: title.trim(),
@@ -120,7 +119,6 @@ export function useProjects() {
   const editSection = useCallback(async (projectId: string, sectionId: string, title: string, icon?: string) => {
     const project = projects.find(p => p.id === projectId);
     if (!project) return;
-
     const sections = project.sections.map(s =>
       s.id === sectionId ? { ...s, title, icon } : s
     );
@@ -130,9 +128,7 @@ export function useProjects() {
   const deleteSection = useCallback(async (projectId: string, sectionId: string) => {
     const project = projects.find(p => p.id === projectId);
     if (!project) return;
-
     const sections = project.sections.filter(s => s.id !== sectionId);
-
     const tasks = project.tasks.map(t =>
       t.sectionId === sectionId ? { ...t, sectionId: undefined } : t
     );
@@ -150,7 +146,6 @@ export function useProjects() {
   ) => {
     const project = projects.find(p => p.id === projectId);
     if (!project) return;
-
     const task: ProjectTask = {
       id: generateId('ptask'),
       title: title.trim(),
@@ -171,7 +166,6 @@ export function useProjects() {
   ) => {
     const project = projects.find(p => p.id === projectId);
     if (!project) return;
-
     const tasks = project.tasks.map(t => t.id === taskId ? { ...t, ...fields } : t);
     await updateProject(projectId, { tasks });
   }, [projects, updateProject]);
@@ -179,7 +173,6 @@ export function useProjects() {
   const deleteTask = useCallback(async (projectId: string, taskId: string) => {
     const project = projects.find(p => p.id === projectId);
     if (!project) return;
-
     const tasks = project.tasks.filter(t => t.id !== taskId);
     await updateProject(projectId, { tasks });
   }, [projects, updateProject]);
@@ -187,7 +180,6 @@ export function useProjects() {
   const toggleTask = useCallback(async (projectId: string, taskId: string) => {
     const project = projects.find(p => p.id === projectId);
     if (!project) return;
-
     const tasks = project.tasks.map(t =>
       t.id === taskId ? { ...t, completed: !t.completed } : t
     );
@@ -202,14 +194,11 @@ export function useProjects() {
   ) => {
     const project = projects.find(p => p.id === projectId);
     if (!project) return;
-
     const task = project.tasks.find(t => t.id === taskId);
     if (!task) return;
-
     const updatedTask = { ...task, sectionId: targetSectionId };
     const remaining = project.tasks.filter(t => t.id !== taskId);
     let reordered: ProjectTask[];
-
     if (beforeTaskId) {
       const idx = remaining.findIndex(t => t.id === beforeTaskId);
       if (idx === -1) {
@@ -223,7 +212,6 @@ export function useProjects() {
       const otherTasks = remaining.filter(t => t.sectionId !== targetSectionId);
       reordered = [...otherTasks, ...sectionTasks, updatedTask];
     }
-
     await updateProject(projectId, { tasks: reordered });
   }, [projects, updateProject]);
 
@@ -234,13 +222,10 @@ export function useProjects() {
   ) => {
     const project = projects.find(p => p.id === projectId);
     if (!project) return;
-
     const section = project.sections.find(s => s.id === sectionId);
     if (!section) return;
-
     const remaining = project.sections.filter(s => s.id !== sectionId);
     let reordered: ProjectSection[];
-
     if (beforeSectionId) {
       const idx = remaining.findIndex(s => s.id === beforeSectionId);
       if (idx === -1) {
@@ -252,7 +237,6 @@ export function useProjects() {
     } else {
       reordered = [...remaining, section];
     }
-
     await updateProject(projectId, {
       sections: reordered.map((s, i) => ({ ...s, order: i })),
     });
@@ -260,6 +244,7 @@ export function useProjects() {
 
   return {
     projects,
+    loading,
     createProject,
     editProject,
     deleteProject,

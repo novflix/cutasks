@@ -220,7 +220,7 @@ export const SettingsPage: React.FC<Props> = ({ theme, onThemeChange }) => {
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = 'var(--text-muted)'; }}
           >
             <Logout size={14} />
-            Выйти
+            Log Out
           </button>
         </div>
       </section>

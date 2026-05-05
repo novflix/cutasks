@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useProjects } from '../hooks/useProjects';
 import { ProjectDetail } from './ProjectsPage';
+import { ProjectDetailSkeleton, SkeletonStyles } from '../components/SkeletonLoader';
 
 export const ProjectDetailPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -9,6 +10,15 @@ export const ProjectDetailPage: React.FC = () => {
   const ops = useProjects();
 
   const project = ops.projects.find(p => p.id === projectId) ?? null;
+
+  if (ops.loading) {
+    return (
+      <>
+        <SkeletonStyles />
+        <ProjectDetailSkeleton />
+      </>
+    );
+  }
 
   if (!project) {
     return (

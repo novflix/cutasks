@@ -6,6 +6,7 @@ import { TaskModal } from '../components/TaskModal';
 import { EmptyState } from '../components/EmptyState';
 import { AddSquare, ListArrowDown, CheckCircle, ClipboardList } from '@solar-icons/react';
 import { LogoSVG } from '../components/LogoSVG';
+import { TasksPageSkeleton, SkeletonStyles } from '../components/SkeletonLoader';
 
 const FILTERS: { value: FilterType; label: string; Icon: React.FC<{ size?: number }> }[] = [
   { value: 'all',       label: 'All',    Icon: ClipboardList },
@@ -18,9 +19,9 @@ interface Props {
 }
 
 export const TasksPage: React.FC<Props> = ({ dark }) => {
-  const { tasks, addTask, editTask, deleteTask, toggleTask } = useTasks();
+  const { tasks, addTask, editTask, deleteTask, toggleTask, initialized } = useTasks();
 
-  const [filter, setFilter]   = useState<FilterType>('all');
+  const [filter, setFilter]     = useState<FilterType>('all');
   const [showCreate, setCreate] = useState(false);
   const [editTarget, setEdit]   = useState<Task | null>(null);
 
@@ -31,8 +32,8 @@ export const TasksPage: React.FC<Props> = ({ dark }) => {
   });
 
   const counts = {
-    all: tasks.length,
-    active: tasks.filter((t: Task) => !t.completed).length,
+    all:       tasks.length,
+    active:    tasks.filter((t: Task) => !t.completed).length,
     completed: tasks.filter((t: Task) => t.completed).length,
   };
 
@@ -46,6 +47,8 @@ export const TasksPage: React.FC<Props> = ({ dark }) => {
 
   return (
     <>
+      <SkeletonStyles />
+
       <header className="flex items-start justify-between mb-8">
         <div>
           <p className="text-xs font-body font-medium uppercase tracking-widest mb-3" style={{ color: 'var(--text-muted)' }}>
@@ -53,9 +56,12 @@ export const TasksPage: React.FC<Props> = ({ dark }) => {
           </p>
           <LogoSVG dark={dark} style={{ height: '36px', width: 'auto' }} />
           <p className="mt-2 text-sm font-body" style={{ color: 'var(--text-muted)' }}>
-            {counts.active === 0
-              ? 'Nothing pending — enjoy!'
-              : `${counts.active} task${counts.active === 1 ? '' : 's'} to do`}
+            {!initialized
+              ? <span style={{ display: 'inline-block', width: '120px', height: '14px', borderRadius: '6px', background: 'var(--bg-panel)', animation: 'skeletonPulse 1.4s ease-in-out infinite' }} />
+              : counts.active === 0
+                ? 'Nothing pending — enjoy!'
+                : `${counts.active} task${counts.active === 1 ? '' : 's'} to do`
+            }
           </p>
         </div>
       </header>
@@ -77,7 +83,7 @@ export const TasksPage: React.FC<Props> = ({ dark }) => {
           >
             <f.Icon size={14} />
             {f.label}
-            {counts[f.value] > 0 && (
+            {initialized && counts[f.value] > 0 && (
               <span
                 className="text-xs px-1.5 py-0.5 rounded-full font-medium"
                 style={{ background: 'var(--bg-panel)', color: 'var(--text-muted)' }}
@@ -89,25 +95,29 @@ export const TasksPage: React.FC<Props> = ({ dark }) => {
         ))}
       </div>
 
-      {/* Task list */}
-      <div className="flex flex-col gap-2.5">
-        {filtered.length === 0 ? (
-          <EmptyState filter={filter} />
-        ) : (
-          filtered.map((task: Task) => (
-            <div key={task.id} className="animate-fade-in">
-              <TaskCard
-                task={task}
-                onToggle={() => toggleTask(task.id)}
-                onEdit={() => setEdit(task)}
-                onDelete={() => deleteTask(task.id)}
-              />
-            </div>
-          ))
-        )}
-      </div>
+      {/* Task list or skeleton */}
+      {!initialized ? (
+        <TasksPageSkeleton />
+      ) : (
+        <div className="flex flex-col gap-2.5">
+          {filtered.length === 0 ? (
+            <EmptyState filter={filter} />
+          ) : (
+            filtered.map((task: Task) => (
+              <div key={task.id} className="animate-fade-in">
+                <TaskCard
+                  task={task}
+                  onToggle={() => toggleTask(task.id)}
+                  onEdit={() => setEdit(task)}
+                  onDelete={() => deleteTask(task.id)}
+                />
+              </div>
+            ))
+          )}
+        </div>
+      )}
 
-      {/* FAB — выше bottom nav на мобилке */}
+      {/* FAB */}
       <div className="fixed bottom-20 right-5 sm:bottom-8 sm:right-8 z-40">
         <button
           onClick={() => setCreate(true)}
