@@ -225,41 +225,6 @@ export const Sidebar: React.FC<Props> = ({ dark }) => {
           </NavLink>
         ))}
 
-        {/* Logout button */}
-        <button
-          onClick={handleLogout}
-          disabled={loggingOut}
-          aria-label="Выйти"
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '2px',
-            color: 'var(--text-muted)',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: '0',
-            opacity: loggingOut ? 0.5 : 1,
-          }}
-          className="bottom-nav-btn"
-        >
-          <span
-            style={{
-              width: '36px',
-              height: '24px',
-              borderRadius: '12px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Logout size={18} />
-          </span>
-          <span style={{ fontSize: '10px', fontFamily: '"DM Sans", sans-serif', fontWeight: 400 }}>
-            Выйти
-          </span>
-        </button>
       </nav>
     </>
   );
