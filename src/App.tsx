@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { useTheme } from './hooks/useTheme';
 import { useAuth } from './context/useAuth';
 import { Sidebar } from './components/Sidebar';
@@ -51,7 +51,7 @@ export default function App() {
             <Route path="/projects/:projectId"    element={<ProjectDetailPage />} />
             <Route path="/pomodoro"               element={<PomodoroPage />} />
             <Route path="/settings"               element={<SettingsPage theme={theme} onThemeChange={setTheme} />} />
-            <Route path="*"                       element={<Navigate to="/" replace />} />
+            <Route path="*"                       element={<NotFoundPage />} />
           </Routes>
         </div>
       </main>
