@@ -35,11 +35,18 @@ export interface UseDragDropOptions {
 const DRAG_THRESHOLD = 6;
 const GHOST_OPACITY = 0.88;
 
+// Auto-scroll zone: px from edge that triggers scrolling
+const SCROLL_ZONE = 80;
+// Max scroll speed in px per frame
+const SCROLL_SPEED = 14;
+
 export function useDragDrop({ onReorderTask, onReorderSection }: UseDragDropOptions) {
   const stateRef = useRef<DragState | null>(null);
   const pendingRef = useRef<{ item: DragItem; startX: number; startY: number; pointerId: number; sourceEl: HTMLElement } | null>(null);
   const animFrameRef = useRef<number | null>(null);
   const indicatorRef = useRef<HTMLElement | null>(null);
+  const scrollFrameRef = useRef<number | null>(null);
+  const pointerPosRef = useRef<{ x: number; y: number } | null>(null);
 
   // Ghost element
   const createGhost = useCallback((sourceEl: HTMLElement): HTMLElement => {
@@ -136,10 +143,11 @@ export function useDragDrop({ onReorderTask, onReorderSection }: UseDragDropOpti
 
   // Hit testing — multi-pass for maximum coverage
   const findDropTarget = useCallback((x: number, y: number, dragItem: DragItem): DropTarget | null => {
-    const ghost = stateRef.current?.ghost;
-    if (ghost) ghost.style.display = 'none';
+    // Temporarily hide ghost so elementFromPoint hits real elements beneath it
+    const ghostEl = document.querySelector('[data-drag-ghost]') as HTMLElement | null;
+    if (ghostEl) ghostEl.style.display = 'none';
     const el = document.elementFromPoint(x, y) as HTMLElement | null;
-    if (ghost) ghost.style.display = '';
+    if (ghostEl) ghostEl.style.display = '';
     if (!el) return null;
 
     if (dragItem.type === 'task') {
@@ -249,6 +257,58 @@ export function useDragDrop({ onReorderTask, onReorderSection }: UseDragDropOpti
     return null;
   }, []);
 
+  // Auto-scroll: runs in a rAF loop while dragging near viewport edges
+  const startAutoScroll = useCallback(() => {
+    if (scrollFrameRef.current !== null) return; // already running
+
+    const tick = () => {
+      const pos = pointerPosRef.current;
+      if (!pos || !stateRef.current) {
+        scrollFrameRef.current = null;
+        return;
+      }
+
+      const { y } = pos;
+      const vh = window.innerHeight;
+      let scrollDelta = 0;
+
+      if (y < SCROLL_ZONE) {
+        scrollDelta = -SCROLL_SPEED * (1 - y / SCROLL_ZONE);
+      } else if (y > vh - SCROLL_ZONE) {
+        scrollDelta = SCROLL_SPEED * (1 - (vh - y) / SCROLL_ZONE);
+      }
+
+      if (scrollDelta !== 0) {
+        window.scrollBy({ top: scrollDelta, behavior: 'instant' });
+
+        // Refresh ghost position and drop indicator after scroll
+        const state = stateRef.current;
+        if (state?.ghost && state.sourceEl) {
+          const dx = pos.x - state.startX;
+          const dy = pos.y - state.startY;
+          const originRect = state.sourceEl.getBoundingClientRect();
+          state.ghost.style.top  = `${originRect.top  + dy}px`;
+          state.ghost.style.left = `${originRect.left + dx}px`;
+        }
+
+        const target = findDropTarget(pos.x, pos.y, stateRef.current.item);
+        stateRef.current.dropTarget = target;
+        showIndicator(target);
+      }
+
+      scrollFrameRef.current = requestAnimationFrame(tick);
+    };
+
+    scrollFrameRef.current = requestAnimationFrame(tick);
+  }, [findDropTarget, showIndicator]);
+
+  const stopAutoScroll = useCallback(() => {
+    if (scrollFrameRef.current !== null) {
+      cancelAnimationFrame(scrollFrameRef.current);
+      scrollFrameRef.current = null;
+    }
+  }, []);
+
   // Pointer handlers
   const onPointerDown = useCallback((
     e: React.PointerEvent,
@@ -298,6 +358,9 @@ export function useDragDrop({ onReorderTask, onReorderSection }: UseDragDropOpti
     if (!state || !state.ghost) return;
     e.preventDefault();
 
+    pointerPosRef.current = { x, y };
+    startAutoScroll();
+
     if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     animFrameRef.current = requestAnimationFrame(() => {
       if (!state || !state.ghost) return;
@@ -310,11 +373,13 @@ export function useDragDrop({ onReorderTask, onReorderSection }: UseDragDropOpti
       state.currentY   = y;
       showIndicator(target);
     });
-  }, [createGhost, moveGhost, findDropTarget, showIndicator]);
+  }, [createGhost, moveGhost, findDropTarget, showIndicator, startAutoScroll]);
 
   const finishDrag = useCallback(() => {
     const state = stateRef.current;
     pendingRef.current = null;
+    pointerPosRef.current = null;
+    stopAutoScroll();
 
     document.body.classList.remove('dragging');
     document.body.style.userSelect = '';
@@ -370,7 +435,7 @@ export function useDragDrop({ onReorderTask, onReorderSection }: UseDragDropOpti
 
     if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     stateRef.current = null;
-  }, [onReorderTask, onReorderSection, showIndicator]);
+  }, [onReorderTask, onReorderSection, showIndicator, stopAutoScroll]);
 
   const onPointerUp     = useCallback(() => { finishDrag(); }, [finishDrag]);
   const onPointerCancel = useCallback(() => {
@@ -380,11 +445,13 @@ export function useDragDrop({ onReorderTask, onReorderSection }: UseDragDropOpti
     showIndicator(null);
     stateRef.current = null;
     pendingRef.current = null;
+    pointerPosRef.current = null;
+    stopAutoScroll();
     document.body.classList.remove('dragging');
     document.body.style.userSelect  = '';
     document.body.style.touchAction = '';
     if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
-  }, [showIndicator]);
+  }, [showIndicator, stopAutoScroll]);
 
   useEffect(() => {
     window.addEventListener('pointermove',   onPointerMove,   { passive: false });
@@ -395,9 +462,10 @@ export function useDragDrop({ onReorderTask, onReorderSection }: UseDragDropOpti
       window.removeEventListener('pointerup',     onPointerUp);
       window.removeEventListener('pointercancel', onPointerCancel);
       if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
+      stopAutoScroll();
       indicatorRef.current?.remove();
     };
-  }, [onPointerMove, onPointerUp, onPointerCancel]);
+  }, [onPointerMove, onPointerUp, onPointerCancel, stopAutoScroll]);
 
   return { onPointerDown };
 }
