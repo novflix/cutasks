@@ -98,7 +98,7 @@ export const TasksPage: React.FC<Props> = ({ dark }) => {
           cursor: pointer;
           transition: color 0.18s, border-color 0.18s, background 0.18s, transform 0.12s;
           white-space: nowrap;
-          overflow: hidden;
+          flex-shrink: 0;
         }
         .sort-btn:hover {
           color: var(--text-main);
@@ -129,6 +129,11 @@ export const TasksPage: React.FC<Props> = ({ dark }) => {
           gap: 6px;
           margin-bottom: 20px;
           animation: sortPillIn 0.22s ease-out;
+          overflow-x: auto;
+          scrollbar-width: none;
+        }
+        .sort-row::-webkit-scrollbar {
+          display: none;
         }
         .sort-label {
           font-family: "DM Sans", sans-serif;
