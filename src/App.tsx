@@ -7,6 +7,7 @@ import { CalendarPage } from './pages/CalendarPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { ProjectsPage } from './pages/ProjectsPage';
 import { ProjectDetailPage } from './pages/ProjectDetailPage';
+import { PomodoroPage } from './pages/PomodoroPage';
 import { AuthPage } from './pages/AuthPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 
@@ -17,25 +18,8 @@ export default function App() {
 
   if (loading) {
     return (
-      <div
-        style={{
-          minHeight: '100dvh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'var(--bg-main)',
-        }}
-      >
-        <div
-          style={{
-            width: '32px',
-            height: '32px',
-            borderRadius: '50%',
-            border: '3px solid var(--border)',
-            borderTopColor: 'var(--accent)',
-            animation: 'spin 0.7s linear infinite',
-          }}
-        />
+      <div style={{ minHeight: '100dvh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--bg-main)' }}>
+        <div style={{ width: '32px', height: '32px', borderRadius: '50%', border: '3px solid var(--border)', borderTopColor: 'var(--accent)', animation: 'spin 0.7s linear infinite' }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
@@ -45,9 +29,8 @@ export default function App() {
     return <AuthPage dark={dark} />;
   }
 
-  // 404 — rendered outside the main shell (no sidebar, full-screen)
   const is404 = ![
-    '/', '/tasks', '/calendar', '/projects', '/settings',
+    '/', '/tasks', '/calendar', '/projects', '/settings', '/pomodoro',
   ].some(p => location.pathname === p || location.pathname.startsWith('/projects/'));
 
   if (is404) {
@@ -58,10 +41,7 @@ export default function App() {
     <div className="min-h-screen" style={{ background: 'var(--bg-main)' }}>
       <Sidebar currentPath={location.pathname} dark={dark} />
 
-      <main
-        style={{ paddingLeft: 0, paddingBottom: '80px' }}
-        className="sm:pl-[200px] sm:pb-0"
-      >
+      <main style={{ paddingLeft: 0, paddingBottom: '80px' }} className="sm:pl-[200px] sm:pb-0">
         <div className="max-w-xl mx-auto px-4 py-8 sm:py-12">
           <Routes>
             <Route path="/"                       element={<TasksPage dark={dark} />} />
@@ -69,6 +49,7 @@ export default function App() {
             <Route path="/calendar"               element={<CalendarPage />} />
             <Route path="/projects"               element={<ProjectsPage />} />
             <Route path="/projects/:projectId"    element={<ProjectDetailPage />} />
+            <Route path="/pomodoro"               element={<PomodoroPage />} />
             <Route path="/settings"               element={<SettingsPage theme={theme} onThemeChange={setTheme} />} />
             <Route path="*"                       element={<Navigate to="/" replace />} />
           </Routes>
