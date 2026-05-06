@@ -3,6 +3,8 @@ import { Sun, Moon, CloudStorm, Logout } from '@solar-icons/react';
 import type { Theme } from '../hooks/useTheme';
 import { useAuth } from '../context/useAuth';
 import { usePomodoroSettings } from '../hooks/usePomodoroSettings';
+import { useTaskSort } from '../hooks/useTaskSort';
+import type { SortField } from '../hooks/useTaskSort';
 
 interface Props {
   theme: Theme;
@@ -19,6 +21,12 @@ const THEMES: {
   { value: 'light', label: 'Light',  description: 'Warm cream tones',    Icon: Sun,        preview: { bg: '#fdfaf5', card: '#ffffff', text: '#2d2824', accent: '#ed9b6d' } },
   { value: 'slate', label: 'Slate',  description: 'Neutral dark greys',  Icon: CloudStorm, preview: { bg: '#111111', card: '#1c1c1c', text: '#e4e4e4', accent: '#ed9b6d' } },
   { value: 'dark',  label: 'Mocha',  description: 'Warm dark browns',    Icon: Moon,       preview: { bg: '#1a1614', card: '#2d2824', text: '#f4e8d0', accent: '#ed9b6d' } },
+];
+
+const SORT_FIELD_OPTIONS: { value: SortField; label: string; hint: string }[] = [
+  { value: 'createdAt', label: 'Date created',  hint: 'Newest first' },
+  { value: 'priority',  label: 'Priority',       hint: 'High → Medium → Low' },
+  { value: 'deadline',  label: 'Due date',       hint: 'Closest to today first' },
 ];
 
 const ThemePreview: React.FC<{ colors: (typeof THEMES)[0]['preview']; active: boolean }> = ({ colors, active }) => (
@@ -89,6 +97,7 @@ const SettingRow: React.FC<{ label: string; hint?: string; children: React.React
 export const SettingsPage: React.FC<Props> = ({ theme, onThemeChange }) => {
   const { user, logOut } = useAuth();
   const { settings: pomo, update: updatePomo } = usePomodoroSettings();
+  const { sort, setField } = useTaskSort();
 
   const displayName = user?.displayName ?? user?.email ?? 'Пользователь';
   const avatarLetter = user?.displayName?.[0] ?? user?.email?.[0] ?? '?';
@@ -149,6 +158,48 @@ export const SettingsPage: React.FC<Props> = ({ theme, onThemeChange }) => {
               </button>
             );
           })}
+        </div>
+      </section>
+
+      {/* Tasks */}
+      <section style={{ marginBottom: '28px' }}>
+        <SectionLabel>Tasks</SectionLabel>
+        <div style={{ background: 'var(--bg-card)', borderRadius: '16px', border: '1px solid var(--border)', padding: '16px' }}>
+          <p style={{ fontFamily: '"DM Sans", sans-serif', fontWeight: 500, fontSize: '0.85rem', color: 'var(--text-main)', marginBottom: '10px' }}>
+            Default sort
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            {SORT_FIELD_OPTIONS.map(opt => {
+              const active = sort.field === opt.value;
+              return (
+                <button
+                  key={opt.value}
+                  onClick={() => setField(opt.value)}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '10px 12px', borderRadius: '12px', cursor: 'pointer', textAlign: 'left',
+                    border: active ? '1.5px solid var(--accent)' : '1.5px solid var(--border)',
+                    background: active ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'var(--bg-panel)',
+                    transition: 'border-color 0.15s, background 0.15s',
+                  }}
+                >
+                  <div>
+                    <p style={{ fontFamily: '"DM Sans", sans-serif', fontWeight: 500, fontSize: '0.82rem', color: active ? 'var(--accent)' : 'var(--text-main)', lineHeight: 1.2 }}>{opt.label}</p>
+                    <p style={{ fontFamily: '"DM Sans", sans-serif', fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '2px' }}>{opt.hint}</p>
+                  </div>
+                  <div style={{
+                    width: '16px', height: '16px', borderRadius: '50%', flexShrink: 0,
+                    border: active ? '2px solid var(--accent)' : '2px solid var(--border)',
+                    background: active ? 'var(--accent)' : 'transparent',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'border-color 0.15s, background 0.15s',
+                  }}>
+                    {active && <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--bg-main)' }} />}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </section>
 

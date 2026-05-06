@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProjects } from '../hooks/useProjects';
 import { useDragDrop } from '../hooks/useDragDrop';
+import { useTaskSort, sortTasks } from '../hooks/useTaskSort';
 import { useTheme } from '../hooks/useTheme';
 import type { Project, ProjectTask, Priority, ProjectColor } from '../types';
 import { resolveProjectColors } from '../types';
@@ -711,7 +712,13 @@ export const ProjectDetail: React.FC<{
   const totalTasks      = project.tasks.length;
   const doneTasks       = project.tasks.filter(t => t.completed).length;
   const progress        = totalTasks === 0 ? 0 : Math.round((doneTasks / totalTasks) * 100);
-  const sortByCompletion = (tasks: ProjectTask[]) => [...tasks.filter(t => !t.completed), ...tasks.filter(t => t.completed)];
+  const { sort } = useTaskSort();
+  const sortByCompletion = (tasks: ProjectTask[]) => {
+    const toSortable = (t: ProjectTask) => ({ ...t, description: t.description ?? undefined, deadline: t.deadline ?? undefined });
+    const active    = sortTasks(tasks.filter(t => !t.completed).map(toSortable), sort);
+    const completed = tasks.filter(t => t.completed);
+    return [...active, ...completed] as ProjectTask[];
+  };
   const unsectioned     = sortByCompletion(project.tasks.filter(t => !t.sectionId));
   const getSectionTasks = (id: string) => sortByCompletion(project.tasks.filter(t => t.sectionId === id));
   const sortedSections  = [...project.sections].sort((a, b) => a.order - b.order);

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useTasks } from '../hooks/useTasks';
+import { useTaskSort, sortTasks } from '../hooks/useTaskSort';
 import type { FilterType, Priority, Task } from '../types';
+import type { SortField } from '../hooks/useTaskSort';
 import { TaskCard } from '../components/TaskCard';
 import { TaskModal } from '../components/TaskModal';
 import { EmptyState } from '../components/EmptyState';
@@ -14,12 +16,24 @@ const FILTERS: { value: FilterType; label: string; Icon: React.FC<{ size?: numbe
   { value: 'completed', label: 'Done',   Icon: CheckCircle },
 ];
 
+const SORT_OPTIONS: {
+  value: SortField;
+  label: string;
+  icon: string;
+  hint: string;
+}[] = [
+  { value: 'createdAt', label: 'New first',  icon: '✦', hint: 'Newest created' },
+  { value: 'priority',  label: 'Priority',   icon: '↑', hint: 'High → Low' },
+  { value: 'deadline',  label: 'Due date',   icon: '◷', hint: 'Closest first' },
+];
+
 interface Props {
   dark: boolean;
 }
 
 export const TasksPage: React.FC<Props> = ({ dark }) => {
   const { tasks, addTask, editTask, deleteTask, toggleTask, initialized } = useTasks();
+  const { sort, setField } = useTaskSort();
 
   const [filter, setFilter]     = useState<FilterType>('all');
   const [showCreate, setCreate] = useState(false);
@@ -30,6 +44,8 @@ export const TasksPage: React.FC<Props> = ({ dark }) => {
     if (filter === 'completed') return t.completed;
     return true;
   });
+
+  const sorted = sortTasks(filtered, sort);
 
   const counts = {
     all:       tasks.length,
@@ -45,9 +61,96 @@ export const TasksPage: React.FC<Props> = ({ dark }) => {
     return 'Good evening';
   })();
 
+  const activeSortOption = SORT_OPTIONS.find(o => o.value === sort.field)!;
+
   return (
     <>
       <SkeletonStyles />
+
+      <style>{`
+        @keyframes sortPillIn {
+          from { opacity: 0; transform: translateY(-6px) scale(0.94); }
+          to   { opacity: 1; transform: translateY(0)    scale(1); }
+        }
+        @keyframes sortIndicatorSlide {
+          from { opacity: 0; transform: scaleX(0); }
+          to   { opacity: 1; transform: scaleX(1); }
+        }
+        @keyframes sortChipPop {
+          0%   { transform: scale(1); }
+          40%  { transform: scale(0.93); }
+          70%  { transform: scale(1.05); }
+          100% { transform: scale(1); }
+        }
+        .sort-btn {
+          position: relative;
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          padding: 6px 12px;
+          border-radius: 20px;
+          border: 1.5px solid var(--border);
+          background: transparent;
+          color: var(--text-muted);
+          font-family: "DM Sans", sans-serif;
+          font-size: 0.78rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: color 0.18s, border-color 0.18s, background 0.18s, transform 0.12s;
+          white-space: nowrap;
+          overflow: hidden;
+        }
+        .sort-btn:hover {
+          color: var(--text-main);
+          border-color: var(--text-muted);
+          transform: translateY(-1px);
+        }
+        .sort-btn.active {
+          color: var(--bg-main);
+          background: var(--text-main);
+          border-color: var(--text-main);
+          animation: sortChipPop 0.28s ease;
+        }
+        .sort-btn.active:hover {
+          opacity: 0.88;
+          transform: translateY(-1px);
+        }
+        .sort-btn-icon {
+          font-size: 0.9rem;
+          line-height: 1;
+          transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        .sort-btn.active .sort-btn-icon {
+          transform: scale(1.15);
+        }
+        .sort-row {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          margin-bottom: 20px;
+          animation: sortPillIn 0.22s ease-out;
+        }
+        .sort-label {
+          font-family: "DM Sans", sans-serif;
+          font-size: 0.68rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          color: var(--text-muted);
+          padding-left: 2px;
+          flex-shrink: 0;
+          opacity: 0.7;
+        }
+        .sort-hint {
+          margin-left: auto;
+          font-family: "DM Sans", sans-serif;
+          font-size: 0.7rem;
+          color: var(--text-muted);
+          opacity: 0.55;
+          flex-shrink: 0;
+          transition: opacity 0.2s;
+        }
+      `}</style>
 
       <header className="flex items-start justify-between mb-8">
         <div>
@@ -68,7 +171,7 @@ export const TasksPage: React.FC<Props> = ({ dark }) => {
 
       {/* Filters */}
       <div
-        className="flex gap-1.5 mb-6 p-1 rounded-2xl"
+        className="flex gap-1.5 mb-4 p-1 rounded-2xl"
         style={{ background: 'var(--bg-panel)', border: '1px solid var(--border)' }}
       >
         {FILTERS.map(f => (
@@ -95,15 +198,32 @@ export const TasksPage: React.FC<Props> = ({ dark }) => {
         ))}
       </div>
 
+      {/* Sort row */}
+      <div className="sort-row">
+        <span className="sort-label">Sort</span>
+        {SORT_OPTIONS.map(opt => (
+          <button
+            key={opt.value}
+            className={`sort-btn${sort.field === opt.value ? ' active' : ''}`}
+            onClick={() => setField(opt.value)}
+            title={opt.hint}
+          >
+            <span className="sort-btn-icon">{opt.icon}</span>
+            {opt.label}
+          </button>
+        ))}
+        <span className="sort-hint">{activeSortOption.hint}</span>
+      </div>
+
       {/* Task list or skeleton */}
       {!initialized ? (
         <TasksPageSkeleton />
       ) : (
         <div className="flex flex-col gap-2.5">
-          {filtered.length === 0 ? (
+          {sorted.length === 0 ? (
             <EmptyState filter={filter} />
           ) : (
-            filtered.map((task: Task) => (
+            sorted.map((task: Task) => (
               <div key={task.id} className="animate-fade-in">
                 <TaskCard
                   task={task}
