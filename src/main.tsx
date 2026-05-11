@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { AuthProvider } from './context/AuthContext'
-import { PomodoroProvider } from './context/PomodoroContext'
+import { AppSettingsProvider } from './context/AppSettings'
 import App from './App.tsx'
 import './index.css'
 
@@ -10,9 +10,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <PomodoroProvider>
+        <AppSettingsProvider>
           <App />
-        </PomodoroProvider>
+        </AppSettingsProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>,

@@ -1,5 +1,5 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
-import { useTheme } from './hooks/useTheme';
+import { useAppSettings } from './context/AppSettings';
 import { useAuth } from './context/useAuth';
 import { Sidebar } from './components/Sidebar';
 import { TasksPage } from './pages/TasksPage';
@@ -12,10 +12,13 @@ import { AuthPage } from './pages/AuthPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { useTaskDeletionCleanup } from './hooks/useTaskDeletion';
 
-function AppInner({ theme, setTheme, dark }: { theme: ReturnType<typeof useTheme>['theme']; setTheme: ReturnType<typeof useTheme>['setTheme']; dark: boolean }) {
+function AppInner() {
+  const { theme, setTheme, dark, sortField, setSortField, deletionDelay, setDeletionDelay } = useAppSettings();
   const { user, loading } = useAuth();
   const location = useLocation();
-  useTaskDeletionCleanup();
+
+  // Pass synced deletionDelay so cleanup uses the cross-device value
+  useTaskDeletionCleanup(deletionDelay);
 
   if (loading) {
     return (
@@ -51,7 +54,16 @@ function AppInner({ theme, setTheme, dark }: { theme: ReturnType<typeof useTheme
             <Route path="/projects"               element={<ProjectsPage />} />
             <Route path="/projects/:projectId"    element={<ProjectDetailPage />} />
             <Route path="/pomodoro"               element={<PomodoroPage />} />
-            <Route path="/settings"               element={<SettingsPage theme={theme} onThemeChange={setTheme} />} />
+            <Route path="/settings"               element={
+              <SettingsPage
+                theme={theme}
+                onThemeChange={setTheme}
+                sortField={sortField}
+                onSortFieldChange={setSortField}
+                deletionDelay={deletionDelay}
+                onDeletionDelayChange={setDeletionDelay}
+              />
+            } />
             <Route path="*"                       element={<NotFoundPage />} />
           </Routes>
         </div>
@@ -61,6 +73,5 @@ function AppInner({ theme, setTheme, dark }: { theme: ReturnType<typeof useTheme
 }
 
 export default function App() {
-  const { theme, setTheme, dark } = useTheme();
-  return <AppInner theme={theme} setTheme={setTheme} dark={dark} />;
+  return <AppInner />;
 }

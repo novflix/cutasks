@@ -2,9 +2,9 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProjects } from '../hooks/useProjects';
 import { useDragDrop } from '../hooks/useDragDrop';
-import { useTaskSort, sortTasks } from '../hooks/useTaskSort';
+import { sortTasks } from '../hooks/useTaskSort';
 import { getDeletionDelay } from '../hooks/useTaskDeletion';
-import { useTheme } from '../hooks/useTheme';
+import { useAppSettings } from '../context/AppSettings';
 import type { Project, ProjectTask, Priority, ProjectColor } from '../types';
 import { resolveProjectColors } from '../types';
 import { PROJECT_ICON_MAP, PROJECT_ICON_OPTIONS } from '../projectIcons';
@@ -766,7 +766,7 @@ export const ProjectDetail: React.FC<{
   onBack: () => void;
   ops: ReturnType<typeof useProjects>;
 }> = ({ project, onBack, ops }) => {
-  const { dark }  = useTheme();
+  const { dark, sortField }  = useAppSettings();
   const colors    = resolveProjectColors(project.color, dark);
 
   const [showEdit, setShowEdit]             = useState(false);
@@ -784,7 +784,7 @@ export const ProjectDetail: React.FC<{
   const totalTasks      = project.tasks.length + (project.completedCount ?? 0);
   const doneTasks       = project.tasks.filter(t => t.completed).length + (project.completedCount ?? 0);
   const progress        = totalTasks === 0 ? 0 : Math.round((doneTasks / totalTasks) * 100);
-  const { sort } = useTaskSort();
+  const sort = { field: sortField };
   const sortByCompletion = (tasks: ProjectTask[]) => {
     const toSortable = (t: ProjectTask) => ({ ...t, description: t.description ?? undefined, deadline: t.deadline ?? undefined });
     const active    = sortTasks(tasks.filter(t => !t.completed).map(toSortable), sort);
@@ -1227,7 +1227,7 @@ export const ProjectDetail: React.FC<{
 
 // ─── Project card ─────────────────────────────────────────────────────────────
 const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ project, onClick }) => {
-  const { dark } = useTheme();
+  const { dark } = useAppSettings();
   const colors   = resolveProjectColors(project.color, dark);
   const total    = project.tasks.length + (project.completedCount ?? 0);
   const done     = project.tasks.filter(t => t.completed).length + (project.completedCount ?? 0);

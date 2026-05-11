@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTasks } from '../hooks/useTasks';
-import { useTaskSort, sortTasks } from '../hooks/useTaskSort';
+import { sortTasks } from '../hooks/useTaskSort';
+import { useAppSettings } from '../context/AppSettings';
 import type { FilterType, Priority, Task } from '../types';
 import type { SortField } from '../hooks/useTaskSort';
 import { TaskCard } from '../components/TaskCard';
@@ -33,7 +34,8 @@ interface Props {
 
 export const TasksPage: React.FC<Props> = ({ dark }) => {
   const { tasks, addTask, editTask, deleteTask, toggleTask, initialized } = useTasks();
-  const { sort, setField } = useTaskSort();
+  const { sortField, setSortField } = useAppSettings();
+  const sort = { field: sortField };
 
   const [filter, setFilter]     = useState<FilterType>('all');
   const [showCreate, setCreate] = useState(false);
@@ -210,7 +212,7 @@ export const TasksPage: React.FC<Props> = ({ dark }) => {
           <button
             key={opt.value}
             className={`sort-btn${sort.field === opt.value ? ' active' : ''}`}
-            onClick={() => setField(opt.value)}
+            onClick={() => setSortField(opt.value)}
             title={opt.hint}
           >
             <span className="sort-btn-icon">{opt.icon}</span>

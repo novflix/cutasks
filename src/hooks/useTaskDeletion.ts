@@ -14,6 +14,7 @@ import type { Project } from '../types';
 
 export type DeletionDelay = 'immediate' | '24h' | '3d';
 
+// localStorage accessors kept for backward compatibility / initial read
 const KEY = 'cutasks-deletion-delay';
 
 export function getDeletionDelay(): DeletionDelay {
@@ -38,18 +39,15 @@ function delayMs(delay: DeletionDelay): number | null {
 }
 
 /**
- * Runs a background cleanup pass:
- * - For standalone tasks (users/{uid}/tasks): deletes docs where completed=true
- *   and completedAt is old enough.
- * - For project tasks (users/{uid}/projects): removes tasks from the tasks[]
- *   array, but preserves the count in completedCount on the project doc.
+ * Runs a background cleanup pass.
+ * Now accepts deletionDelay as a parameter so it uses the synced value.
  */
-export function useTaskDeletionCleanup() {
+export function useTaskDeletionCleanup(deletionDelay?: DeletionDelay) {
   const { user } = useAuth();
 
   const runCleanup = useCallback(async () => {
     if (!user) return;
-    const delay = getDeletionDelay();
+    const delay = deletionDelay ?? getDeletionDelay();
     const ms = delayMs(delay);
     if (ms === null) return;
 
@@ -69,8 +67,6 @@ export function useTaskDeletionCleanup() {
           : data.completedAt?.toMillis?.() ?? null;
 
       if (completedAt === null) {
-        // Legacy task completed before this feature: treat completedAt as now
-        // so it will be cleaned up on the next cycle (or immediately if delay=0)
         await updateDoc(doc(db, 'users', user.uid, 'tasks', taskDoc.id), {
           completedAt: now,
         });
@@ -114,11 +110,9 @@ export function useTaskDeletionCleanup() {
           typeof t.completedAt === 'number' ? t.completedAt : null;
 
         if (completedAt === null) {
-          // Legacy: stamp now, will be cleaned up next cycle (or immediately)
           if (ms === 0) {
             completedCount += 1;
             changed = true;
-            // don't push → effectively deleted
           } else {
             surviving.push({ ...t, completedAt: now });
             changed = true;
@@ -129,7 +123,6 @@ export function useTaskDeletionCleanup() {
         if (now - completedAt >= ms) {
           completedCount += 1;
           changed = true;
-          // don't push → effectively deleted
         } else {
           surviving.push(t);
         }
@@ -142,7 +135,7 @@ export function useTaskDeletionCleanup() {
         });
       }
     }
-  }, [user]);
+  }, [user, deletionDelay]);
 
   // Run on mount + every 5 minutes
   useEffect(() => {

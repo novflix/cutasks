@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Sun, Moon, CloudStorm, Logout, TrashBinMinimalistic } from '@solar-icons/react';
 import type { Theme } from '../hooks/useTheme';
 import { useAuth } from '../context/useAuth';
 import { usePomodoroSettings } from '../hooks/usePomodoroSettings';
-import { useTaskSort } from '../hooks/useTaskSort';
 import type { SortField } from '../hooks/useTaskSort';
-import { getDeletionDelay, setDeletionDelay } from '../hooks/useTaskDeletion';
 import type { DeletionDelay } from '../hooks/useTaskDeletion';
 
 interface Props {
   theme: Theme;
   onThemeChange: (t: Theme) => void;
+  sortField: SortField;
+  onSortFieldChange: (f: SortField) => void;
+  deletionDelay: DeletionDelay;
+  onDeletionDelayChange: (d: DeletionDelay) => void;
 }
 
 const THEMES: {
@@ -32,7 +34,7 @@ const SORT_FIELD_OPTIONS: { value: SortField; label: string; hint: string }[] = 
 ];
 
 const DELETION_DELAY_OPTIONS: { value: DeletionDelay; label: string; hint: string }[] = [
-  { value: 'immediate', label: 'Immediately',   hint: 'Deleted as soon as they\'re checked off' },
+  { value: 'immediate', label: 'Immediately',   hint: "Deleted as soon as they're checked off" },
   { value: '24h',       label: 'After 24 hours', hint: 'Kept for a day, then removed' },
   { value: '3d',        label: 'After 3 days',   hint: 'Kept for three days, then removed' },
 ];
@@ -102,18 +104,15 @@ const SettingRow: React.FC<{ label: string; hint?: string; children: React.React
   </div>
 );
 
-export const SettingsPage: React.FC<Props> = ({ theme, onThemeChange }) => {
+export const SettingsPage: React.FC<Props> = ({
+  theme, onThemeChange,
+  sortField, onSortFieldChange,
+  deletionDelay, onDeletionDelayChange,
+}) => {
   const { user, logOut } = useAuth();
   const { settings: pomo, update: updatePomo } = usePomodoroSettings();
-  const { sort, setField } = useTaskSort();
-  const [deletionDelay, setDeletionDelayState] = useState<DeletionDelay>(getDeletionDelay);
 
-  const handleDeletionDelayChange = (v: DeletionDelay) => {
-    setDeletionDelayState(v);
-    setDeletionDelay(v);
-  };
-
-  const displayName = user?.displayName ?? user?.email ?? 'Пользователь';
+  const displayName = user?.displayName ?? user?.email ?? 'User';
   const avatarLetter = user?.displayName?.[0] ?? user?.email?.[0] ?? '?';
 
   return (
@@ -184,11 +183,11 @@ export const SettingsPage: React.FC<Props> = ({ theme, onThemeChange }) => {
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {SORT_FIELD_OPTIONS.map(opt => {
-              const active = sort.field === opt.value;
+              const active = sortField === opt.value;
               return (
                 <button
                   key={opt.value}
-                  onClick={() => setField(opt.value)}
+                  onClick={() => onSortFieldChange(opt.value)}
                   style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '10px 12px', borderRadius: '12px', cursor: 'pointer', textAlign: 'left',
@@ -236,7 +235,7 @@ export const SettingsPage: React.FC<Props> = ({ theme, onThemeChange }) => {
               return (
                 <button
                   key={opt.value}
-                  onClick={() => handleDeletionDelayChange(opt.value)}
+                  onClick={() => onDeletionDelayChange(opt.value)}
                   style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '10px 12px', borderRadius: '12px', cursor: 'pointer', textAlign: 'left',

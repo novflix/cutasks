@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { Project, ProjectColor } from '../types';
 import { PROJECT_COLOR_TOKENS, resolveProjectColors } from '../types';
 import { PROJECT_ICON_OPTIONS, PROJECT_ICON_MAP } from '../projectIcons';
-import { useTheme } from '../hooks/useTheme';
+import { useAppSettings } from '../context/AppSettings';
 import { CloseCircle } from '@solar-icons/react';
 
 const COLOR_KEYS = Object.keys(PROJECT_COLOR_TOKENS) as ProjectColor[];
@@ -39,7 +39,7 @@ export const ProjectModal: React.FC<Props> = ({ mode, initial, onClose, onSubmit
     onClose();
   };
 
-  const { dark } = useTheme();
+  const { dark } = useAppSettings();
   const selectedColors = resolveProjectColors(color, dark);
   const SelectedIcon = iconKey ? PROJECT_ICON_MAP[iconKey] : null;
 
