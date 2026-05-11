@@ -13,6 +13,7 @@ import {
 import { db } from '../firebase/config';
 import { useAuth } from '../context/useAuth';
 import type { Project, ProjectTask, ProjectSection, ProjectColor, Priority } from '../types';
+import { getDeletionDelay } from './useTaskDeletion';
 
 function generateId(prefix: string) {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
@@ -55,6 +56,7 @@ export function useProjects() {
           tasks: data.tasks ?? [],
           createdAt: data.createdAt?.toDate?.()?.toISOString() ?? new Date().toISOString(),
           order: data.order ?? null,
+          completedCount: data.completedCount ?? 0,
         } as Project;
       });
       // Sort by explicit order first, fallback to createdAt desc
@@ -188,16 +190,37 @@ export function useProjects() {
   const deleteTask = useCallback(async (projectId: string, taskId: string) => {
     const project = projects.find(p => p.id === projectId);
     if (!project) return;
+    const task = project.tasks.find(t => t.id === taskId);
     const tasks = project.tasks.filter(t => t.id !== taskId);
-    await updateProject(projectId, { tasks });
+    // If the deleted task was completed, preserve its count in completedCount
+    // so the progress bar stays accurate
+    const completedCount = (project.completedCount ?? 0) + (task?.completed ? 1 : 0);
+    await updateProject(projectId, { tasks, completedCount });
   }, [projects, updateProject]);
 
   const toggleTask = useCallback(async (projectId: string, taskId: string) => {
     const project = projects.find(p => p.id === projectId);
     if (!project) return;
-    const tasks = project.tasks.map(t =>
-      t.id === taskId ? { ...t, completed: !t.completed } : t
-    );
+    const task = project.tasks.find(t => t.id === taskId);
+    if (!task) return;
+    const nowCompleted = !task.completed;
+
+    // If completing and delay=immediate → remove from array and bump completedCount
+    if (nowCompleted && getDeletionDelay() === 'immediate') {
+      const tasks = project.tasks.filter(t => t.id !== taskId);
+      const completedCount = (project.completedCount ?? 0) + 1;
+      await updateProject(projectId, { tasks, completedCount });
+      return;
+    }
+
+    const tasks = project.tasks.map(t => {
+      if (t.id !== taskId) return t;
+      return {
+        ...t,
+        completed: nowCompleted,
+        completedAt: nowCompleted ? Date.now() : null,
+      };
+    });
     await updateProject(projectId, { tasks });
   }, [projects, updateProject]);
 

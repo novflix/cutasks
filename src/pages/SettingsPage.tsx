@@ -1,10 +1,12 @@
-import React from 'react';
-import { Sun, Moon, CloudStorm, Logout } from '@solar-icons/react';
+import React, { useState } from 'react';
+import { Sun, Moon, CloudStorm, Logout, TrashBinMinimalistic } from '@solar-icons/react';
 import type { Theme } from '../hooks/useTheme';
 import { useAuth } from '../context/useAuth';
 import { usePomodoroSettings } from '../hooks/usePomodoroSettings';
 import { useTaskSort } from '../hooks/useTaskSort';
 import type { SortField } from '../hooks/useTaskSort';
+import { getDeletionDelay, setDeletionDelay } from '../hooks/useTaskDeletion';
+import type { DeletionDelay } from '../hooks/useTaskDeletion';
 
 interface Props {
   theme: Theme;
@@ -27,6 +29,12 @@ const SORT_FIELD_OPTIONS: { value: SortField; label: string; hint: string }[] = 
   { value: 'createdAt', label: 'Date created',  hint: 'Newest first' },
   { value: 'priority',  label: 'Priority',       hint: 'High → Medium → Low' },
   { value: 'deadline',  label: 'Due date',       hint: 'Closest to today first' },
+];
+
+const DELETION_DELAY_OPTIONS: { value: DeletionDelay; label: string; hint: string }[] = [
+  { value: 'immediate', label: 'Immediately',   hint: 'Deleted as soon as they\'re checked off' },
+  { value: '24h',       label: 'After 24 hours', hint: 'Kept for a day, then removed' },
+  { value: '3d',        label: 'After 3 days',   hint: 'Kept for three days, then removed' },
 ];
 
 const ThemePreview: React.FC<{ colors: (typeof THEMES)[0]['preview']; active: boolean }> = ({ colors, active }) => (
@@ -98,6 +106,12 @@ export const SettingsPage: React.FC<Props> = ({ theme, onThemeChange }) => {
   const { user, logOut } = useAuth();
   const { settings: pomo, update: updatePomo } = usePomodoroSettings();
   const { sort, setField } = useTaskSort();
+  const [deletionDelay, setDeletionDelayState] = useState<DeletionDelay>(getDeletionDelay);
+
+  const handleDeletionDelayChange = (v: DeletionDelay) => {
+    setDeletionDelayState(v);
+    setDeletionDelay(v);
+  };
 
   const displayName = user?.displayName ?? user?.email ?? 'Пользователь';
   const avatarLetter = user?.displayName?.[0] ?? user?.email?.[0] ?? '?';
@@ -175,6 +189,54 @@ export const SettingsPage: React.FC<Props> = ({ theme, onThemeChange }) => {
                 <button
                   key={opt.value}
                   onClick={() => setField(opt.value)}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    padding: '10px 12px', borderRadius: '12px', cursor: 'pointer', textAlign: 'left',
+                    border: active ? '1.5px solid var(--accent)' : '1.5px solid var(--border)',
+                    background: active ? 'color-mix(in srgb, var(--accent) 10%, transparent)' : 'var(--bg-panel)',
+                    transition: 'border-color 0.15s, background 0.15s',
+                  }}
+                >
+                  <div>
+                    <p style={{ fontFamily: '"DM Sans", sans-serif', fontWeight: 500, fontSize: '0.82rem', color: active ? 'var(--accent)' : 'var(--text-main)', lineHeight: 1.2 }}>{opt.label}</p>
+                    <p style={{ fontFamily: '"DM Sans", sans-serif', fontSize: '0.7rem', color: 'var(--text-muted)', marginTop: '2px' }}>{opt.hint}</p>
+                  </div>
+                  <div style={{
+                    width: '16px', height: '16px', borderRadius: '50%', flexShrink: 0,
+                    border: active ? '2px solid var(--accent)' : '2px solid var(--border)',
+                    background: active ? 'var(--accent)' : 'transparent',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    transition: 'border-color 0.15s, background 0.15s',
+                  }}>
+                    {active && <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--bg-main)' }} />}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Completed Tasks */}
+      <section style={{ marginBottom: '28px' }}>
+        <SectionLabel>Completed tasks</SectionLabel>
+        <div style={{ background: 'var(--bg-card)', borderRadius: '16px', border: '1px solid var(--border)', padding: '16px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+            <TrashBinMinimalistic size={14} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
+            <p style={{ fontFamily: '"DM Sans", sans-serif', fontWeight: 500, fontSize: '0.85rem', color: 'var(--text-main)' }}>
+              Delete completed tasks
+            </p>
+          </div>
+          <p style={{ fontFamily: '"DM Sans", sans-serif', fontSize: '0.72rem', color: 'var(--text-muted)', marginBottom: '10px', lineHeight: 1.5 }}>
+            Completed tasks are automatically deleted from storage. Project progress is preserved even after deletion.
+          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            {DELETION_DELAY_OPTIONS.map(opt => {
+              const active = deletionDelay === opt.value;
+              return (
+                <button
+                  key={opt.value}
+                  onClick={() => handleDeletionDelayChange(opt.value)}
                   style={{
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '10px 12px', borderRadius: '12px', cursor: 'pointer', textAlign: 'left',

@@ -709,8 +709,8 @@ export const ProjectDetail: React.FC<{
   const sectionInputRef = useRef<HTMLDivElement>(null);
   const newSectionPickerRef = useRef<HTMLDivElement>(null);
 
-  const totalTasks      = project.tasks.length;
-  const doneTasks       = project.tasks.filter(t => t.completed).length;
+  const totalTasks      = project.tasks.length + (project.completedCount ?? 0);
+  const doneTasks       = project.tasks.filter(t => t.completed).length + (project.completedCount ?? 0);
   const progress        = totalTasks === 0 ? 0 : Math.round((doneTasks / totalTasks) * 100);
   const { sort } = useTaskSort();
   const sortByCompletion = (tasks: ProjectTask[]) => {
@@ -1157,8 +1157,8 @@ export const ProjectDetail: React.FC<{
 const ProjectCard: React.FC<{ project: Project; onClick: () => void }> = ({ project, onClick }) => {
   const { dark } = useTheme();
   const colors   = resolveProjectColors(project.color, dark);
-  const total    = project.tasks.length;
-  const done     = project.tasks.filter(t => t.completed).length;
+  const total    = project.tasks.length + (project.completedCount ?? 0);
+  const done     = project.tasks.filter(t => t.completed).length + (project.completedCount ?? 0);
   const progress = total === 0 ? 0 : Math.round((done / total) * 100);
   const overdue  = project.tasks.filter(t =>
     t.deadline && !t.completed && t.deadline < new Date().toISOString().split('T')[0],

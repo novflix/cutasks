@@ -13,6 +13,7 @@ import {
 import { db } from '../firebase/config';
 import { useAuth } from '../context/useAuth';
 import type { Task, Priority } from '../types';
+import { getDeletionDelay } from './useTaskDeletion';
 
 export function useTasks() {
   const { user } = useAuth();
@@ -47,6 +48,7 @@ export function useTasks() {
           deadline: data.deadline,
           completed: data.completed ?? false,
           createdAt: data.createdAt?.toDate?.()?.toISOString() ?? new Date().toISOString(),
+          completedAt: typeof data.completedAt === 'number' ? data.completedAt : (data.completedAt?.toMillis?.() ?? null),
         } as Task;
       });
       setTasks(loaded);
@@ -97,8 +99,19 @@ export function useTasks() {
     if (!user) return;
     const task = tasks.find(t => t.id === id);
     if (!task) return;
-    const ref = doc(db, 'users', user.uid, 'tasks', id);
-    await updateDoc(ref, { completed: !task.completed });
+    const nowCompleted = !task.completed;
+    const taskRef = doc(db, 'users', user.uid, 'tasks', id);
+
+    // If completing and delay=immediate → delete right away
+    if (nowCompleted && getDeletionDelay() === 'immediate') {
+      await deleteDoc(taskRef);
+      return;
+    }
+
+    await updateDoc(taskRef, {
+      completed: nowCompleted,
+      completedAt: nowCompleted ? Date.now() : null,
+    });
   }, [user, tasks]);
 
   return { tasks, addTask, editTask, deleteTask, toggleTask, initialized };

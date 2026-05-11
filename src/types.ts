@@ -8,6 +8,8 @@ export interface Task {
   deadline?: string; // ISO date string YYYY-MM-DD
   completed: boolean;
   createdAt: string;
+  /** Unix ms timestamp set when task is marked completed */
+  completedAt?: number | null;
 }
 
 export type FilterType = 'all' | 'active' | 'completed';
@@ -79,6 +81,8 @@ export interface ProjectTask {
   completed: boolean;
   createdAt: string;
   sectionId?: string | null;
+  /** Unix ms timestamp set when task is marked completed */
+  completedAt?: number | null;
 }
 
 export interface ProjectSection {
@@ -98,4 +102,9 @@ export interface Project {
   tasks: ProjectTask[];
   createdAt: string;
   order?: number;
+  /**
+   * Number of tasks that have been permanently deleted after completion.
+   * Used to keep progress bar accurate even after tasks are purged.
+   */
+  completedCount?: number;
 }

@@ -10,11 +10,12 @@ import { ProjectDetailPage } from './pages/ProjectDetailPage';
 import { PomodoroPage } from './pages/PomodoroPage';
 import { AuthPage } from './pages/AuthPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { useTaskDeletionCleanup } from './hooks/useTaskDeletion';
 
-export default function App() {
-  const { theme, setTheme, dark } = useTheme();
+function AppInner({ theme, setTheme, dark }: { theme: ReturnType<typeof useTheme>['theme']; setTheme: ReturnType<typeof useTheme>['setTheme']; dark: boolean }) {
   const { user, loading } = useAuth();
   const location = useLocation();
+  useTaskDeletionCleanup();
 
   if (loading) {
     return (
@@ -57,4 +58,9 @@ export default function App() {
       </main>
     </div>
   );
+}
+
+export default function App() {
+  const { theme, setTheme, dark } = useTheme();
+  return <AppInner theme={theme} setTheme={setTheme} dark={dark} />;
 }
