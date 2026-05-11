@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useProjects } from '../hooks/useProjects';
 import { useDragDrop } from '../hooks/useDragDrop';
 import { useTaskSort, sortTasks } from '../hooks/useTaskSort';
+import { getDeletionDelay } from '../hooks/useTaskDeletion';
 import { useTheme } from '../hooks/useTheme';
 import type { Project, ProjectTask, Priority, ProjectColor } from '../types';
 import { resolveProjectColors } from '../types';
@@ -211,6 +212,15 @@ function formatTaskDeadline(date: string): { label: string; overdue: boolean; so
   return { label, overdue, soon };
 }
 
+const MINI_BURST_COLORS = ['#ed9b6d', '#f5b800', '#6da07a', '#9b84d8', '#d45c5c', '#3d96e0'];
+
+// Pre-computed random offsets for mini burst — stable across renders
+const MINI_BURST_OFFSETS = Array.from({ length: 8 }, (_, i) => ({
+  angleJitter: (i * 41 + 7) % 18,
+  dist: 12 + (i * 11 + 5) % 8,
+  size: 2.5 + (i * 5 + 2) % 2,
+}));
+
 const ProjectTaskRow: React.FC<{
   task: ProjectTask;
   dotColor: string;
@@ -220,6 +230,9 @@ const ProjectTaskRow: React.FC<{
   onDragHandlePointerDown: (e: React.PointerEvent) => void;
 }> = ({ task, dotColor, onToggle, onEdit, onDelete, onDragHandlePointerDown }) => {
   const [deleting, setDeleting] = useState(false);
+  const [bursting, setBursting] = useState(false);
+  const [vanishing, setVanishing] = useState(false);
+  const burstTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const deadline = task.deadline ? formatTaskDeadline(task.deadline) : null;
   const priorityColor = PRIORITY_DOT[task.priority] ?? dotColor;
 
@@ -228,11 +241,34 @@ const ProjectTaskRow: React.FC<{
     setTimeout(onDelete, 250);
   };
 
+  const handleToggle = React.useCallback(() => {
+    if (!task.completed) {
+      setBursting(true);
+      if (burstTimer.current) clearTimeout(burstTimer.current);
+      burstTimer.current = setTimeout(() => setBursting(false), 550);
+
+      if (getDeletionDelay() === 'immediate') {
+        setVanishing(true);
+        setTimeout(onToggle, 500);
+        return;
+      }
+    }
+    onToggle();
+  }, [task.completed, onToggle]);
+
+  const miniBurstParticles = React.useMemo(() => MINI_BURST_OFFSETS.map((o, i) => ({
+    id: i,
+    angle: (i / 8) * 360 + o.angleJitter,
+    dist: o.dist,
+    size: o.size,
+    color: i % 3 === 0 ? priorityColor : MINI_BURST_COLORS[i % MINI_BURST_COLORS.length],
+  })), [priorityColor]);
+
   return (
     <div
-      className={`group flex items-start gap-2 px-1 py-2 transition-all duration-200 ${
+      className={`group flex items-start gap-2 px-1 py-2 transition-all duration-300 ${
         deleting ? 'opacity-0 -translate-x-1' : ''
-      }`}
+      } ${vanishing ? 'opacity-0 scale-95 -translate-y-1' : ''}`}
       data-task-id={task.id}
       data-task-section={task.sectionId ?? ''}
       style={{
@@ -251,38 +287,74 @@ const ProjectTaskRow: React.FC<{
         <DragDotsIcon size={11} />
       </div>
 
-      {/* Checkbox */}
-      <button
-        onClick={onToggle}
-        className="flex-shrink-0 flex items-center justify-center mt-0.5 transition-all duration-150"
-        style={{
-          width: '18px', height: '18px',
-          borderRadius: '50%',
-          border: `2px solid ${task.completed ? priorityColor : priorityColor + '80'}`,
-          background: task.completed ? priorityColor : 'transparent',
-          flexShrink: 0,
-          transition: 'border-color 0.15s, background 0.15s',
-        }}
-        onMouseEnter={e => {
-          if (!task.completed) {
-            (e.currentTarget as HTMLButtonElement).style.borderColor = priorityColor;
-            (e.currentTarget as HTMLButtonElement).style.background = priorityColor + '18';
-          }
-        }}
-        onMouseLeave={e => {
-          if (!task.completed) {
-            (e.currentTarget as HTMLButtonElement).style.borderColor = priorityColor + '80';
-            (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
-          }
-        }}
-        aria-label="Toggle task"
-      >
-        {task.completed && (
-          <svg width="8" height="6" viewBox="0 0 8 6" fill="none">
-            <path d="M1 3L3 5L7 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-          </svg>
+      {/* Checkbox with burst animation */}
+      <div style={{ position: 'relative', flexShrink: 0, marginTop: '2px', width: '18px', height: '18px' }}>
+        {/* Mini ripple ring */}
+        {bursting && (
+          <div style={{
+            position: 'absolute', inset: '-5px', borderRadius: '50%',
+            border: `1.5px solid ${priorityColor}`,
+            animation: 'task-mini-ripple 0.5s ease-out forwards',
+            pointerEvents: 'none', zIndex: 9,
+          }} />
         )}
-      </button>
+        {/* Mini burst particles */}
+        {bursting && miniBurstParticles.map(p => {
+          const rad = (p.angle * Math.PI) / 180;
+          const tx = Math.cos(rad) * p.dist;
+          const ty = Math.sin(rad) * p.dist;
+          return (
+            <div key={p.id} style={{
+              position: 'absolute', top: '50%', left: '50%',
+              width: `${p.size}px`, height: `${p.size}px`,
+              borderRadius: p.id % 2 === 0 ? '50%' : '1px',
+              background: p.color,
+              transform: 'translate(-50%, -50%)',
+              animation: `task-mini-burst 0.42s cubic-bezier(0.22,1,0.36,1) forwards`,
+              animationDelay: `${p.id * 10}ms`,
+              '--tx': `${tx}px`,
+              '--ty': `${ty}px`,
+              pointerEvents: 'none', zIndex: 10,
+            } as React.CSSProperties} />
+          );
+        })}
+        <button
+          onClick={handleToggle}
+          className="flex-shrink-0 flex items-center justify-center"
+          style={{
+            width: '18px', height: '18px',
+            borderRadius: '50%',
+            border: `2px solid ${task.completed ? priorityColor : priorityColor + '80'}`,
+            background: task.completed ? priorityColor : 'transparent',
+            flexShrink: 0,
+            animation: bursting ? 'task-mini-pop 0.36s cubic-bezier(0.34,1.56,0.64,1) forwards' : 'none',
+            transition: bursting ? 'none' : 'border-color 0.15s, background 0.15s',
+            position: 'relative', zIndex: 11,
+          }}
+          onMouseEnter={e => {
+            if (!task.completed) {
+              (e.currentTarget as HTMLButtonElement).style.borderColor = priorityColor;
+              (e.currentTarget as HTMLButtonElement).style.background = priorityColor + '18';
+            }
+          }}
+          onMouseLeave={e => {
+            if (!task.completed) {
+              (e.currentTarget as HTMLButtonElement).style.borderColor = priorityColor + '80';
+              (e.currentTarget as HTMLButtonElement).style.background = 'transparent';
+            }
+          }}
+          aria-label="Toggle task"
+        >
+          {task.completed && (
+            <svg
+              width="8" height="6" viewBox="0 0 8 6" fill="none"
+              style={{ animation: 'task-check-icon 0.22s cubic-bezier(0.34,1.56,0.64,1) forwards' }}
+            >
+              <path d="M1 3L3 5L7 1" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          )}
+        </button>
+      </div>
 
       {/* Content */}
       <div className="flex-1 min-w-0 py-0.5">
