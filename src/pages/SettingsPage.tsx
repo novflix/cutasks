@@ -3,6 +3,7 @@ import { Sun, Moon, CloudStorm, Logout, TrashBinMinimalistic } from '@solar-icon
 import type { Theme } from '../hooks/useTheme';
 import { useAuth } from '../context/useAuth';
 import { usePomodoroSettings } from '../hooks/usePomodoroSettings';
+import { useAppSettings } from '../context/AppSettings';
 import type { SortField } from '../hooks/useTaskSort';
 import type { DeletionDelay } from '../hooks/useTaskDeletion';
 
@@ -111,6 +112,7 @@ export const SettingsPage: React.FC<Props> = ({
 }) => {
   const { user, logOut } = useAuth();
   const { settings: pomo, update: updatePomo } = usePomodoroSettings();
+  const { habit, updateHabit } = useAppSettings();
 
   const displayName = user?.displayName ?? user?.email ?? 'User';
   const avatarLetter = user?.displayName?.[0] ?? user?.email?.[0] ?? '?';
@@ -288,6 +290,16 @@ export const SettingsPage: React.FC<Props> = ({
           </SettingRow>
           <SettingRow label="Long break interval" hint="Pomodoros before long break">
             <NumberInput value={pomo.longBreakInterval} min={2} max={10} onChange={v => updatePomo({ longBreakInterval: v })} />
+          </SettingRow>
+        </div>
+      </section>
+
+      {/* Habits */}
+      <section style={{ marginTop: '28px' }}>
+        <SectionLabel>Habits</SectionLabel>
+        <div style={{ background: 'var(--bg-card)', borderRadius: '16px', border: '1px solid var(--border)', padding: '0 16px' }}>
+          <SettingRow label="Show in navigation" hint="Display Habits tab in the sidebar">
+            <Toggle checked={habit.showInNav} onChange={v => updateHabit({ showInNav: v })} />
           </SettingRow>
         </div>
       </section>

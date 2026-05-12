@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { LogoSVG } from './LogoSVG';
-import { ClipboardList, CalendarMinimalistic, Settings, FolderOpen, Logout } from '@solar-icons/react';
+import { ClipboardList, CalendarMinimalistic, Settings, FolderOpen, Logout, Repeat } from '@solar-icons/react';
 import { useAuth } from '../context/useAuth';
-import { usePomodoroSettings } from '../hooks/usePomodoroSettings';
+import { useAppSettings } from '../context/AppSettings';
 
 const TimerIcon: React.FC<{ size?: number }> = ({ size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -18,14 +18,15 @@ interface NavItemDef {
   path: string;
   label: string;
   Icon: React.FC<{ size?: number }>;
-  pomodoro?: boolean;
+  flag?: 'pomodoro' | 'habit';
 }
 
 const BASE_NAV: NavItemDef[] = [
   { path: '/tasks',    label: 'Tasks',    Icon: ClipboardList },
   { path: '/calendar', label: 'Calendar', Icon: CalendarMinimalistic },
   { path: '/projects', label: 'Projects', Icon: FolderOpen },
-  { path: '/pomodoro', label: 'Pomodoro', Icon: TimerIcon, pomodoro: true },
+  { path: '/habits',   label: 'Habits',   Icon: Repeat,     flag: 'habit' },
+  { path: '/pomodoro', label: 'Pomodoro', Icon: TimerIcon,  flag: 'pomodoro' },
   { path: '/settings', label: 'Settings', Icon: Settings },
 ];
 
@@ -36,10 +37,14 @@ interface Props {
 
 export const Sidebar: React.FC<Props> = ({ dark }) => {
   const { user, logOut } = useAuth();
-  const { settings } = usePomodoroSettings();
+  const { pomodoro, habit } = useAppSettings();
   const [loggingOut, setLoggingOut] = useState(false);
 
-  const NAV = BASE_NAV.filter(item => !item.pomodoro || settings.showInNav);
+  const NAV = BASE_NAV.filter(item => {
+    if (item.flag === 'pomodoro') return pomodoro.showInNav;
+    if (item.flag === 'habit')    return habit.showInNav;
+    return true;
+  });
 
   const handleLogout = async () => {
     setLoggingOut(true);

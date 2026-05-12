@@ -8,6 +8,10 @@ export interface PomodoroSettings {
   autoStartPomodoros: boolean;
 }
 
+export interface HabitSettings {
+  showInNav: boolean;
+}
+
 export interface PomodoroContextValue {
   settings: PomodoroSettings;
   update: (patch: Partial<PomodoroSettings>) => void;
