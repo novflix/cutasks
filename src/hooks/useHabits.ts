@@ -1,149 +1,238 @@
-import { useState, useEffect, useCallback } from 'react';
+/**
+ * useHabits – Firebase-backed habit tracker hook.
+ *
+ * Firestore layout: users/{uid}/habits/{habitId}
+ * Each document:
+ *   id, title, emoji, color, frequency ('daily'|'weekly'|number[]),
+ *   targetDays (days of week for weekly, or array index for custom),
+ *   streak, bestStreak, completions: Record<string, true> (keys = 'YYYY-MM-DD'),
+ *   archivedAt, createdAt, order
+ */
+
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
-  collection,
-  onSnapshot,
-  addDoc,
-  updateDoc,
-  deleteDoc,
-  doc,
-  query,
-  orderBy,
-  serverTimestamp,
+  collection, doc, onSnapshot, setDoc, updateDoc,
+  deleteDoc, serverTimestamp, query, orderBy,
+  type Unsubscribe,
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
-import { useAuth } from '../context/useAuth';
 
 export type HabitColor =
-  | 'terracotta' | 'sage' | 'sky' | 'lavender'
-  | 'blush' | 'amber' | 'teal' | 'slate';
+  | 'coral' | 'sage' | 'sky' | 'lavender'
+  | 'amber' | 'teal' | 'blush' | 'slate';
 
-export const HABIT_COLOR_MAP: Record<HabitColor, { dot: string; bg: string; border: string; text: string }> = {
-  terracotta: { dot: '#e07850', bg: 'rgba(224,120,80,0.12)',  border: 'rgba(224,120,80,0.35)', text: '#e07850' },
-  sage:       { dot: '#5ea84e', bg: 'rgba(94,168,78,0.12)',   border: 'rgba(94,168,78,0.35)',  text: '#5ea84e' },
-  sky:        { dot: '#3d96e0', bg: 'rgba(61,150,224,0.12)',  border: 'rgba(61,150,224,0.35)', text: '#3d96e0' },
-  lavender:   { dot: '#9370e0', bg: 'rgba(147,112,224,0.12)', border: 'rgba(147,112,224,0.35)',text: '#9370e0' },
-  blush:      { dot: '#e0546a', bg: 'rgba(224,84,106,0.12)',  border: 'rgba(224,84,106,0.35)', text: '#e0546a' },
-  amber:      { dot: '#d4a030', bg: 'rgba(212,160,48,0.12)',  border: 'rgba(212,160,48,0.35)', text: '#d4a030' },
-  teal:       { dot: '#28b8aa', bg: 'rgba(40,184,170,0.12)',  border: 'rgba(40,184,170,0.35)', text: '#28b8aa' },
-  slate:      { dot: '#6488c0', bg: 'rgba(100,136,192,0.12)', border: 'rgba(100,136,192,0.35)',text: '#6488c0' },
-};
-
-export const HABIT_COLOR_OPTIONS = Object.keys(HABIT_COLOR_MAP) as HabitColor[];
+export type HabitFrequency = 'daily' | number[]; // number[] = days of week (0=Sun)
 
 export interface Habit {
   id: string;
-  name: string;
-  icon: string;
+  title: string;
+  emoji: string;
   color: HabitColor;
-  /** days of week to track: 0=Sun … 6=Sat. Empty = every day */
-  targetDays: number[];
-  /** ISO date strings YYYY-MM-DD that were completed */
-  completions: string[];
-  order: number;
+  frequency: HabitFrequency;
+  /** running streak in days */
+  streak: number;
+  bestStreak: number;
+  /** Record of completed dates 'YYYY-MM-DD' -> true */
+  completions: Record<string, true>;
   createdAt: string;
+  order: number;
+  archivedAt?: string | null;
 }
 
-export type CreateHabitInput = Omit<Habit, 'id' | 'completions' | 'order' | 'createdAt'>;
+export type HabitInput = Omit<Habit, 'id' | 'streak' | 'bestStreak' | 'completions' | 'createdAt' | 'order' | 'archivedAt'>;
 
-/** Today as YYYY-MM-DD in local time */
-export function todayISO(): string {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const COLORS: Record<HabitColor, { dot: string; bg: string; border: string; text: string }> = {
+  coral:    { dot: '#e07850', bg: 'rgba(224,120,80,0.14)',  border: 'rgba(224,120,80,0.35)',  text: '#e07850' },
+  sage:     { dot: '#5ea84e', bg: 'rgba(94,168,78,0.14)',   border: 'rgba(94,168,78,0.35)',   text: '#5ea84e' },
+  sky:      { dot: '#3d96e0', bg: 'rgba(61,150,224,0.14)',  border: 'rgba(61,150,224,0.35)',  text: '#3d96e0' },
+  lavender: { dot: '#9370e0', bg: 'rgba(147,112,224,0.14)', border: 'rgba(147,112,224,0.35)', text: '#9370e0' },
+  amber:    { dot: '#d4a030', bg: 'rgba(212,160,48,0.14)',  border: 'rgba(212,160,48,0.35)',  text: '#d4a030' },
+  teal:     { dot: '#28b8aa', bg: 'rgba(40,184,170,0.14)',  border: 'rgba(40,184,170,0.35)',  text: '#28b8aa' },
+  blush:    { dot: '#e0546a', bg: 'rgba(224,84,106,0.14)',  border: 'rgba(224,84,106,0.35)',  text: '#e0546a' },
+  slate:    { dot: '#6488c0', bg: 'rgba(100,136,192,0.14)', border: 'rgba(100,136,192,0.35)', text: '#6488c0' },
+};
+
+export function habitColorTokens(color: HabitColor) {
+  return COLORS[color] ?? COLORS.coral;
 }
 
-/** Returns the last N days as YYYY-MM-DD strings, oldest first */
-export function lastNDays(n: number): string[] {
+// ── Date utils ─────────────────────────────────────────────────────────────────
+
+export function toDateKey(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
+
+export function getTodayKey(): string {
+  return toDateKey(new Date());
+}
+
+/** Returns last N days as 'YYYY-MM-DD' keys, most recent first */
+export function getLastNDays(n: number): string[] {
   const days: string[] = [];
-  for (let i = n - 1; i >= 0; i--) {
-    const d = new Date();
+  const now = new Date();
+  for (let i = 0; i < n; i++) {
+    const d = new Date(now);
     d.setDate(d.getDate() - i);
-    days.push(`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`);
+    days.push(toDateKey(d));
   }
   return days;
 }
 
-/** Current streak: consecutive completed days ending today (or yesterday) */
-export function calcStreak(completions: string[], targetDays: number[]): number {
-  const set = new Set(completions);
-  let streak = 0;
-  let i = 0;
-  while (true) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    const dayOfWeek = d.getDay();
-    const isTarget = targetDays.length === 0 || targetDays.includes(dayOfWeek);
-    if (isTarget) {
-      if (set.has(iso)) {
+/** Compute current streak from completions */
+function computeStreak(completions: Record<string, true>, frequency: HabitFrequency): number {
+  if (frequency === 'daily') {
+    let streak = 0;
+    const today = new Date();
+    // allow today or yesterday to count as "current"
+    for (let i = 0; i < 365; i++) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      const key = toDateKey(d);
+      if (completions[key]) {
         streak++;
-      } else if (i === 0) {
-        // today not yet done — don't break streak if yesterday was done
-        i++;
-        continue;
       } else {
+        // allow one gap (today not yet completed)
+        if (i === 0) continue;
         break;
       }
     }
-    i++;
-    if (i > 365) break;
+    return streak;
+  }
+  // For weekly frequency – count consecutive weeks
+  const days = frequency as number[];
+  let streak = 0;
+  const today = new Date();
+  // go back week by week
+  for (let w = 0; w < 52; w++) {
+    const weekStart = new Date(today);
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay() - w * 7);
+    let weekDone = false;
+    for (const day of days) {
+      const d = new Date(weekStart);
+      d.setDate(weekStart.getDate() + day);
+      if (d <= today && completions[toDateKey(d)]) {
+        weekDone = true;
+        break;
+      }
+    }
+    if (weekDone) streak++;
+    else if (w > 0) break; // current week can still be done
   }
   return streak;
 }
 
-export function useHabits() {
-  const { user } = useAuth();
+/** Is this habit scheduled for today? */
+export function isScheduledToday(habit: Habit): boolean {
+  if (habit.frequency === 'daily') return true;
+  const dow = new Date().getDay();
+  return (habit.frequency as number[]).includes(dow);
+}
+
+// ── Hook ───────────────────────────────────────────────────────────────────────
+
+export function useHabits(uid: string | null) {
   const [habits, setHabits] = useState<Habit[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !!uid);
+  const unsubRef = useRef<Unsubscribe | null>(null);
+  const prevUidRef = useRef<string | null | undefined>(undefined);
 
   useEffect(() => {
-    if (!user) {
-      // Schedule state updates as callbacks, not synchronously in the effect body
-      Promise.resolve().then(() => {
-        setHabits([]);
-        setLoading(false);
-      });
+    // When uid disappears (logout), reset state.
+    // Wrap in setTimeout to avoid synchronous setState inside effect body.
+    if (!uid) {
+      if (prevUidRef.current !== uid) {
+        prevUidRef.current = uid;
+        const t = setTimeout(() => { setHabits([]); setLoading(false); }, 0);
+        return () => clearTimeout(t);
+      }
       return;
     }
-    const ref = collection(db, 'users', user.uid, 'habits');
+    prevUidRef.current = uid;
+
+    const ref = collection(db, 'users', uid, 'habits');
     const q = query(ref, orderBy('order', 'asc'));
-    const unsub = onSnapshot(q, snap => {
-      setHabits(snap.docs.map(d => ({ id: d.id, ...d.data() } as Habit)));
+
+    unsubRef.current = onSnapshot(q, (snap) => {
+      const list: Habit[] = snap.docs.map(d => {
+        const data = d.data();
+        const completions = (data.completions ?? {}) as Record<string, true>;
+        const freq: HabitFrequency = data.frequency === 'daily' ? 'daily' : (data.frequency ?? 'daily');
+        const streak = computeStreak(completions, freq);
+        return {
+          id: d.id,
+          title: data.title ?? '',
+          emoji: data.emoji ?? '✨',
+          color: (data.color ?? 'coral') as HabitColor,
+          frequency: freq,
+          streak,
+          bestStreak: Math.max(data.bestStreak ?? 0, streak),
+          completions,
+          createdAt: data.createdAt ?? new Date().toISOString(),
+          order: data.order ?? 0,
+          archivedAt: data.archivedAt ?? null,
+        };
+      });
+      setHabits(list);
       setLoading(false);
     }, () => setLoading(false));
-    return unsub;
-  }, [user]);
 
-  const addHabit = useCallback(async (input: CreateHabitInput) => {
-    if (!user) return;
+    return () => { unsubRef.current?.(); };
+  }, [uid]);
+
+  // ── CRUD ──────────────────────────────────────────────────────────────────
+
+  const addHabit = useCallback(async (input: HabitInput) => {
+    if (!uid) return;
+    const id = crypto.randomUUID();
     const order = habits.length;
-    await addDoc(collection(db, 'users', user.uid, 'habits'), {
+    await setDoc(doc(db, 'users', uid, 'habits', id), {
       ...input,
-      completions: [],
-      order,
+      frequency: input.frequency,
+      streak: 0,
+      bestStreak: 0,
+      completions: {},
       createdAt: new Date().toISOString(),
+      order,
+      archivedAt: null,
       _ts: serverTimestamp(),
     });
-  }, [user, habits.length]);
+  }, [uid, habits.length]);
 
   const updateHabit = useCallback(async (id: string, patch: Partial<Omit<Habit, 'id'>>) => {
-    if (!user) return;
-    await updateDoc(doc(db, 'users', user.uid, 'habits', id), { ...patch, _ts: serverTimestamp() });
-  }, [user]);
+    if (!uid) return;
+    await updateDoc(doc(db, 'users', uid, 'habits', id), {
+      ...patch,
+      _ts: serverTimestamp(),
+    });
+  }, [uid]);
 
   const deleteHabit = useCallback(async (id: string) => {
-    if (!user) return;
-    await deleteDoc(doc(db, 'users', user.uid, 'habits', id));
-  }, [user]);
+    if (!uid) return;
+    await deleteDoc(doc(db, 'users', uid, 'habits', id));
+  }, [uid]);
 
-  const toggleCompletion = useCallback(async (id: string, date: string) => {
-    if (!user) return;
+  const toggleCompletion = useCallback(async (id: string, dateKey: string) => {
+    if (!uid) return;
     const habit = habits.find(h => h.id === id);
     if (!habit) return;
-    const completions = habit.completions.includes(date)
-      ? habit.completions.filter(d => d !== date)
-      : [...habit.completions, date];
-    await updateDoc(doc(db, 'users', user.uid, 'habits', id), { completions, _ts: serverTimestamp() });
-  }, [user, habits]);
+
+    const newCompletions = { ...habit.completions };
+    if (newCompletions[dateKey]) {
+      delete newCompletions[dateKey];
+    } else {
+      newCompletions[dateKey] = true;
+    }
+
+    const newStreak = computeStreak(newCompletions, habit.frequency);
+    const newBest = Math.max(habit.bestStreak, newStreak);
+
+    await updateDoc(doc(db, 'users', uid, 'habits', id), {
+      completions: newCompletions,
+      streak: newStreak,
+      bestStreak: newBest,
+      _ts: serverTimestamp(),
+    });
+  }, [uid, habits]);
 
   return { habits, loading, addHabit, updateHabit, deleteHabit, toggleCompletion };
 }

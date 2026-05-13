@@ -5,11 +5,11 @@
  *   th  – theme:         'l' | 'd' | 's'  (light / dark / slate)
  *   sf  – sort field:    'c' | 'p' | 'dl' (createdAt / priority / deadline)
  *   dd  – deletion delay:'i' | '1' | '3'  (immediate / 24h / 3d)
- *   pm  – pomodoro:      compact object
- *   hb  – habits:        compact object
- *   _ts – last updated:  server timestamp
+ *   pm  – pomodoro:      compact number-encoded object (see below)
+ *   hn  – habitShowInNav: 0 | 1
+ *   _ts – last updated:  server timestamp (conflict resolution)
  *
- * Pomodoro packed (pm):
+ * Pomodoro packed as a single object with short keys:
  *   w   – workDuration       (number)
  *   s   – shortBreak         (number)
  *   l   – longBreak          (number)
@@ -18,8 +18,11 @@
  *   ab  – autoStartBreaks    (0 | 1)
  *   ap  – autoStartPomodoros (0 | 1)
  *
- * Habits packed (hb):
- *   sn  – showInNav (0 | 1)
+ * Strategy:
+ *   1. On mount: read localStorage for instant UI.
+ *   2. Subscribe to Firestore (onSnapshot) – remote wins when _ts > local _ts.
+ *   3. On change: write localStorage immediately + debounce Firestore write.
+ *   4. On logout: unsubscribe.
  */
 
 import { useEffect, useRef, useCallback } from 'react';
@@ -34,14 +37,17 @@ import { db } from '../firebase/config';
 import type { Theme } from './useTheme';
 import type { SortField } from './useTaskSort';
 import type { DeletionDelay } from './useTaskDeletion';
-import type { PomodoroSettings, HabitSettings } from '../context/pomodoroContextValue';
+import type { PomodoroSettings } from '../context/pomodoroContextValue';
 
+// ─── Local-storage keys (unchanged to preserve existing local data) ───────────
 const LS_THEME   = 'cutasks-theme';
 const LS_SORT    = 'cutasks_sort';
 const LS_DEL     = 'cutasks-deletion-delay';
 const LS_POMO    = 'cutasks-pomodoro-settings';
-const LS_HABIT   = 'cutasks-habit-settings';
-const LS_SYNC_TS = 'cutasks-settings-ts';
+const LS_HABIT_NAV = 'cutasks-habit-show-in-nav';
+const LS_SYNC_TS = 'cutasks-settings-ts'; // last synced remote timestamp (ms)
+
+// ─── Compact encode / decode ──────────────────────────────────────────────────
 
 type CompactDoc = {
   th?: string;
@@ -51,23 +57,23 @@ type CompactDoc = {
     w?: number; s?: number; l?: number; li?: number;
     sn?: 0 | 1; ab?: 0 | 1; ap?: 0 | 1;
   };
-  hb?: { sn?: 0 | 1 };
-  _ts?: unknown;
+  hn?: 0 | 1;
+  _ts?: unknown; // serverTimestamp
 };
 
-const THEME_ENC: Record<Theme, string>         = { light: 'l', dark: 'd', slate: 's' };
-const THEME_DEC: Record<string, Theme>         = { l: 'light', d: 'dark', s: 'slate' };
-const SORT_ENC:  Record<SortField, string>     = { createdAt: 'c', priority: 'p', deadline: 'dl' };
-const SORT_DEC:  Record<string, SortField>     = { c: 'createdAt', p: 'priority', dl: 'deadline' };
-const DEL_ENC:   Record<DeletionDelay, string> = { immediate: 'i', '24h': '1', '3d': '3' };
-const DEL_DEC:   Record<string, DeletionDelay> = { i: 'immediate', '1': '24h', '3': '3d' };
+const THEME_ENC: Record<Theme, string>          = { light: 'l', dark: 'd', slate: 's' };
+const THEME_DEC: Record<string, Theme>          = { l: 'light', d: 'dark', s: 'slate' };
+const SORT_ENC:  Record<SortField, string>      = { createdAt: 'c', priority: 'p', deadline: 'dl' };
+const SORT_DEC:  Record<string, SortField>      = { c: 'createdAt', p: 'priority', dl: 'deadline' };
+const DEL_ENC:   Record<DeletionDelay, string>  = { immediate: 'i', '24h': '1', '3d': '3' };
+const DEL_DEC:   Record<string, DeletionDelay>  = { i: 'immediate', '1': '24h', '3': '3d' };
 
 export interface AllSettings {
   theme: Theme;
   sortField: SortField;
   deletionDelay: DeletionDelay;
   pomodoro: PomodoroSettings;
-  habit: HabitSettings;
+  habitShowInNav: boolean;
 }
 
 const POMO_DEFAULTS: PomodoroSettings = {
@@ -76,19 +82,18 @@ const POMO_DEFAULTS: PomodoroSettings = {
   autoStartBreaks: false, autoStartPomodoros: false,
 };
 
-const HABIT_DEFAULTS: HabitSettings = { showInNav: true };
-
 function readLocal(): AllSettings {
   let theme: Theme = 'dark';
   let sortField: SortField = 'createdAt';
   let deletionDelay: DeletionDelay = '24h';
   let pomodoro: PomodoroSettings = { ...POMO_DEFAULTS };
-  let habit: HabitSettings = { ...HABIT_DEFAULTS };
+  let habitShowInNav = true;
 
   try {
     const t = localStorage.getItem(LS_THEME);
     if (t === 'light' || t === 'dark' || t === 'slate') theme = t;
-    else theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    else if (window.matchMedia('(prefers-color-scheme: dark)').matches) theme = 'dark';
+    else theme = 'light';
   } catch { /* ignore */ }
 
   try {
@@ -107,11 +112,11 @@ function readLocal(): AllSettings {
   } catch { /* ignore */ }
 
   try {
-    const hb = localStorage.getItem(LS_HABIT);
-    if (hb) habit = { ...HABIT_DEFAULTS, ...JSON.parse(hb) };
+    const hn = localStorage.getItem(LS_HABIT_NAV);
+    if (hn === 'false') habitShowInNav = false;
   } catch { /* ignore */ }
 
-  return { theme, sortField, deletionDelay, pomodoro, habit };
+  return { theme, sortField, deletionDelay, pomodoro, habitShowInNav };
 }
 
 function writeLocal(s: AllSettings) {
@@ -120,33 +125,32 @@ function writeLocal(s: AllSettings) {
     localStorage.setItem(LS_SORT, JSON.stringify({ field: s.sortField }));
     localStorage.setItem(LS_DEL, s.deletionDelay);
     localStorage.setItem(LS_POMO, JSON.stringify(s.pomodoro));
-    localStorage.setItem(LS_HABIT, JSON.stringify(s.habit));
+    localStorage.setItem(LS_HABIT_NAV, String(s.habitShowInNav));
   } catch { /* ignore */ }
 }
 
 function encode(s: AllSettings): CompactDoc {
   const pm = s.pomodoro;
   return {
-    th: THEME_ENC[s.theme]       ?? 'd',
-    sf: SORT_ENC[s.sortField]    ?? 'c',
-    dd: DEL_ENC[s.deletionDelay] ?? '1',
+    th: THEME_ENC[s.theme]        ?? 'd',
+    sf: SORT_ENC[s.sortField]     ?? 'c',
+    dd: DEL_ENC[s.deletionDelay]  ?? '1',
     pm: {
       w:  pm.workDuration,
       s:  pm.shortBreak,
       l:  pm.longBreak,
       li: pm.longBreakInterval,
-      sn: pm.showInNav          ? 1 : 0,
-      ab: pm.autoStartBreaks    ? 1 : 0,
+      sn: pm.showInNav        ? 1 : 0,
+      ab: pm.autoStartBreaks  ? 1 : 0,
       ap: pm.autoStartPomodoros ? 1 : 0,
     },
-    hb: { sn: s.habit.showInNav ? 1 : 0 },
+    hn: s.habitShowInNav ? 1 : 0,
     _ts: serverTimestamp(),
   };
 }
 
 function decode(data: CompactDoc): AllSettings {
   const pm = data.pm ?? {};
-  const hb = data.hb ?? {};
   return {
     theme:         THEME_DEC[data.th ?? ''] ?? 'dark',
     sortField:     SORT_DEC[data.sf ?? '']  ?? 'createdAt',
@@ -160,19 +164,24 @@ function decode(data: CompactDoc): AllSettings {
       autoStartBreaks:     pm.ab === 1,
       autoStartPomodoros:  pm.ap === 1,
     },
-    habit: {
-      showInNav: hb.sn !== 0, // default true
-    },
+    habitShowInNav: data.hn !== 0,
   };
 }
 
+// ─── Hook ─────────────────────────────────────────────────────────────────────
+
 type OnRemoteUpdate = (settings: AllSettings) => void;
 
+/**
+ * Call once per authenticated session.
+ * Returns a `push` function to call whenever any setting changes.
+ */
 export function useSettingsSync(uid: string | null, onRemoteUpdate: OnRemoteUpdate) {
-  const unsubRef  = useRef<Unsubscribe | null>(null);
-  const timerRef  = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const latestRef = useRef<AllSettings>(readLocal());
+  const unsubRef   = useRef<Unsubscribe | null>(null);
+  const timerRef   = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const latestRef  = useRef<AllSettings>(readLocal());
 
+  // Debounced Firestore write (300 ms)
   const push = useCallback((settings: AllSettings) => {
     latestRef.current = settings;
     writeLocal(settings);
@@ -190,20 +199,27 @@ export function useSettingsSync(uid: string | null, onRemoteUpdate: OnRemoteUpda
     }, 300);
   }, [uid]);
 
+  // Subscribe to remote changes
   useEffect(() => {
     if (!uid) return;
+
     const ref = doc(db, 'users', uid, 'settings', 'prefs');
 
     unsubRef.current = onSnapshot(ref, (snap) => {
       if (!snap.exists()) {
+        // First login on this account – push local settings to cloud
         push(latestRef.current);
         return;
       }
+
       const data = snap.data() as CompactDoc;
+
+      // Compare remote timestamp vs last known local sync timestamp
       const remoteMs: number =
         (data._ts as { toMillis?: () => number } | null)?.toMillis?.() ?? 0;
-      const localMs = parseInt(localStorage.getItem(LS_SYNC_TS) ?? '0', 10);
+      const localMs  = parseInt(localStorage.getItem(LS_SYNC_TS) ?? '0', 10);
 
+      // Only apply remote if it is newer than our last write
       if (remoteMs > localMs) {
         const decoded = decode(data);
         writeLocal(decoded);

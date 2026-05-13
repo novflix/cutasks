@@ -8,7 +8,7 @@ import { SettingsPage } from './pages/SettingsPage';
 import { ProjectsPage } from './pages/ProjectsPage';
 import { ProjectDetailPage } from './pages/ProjectDetailPage';
 import { PomodoroPage } from './pages/PomodoroPage';
-import { HabitPage } from './pages/HabitPage';
+import { HabitsPage } from './pages/HabitsPage';
 import { AuthPage } from './pages/AuthPage';
 import { NotFoundPage } from './pages/NotFoundPage';
 import { useTaskDeletionCleanup } from './hooks/useTaskDeletion';
@@ -55,7 +55,7 @@ function AppInner() {
             <Route path="/projects"               element={<ProjectsPage />} />
             <Route path="/projects/:projectId"    element={<ProjectDetailPage />} />
             <Route path="/pomodoro"               element={<PomodoroPage />} />
-            <Route path="/habits"                 element={<HabitPage />} />
+            <Route path="/habits"                 element={<HabitsPage />} />
             <Route path="/settings"               element={
               <SettingsPage
                 theme={theme}
