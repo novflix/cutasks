@@ -12,7 +12,6 @@ import {
   type HabitFrequency,
 } from '../hooks/useHabits';
 
-// ── Solar Icons (all from main package) ──────────────────────────────────────
 import {
   AddCircle,
   CheckCircle,
@@ -27,7 +26,6 @@ import {
   Leaf,
   Flame,
   Fire,
-  MedalRibbonStar,
   MedalStar,
   HeartShine,
   Star,
@@ -44,7 +42,7 @@ import {
   type IconProps,
 } from '@solar-icons/react';
 
-// ── Icon Picker ───────────────────────────────────────────────────────────────
+// ─── Icon system ────────────────────────────────────────────────────────────
 
 type IconComponent = React.ComponentType<IconProps>;
 
@@ -54,7 +52,6 @@ interface HabitIconOption {
   label: string;
 }
 
-// Declared at module level — never recreated during render
 const HABIT_ICONS: HabitIconOption[] = [
   { key: 'running',     component: Running,      label: 'Running'     },
   { key: 'dumbbell',   component: Dumbbell,     label: 'Fitness'     },
@@ -82,7 +79,6 @@ function getIconComponent(key: string): IconComponent {
   return HABIT_ICONS.find(i => i.key === key)?.component ?? Target;
 }
 
-// Stable named component — avoids "component created during render" lint error
 function HabitIcon({ iconKey, size, color, weight }: {
   iconKey: string;
   size?: number;
@@ -93,7 +89,7 @@ function HabitIcon({ iconKey, size, color, weight }: {
   return React.createElement(Ic, { size, color, weight });
 }
 
-// ── Constants ─────────────────────────────────────────────────────────────────
+// ─── Constants ──────────────────────────────────────────────────────────────
 
 const COLORS: { value: HabitColor; label: string }[] = [
   { value: 'coral',    label: 'Coral'    },
@@ -106,10 +102,15 @@ const COLORS: { value: HabitColor; label: string }[] = [
   { value: 'slate',    label: 'Slate'    },
 ];
 
-const DAY_LABELS      = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const DAY_LABELS_SHORT = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+// Mon-first week order: 1=Mon … 6=Sat, 0=Sun at end
+const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0];
+const DAY_SHORT  = ['S', 'M', 'T', 'W', 'T', 'F', 'S']; // indexed by JS getDay()
+const DAY_FULL   = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-// ── Habit Modal ───────────────────────────────────────────────────────────────
+// Chronological last-7 (oldest first, today last)
+const LAST_7_CHRON = [...getLastNDays(7)].reverse();
+
+// ─── Habit Modal ─────────────────────────────────────────────────────────────
 
 interface ModalProps {
   onClose: () => void;
@@ -118,11 +119,10 @@ interface ModalProps {
 }
 
 const HabitModal: React.FC<ModalProps> = ({ onClose, onSave, initial }) => {
-  // The `emoji` field in Habit stores the iconKey string
-  const [title,   setTitle]   = useState(initial?.title ?? '');
-  const [iconKey, setIconKey] = useState<string>(initial?.emoji ?? 'target');
-  const [color,   setColor]   = useState<HabitColor>(initial?.color ?? 'coral');
-  const [freq,    setFreq]    = useState<'daily' | 'weekly'>(
+  const [title,    setTitle]    = useState(initial?.title ?? '');
+  const [iconKey,  setIconKey]  = useState(initial?.emoji ?? 'target');
+  const [color,    setColor]    = useState<HabitColor>(initial?.color ?? 'coral');
+  const [freq,     setFreq]     = useState<'daily' | 'weekly'>(
     initial ? (initial.frequency === 'daily' ? 'daily' : 'weekly') : 'daily'
   );
   const [days, setDays] = useState<number[]>(
@@ -133,9 +133,8 @@ const HabitModal: React.FC<ModalProps> = ({ onClose, onSave, initial }) => {
 
   useEffect(() => { titleRef.current?.focus(); }, []);
 
-  const toggleDay = (d: number) => {
+  const toggleDay = (d: number) =>
     setDays(prev => prev.includes(d) ? prev.filter(x => x !== d) : [...prev, d].sort());
-  };
 
   const handleSave = () => {
     if (!title.trim()) return;
@@ -144,95 +143,153 @@ const HabitModal: React.FC<ModalProps> = ({ onClose, onSave, initial }) => {
     onClose();
   };
 
-  const tokens = habitColorTokens(color);
+  const tk = habitColorTokens(color);
 
   return (
     <div
-      style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center', animation: 'fadeIn 0.18s ease' }}
+      className="fixed inset-0 z-[200] flex items-end justify-center"
+      style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)', animation: 'hFadeIn 0.18s ease' }}
       onClick={e => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div style={{ width: '100%', maxWidth: '480px', background: 'var(--bg-card)', borderRadius: '28px 28px 0 0', padding: '8px 20px 36px', animation: 'slideUp 0.28s cubic-bezier(0.34,1.2,0.64,1)', maxHeight: '90dvh', overflowY: 'auto', boxShadow: '0 -4px 40px rgba(0,0,0,0.15)' }}>
-        {/* Handle */}
-        <div style={{ width: '40px', height: '4px', borderRadius: '2px', background: 'var(--border)', margin: '12px auto 20px' }} />
+      <div
+        className="w-full overflow-y-auto"
+        style={{
+          maxWidth: 480,
+          background: 'var(--bg-card)',
+          borderRadius: '28px 28px 0 0',
+          padding: '0 20px 40px',
+          maxHeight: '90dvh',
+          boxShadow: '0 -8px 48px rgba(0,0,0,0.18)',
+          animation: 'hSlideUp 0.3s cubic-bezier(0.34,1.15,0.64,1)',
+        }}
+      >
+        <div className="mx-auto mt-3 mb-5 rounded-full" style={{ width: 36, height: 4, background: 'var(--border)' }} />
 
-        {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-          <h2 style={{ fontFamily: '"Fraunces", serif', fontSize: '1.4rem', fontWeight: 500, color: 'var(--text-main)' }}>
+        <div className="flex items-center justify-between mb-6">
+          <h2 style={{ fontFamily: '"Fraunces", serif', fontSize: '1.35rem', fontWeight: 500, color: 'var(--text-main)' }}>
             {initial ? 'Edit habit' : 'New habit'}
           </h2>
-          <button onClick={onClose} style={{ width: '34px', height: '34px', borderRadius: '50%', border: '1.5px solid var(--border)', background: 'var(--bg-panel)', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-            <CloseCircle size={18} weight="Bold" />
+          <button
+            onClick={onClose}
+            className="flex items-center justify-center rounded-full transition-opacity hover:opacity-70"
+            style={{ width: 32, height: 32, border: '1.5px solid var(--border)', background: 'var(--bg-panel)', color: 'var(--text-muted)', cursor: 'pointer' }}
+          >
+            <CloseCircle size={17} weight="Bold" />
           </button>
         </div>
 
-        {/* Icon + Title */}
-        <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', alignItems: 'flex-start' }}>
-          <div style={{ position: 'relative', flexShrink: 0 }}>
+        {/* Icon + Name */}
+        <div className="flex gap-3 items-start mb-5">
+          <div className="relative flex-shrink-0">
             <button
               onClick={() => setShowIcons(v => !v)}
-              style={{ width: '52px', height: '52px', borderRadius: '16px', border: `2px solid ${tokens.border}`, background: tokens.bg, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'box-shadow 0.15s', boxShadow: showIcons ? `0 0 0 3px ${tokens.dot}33` : 'none' }}
+              className="flex items-center justify-center rounded-2xl transition-all"
+              style={{
+                width: 50, height: 50, cursor: 'pointer',
+                background: tk.bg, border: `2px solid ${tk.border}`,
+                boxShadow: showIcons ? `0 0 0 3px ${tk.dot}28` : 'none',
+              }}
             >
-              <HabitIcon iconKey={iconKey} size={24} color={tokens.dot} weight="Bold" />
+              <HabitIcon iconKey={iconKey} size={22} color={tk.dot} weight="Bold" />
             </button>
-
             {showIcons && (
-              <div style={{ position: 'absolute', top: '58px', left: 0, zIndex: 20, background: 'var(--bg-card)', border: '1.5px solid var(--border)', borderRadius: '20px', padding: '12px', display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px', boxShadow: '0 12px 32px rgba(0,0,0,0.18)', width: '220px' }}>
+              <div
+                className="absolute top-14 left-0 z-20 grid"
+                style={{
+                  gridTemplateColumns: 'repeat(5, 1fr)', gap: 6, padding: 10, width: 210,
+                  background: 'var(--bg-card)', border: '1.5px solid var(--border)',
+                  borderRadius: 18, boxShadow: '0 16px 40px rgba(0,0,0,0.18)',
+                }}
+              >
                 {HABIT_ICONS.map(({ key, label }) => (
                   <button
-                    key={key}
+                    key={key} title={label}
                     onClick={() => { setIconKey(key); setShowIcons(false); }}
-                    title={label}
-                    style={{ width: '36px', height: '36px', borderRadius: '10px', border: iconKey === key ? `1.5px solid ${tokens.dot}` : '1.5px solid transparent', background: iconKey === key ? tokens.bg : 'var(--bg-panel)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.12s' }}
+                    className="flex items-center justify-center rounded-xl transition-all"
+                    style={{
+                      width: 34, height: 34, cursor: 'pointer',
+                      background: iconKey === key ? tk.bg : 'var(--bg-panel)',
+                      border: iconKey === key ? `1.5px solid ${tk.dot}` : '1.5px solid transparent',
+                    }}
                   >
-                    <HabitIcon iconKey={key} size={18} color={iconKey === key ? tokens.dot : 'var(--text-muted)'} weight="Bold" />
+                    <HabitIcon iconKey={key} size={16} color={iconKey === key ? tk.dot : 'var(--text-muted)'} weight="Bold" />
                   </button>
                 ))}
               </div>
             )}
           </div>
-
           <input
             ref={titleRef}
             value={title}
             onChange={e => setTitle(e.target.value)}
-            placeholder="Habit name..."
-            style={{ flex: 1, padding: '14px 16px', borderRadius: '16px', border: '1.5px solid var(--border)', outline: 'none', background: 'var(--bg-panel)', color: 'var(--text-main)', fontFamily: '"DM Sans", sans-serif', fontSize: '0.95rem', transition: 'border-color 0.15s, box-shadow 0.15s', WebkitUserSelect: 'text', userSelect: 'text' }}
-            onFocus={e => { e.currentTarget.style.borderColor = tokens.dot; e.currentTarget.style.boxShadow = `0 0 0 3px ${tokens.dot}22`; }}
+            onKeyDown={e => { if (e.key === 'Enter') handleSave(); }}
+            placeholder="Habit name…"
+            className="flex-1 rounded-2xl text-sm outline-none transition-all"
+            style={{
+              padding: '13px 16px',
+              background: 'var(--bg-panel)', border: '1.5px solid var(--border)',
+              color: 'var(--text-main)', fontFamily: '"DM Sans", sans-serif',
+              WebkitUserSelect: 'text', userSelect: 'text',
+            }}
+            onFocus={e => { e.currentTarget.style.borderColor = tk.dot; e.currentTarget.style.boxShadow = `0 0 0 3px ${tk.dot}1e`; }}
             onBlur={e  => { e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'none'; }}
           />
         </div>
 
         {/* Color */}
-        <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', marginBottom: '10px' }}>Color</label>
-        <div style={{ display: 'flex', gap: '10px', marginBottom: '22px', flexWrap: 'wrap' }}>
+        <p className="mb-2.5 text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)', fontFamily: '"DM Sans", sans-serif' }}>Color</p>
+        <div className="flex flex-wrap gap-2.5 mb-6">
           {COLORS.map(c => {
-            const t = habitColorTokens(c.value);
+            const ct = habitColorTokens(c.value);
             return (
-              <button key={c.value} onClick={() => setColor(c.value)} title={c.label}
-                style={{ width: '30px', height: '30px', borderRadius: '50%', background: t.dot, border: color === c.value ? `3px solid var(--text-main)` : '3px solid transparent', cursor: 'pointer', outline: 'none', boxShadow: color === c.value ? `0 0 0 2px ${t.dot}55` : 'none', transition: 'transform 0.15s, border-color 0.15s', transform: color === c.value ? 'scale(1.2)' : 'scale(1)' }}
+              <button key={c.value} title={c.label} onClick={() => setColor(c.value)}
+                className="rounded-full transition-all"
+                style={{
+                  width: 28, height: 28, cursor: 'pointer',
+                  background: ct.dot,
+                  border: color === c.value ? `3px solid var(--text-main)` : '3px solid transparent',
+                  boxShadow: color === c.value ? `0 0 0 2px ${ct.dot}55` : 'none',
+                  transform: color === c.value ? 'scale(1.2)' : 'scale(1)',
+                }}
               />
             );
           })}
         </div>
 
         {/* Frequency */}
-        <label style={{ display: 'block', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', marginBottom: '10px' }}>Frequency</label>
-        <div style={{ display: 'flex', gap: '8px', marginBottom: freq === 'weekly' ? '14px' : '28px' }}>
+        <p className="mb-2.5 text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)', fontFamily: '"DM Sans", sans-serif' }}>Frequency</p>
+        <div className="flex gap-2" style={{ marginBottom: freq === 'weekly' ? 14 : 28 }}>
           {(['daily', 'weekly'] as const).map(f => (
             <button key={f} onClick={() => setFreq(f)}
-              style={{ flex: 1, padding: '11px', borderRadius: '14px', cursor: 'pointer', border: freq === f ? `1.5px solid ${tokens.dot}` : '1.5px solid var(--border)', background: freq === f ? tokens.bg : 'var(--bg-panel)', color: freq === f ? tokens.dot : 'var(--text-muted)', fontFamily: '"DM Sans", sans-serif', fontWeight: 600, fontSize: '0.85rem', transition: 'all 0.15s', textTransform: 'capitalize' }}
+              className="flex-1 rounded-xl font-semibold text-sm capitalize transition-all"
+              style={{
+                padding: '11px 0', cursor: 'pointer',
+                background: freq === f ? tk.bg : 'var(--bg-panel)',
+                border: freq === f ? `1.5px solid ${tk.dot}` : '1.5px solid var(--border)',
+                color: freq === f ? tk.dot : 'var(--text-muted)',
+                fontFamily: '"DM Sans", sans-serif',
+              }}
             >{f}</button>
           ))}
         </div>
 
         {freq === 'weekly' && (
-          <div style={{ display: 'flex', gap: '6px', marginBottom: '28px' }}>
-            {DAY_LABELS_SHORT.map((d, i) => {
-              const on = days.includes(i);
+          <div className="flex gap-1.5 mb-7">
+            {WEEK_ORDER.map(dow => {
+              const on = days.includes(dow);
               return (
-                <button key={i} onClick={() => toggleDay(i)}
-                  style={{ flex: 1, height: '38px', borderRadius: '12px', cursor: 'pointer', border: on ? `1.5px solid ${tokens.dot}` : '1.5px solid var(--border)', background: on ? tokens.dot : 'var(--bg-panel)', color: on ? '#fff' : 'var(--text-muted)', fontFamily: '"DM Sans", sans-serif', fontWeight: 700, fontSize: '0.75rem', transition: 'all 0.15s' }}
-                >{d}</button>
+                <button key={dow} onClick={() => toggleDay(dow)}
+                  className="flex-1 rounded-xl font-bold text-xs transition-all"
+                  style={{
+                    height: 38, cursor: 'pointer',
+                    background: on ? tk.dot : 'var(--bg-panel)',
+                    border: on ? `1.5px solid ${tk.dot}` : '1.5px solid var(--border)',
+                    color: on ? '#fff' : 'var(--text-muted)',
+                    fontFamily: '"DM Sans", sans-serif',
+                  }}
+                >
+                  {DAY_SHORT[dow]}
+                </button>
               );
             })}
           </div>
@@ -241,9 +298,18 @@ const HabitModal: React.FC<ModalProps> = ({ onClose, onSave, initial }) => {
         <button
           onClick={handleSave}
           disabled={!title.trim()}
-          style={{ width: '100%', padding: '15px', borderRadius: '18px', border: 'none', background: title.trim() ? tokens.dot : 'var(--border)', color: '#fff', fontFamily: '"DM Sans", sans-serif', fontWeight: 700, fontSize: '0.95rem', cursor: title.trim() ? 'pointer' : 'not-allowed', transition: 'opacity 0.15s', letterSpacing: '0.02em' }}
-          onMouseEnter={e => { if (title.trim()) (e.currentTarget as HTMLButtonElement).style.opacity = '0.88'; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.opacity = '1'; }}
+          className="w-full rounded-2xl font-bold tracking-wide transition-all"
+          style={{
+            padding: '15px 0',
+            background: title.trim() ? tk.dot : 'var(--border)',
+            color: '#fff',
+            border: 'none',
+            fontFamily: '"DM Sans", sans-serif',
+            fontSize: '0.9rem',
+            cursor: title.trim() ? 'pointer' : 'not-allowed',
+          }}
+          onMouseEnter={e => { if (title.trim()) (e.currentTarget as HTMLElement).style.opacity = '0.85'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}
         >
           {initial ? 'Save changes' : 'Create habit'}
         </button>
@@ -252,7 +318,7 @@ const HabitModal: React.FC<ModalProps> = ({ onClose, onSave, initial }) => {
   );
 };
 
-// ── Habit Card ─────────────────────────────────────────────────────────────────
+// ─── Habit Card ───────────────────────────────────────────────────────────────
 
 interface CardProps {
   habit:    Habit;
@@ -261,109 +327,180 @@ interface CardProps {
   onDelete: () => void;
 }
 
-const LAST_7 = getLastNDays(7).reverse();
-
 const HabitCard: React.FC<CardProps> = ({ habit, onToggle, onEdit, onDelete }) => {
-  const tokens         = habitColorTokens(habit.color);
-  const todayKey       = getTodayKey();
-  const completedToday = !!habit.completions[todayKey];
-  const scheduled      = isScheduledToday(habit);
-  const [showMenu, setShowMenu] = useState(false);
+  const tk        = habitColorTokens(habit.color);
+  const todayKey  = getTodayKey();
+  const done      = !!habit.completions[todayKey];
+  const scheduled = isScheduledToday(habit);
+  const [menu, setMenu] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!showMenu) return;
-    const handler = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setShowMenu(false);
+    if (!menu) return;
+    const h = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenu(false);
     };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [showMenu]);
+    document.addEventListener('mousedown', h);
+    return () => document.removeEventListener('mousedown', h);
+  }, [menu]);
+
+  const freqLabel = habit.frequency === 'daily'
+    ? 'Every day'
+    : (habit.frequency as number[]).map(d => DAY_FULL[d].slice(0, 3)).join(' · ');
 
   return (
-    <div style={{ background: 'var(--bg-card)', borderRadius: '22px', border: `1.5px solid ${completedToday && scheduled ? tokens.border : 'var(--border)'}`, padding: '16px 16px 14px', transition: 'border-color 0.2s, box-shadow 0.2s', boxShadow: completedToday && scheduled ? `0 4px 20px ${tokens.dot}22` : '0 1px 4px rgba(0,0,0,0.04)', position: 'relative' }}>
+    <div
+      className="rounded-2xl transition-all overflow-hidden"
+      style={{
+        background: 'var(--bg-card)',
+        border: `1.5px solid ${done && scheduled ? tk.border : 'var(--border)'}`,
+        boxShadow: done && scheduled ? `0 4px 20px ${tk.dot}18` : '0 1px 3px rgba(0,0,0,0.04)',
+      }}
+    >
+      {/* Main row */}
+      <div className="flex items-center gap-3" style={{ padding: '14px 14px 12px' }}>
 
-      {/* Top row */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '14px' }}>
-
+        {/* Big circular check */}
         <button
-          onClick={() => { if (scheduled) onToggle(todayKey); }}
-          style={{ width: '44px', height: '44px', borderRadius: '14px', flexShrink: 0, border: completedToday ? 'none' : `2px solid ${tokens.border}`, background: completedToday ? tokens.dot : tokens.bg, color: completedToday ? '#fff' : tokens.dot, cursor: scheduled ? 'pointer' : 'default', opacity: !scheduled ? 0.4 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.22s cubic-bezier(0.34,1.4,0.64,1)', transform: completedToday ? 'scale(1.06)' : 'scale(1)' }}
+          onClick={() => scheduled && onToggle(todayKey)}
+          className="flex-shrink-0 flex items-center justify-center rounded-full transition-all"
+          style={{
+            width: 48, height: 48,
+            background: done ? tk.dot : tk.bg,
+            border: done ? 'none' : `2px solid ${tk.border}`,
+            opacity: !scheduled ? 0.3 : 1,
+            cursor: scheduled ? 'pointer' : 'default',
+            transform: done ? 'scale(1.06)' : 'scale(1)',
+            boxShadow: done ? `0 4px 14px ${tk.dot}44` : 'none',
+          }}
         >
-          {completedToday
+          {done
             ? <CheckCircle size={22} color="#fff" weight="Bold" />
-            : <HabitIcon iconKey={habit.emoji} size={22} color={tokens.dot} weight="Bold" />
+            : <HabitIcon iconKey={habit.emoji} size={21} color={tk.dot} weight="Bold" />
           }
         </button>
 
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <p style={{ fontFamily: '"DM Sans", sans-serif', fontWeight: 600, fontSize: '0.92rem', color: 'var(--text-main)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', opacity: completedToday ? 0.65 : 1, transition: 'opacity 0.2s' }}>
+        {/* Name + meta */}
+        <div className="flex-1 min-w-0">
+          <p
+            className="text-sm font-semibold truncate"
+            style={{
+              fontFamily: '"DM Sans", sans-serif',
+              color: 'var(--text-main)',
+              opacity: done ? 0.45 : 1,
+              textDecoration: done ? 'line-through' : 'none',
+              transition: 'opacity 0.2s',
+            }}
+          >
             {habit.title}
           </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px' }}>
+          <div className="flex items-center gap-2 mt-0.5">
             {habit.streak > 0 && (
-              <span style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#f59e0b', fontSize: '0.7rem', fontWeight: 700, fontFamily: '"DM Sans", sans-serif' }}>
-                <Flame size={12} color="#f59e0b" weight="Bold" /> {habit.streak}d
+              <span
+                className="inline-flex items-center gap-1 rounded-full text-xs font-bold"
+                style={{ padding: '2px 6px', background: 'rgba(245,158,11,0.12)', color: '#f59e0b', fontFamily: '"DM Sans", sans-serif' }}
+              >
+                <Flame size={10} color="#f59e0b" weight="Bold" />
+                {habit.streak}d
               </span>
             )}
-            {habit.bestStreak > 0 && (
-              <span style={{ display: 'flex', alignItems: 'center', gap: '3px', color: 'var(--text-muted)', fontSize: '0.7rem', fontFamily: '"DM Sans", sans-serif' }}>
-                <MedalRibbonStar size={11} color="var(--text-muted)" weight="Bold" /> {habit.bestStreak}
-              </span>
-            )}
-            <span style={{ fontSize: '0.67rem', color: 'var(--text-muted)', fontFamily: '"DM Sans", sans-serif' }}>
-              {habit.frequency === 'daily' ? 'Daily' : (habit.frequency as number[]).map(d => DAY_LABELS[d].slice(0, 2)).join(', ')}
+            <span className="text-xs" style={{ color: 'var(--text-muted)', fontFamily: '"DM Sans", sans-serif' }}>
+              {freqLabel}
             </span>
           </div>
         </div>
 
-        <div ref={menuRef} style={{ position: 'relative' }}>
-          <button onClick={() => setShowMenu(v => !v)} style={{ width: '32px', height: '32px', borderRadius: '10px', border: 'none', background: showMenu ? 'var(--bg-panel)' : 'transparent', color: 'var(--text-muted)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.15s' }}>
-            <MenuDots size={18} weight="Bold" />
+        {/* Menu */}
+        <div ref={menuRef} className="relative flex-shrink-0">
+          <button
+            onClick={() => setMenu(v => !v)}
+            className="flex items-center justify-center rounded-xl transition-all"
+            style={{
+              width: 30, height: 30, border: 'none', cursor: 'pointer',
+              background: menu ? 'var(--bg-panel)' : 'transparent',
+              color: 'var(--text-muted)',
+            }}
+          >
+            <MenuDots size={16} weight="Bold" />
           </button>
-          {showMenu && (
-            <div style={{ position: 'absolute', right: 0, top: '36px', zIndex: 50, background: 'var(--bg-card)', border: '1.5px solid var(--border)', borderRadius: '16px', padding: '6px', minWidth: '140px', boxShadow: '0 8px 28px rgba(0,0,0,0.15)' }}>
-              <button onClick={() => { onEdit(); setShowMenu(false); }}
-                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 12px', borderRadius: '10px', border: 'none', background: 'none', color: 'var(--text-main)', fontFamily: '"DM Sans", sans-serif', fontSize: '0.82rem', fontWeight: 500, cursor: 'pointer', textAlign: 'left', transition: 'background 0.12s' }}
+          {menu && (
+            <div
+              className="absolute right-0 z-50 rounded-2xl"
+              style={{
+                top: 34, minWidth: 130,
+                background: 'var(--bg-card)', border: '1.5px solid var(--border)',
+                padding: 5, boxShadow: '0 8px 28px rgba(0,0,0,0.14)',
+              }}
+            >
+              <button
+                onClick={() => { onEdit(); setMenu(false); }}
+                className="w-full flex items-center gap-2 rounded-xl text-left text-sm font-medium transition-all"
+                style={{ padding: '8px 10px', border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-main)', fontFamily: '"DM Sans", sans-serif' }}
                 onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'var(--bg-panel)'}
                 onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}
               >
-                <Pen2 size={14} weight="Bold" /> Edit
+                <Pen2 size={13} weight="Bold" /> Edit
               </button>
-              <button onClick={() => { onDelete(); setShowMenu(false); }}
-                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '8px', padding: '9px 12px', borderRadius: '10px', border: 'none', background: 'none', color: '#e05050', fontFamily: '"DM Sans", sans-serif', fontSize: '0.82rem', fontWeight: 500, cursor: 'pointer', textAlign: 'left', transition: 'background 0.12s' }}
+              <button
+                onClick={() => { onDelete(); setMenu(false); }}
+                className="w-full flex items-center gap-2 rounded-xl text-left text-sm font-medium transition-all"
+                style={{ padding: '8px 10px', border: 'none', background: 'none', cursor: 'pointer', color: '#e05050', fontFamily: '"DM Sans", sans-serif' }}
                 onMouseEnter={e => (e.currentTarget as HTMLElement).style.background = 'rgba(224,80,80,0.08)'}
                 onMouseLeave={e => (e.currentTarget as HTMLElement).style.background = 'none'}
               >
-                <TrashBinMinimalistic size={14} weight="Bold" /> Delete
+                <TrashBinMinimalistic size={13} weight="Bold" /> Delete
               </button>
             </div>
           )}
         </div>
       </div>
 
-      {/* Weekly mini-calendar */}
-      <div style={{ display: 'flex', gap: '5px' }}>
-        {LAST_7.map(dateKey => {
-          const done         = !!habit.completions[dateKey];
+      {/* ── Week strip ── */}
+      <div className="flex" style={{ borderTop: '1px solid var(--border)' }}>
+        {LAST_7_CHRON.map((dateKey, idx) => {
+          const dayDone      = !!habit.completions[dateKey];
           const isToday      = dateKey === todayKey;
-          const d            = new Date(dateKey + 'T12:00:00');
-          const dow          = d.getDay();
-          const dayLabel     = DAY_LABELS_SHORT[dow];
-          const scheduledDay = habit.frequency === 'daily' || (habit.frequency as number[]).includes(dow);
+          const dow          = new Date(dateKey + 'T12:00:00').getDay();
+          const dayScheduled = habit.frequency === 'daily' || (habit.frequency as number[]).includes(dow);
+          const isLast       = idx === LAST_7_CHRON.length - 1;
 
           return (
-            <div key={dateKey}
-              onClick={() => { if (isToday && scheduled) onToggle(dateKey); else if (!isToday && scheduledDay) onToggle(dateKey); }}
-              style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '5px', cursor: scheduledDay ? 'pointer' : 'default' }}
+            <button
+              key={dateKey}
+              onClick={() => dayScheduled && onToggle(dateKey)}
+              className="flex-1 flex flex-col items-center justify-center gap-1.5 transition-all"
+              style={{
+                paddingTop: 10, paddingBottom: 10,
+                background: 'transparent', border: 'none',
+                borderRight: isLast ? 'none' : '1px solid var(--border)',
+                cursor: dayScheduled ? 'pointer' : 'default',
+                opacity: dayScheduled ? 1 : 0.22,
+              }}
             >
-              <span style={{ fontSize: '0.58rem', color: isToday ? tokens.dot : 'var(--text-muted)', fontFamily: '"DM Sans", sans-serif', fontWeight: isToday ? 700 : 400 }}>
-                {isToday ? '·' : dayLabel}
+              <span
+                style={{
+                  fontSize: '0.58rem', lineHeight: 1,
+                  fontFamily: '"DM Sans", sans-serif', fontWeight: isToday ? 700 : 500,
+                  color: isToday ? tk.dot : 'var(--text-muted)',
+                }}
+              >
+                {DAY_SHORT[dow]}
               </span>
-              <div style={{ width: '100%', aspectRatio: '1', borderRadius: '9px', background: done ? tokens.dot : scheduledDay ? tokens.bg : 'var(--bg-panel)', border: isToday ? `1.5px solid ${tokens.dot}` : `1.5px solid ${done ? tokens.dot : 'transparent'}`, opacity: scheduledDay ? 1 : 0.3, display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'background 0.18s' }}>
-                {done && <CheckCircle size={10} color="#fff" weight="Bold" />}
+              <div
+                className="flex items-center justify-center rounded-full transition-all"
+                style={{
+                  width: 22, height: 22,
+                  background: dayDone ? tk.dot : 'transparent',
+                  border: isToday
+                    ? `2px solid ${tk.dot}`
+                    : dayDone ? 'none'
+                    : '1.5px solid var(--border)',
+                  boxShadow: dayDone ? `0 2px 6px ${tk.dot}44` : 'none',
+                }}
+              >
+                {dayDone && <CheckCircle size={13} color="#fff" weight="Bold" />}
               </div>
-            </div>
+            </button>
           );
         })}
       </div>
@@ -371,146 +508,136 @@ const HabitCard: React.FC<CardProps> = ({ habit, onToggle, onEdit, onDelete }) =
   );
 };
 
-// ── Stats Bar ─────────────────────────────────────────────────────────────────
+// ─── Progress ring ────────────────────────────────────────────────────────────
 
-const StatsBar: React.FC<{ habits: Habit[] }> = ({ habits }) => {
-  const todayKey    = getTodayKey();
-  const scheduled   = habits.filter(isScheduledToday);
-  const done        = scheduled.filter(h => !!h.completions[todayKey]);
-  const pct         = scheduled.length > 0 ? Math.round((done.length / scheduled.length) * 100) : 0;
-  const maxStreak   = habits.reduce((max, h) => Math.max(max, h.streak), 0);
-  const totalStreak = habits.reduce((sum, h) => sum + h.streak, 0);
-  const isAllDone   = pct === 100 && scheduled.length > 0;
-
-  if (habits.length === 0) return null;
-
+const ProgressRing: React.FC<{ pct: number; size: number; stroke: number; color: string }> = ({ pct, size, stroke, color }) => {
+  const r    = (size - stroke) / 2;
+  const circ = 2 * Math.PI * r;
   return (
-    <div style={{ background: 'var(--bg-card)', borderRadius: '22px', border: `1.5px solid ${isAllDone ? 'rgba(94,168,78,0.35)' : 'var(--border)'}`, padding: '18px', marginBottom: '16px', boxShadow: isAllDone ? '0 4px 20px rgba(94,168,78,0.12)' : '0 1px 4px rgba(0,0,0,0.04)', transition: 'border-color 0.3s, box-shadow 0.3s' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <Target size={14} color="var(--text-muted)" weight="Bold" />
-          <span style={{ fontFamily: '"DM Sans", sans-serif', fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Today's progress</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          {isAllDone && <CheckCircle size={16} color="#5ea84e" weight="Bold" />}
-          <span style={{ fontFamily: '"Fraunces", serif', fontSize: '1.15rem', color: isAllDone ? '#5ea84e' : 'var(--text-main)', fontWeight: 500 }}>{done.length}/{scheduled.length}</span>
-        </div>
-      </div>
-
-      <div style={{ height: '7px', borderRadius: '4px', background: 'var(--bg-panel)', marginBottom: '16px', overflow: 'hidden' }}>
-        <div style={{ height: '100%', borderRadius: '4px', background: isAllDone ? 'linear-gradient(90deg, #5ea84e, #7cc96b)' : 'linear-gradient(90deg, var(--accent), #f0b080)', width: `${pct}%`, transition: 'width 0.5s cubic-bezier(0.34,1.2,0.64,1)' }} />
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
-        {([
-          { icon: <Leaf size={13} color="var(--text-muted)" weight="Bold" />,  label: 'Habits',      value: habits.length,   color: 'var(--text-main)' },
-          { icon: <Flame size={13} color="#f59e0b" weight="Bold" />,           label: 'Best streak', value: `${maxStreak}d`, color: '#f59e0b'          },
-          { icon: <Fire size={13} color="var(--accent)" weight="Bold" />,      label: 'Total days',  value: totalStreak,     color: 'var(--text-main)' },
-        ] as { icon: React.ReactNode; label: string; value: string | number; color: string }[]).map((stat, i) => (
-          <div key={i} style={{ background: 'var(--bg-panel)', borderRadius: '14px', padding: '10px 12px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '5px' }}>
-              {stat.icon}
-              <p style={{ fontFamily: '"DM Sans", sans-serif', fontSize: '0.62rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>{stat.label}</p>
-            </div>
-            <p style={{ fontFamily: '"Fraunces", serif', fontSize: '1.05rem', color: stat.color, fontWeight: 500 }}>{stat.value}</p>
-          </div>
-        ))}
-      </div>
-    </div>
+    <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--border)" strokeWidth={stroke} />
+      <circle
+        cx={size/2} cy={size/2} r={r} fill="none"
+        stroke={color} strokeWidth={stroke}
+        strokeDasharray={circ}
+        strokeDashoffset={circ - (pct / 100) * circ}
+        strokeLinecap="round"
+        style={{ transition: 'stroke-dashoffset 0.6s cubic-bezier(0.34,1.2,0.64,1)' }}
+      />
+    </svg>
   );
 };
 
-// ── Main Page ─────────────────────────────────────────────────────────────────
-
-type TabType = 'today' | 'all';
+// ─── Main Page ────────────────────────────────────────────────────────────────
 
 export const HabitsPage: React.FC = () => {
   const { user } = useAuth();
   const { habits, loading, addHabit, updateHabit, deleteHabit, toggleCompletion } = useHabits(user?.uid ?? null);
   const [showModal,     setShowModal]     = useState(false);
   const [editingHabit,  setEditingHabit]  = useState<Habit | null>(null);
-  const [tab,           setTab]           = useState<TabType>('today');
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
 
   const todayKey    = getTodayKey();
   const todayHabits = habits.filter(isScheduledToday);
-  const displayed   = tab === 'today' ? todayHabits : habits;
   const doneCount   = todayHabits.filter(h => !!h.completions[todayKey]).length;
+  const pct         = todayHabits.length > 0 ? Math.round((doneCount / todayHabits.length) * 100) : 0;
   const allDone     = todayHabits.length > 0 && doneCount === todayHabits.length;
+  const maxStreak   = habits.reduce((m, h) => Math.max(m, h.streak), 0);
 
   const handleSave = async (input: HabitInput) => {
-    if (editingHabit) { await updateHabit(editingHabit.id, input); }
-    else              { await addHabit(input); }
+    if (editingHabit) await updateHabit(editingHabit.id, input);
+    else              await addHabit(input);
     setEditingHabit(null);
   };
-
-  const handleDelete = async (id: string) => { await deleteHabit(id); setConfirmDelete(null); };
 
   const dateLabel = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
   return (
-    <div style={{ maxWidth: '480px', margin: '0 auto', opacity: 0, animation: 'fadeIn 0.22s ease-out forwards' }}>
+    <div className="mx-auto" style={{ maxWidth: 480, opacity: 0, animation: 'hFadeIn 0.28s ease-out forwards' }}>
 
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '6px' }}>
+      <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 style={{ fontFamily: '"Fraunces", serif', fontSize: '1.85rem', fontWeight: 500, color: 'var(--text-main)', marginBottom: '4px', lineHeight: 1.1 }}>Habits</h1>
-          <p style={{ fontFamily: '"DM Sans", sans-serif', fontSize: '0.78rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <h1 style={{ fontFamily: '"Fraunces", serif', fontSize: '2rem', fontWeight: 500, color: 'var(--text-main)', lineHeight: 1.05, letterSpacing: '-0.02em' }}>
+            Habits
+          </h1>
+          <p className="mt-1 text-xs" style={{ color: 'var(--text-muted)', fontFamily: '"DM Sans", sans-serif' }}>
             {dateLabel}
-            {todayHabits.length > 0 && (
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '3px', color: allDone ? '#5ea84e' : 'var(--text-muted)', fontWeight: allDone ? 600 : 400, transition: 'color 0.3s' }}>
-                ·&nbsp;{allDone ? <><CheckCircle size={12} color="#5ea84e" weight="Bold" /> All done!</> : `${doneCount}/${todayHabits.length} done`}
-              </span>
-            )}
           </p>
         </div>
-
         <button
           onClick={() => { setEditingHabit(null); setShowModal(true); }}
-          style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 16px', borderRadius: '14px', background: 'var(--accent)', color: '#fff', border: 'none', fontFamily: '"DM Sans", sans-serif', fontWeight: 700, fontSize: '0.82rem', cursor: 'pointer', transition: 'opacity 0.15s, transform 0.12s', flexShrink: 0, marginTop: '4px', letterSpacing: '0.02em' }}
-          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.88'; (e.currentTarget as HTMLElement).style.transform = 'scale(0.97)'; }}
-          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1';    (e.currentTarget as HTMLElement).style.transform = 'scale(1)';    }}
+          className="flex items-center gap-1.5 rounded-xl font-bold text-xs transition-all"
+          style={{
+            padding: '9px 14px', marginTop: 6, border: 'none', cursor: 'pointer',
+            background: 'var(--accent)', color: '#fff',
+            fontFamily: '"DM Sans", sans-serif', letterSpacing: '0.02em',
+          }}
+          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.opacity = '0.85'; (e.currentTarget as HTMLElement).style.transform = 'scale(0.97)'; }}
+          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; (e.currentTarget as HTMLElement).style.transform = 'scale(1)'; }}
         >
-          <AddCircle size={16} weight="Bold" /> New
+          <AddCircle size={14} weight="Bold" /> New habit
         </button>
       </div>
 
-      {/* Tabs */}
-      <div style={{ display: 'flex', gap: '4px', background: 'var(--bg-card)', borderRadius: '16px', padding: '4px', border: '1.5px solid var(--border)', marginTop: '20px', marginBottom: '16px' }}>
-        {(['today', 'all'] as TabType[]).map(t => (
-          <button key={t} onClick={() => setTab(t)}
-            style={{ flex: 1, padding: '9px 12px', borderRadius: '12px', border: 'none', cursor: 'pointer', background: tab === t ? 'var(--bg-panel)' : 'transparent', color: tab === t ? 'var(--text-main)' : 'var(--text-muted)', fontFamily: '"DM Sans", sans-serif', fontWeight: 700, fontSize: '0.82rem', transition: 'background 0.15s, color 0.15s', letterSpacing: '0.01em' }}
-          >
-            {t === 'today' ? 'Today' : 'All habits'}
-          </button>
-        ))}
-      </div>
+      {/* Summary card */}
+      {habits.length > 0 && (
+        <div
+          className="rounded-2xl flex items-center gap-4 mb-5 transition-all"
+          style={{
+            padding: '16px 18px',
+            background: 'var(--bg-card)',
+            border: `1.5px solid ${allDone ? 'rgba(94,168,78,0.3)' : 'var(--border)'}`,
+            boxShadow: allDone ? '0 4px 20px rgba(94,168,78,0.1)' : '0 1px 3px rgba(0,0,0,0.04)',
+          }}
+        >
+          <div className="relative flex-shrink-0 flex items-center justify-center" style={{ width: 52, height: 52 }}>
+            <ProgressRing pct={pct} size={52} stroke={4} color={allDone ? '#5ea84e' : 'var(--accent)'} />
+            <span
+              className="absolute font-bold"
+              style={{ fontSize: '0.62rem', fontFamily: '"DM Sans", sans-serif', color: allDone ? '#5ea84e' : 'var(--text-main)' }}
+            >
+              {pct}%
+            </span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p style={{ fontFamily: '"Fraunces", serif', fontSize: '1rem', fontWeight: 500, color: allDone ? '#5ea84e' : 'var(--text-main)', lineHeight: 1.2 }}>
+              {allDone ? 'All done today! 🎉' : `${doneCount} of ${todayHabits.length} done`}
+            </p>
+            <p className="mt-0.5 text-xs" style={{ color: 'var(--text-muted)', fontFamily: '"DM Sans", sans-serif' }}>
+              {todayHabits.length === 0 ? 'No habits scheduled' : todayHabits.length - doneCount > 0 ? `${todayHabits.length - doneCount} remaining` : 'Keep it up!'}
+            </p>
+          </div>
+          {maxStreak > 0 && (
+            <div className="flex-shrink-0 flex flex-col items-center gap-0.5">
+              <Flame size={18} color="#f59e0b" weight="Bold" />
+              <span className="font-bold text-xs" style={{ color: '#f59e0b', fontFamily: '"DM Sans", sans-serif' }}>{maxStreak}d</span>
+            </div>
+          )}
+        </div>
+      )}
 
-      <StatsBar habits={habits} />
-
+      {/* List */}
       {loading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {[1, 2, 3].map(i => (
-            <div key={i} style={{ height: '124px', borderRadius: '22px', background: 'var(--bg-card)', border: '1.5px solid var(--border)', animation: 'pulse 1.4s ease-in-out infinite', animationDelay: `${i * 0.15}s` }} />
+        <div className="flex flex-col gap-3">
+          {[0, 1, 2].map(i => (
+            <div key={i} className="rounded-2xl" style={{ height: 120, background: 'var(--bg-card)', border: '1.5px solid var(--border)', animation: `hPulse 1.4s ease-in-out ${i * 0.15}s infinite` }} />
           ))}
         </div>
-      ) : displayed.length === 0 ? (
-        <div style={{ textAlign: 'center', padding: '56px 24px' }}>
-          <div style={{ width: '64px', height: '64px', borderRadius: '20px', background: 'var(--bg-card)', border: '1.5px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-            <Leaf size={28} color="var(--text-muted)" weight="Bold" />
+      ) : habits.length === 0 ? (
+        <div className="flex flex-col items-center text-center" style={{ padding: '60px 24px' }}>
+          <div className="flex items-center justify-center rounded-2xl mb-4" style={{ width: 60, height: 60, background: 'var(--bg-card)', border: '1.5px solid var(--border)' }}>
+            <Leaf size={26} color="var(--text-muted)" weight="Bold" />
           </div>
-          <p style={{ fontFamily: '"Fraunces", serif', fontSize: '1.15rem', color: 'var(--text-main)', fontWeight: 500, marginBottom: '6px' }}>
-            {tab === 'today' ? 'No habits today' : 'No habits yet'}
-          </p>
-          <p style={{ fontFamily: '"DM Sans", sans-serif', fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-            {tab === 'today' ? 'Add a habit and start your streak' : 'Create your first habit to get started'}
-          </p>
+          <p style={{ fontFamily: '"Fraunces", serif', fontSize: '1.1rem', fontWeight: 500, color: 'var(--text-main)', marginBottom: 6 }}>No habits yet</p>
+          <p className="text-xs" style={{ color: 'var(--text-muted)', fontFamily: '"DM Sans", sans-serif' }}>Start building consistent routines</p>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          {displayed.map(habit => (
-            <HabitCard key={habit.id} habit={habit}
-              onToggle={dateKey => toggleCompletion(habit.id, dateKey)}
+        <div className="flex flex-col gap-2.5">
+          {habits.map(habit => (
+            <HabitCard
+              key={habit.id} habit={habit}
+              onToggle={dk => toggleCompletion(habit.id, dk)}
               onEdit={() => { setEditingHabit(habit); setShowModal(true); }}
               onDelete={() => setConfirmDelete(habit.id)}
             />
@@ -518,6 +645,7 @@ export const HabitsPage: React.FC = () => {
         </div>
       )}
 
+      {/* Modals */}
       {showModal && (
         <HabitModal
           onClose={() => { setShowModal(false); setEditingHabit(null); }}
@@ -528,26 +656,42 @@ export const HabitsPage: React.FC = () => {
 
       {confirmDelete && (
         <div
-          style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', animation: 'fadeIn 0.18s ease' }}
+          className="fixed inset-0 z-[200] flex items-center justify-center"
+          style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(8px)', padding: 20, animation: 'hFadeIn 0.18s ease' }}
           onClick={e => { if (e.target === e.currentTarget) setConfirmDelete(null); }}
         >
-          <div style={{ background: 'var(--bg-card)', borderRadius: '24px', padding: '28px 24px 24px', maxWidth: '320px', width: '100%', textAlign: 'center', boxShadow: '0 16px 48px rgba(0,0,0,0.2)' }}>
-            <div style={{ width: '52px', height: '52px', borderRadius: '16px', background: 'rgba(224,80,80,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-              <TrashBinMinimalistic size={24} color="#e05050" weight="Bold" />
+          <div className="w-full text-center" style={{ maxWidth: 300, background: 'var(--bg-card)', borderRadius: 24, padding: '26px 22px 22px', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
+            <div className="flex items-center justify-center rounded-2xl mx-auto mb-4" style={{ width: 48, height: 48, background: 'rgba(224,80,80,0.1)' }}>
+              <TrashBinMinimalistic size={22} color="#e05050" weight="Bold" />
             </div>
-            <p style={{ fontFamily: '"Fraunces", serif', fontSize: '1.15rem', fontWeight: 500, color: 'var(--text-main)', marginBottom: '8px' }}>Delete habit?</p>
-            <p style={{ fontFamily: '"DM Sans", sans-serif', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '22px', lineHeight: 1.5 }}>All completion history and streaks will be permanently lost.</p>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={() => setConfirmDelete(null)} style={{ flex: 1, padding: '13px', borderRadius: '14px', border: '1.5px solid var(--border)', background: 'var(--bg-panel)', color: 'var(--text-muted)', fontFamily: '"DM Sans", sans-serif', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}>Cancel</button>
-              <button onClick={() => handleDelete(confirmDelete!)} style={{ flex: 1, padding: '13px', borderRadius: '14px', border: 'none', background: '#e05050', color: '#fff', fontFamily: '"DM Sans", sans-serif', fontWeight: 700, fontSize: '0.85rem', cursor: 'pointer' }}>Delete</button>
+            <p style={{ fontFamily: '"Fraunces", serif', fontSize: '1.1rem', fontWeight: 500, color: 'var(--text-main)', marginBottom: 8 }}>Delete habit?</p>
+            <p className="text-xs mb-5" style={{ color: 'var(--text-muted)', fontFamily: '"DM Sans", sans-serif', lineHeight: 1.6 }}>
+              All completion history and streaks will be permanently lost.
+            </p>
+            <div className="flex gap-2.5">
+              <button
+                onClick={() => setConfirmDelete(null)}
+                className="flex-1 rounded-2xl font-semibold text-sm transition-all"
+                style={{ padding: '12px 0', background: 'var(--bg-panel)', border: '1.5px solid var(--border)', color: 'var(--text-muted)', fontFamily: '"DM Sans", sans-serif', cursor: 'pointer' }}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.opacity = '0.7'}
+                onMouseLeave={e => (e.currentTarget as HTMLElement).style.opacity = '1'}
+              >Cancel</button>
+              <button
+                onClick={() => { deleteHabit(confirmDelete!); setConfirmDelete(null); }}
+                className="flex-1 rounded-2xl font-bold text-sm transition-all"
+                style={{ padding: '12px 0', background: '#e05050', border: 'none', color: '#fff', fontFamily: '"DM Sans", sans-serif', cursor: 'pointer' }}
+                onMouseEnter={e => (e.currentTarget as HTMLElement).style.opacity = '0.85'}
+                onMouseLeave={e => (e.currentTarget as HTMLElement).style.opacity = '1'}
+              >Delete</button>
             </div>
           </div>
         </div>
       )}
 
       <style>{`
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes hFadeIn  { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes hSlideUp { from { transform:translateY(100%); } to { transform:translateY(0); } }
+        @keyframes hPulse   { 0%,100% { opacity:1; } 50% { opacity:0.45; } }
       `}</style>
     </div>
   );
