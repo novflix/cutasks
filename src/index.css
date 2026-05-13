@@ -89,6 +89,18 @@
   .input-field:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(237,155,109,0.18); }
 }
 
+/* ── Modal offsets ── */
+:root {
+  --modal-nav-offset: 65px;
+  --sidebar-w: 0px;
+}
+@media (min-width: 640px) {
+  :root {
+    --modal-nav-offset: 0px;
+    --sidebar-w: 200px;
+  }
+}
+
 /* ── Sidebar / Bottom navbar ── */
 
 .sidebar-desktop {

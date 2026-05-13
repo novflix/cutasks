@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useAuth } from '../context/useAuth';
 import {
   useHabits,
@@ -102,12 +103,10 @@ const COLORS: { value: HabitColor; label: string }[] = [
   { value: 'slate',    label: 'Slate'    },
 ];
 
-// Mon-first week order: 1=Mon … 6=Sat, 0=Sun at end
 const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0];
-const DAY_SHORT  = ['S', 'M', 'T', 'W', 'T', 'F', 'S']; // indexed by JS getDay()
+const DAY_SHORT  = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const DAY_FULL   = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-// Chronological last-7 (oldest first, today last)
 const LAST_7_CHRON = [...getLastNDays(7)].reverse();
 
 // ─── Habit Modal ─────────────────────────────────────────────────────────────
@@ -145,71 +144,76 @@ const HabitModal: React.FC<ModalProps> = ({ onClose, onSave, initial }) => {
 
   const tk = habitColorTokens(color);
 
-  return (
-    <div
-      className="fixed inset-0 z-[200] flex items-end justify-center"
-      style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)', animation: 'hFadeIn 0.18s ease' }}
-      onClick={e => { if (e.target === e.currentTarget) onClose(); }}
-    >
-      <div
-        className="w-full overflow-y-auto"
-        style={{
-          maxWidth: 480,
-          background: 'var(--bg-card)',
-          borderRadius: '28px 28px 0 0',
-          padding: '0 20px 40px',
-          maxHeight: '90dvh',
-          boxShadow: '0 -8px 48px rgba(0,0,0,0.18)',
-          animation: 'hSlideUp 0.3s cubic-bezier(0.34,1.15,0.64,1)',
-        }}
-      >
-        <div className="mx-auto mt-3 mb-5 rounded-full" style={{ width: 36, height: 4, background: 'var(--border)' }} />
+  const overlayStyle: React.CSSProperties = {
+    position: 'fixed',
+    inset: 0,
+    zIndex: 200,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'rgba(0,0,0,0.55)',
+    backdropFilter: 'blur(8px)',
+    padding: '20px 20px 20px calc(20px + var(--sidebar-w, 0px))',
+    animation: 'hFadeIn 0.18s ease',
+  };
 
-        <div className="flex items-center justify-between mb-6">
+  const cardStyle: React.CSSProperties = {
+    width: '100%',
+    maxWidth: 480,
+    overflowY: 'auto',
+    background: 'var(--bg-card)',
+    borderRadius: 24,
+    padding: '24px 20px 28px',
+    maxHeight: '90dvh',
+    animation: 'hFadeIn 0.22s ease',
+  };
+
+  return createPortal(
+    <div style={overlayStyle} onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+      <div style={cardStyle}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
           <h2 style={{ fontFamily: '"Fraunces", serif', fontSize: '1.35rem', fontWeight: 500, color: 'var(--text-main)' }}>
             {initial ? 'Edit habit' : 'New habit'}
           </h2>
           <button
             onClick={onClose}
-            className="flex items-center justify-center rounded-full transition-opacity hover:opacity-70"
-            style={{ width: 32, height: 32, border: '1.5px solid var(--border)', background: 'var(--bg-panel)', color: 'var(--text-muted)', cursor: 'pointer' }}
+            style={{ width: 32, height: 32, border: '1.5px solid var(--border)', background: 'var(--bg-panel)', color: 'var(--text-muted)', cursor: 'pointer', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
             <CloseCircle size={17} weight="Bold" />
           </button>
         </div>
 
         {/* Icon + Name */}
-        <div className="flex gap-3 items-start mb-5">
-          <div className="relative flex-shrink-0">
+        <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start', marginBottom: 20 }}>
+          <div style={{ position: 'relative', flexShrink: 0 }}>
             <button
               onClick={() => setShowIcons(v => !v)}
-              className="flex items-center justify-center rounded-2xl transition-all"
               style={{
-                width: 50, height: 50, cursor: 'pointer',
+                width: 50, height: 50, cursor: 'pointer', borderRadius: 16,
                 background: tk.bg, border: `2px solid ${tk.border}`,
                 boxShadow: showIcons ? `0 0 0 3px ${tk.dot}28` : 'none',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
             >
               <HabitIcon iconKey={iconKey} size={22} color={tk.dot} weight="Bold" />
             </button>
             {showIcons && (
-              <div
-                className="absolute top-14 left-0 z-20 grid"
-                style={{
-                  gridTemplateColumns: 'repeat(5, 1fr)', gap: 6, padding: 10, width: 210,
-                  background: 'var(--bg-card)', border: '1.5px solid var(--border)',
-                  borderRadius: 18, boxShadow: '0 16px 40px rgba(0,0,0,0.18)',
-                }}
-              >
+              <div style={{
+                position: 'absolute', top: 58, left: 0, zIndex: 20,
+                display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 6,
+                padding: 10, width: 210,
+                background: 'var(--bg-card)', border: '1.5px solid var(--border)',
+                borderRadius: 18, boxShadow: '0 16px 40px rgba(0,0,0,0.18)',
+              }}>
                 {HABIT_ICONS.map(({ key, label }) => (
                   <button
                     key={key} title={label}
                     onClick={() => { setIconKey(key); setShowIcons(false); }}
-                    className="flex items-center justify-center rounded-xl transition-all"
                     style={{
-                      width: 34, height: 34, cursor: 'pointer',
+                      width: 34, height: 34, cursor: 'pointer', borderRadius: 10,
                       background: iconKey === key ? tk.bg : 'var(--bg-panel)',
                       border: iconKey === key ? `1.5px solid ${tk.dot}` : '1.5px solid transparent',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
                     }}
                   >
                     <HabitIcon iconKey={key} size={16} color={iconKey === key ? tk.dot : 'var(--text-muted)'} weight="Bold" />
@@ -224,8 +228,8 @@ const HabitModal: React.FC<ModalProps> = ({ onClose, onSave, initial }) => {
             onChange={e => setTitle(e.target.value)}
             onKeyDown={e => { if (e.key === 'Enter') handleSave(); }}
             placeholder="Habit name…"
-            className="flex-1 rounded-2xl text-sm outline-none transition-all"
             style={{
+              flex: 1, borderRadius: 16, fontSize: '0.875rem', outline: 'none',
               padding: '13px 16px',
               background: 'var(--bg-panel)', border: '1.5px solid var(--border)',
               color: 'var(--text-main)', fontFamily: '"DM Sans", sans-serif',
@@ -237,19 +241,19 @@ const HabitModal: React.FC<ModalProps> = ({ onClose, onSave, initial }) => {
         </div>
 
         {/* Color */}
-        <p className="mb-2.5 text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)', fontFamily: '"DM Sans", sans-serif' }}>Color</p>
-        <div className="flex flex-wrap gap-2.5 mb-6">
+        <p style={{ marginBottom: 10, fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', fontFamily: '"DM Sans", sans-serif' }}>Color</p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, marginBottom: 24 }}>
           {COLORS.map(c => {
             const ct = habitColorTokens(c.value);
             return (
               <button key={c.value} title={c.label} onClick={() => setColor(c.value)}
-                className="rounded-full transition-all"
                 style={{
-                  width: 28, height: 28, cursor: 'pointer',
+                  width: 28, height: 28, cursor: 'pointer', borderRadius: '50%',
                   background: ct.dot,
                   border: color === c.value ? `3px solid var(--text-main)` : '3px solid transparent',
                   boxShadow: color === c.value ? `0 0 0 2px ${ct.dot}55` : 'none',
                   transform: color === c.value ? 'scale(1.2)' : 'scale(1)',
+                  transition: 'all 0.15s',
                 }}
               />
             );
@@ -257,35 +261,37 @@ const HabitModal: React.FC<ModalProps> = ({ onClose, onSave, initial }) => {
         </div>
 
         {/* Frequency */}
-        <p className="mb-2.5 text-xs font-bold uppercase tracking-widest" style={{ color: 'var(--text-muted)', fontFamily: '"DM Sans", sans-serif' }}>Frequency</p>
-        <div className="flex gap-2" style={{ marginBottom: freq === 'weekly' ? 14 : 28 }}>
+        <p style={{ marginBottom: 10, fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-muted)', fontFamily: '"DM Sans", sans-serif' }}>Frequency</p>
+        <div style={{ display: 'flex', gap: 8, marginBottom: freq === 'weekly' ? 14 : 28 }}>
           {(['daily', 'weekly'] as const).map(f => (
             <button key={f} onClick={() => setFreq(f)}
-              className="flex-1 rounded-xl font-semibold text-sm capitalize transition-all"
               style={{
-                padding: '11px 0', cursor: 'pointer',
+                flex: 1, padding: '11px 0', cursor: 'pointer', borderRadius: 12,
+                fontWeight: 600, fontSize: '0.875rem', textTransform: 'capitalize',
                 background: freq === f ? tk.bg : 'var(--bg-panel)',
                 border: freq === f ? `1.5px solid ${tk.dot}` : '1.5px solid var(--border)',
                 color: freq === f ? tk.dot : 'var(--text-muted)',
                 fontFamily: '"DM Sans", sans-serif',
+                transition: 'all 0.15s',
               }}
             >{f}</button>
           ))}
         </div>
 
         {freq === 'weekly' && (
-          <div className="flex gap-1.5 mb-7">
+          <div style={{ display: 'flex', gap: 6, marginBottom: 28 }}>
             {WEEK_ORDER.map(dow => {
               const on = days.includes(dow);
               return (
                 <button key={dow} onClick={() => toggleDay(dow)}
-                  className="flex-1 rounded-xl font-bold text-xs transition-all"
                   style={{
-                    height: 38, cursor: 'pointer',
+                    flex: 1, height: 38, cursor: 'pointer', borderRadius: 12,
+                    fontWeight: 700, fontSize: '0.75rem',
                     background: on ? tk.dot : 'var(--bg-panel)',
                     border: on ? `1.5px solid ${tk.dot}` : '1.5px solid var(--border)',
                     color: on ? '#fff' : 'var(--text-muted)',
                     fontFamily: '"DM Sans", sans-serif',
+                    transition: 'all 0.15s',
                   }}
                 >
                   {DAY_SHORT[dow]}
@@ -298,15 +304,14 @@ const HabitModal: React.FC<ModalProps> = ({ onClose, onSave, initial }) => {
         <button
           onClick={handleSave}
           disabled={!title.trim()}
-          className="w-full rounded-2xl font-bold tracking-wide transition-all"
           style={{
-            padding: '15px 0',
+            width: '100%', padding: '15px 0', borderRadius: 16,
+            fontWeight: 700, letterSpacing: '0.02em',
             background: title.trim() ? tk.dot : 'var(--border)',
-            color: '#fff',
-            border: 'none',
-            fontFamily: '"DM Sans", sans-serif',
-            fontSize: '0.9rem',
+            color: '#fff', border: 'none',
+            fontFamily: '"DM Sans", sans-serif', fontSize: '0.9rem',
             cursor: title.trim() ? 'pointer' : 'not-allowed',
+            transition: 'opacity 0.15s',
           }}
           onMouseEnter={e => { if (title.trim()) (e.currentTarget as HTMLElement).style.opacity = '0.85'; }}
           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.opacity = '1'; }}
@@ -314,7 +319,8 @@ const HabitModal: React.FC<ModalProps> = ({ onClose, onSave, initial }) => {
           {initial ? 'Save changes' : 'Create habit'}
         </button>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 
@@ -357,10 +363,7 @@ const HabitCard: React.FC<CardProps> = ({ habit, onToggle, onEdit, onDelete }) =
         boxShadow: done && scheduled ? `0 4px 20px ${tk.dot}18` : '0 1px 3px rgba(0,0,0,0.04)',
       }}
     >
-      {/* Main row */}
       <div className="flex items-center gap-3" style={{ padding: '14px 14px 12px' }}>
-
-        {/* Big circular check */}
         <button
           onClick={() => scheduled && onToggle(todayKey)}
           className="flex-shrink-0 flex items-center justify-center rounded-full transition-all"
@@ -380,7 +383,6 @@ const HabitCard: React.FC<CardProps> = ({ habit, onToggle, onEdit, onDelete }) =
           }
         </button>
 
-        {/* Name + meta */}
         <div className="flex-1 min-w-0">
           <p
             className="text-sm font-semibold truncate"
@@ -410,7 +412,6 @@ const HabitCard: React.FC<CardProps> = ({ habit, onToggle, onEdit, onDelete }) =
           </div>
         </div>
 
-        {/* Menu */}
         <div ref={menuRef} className="relative flex-shrink-0">
           <button
             onClick={() => setMenu(v => !v)}
@@ -455,7 +456,6 @@ const HabitCard: React.FC<CardProps> = ({ habit, onToggle, onEdit, onDelete }) =
         </div>
       </div>
 
-      {/* ── Week strip ── */}
       <div className="flex" style={{ borderTop: '1px solid var(--border)' }}>
         {LAST_7_CHRON.map((dateKey, idx) => {
           const dayDone      = !!habit.completions[dateKey];
@@ -477,13 +477,11 @@ const HabitCard: React.FC<CardProps> = ({ habit, onToggle, onEdit, onDelete }) =
                 opacity: dayScheduled ? 1 : 0.22,
               }}
             >
-              <span
-                style={{
-                  fontSize: '0.58rem', lineHeight: 1,
-                  fontFamily: '"DM Sans", sans-serif', fontWeight: isToday ? 700 : 500,
-                  color: isToday ? tk.dot : 'var(--text-muted)',
-                }}
-              >
+              <span style={{
+                fontSize: '0.58rem', lineHeight: 1,
+                fontFamily: '"DM Sans", sans-serif', fontWeight: isToday ? 700 : 500,
+                color: isToday ? tk.dot : 'var(--text-muted)',
+              }}>
                 {DAY_SHORT[dow]}
               </span>
               <div
@@ -645,7 +643,7 @@ export const HabitsPage: React.FC = () => {
         </div>
       )}
 
-      {/* Modals */}
+      {/* HabitModal uses createPortal internally */}
       {showModal && (
         <HabitModal
           onClose={() => { setShowModal(false); setEditingHabit(null); }}
@@ -654,13 +652,24 @@ export const HabitsPage: React.FC = () => {
         />
       )}
 
-      {confirmDelete && (
+      {/* Confirm delete portal */}
+      {confirmDelete && createPortal(
         <div
-          className="fixed inset-0 z-[200] flex items-center justify-center"
-          style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(8px)', padding: 20, animation: 'hFadeIn 0.18s ease' }}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 200,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            background: 'rgba(0,0,0,0.45)',
+            backdropFilter: 'blur(8px)',
+            padding: '20px 20px 20px calc(20px + var(--sidebar-w, 0px))',
+            animation: 'hFadeIn 0.18s ease',
+          }}
           onClick={e => { if (e.target === e.currentTarget) setConfirmDelete(null); }}
         >
-          <div className="w-full text-center" style={{ maxWidth: 300, background: 'var(--bg-card)', borderRadius: 24, padding: '26px 22px 22px', boxShadow: '0 20px 60px rgba(0,0,0,0.2)' }}>
+          <div className="w-full text-center" style={{ maxWidth: 300, background: 'var(--bg-card)', borderRadius: 24, padding: '26px 22px 22px' }}>
             <div className="flex items-center justify-center rounded-2xl mx-auto mb-4" style={{ width: 48, height: 48, background: 'rgba(224,80,80,0.1)' }}>
               <TrashBinMinimalistic size={22} color="#e05050" weight="Bold" />
             </div>
@@ -685,7 +694,8 @@ export const HabitsPage: React.FC = () => {
               >Delete</button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       <style>{`
