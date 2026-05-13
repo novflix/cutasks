@@ -4,7 +4,6 @@ import { LogoSVG } from './LogoSVG';
 import { ClipboardList, CalendarMinimalistic, Settings, FolderOpen, Logout } from '@solar-icons/react';
 import { useAuth } from '../context/useAuth';
 import { usePomodoroSettings } from '../hooks/usePomodoroSettings';
-import { useAppSettings } from '../context/AppSettings';
 
 const TimerIcon: React.FC<{ size?: number }> = ({ size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
@@ -15,28 +14,18 @@ const TimerIcon: React.FC<{ size?: number }> = ({ size = 18 }) => (
   </svg>
 );
 
-const HabitIcon: React.FC<{ size?: number }> = ({ size = 18 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 2c0 0-4 3.5-4 8a4 4 0 0 0 8 0c0-4.5-4-8-4-8z" />
-    <path d="M8.5 17.5C6 16.5 4 14 4 11" />
-    <path d="M15.5 17.5C18 16.5 20 14 20 11" />
-    <path d="M12 21v-4" />
-  </svg>
-);
 
 interface NavItemDef {
   path: string;
   label: string;
   Icon: React.FC<{ size?: number }>;
   pomodoro?: boolean;
-  habit?: boolean;
 }
 
 const BASE_NAV: NavItemDef[] = [
   { path: '/tasks',    label: 'Tasks',    Icon: ClipboardList },
   { path: '/calendar', label: 'Calendar', Icon: CalendarMinimalistic },
   { path: '/projects', label: 'Projects', Icon: FolderOpen },
-  { path: '/habits',   label: 'Habits',   Icon: HabitIcon, habit: true },
   { path: '/pomodoro', label: 'Pomodoro', Icon: TimerIcon, pomodoro: true },
   { path: '/settings', label: 'Settings', Icon: Settings },
 ];
@@ -49,12 +38,10 @@ interface Props {
 export const Sidebar: React.FC<Props> = ({ dark }) => {
   const { user, logOut } = useAuth();
   const { settings } = usePomodoroSettings();
-  const { habitShowInNav } = useAppSettings();
   const [loggingOut, setLoggingOut] = useState(false);
 
   const NAV = BASE_NAV.filter(item => {
     if (item.pomodoro) return settings.showInNav;
-    if (item.habit) return habitShowInNav;
     return true;
   });
 

@@ -21,9 +21,6 @@ interface AppSettingsValue {
 
   pomodoro: PomodoroSettings;
   updatePomodoro: (patch: Partial<PomodoroSettings>) => void;
-
-  habitShowInNav: boolean;
-  setHabitShowInNav: (v: boolean) => void;
 }
 
 const AppSettingsContext = createContext<AppSettingsValue | null>(null);
@@ -67,20 +64,12 @@ export function AppSettingsProvider({ children }: { children: React.ReactNode })
     return DEFAULTS;
   });
 
-  const [habitShowInNav, setHabitShowInNavState] = useState<boolean>(() => {
-    try {
-      const v = localStorage.getItem('cutasks-habit-show-in-nav');
-      if (v === 'false') return false;
-    } catch { /* ignore */ }
-    return true;
-  });
-
   // Apply theme to DOM whenever it changes
   useThemeApply(theme);
 
   // Collect current settings for the sync hook
   const current = (): AllSettings => ({
-    theme, sortField, deletionDelay, pomodoro, habitShowInNav,
+    theme, sortField, deletionDelay, pomodoro,
   });
 
   // Called by useSettingsSync when a newer remote snapshot arrives
@@ -89,7 +78,6 @@ export function AppSettingsProvider({ children }: { children: React.ReactNode })
     setSortState(s.sortField);
     setDelState(s.deletionDelay);
     setPomoState(s.pomodoro);
-    if (s.habitShowInNav !== undefined) setHabitShowInNavState(s.habitShowInNav);
   }, []);
 
   const { push } = useSettingsSync(user?.uid ?? null, onRemoteUpdate);
@@ -100,19 +88,19 @@ export function AppSettingsProvider({ children }: { children: React.ReactNode })
     setThemeState(t);
     push({ ...current(), theme: t });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [push, sortField, deletionDelay, pomodoro, habitShowInNav]);
+  }, [push, sortField, deletionDelay, pomodoro]);
 
   const setSortField = useCallback((f: SortField) => {
     setSortState(f);
     push({ ...current(), sortField: f });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [push, theme, deletionDelay, pomodoro, habitShowInNav]);
+  }, [push, theme, deletionDelay, pomodoro]);
 
   const setDeletionDelay = useCallback((d: DeletionDelay) => {
     setDelState(d);
     push({ ...current(), deletionDelay: d });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [push, theme, sortField, pomodoro, habitShowInNav]);
+  }, [push, theme, sortField, pomodoro]);
 
   const updatePomodoro = useCallback((patch: Partial<PomodoroSettings>) => {
     setPomoState(prev => {
@@ -121,14 +109,7 @@ export function AppSettingsProvider({ children }: { children: React.ReactNode })
       return next;
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [push, theme, sortField, deletionDelay, habitShowInNav]);
-
-  const setHabitShowInNav = useCallback((v: boolean) => {
-    setHabitShowInNavState(v);
-    try { localStorage.setItem('cutasks-habit-show-in-nav', String(v)); } catch { /* ignore */ }
-    push({ ...current(), habitShowInNav: v });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [push, theme, sortField, deletionDelay, pomodoro]);
+  }, [push, theme, sortField, deletionDelay]);
 
   const dark = theme !== 'light';
 
@@ -138,7 +119,6 @@ export function AppSettingsProvider({ children }: { children: React.ReactNode })
       sortField, setSortField,
       deletionDelay, setDeletionDelay,
       pomodoro, updatePomodoro,
-      habitShowInNav, setHabitShowInNav,
     }}>
       <PomodoroProvider settings={pomodoro} update={updatePomodoro}>
         {children}

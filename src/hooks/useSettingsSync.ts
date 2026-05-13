@@ -6,7 +6,6 @@
  *   sf  – sort field:    'c' | 'p' | 'dl' (createdAt / priority / deadline)
  *   dd  – deletion delay:'i' | '1' | '3'  (immediate / 24h / 3d)
  *   pm  – pomodoro:      compact number-encoded object (see below)
- *   hn  – habitShowInNav: 0 | 1
  *   _ts – last updated:  server timestamp (conflict resolution)
  *
  * Pomodoro packed as a single object with short keys:
@@ -44,7 +43,6 @@ const LS_THEME   = 'cutasks-theme';
 const LS_SORT    = 'cutasks_sort';
 const LS_DEL     = 'cutasks-deletion-delay';
 const LS_POMO    = 'cutasks-pomodoro-settings';
-const LS_HABIT_NAV = 'cutasks-habit-show-in-nav';
 const LS_SYNC_TS = 'cutasks-settings-ts'; // last synced remote timestamp (ms)
 
 // ─── Compact encode / decode ──────────────────────────────────────────────────
@@ -57,7 +55,6 @@ type CompactDoc = {
     w?: number; s?: number; l?: number; li?: number;
     sn?: 0 | 1; ab?: 0 | 1; ap?: 0 | 1;
   };
-  hn?: 0 | 1;
   _ts?: unknown; // serverTimestamp
 };
 
@@ -73,7 +70,6 @@ export interface AllSettings {
   sortField: SortField;
   deletionDelay: DeletionDelay;
   pomodoro: PomodoroSettings;
-  habitShowInNav: boolean;
 }
 
 const POMO_DEFAULTS: PomodoroSettings = {
@@ -87,7 +83,6 @@ function readLocal(): AllSettings {
   let sortField: SortField = 'createdAt';
   let deletionDelay: DeletionDelay = '24h';
   let pomodoro: PomodoroSettings = { ...POMO_DEFAULTS };
-  let habitShowInNav = true;
 
   try {
     const t = localStorage.getItem(LS_THEME);
@@ -111,12 +106,7 @@ function readLocal(): AllSettings {
     if (pm) pomodoro = { ...POMO_DEFAULTS, ...JSON.parse(pm) };
   } catch { /* ignore */ }
 
-  try {
-    const hn = localStorage.getItem(LS_HABIT_NAV);
-    if (hn === 'false') habitShowInNav = false;
-  } catch { /* ignore */ }
-
-  return { theme, sortField, deletionDelay, pomodoro, habitShowInNav };
+  return { theme, sortField, deletionDelay, pomodoro };
 }
 
 function writeLocal(s: AllSettings) {
@@ -125,7 +115,6 @@ function writeLocal(s: AllSettings) {
     localStorage.setItem(LS_SORT, JSON.stringify({ field: s.sortField }));
     localStorage.setItem(LS_DEL, s.deletionDelay);
     localStorage.setItem(LS_POMO, JSON.stringify(s.pomodoro));
-    localStorage.setItem(LS_HABIT_NAV, String(s.habitShowInNav));
   } catch { /* ignore */ }
 }
 
@@ -144,7 +133,6 @@ function encode(s: AllSettings): CompactDoc {
       ab: pm.autoStartBreaks  ? 1 : 0,
       ap: pm.autoStartPomodoros ? 1 : 0,
     },
-    hn: s.habitShowInNav ? 1 : 0,
     _ts: serverTimestamp(),
   };
 }
@@ -164,7 +152,6 @@ function decode(data: CompactDoc): AllSettings {
       autoStartBreaks:     pm.ab === 1,
       autoStartPomodoros:  pm.ap === 1,
     },
-    habitShowInNav: data.hn !== 0,
   };
 }
 
