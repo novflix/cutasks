@@ -11,7 +11,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
-import { useAuth } from '../context/useAuth';
+import { useAuth } from '../context/AuthContext';
 import type { Project, ProjectTask, ProjectSection, ProjectColor, Priority } from '../types';
 import { getDeletionDelay } from './useTaskDeletion';
 

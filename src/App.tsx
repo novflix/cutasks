@@ -1,6 +1,6 @@
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useAppSettings } from './context/AppSettings';
-import { useAuth } from './context/useAuth';
+import { useAuth } from './context/AuthContext';
 import { Sidebar } from './components/Sidebar';
 import { TasksPage } from './pages/TasksPage';
 import { CalendarPage } from './pages/CalendarPage';

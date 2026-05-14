@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useProjects } from '../hooks/useProjects';
-import { ProjectDetail } from './ProjectsPage';
+import { ProjectDetail } from '../components/ProjectDetail';
 import { ProjectDetailSkeleton, SkeletonStyles } from '../components/SkeletonLoader';
 
 export const ProjectDetailPage: React.FC = () => {

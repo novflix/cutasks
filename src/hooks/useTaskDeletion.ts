@@ -9,7 +9,7 @@ import {
   orderBy,
 } from 'firebase/firestore';
 import { db } from '../firebase/config';
-import { useAuth } from '../context/useAuth';
+import { useAuth } from '../context/AuthContext';
 import type { Project } from '../types';
 
 export type DeletionDelay = 'immediate' | '24h' | '3d';

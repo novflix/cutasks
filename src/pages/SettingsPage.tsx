@@ -1,8 +1,8 @@
 import React from 'react';
 import { Sun, Moon, CloudStorm, Logout, TrashBinMinimalistic } from '@solar-icons/react';
 import type { Theme } from '../hooks/useTheme';
-import { useAuth } from '../context/useAuth';
-import { usePomodoroSettings } from '../hooks/usePomodoroSettings';
+import { useAuth } from '../context/AuthContext';
+import { usePomodoroSettings } from '../context/PomodoroContext';
 import type { SortField } from '../hooks/useTaskSort';
 import type { DeletionDelay } from '../hooks/useTaskDeletion';
 

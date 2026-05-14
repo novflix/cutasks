@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { LogoSVG } from './LogoSVG';
 import { ClipboardList, CalendarMinimalistic, Settings, FolderOpen, Logout } from '@solar-icons/react';
-import { useAuth } from '../context/useAuth';
-import { usePomodoroSettings } from '../hooks/usePomodoroSettings';
+import { useAuth } from '../context/AuthContext';
+import { usePomodoroSettings } from '../context/PomodoroContext';
 
 const TimerIcon: React.FC<{ size?: number }> = ({ size = 18 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">

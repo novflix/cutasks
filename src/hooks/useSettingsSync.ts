@@ -36,7 +36,7 @@ import { db } from '../firebase/config';
 import type { Theme } from './useTheme';
 import type { SortField } from './useTaskSort';
 import type { DeletionDelay } from './useTaskDeletion';
-import type { PomodoroSettings } from '../context/pomodoroContextValue';
+import type { PomodoroSettings } from '../context/PomodoroContext';
 
 // ─── Local-storage keys (unchanged to preserve existing local data) ───────────
 const LS_THEME   = 'cutasks-theme';

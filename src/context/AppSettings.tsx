@@ -1,12 +1,12 @@
 import React, { useState, useCallback, useContext, createContext } from 'react';
-import { useAuth } from './useAuth';
+import { useAuth } from './AuthContext';
 import { useSettingsSync, type AllSettings } from '../hooks/useSettingsSync';
 import { useThemeApply, readInitialTheme } from '../hooks/useTheme';
 import { PomodoroProvider } from './PomodoroContext';
 import type { Theme } from '../hooks/useTheme';
 import type { SortField } from '../hooks/useTaskSort';
 import type { DeletionDelay } from '../hooks/useTaskDeletion';
-import type { PomodoroSettings } from './pomodoroContextValue';
+import type { PomodoroSettings } from './PomodoroContext';
 
 interface AppSettingsValue {
   theme: Theme;

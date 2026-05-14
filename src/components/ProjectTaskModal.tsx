@@ -1,13 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
-import type { Priority, Task } from '../types';
+import type { Priority, ProjectTask } from '../types';
 import { Modal } from './Modal';
 import { DatePicker } from './DatePicker';
 
 interface Props {
   mode: 'create' | 'edit';
-  initial?: Task;
+  initial?: ProjectTask;
+  defaultSectionId?: string;
   onClose: () => void;
-  onSubmit: (data: { title: string; description?: string; priority: Priority; deadline?: string }) => void;
+  onSubmit: (data: {
+    title: string;
+    description?: string;
+    priority: Priority;
+    deadline?: string;
+    sectionId?: string;
+  }) => void;
 }
 
 const PRIORITIES: { value: Priority; label: string; cls: string }[] = [
@@ -16,30 +23,42 @@ const PRIORITIES: { value: Priority; label: string; cls: string }[] = [
   { value: 'high',   label: 'High',   cls: 'border-blush-200 text-blush-500 bg-blush-100 dark:bg-blush-500/10 dark:border-blush-500/30' },
 ];
 
-export const TaskModal: React.FC<Props> = ({ mode, initial, onClose, onSubmit }) => {
+export const ProjectTaskModal: React.FC<Props> = ({
+  mode,
+  initial,
+  defaultSectionId,
+  onClose,
+  onSubmit,
+}) => {
   const [title, setTitle]       = useState(initial?.title ?? '');
   const [desc, setDesc]         = useState(initial?.description ?? '');
   const [priority, setPriority] = useState<Priority>(initial?.priority ?? 'medium');
   const [deadline, setDeadline] = useState(initial?.deadline ?? '');
+  const sectionId               = initial?.sectionId ?? defaultSectionId;
   const [shake, setShake]       = useState(false);
   const titleRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => { setTimeout(() => titleRef.current?.focus(), 100); }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     if (!title.trim()) {
       setShake(true);
       setTimeout(() => setShake(false), 400);
       return;
     }
-    onSubmit({ title, description: desc || undefined, priority, deadline: deadline || undefined });
+    onSubmit({
+      title,
+      description: desc || undefined,
+      priority,
+      deadline: deadline || undefined,
+      sectionId: sectionId || undefined,
+    });
     onClose();
   };
 
   return (
     <Modal title={mode === 'create' ? 'New task' : 'Edit task'} onClose={onClose}>
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4">
         {/* Title */}
         <div className="flex flex-col gap-1.5">
           <label className="text-xs font-medium uppercase tracking-wide" style={{ color: 'var(--text-muted)' }}>
@@ -49,6 +68,7 @@ export const TaskModal: React.FC<Props> = ({ mode, initial, onClose, onSubmit })
             ref={titleRef}
             value={title}
             onChange={e => setTitle(e.target.value)}
+            onKeyDown={e => { if (e.key === 'Enter') handleSubmit(); }}
             placeholder="What needs to be done?"
             className={`input-field ${shake ? 'animate-wiggle' : ''}`}
             maxLength={120}
@@ -111,14 +131,15 @@ export const TaskModal: React.FC<Props> = ({ mode, initial, onClose, onSubmit })
             Cancel
           </button>
           <button
-            type="submit"
+            type="button"
+            onClick={handleSubmit}
             className="flex-1 py-2.5 rounded-2xl text-sm font-medium font-body transition-all active:scale-95 hover:opacity-90 shadow-soft"
             style={{ background: 'var(--text-main)', color: 'var(--bg-main)' }}
           >
-            {mode === 'create' ? 'Add task' : 'Save changes'}
+            {mode === 'create' ? 'Add task' : 'Save'}
           </button>
         </div>
-      </form>
+      </div>
     </Modal>
   );
 };

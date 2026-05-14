@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { usePomodoroSettings } from '../hooks/usePomodoroSettings';
+import { usePomodoroSettings } from '../context/PomodoroContext';
 
 type Mode = 'work' | 'short' | 'long';
 
