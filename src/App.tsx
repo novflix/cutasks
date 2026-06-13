@@ -226,6 +226,9 @@ export default function App() {
                   onClick={() => toggleComplete(task.id)}
                   title={task.completed ? 'Undo' : 'Complete'}
                 >
+                  <span className="particles">
+                    <i /><i /><i /><i /><i /><i />
+                  </span>
                   <svg viewBox="0 0 24 24" fill="none" className="check-icon">
                     <polyline points="5 12 10 17 19 7" className="check-path" />
                   </svg>
