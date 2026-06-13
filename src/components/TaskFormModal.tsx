@@ -3,6 +3,7 @@ import { CloseCircle, CalendarMinimalistic, PenNewRound } from '@solar-icons/rea
 import type { Task, Priority } from '../types';
 import { formatDate } from '../utils';
 import DatePicker from './DatePicker';
+import TagInput from './TagInput';
 
 interface TaskFormModalProps {
   editingTask: Task | null;
@@ -10,17 +11,20 @@ interface TaskFormModalProps {
   description: string;
   priority: Priority;
   deadline: string;
+  tags: string[];
+  allTags: string[];
   onTitleChange: (v: string) => void;
   onDescChange: (v: string) => void;
   onPriorityChange: (v: Priority) => void;
   onDeadlineChange: (v: string) => void;
+  onTagsChange: (v: string[]) => void;
   onSubmit: (e: React.FormEvent) => void;
   onClose: () => void;
 }
 
 export default function TaskFormModal({
-  editingTask, title, description, priority, deadline,
-  onTitleChange, onDescChange, onPriorityChange, onDeadlineChange,
+  editingTask, title, description, priority, deadline, tags, allTags,
+  onTitleChange, onDescChange, onPriorityChange, onDeadlineChange, onTagsChange,
   onSubmit, onClose,
 }: TaskFormModalProps) {
   const titleRef = useRef<HTMLInputElement>(null);
@@ -90,6 +94,14 @@ export default function TaskFormModal({
                 min={new Date().toISOString().split('T')[0]}
               />
             </div>
+          </div>
+          <div className="form-group">
+            <TagInput
+              label="Tags"
+              tags={tags}
+              allTags={allTags}
+              onChange={onTagsChange}
+            />
           </div>
           {editingTask && (
             <div className="detail-dates">

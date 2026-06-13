@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import './App.css';
 import type { Task, Priority } from './types';
 import { generateId } from './utils';
-import { loadTasks, saveTasks } from './storage';
+import { loadTasks, saveTasks, getAllTags } from './storage';
 import Header from './components/Header';
 import Toolbar from './components/Toolbar';
 import TaskList from './components/TaskList';
@@ -21,6 +21,7 @@ export default function App() {
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState<Priority>('medium');
   const [deadline, setDeadline] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
   const [filter, setFilter] = useState<FilterType>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -61,12 +62,15 @@ export default function App() {
     overdue: tasks.filter((t) => !t.completed && getDeadlineStatus(t.deadline, t.completed) === 'overdue').length,
   }), [tasks]);
 
+  const allTags = useMemo(() => getAllTags(tasks), [tasks]);
+
   function openCreateForm() {
     setEditingTask(null);
     setTitle('');
     setDescription('');
     setPriority('medium');
     setDeadline('');
+    setTags([]);
     setShowForm(true);
   }
 
@@ -76,6 +80,7 @@ export default function App() {
     setDescription(task.description);
     setPriority(task.priority);
     setDeadline(task.deadline || '');
+    setTags(task.tags || []);
     setShowForm(true);
   }
 
@@ -86,6 +91,7 @@ export default function App() {
     setDescription('');
     setPriority('medium');
     setDeadline('');
+    setTags([]);
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -99,7 +105,7 @@ export default function App() {
       setTasks((prev) =>
         prev.map((t) =>
           t.id === editingTask.id
-            ? { ...t, title: trimmedTitle, description: description.trim(), priority, deadline, updatedAt: now }
+            ? { ...t, title: trimmedTitle, description: description.trim(), priority, deadline, tags, updatedAt: now }
             : t
         )
       );
@@ -110,6 +116,7 @@ export default function App() {
         description: description.trim(),
         priority,
         deadline,
+        tags,
         completed: false,
         createdAt: now,
         updatedAt: now,
@@ -167,10 +174,13 @@ export default function App() {
           description={description}
           priority={priority}
           deadline={deadline}
+          tags={tags}
+          allTags={allTags}
           onTitleChange={setTitle}
           onDescChange={setDescription}
           onPriorityChange={setPriority}
           onDeadlineChange={setDeadline}
+          onTagsChange={setTags}
           onSubmit={handleSubmit}
           onClose={closeForm}
         />

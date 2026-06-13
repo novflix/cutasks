@@ -42,6 +42,9 @@ export default function TaskCard({ task, onToggle, onView, onEdit, onDelete }: T
               {formatDeadline(task.deadline)}
             </span>
           )}
+          {task.tags.map((tag) => (
+            <span key={tag} className="user-tag">{tag}</span>
+          ))}
         </div>
       </div>
       <div className="task-actions">

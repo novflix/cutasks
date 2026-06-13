@@ -37,6 +37,13 @@ export default function TaskDetailModal({ task, onClose, onEdit }: TaskDetailMod
               </span>
             )}
           </div>
+          {task.tags.length > 0 && (
+            <div className="detail-tags">
+              {task.tags.map((tag) => (
+                <span key={tag} className="user-tag">{tag}</span>
+              ))}
+            </div>
+          )}
           <div className="detail-dates">
             <div className="date-item">
               <CalendarMinimalistic size={14} />
