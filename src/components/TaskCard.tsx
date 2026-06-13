@@ -43,7 +43,7 @@ export default function TaskCard({ task, onToggle, onView, onEdit, onDelete }: T
             </span>
           )}
           {task.tags.map((tag) => (
-            <span key={tag} className="user-tag">{tag}</span>
+            <span key={tag} className="user-tag">#{tag}</span>
           ))}
         </div>
       </div>

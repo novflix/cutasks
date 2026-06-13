@@ -58,7 +58,7 @@ export default function TagInput({ tags, allTags, onChange, label }: TagInputPro
       <div className="tag-input-box" onClick={() => setOpen(true)}>
         {tags.map((tag) => (
           <span key={tag} className="tag-chip">
-            {tag}
+            #{tag}
             <button type="button" className="tag-chip-remove" onClick={() => removeTag(tag)}>
               <CloseCircle size={12} />
             </button>
@@ -83,7 +83,7 @@ export default function TagInput({ tags, allTags, onChange, label }: TagInputPro
               className="tag-dropdown-item"
               onClick={() => addTag(tag)}
             >
-              {tag}
+              #{tag}
             </button>
           ))}
         </div>

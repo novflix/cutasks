@@ -1219,12 +1219,15 @@ body {
   display: inline-block;
   padding: 2px 8px;
   background: rgba(150, 150, 150, 0.1);
-  color: var(--text-secondary);
+  color: var(--text-muted);
   border-radius: 4px;
   font-size: 0.65rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.02em;
+}
+
+.user-tag::first-letter {
+  color: var(--text-dim);
 }
 
 .detail-tags {
@@ -1235,6 +1238,6 @@ body {
 }
 
 .detail-tags .user-tag {
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   padding: 3px 10px;
 }
