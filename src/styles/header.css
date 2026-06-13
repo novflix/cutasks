@@ -1,0 +1,64 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 28px 0 20px;
+  background: linear-gradient(to bottom, var(--bg) 70%, transparent);
+}
+
+.header-content {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  height: 38px;
+  width: auto;
+  display: block;
+}
+
+.logo-full {
+  display: none;
+}
+
+.logo-mini {
+  display: block;
+}
+
+.stats {
+  display: flex;
+  gap: 20px;
+}
+
+.stat {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.stat strong {
+  color: var(--text);
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.stat-active strong {
+  color: var(--primary);
+}
+
+.stat-done strong {
+  color: var(--success);
+}
+
+.stat-overdue strong {
+  color: #ef5350;
+}

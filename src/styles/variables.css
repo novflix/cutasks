@@ -1,0 +1,68 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #121212;
+  --bg-card: #1e1e1e;
+  --bg-elevated: #252525;
+  --bg-hover: #2a2a2a;
+  --bg-input: #1a1a1a;
+  --border: #333333;
+  --border-subtle: #2a2a2a;
+  --border-focus: #ed9b6d;
+  --text: #f0f0f0;
+  --text-secondary: #b0b0b0;
+  --text-muted: #777777;
+  --text-dim: #555555;
+  --primary: #ed9b6d;
+  --primary-hover: #f5ab80;
+  --primary-subtle: rgba(237, 155, 109, 0.12);
+  --primary-glow: rgba(237, 155, 109, 0.25);
+  --danger: #ef5350;
+  --danger-subtle: rgba(239, 83, 80, 0.1);
+  --success: #66bb6a;
+  --success-subtle: rgba(102, 187, 106, 0.1);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.6);
+  --transition: 0.15s ease;
+  --transition-fast: 0.1s ease;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 680px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 20px 60px;
+}
