@@ -64,6 +64,11 @@ export default function App() {
 
   const allTags = useMemo(() => getAllTags(tasks), [tasks]);
 
+  const activeViewingTask = useMemo(
+    () => (viewingTask ? tasks.find((t) => t.id === viewingTask.id) ?? null : null),
+    [tasks, viewingTask]
+  );
+
   function openCreateForm() {
     setEditingTask(null);
     setTitle('');
@@ -159,11 +164,12 @@ export default function App() {
         />
       </main>
 
-      {viewingTask && (
+      {activeViewingTask && (
         <TaskDetailModal
-          task={viewingTask}
+          task={activeViewingTask}
           onClose={() => setViewingTask(null)}
           onEdit={openEditForm}
+          onToggle={toggleComplete}
         />
       )}
 

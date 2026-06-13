@@ -6,13 +6,14 @@ interface TaskDetailModalProps {
   task: Task;
   onClose: () => void;
   onEdit: (task: Task) => void;
+  onToggle: (id: string) => void;
 }
 
 function capitalize(s: string) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-export default function TaskDetailModal({ task, onClose, onEdit }: TaskDetailModalProps) {
+export default function TaskDetailModal({ task, onClose, onEdit, onToggle }: TaskDetailModalProps) {
   const dlStatus = getDeadlineStatus(task.deadline, task.completed);
 
   return (
@@ -22,7 +23,7 @@ export default function TaskDetailModal({ task, onClose, onEdit }: TaskDetailMod
           <div className="detail-top-left">
             <button
               className={`task-check ${task.completed ? 'checked' : ''} detail-check`}
-              onClick={() => {}}
+              onClick={() => onToggle(task.id)}
               title={task.completed ? 'Completed' : 'Active'}
             >
               <svg viewBox="0 0 24 24" fill="none" className="check-icon">
