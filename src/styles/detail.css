@@ -128,13 +128,13 @@
 .detail-tags {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .detail-tags .user-tag {
-  font-size: 0.72rem;
-  padding: 3px 10px;
+  font-size: 0.78rem;
+  padding: 4px 12px;
 }
 
 .detail-actions {

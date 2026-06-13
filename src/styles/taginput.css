@@ -37,16 +37,8 @@
 }
 
 .tag-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  background: var(--primary-subtle);
-  color: var(--primary);
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  white-space: nowrap;
+  gap: 2px;
+  cursor: default;
 }
 
 .tag-chip-remove {
@@ -88,7 +80,7 @@
   z-index: 100;
   background: var(--bg-elevated);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   box-shadow: var(--shadow-lg);
   max-height: 160px;
   overflow-y: auto;

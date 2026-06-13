@@ -74,18 +74,18 @@
 }
 
 .user-tag {
-  display: inline-block;
-  padding: 2px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
   background: rgba(150, 150, 150, 0.1);
   color: var(--text-muted);
-  border-radius: 4px;
-  font-size: 0.65rem;
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.02em;
-}
-
-.user-tag::first-letter {
-  color: var(--text-dim);
+  white-space: nowrap;
+  line-height: 1.4;
 }
 
 .priority-selector {

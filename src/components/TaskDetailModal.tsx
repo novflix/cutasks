@@ -1,6 +1,6 @@
 import { CloseCircle, CalendarMinimalistic, PenNewRound, Flag2, Tag } from '@solar-icons/react';
 import type { Task } from '../types';
-import { formatDate, formatDeadline, getDeadlineStatus } from '../utils';
+import { formatDate, formatDeadline, getDeadlineStatus, getTagColor } from '../utils';
 
 interface TaskDetailModalProps {
   task: Task;
@@ -111,9 +111,14 @@ export default function TaskDetailModal({ task, onClose, onEdit, onToggle }: Tas
                 Tags
               </span>
               <div className="detail-tags">
-                {task.tags.map((tag) => (
-                  <span key={tag} className="user-tag">#{tag}</span>
-                ))}
+                {task.tags.map((tag) => {
+                  const c = getTagColor(tag);
+                  return (
+                    <span key={tag} className="user-tag" style={{ background: c.bg, color: c.text }}>
+                      #{tag}
+                    </span>
+                  );
+                })}
               </div>
             </div>
           </>

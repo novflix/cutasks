@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { CloseCircle } from '@solar-icons/react';
+import { getTagColor } from '../utils';
 
 interface TagInputProps {
   tags: string[];
@@ -56,14 +57,17 @@ export default function TagInput({ tags, allTags, onChange, label }: TagInputPro
     <div className="tag-input" ref={ref}>
       {label && <label className="tag-input-label">{label}</label>}
       <div className="tag-input-box" onClick={() => setOpen(true)}>
-        {tags.map((tag) => (
-          <span key={tag} className="tag-chip">
-            #{tag}
-            <button type="button" className="tag-chip-remove" onClick={() => removeTag(tag)}>
-              <CloseCircle size={12} />
-            </button>
-          </span>
-        ))}
+        {tags.map((tag) => {
+          const c = getTagColor(tag);
+          return (
+            <span key={tag} className="user-tag tag-chip" style={{ background: c.bg, color: c.text }}>
+              #{tag}
+              <button type="button" className="tag-chip-remove" onClick={() => removeTag(tag)}>
+                <CloseCircle size={12} />
+              </button>
+            </span>
+          );
+        })}
         <input
           type="text"
           className="tag-input-field"

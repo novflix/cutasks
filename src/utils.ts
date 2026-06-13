@@ -2,6 +2,29 @@ export function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
+const TAG_COLORS = [
+  { bg: 'rgba(237, 155, 109, 0.15)', text: '#ed9b6d' },
+  { bg: 'rgba(102, 187, 106, 0.15)', text: '#66bb6a' },
+  { bg: 'rgba(100, 181, 246, 0.15)', text: '#64b5f6' },
+  { bg: 'rgba(186, 104, 200, 0.15)', text: '#ba68c8' },
+  { bg: 'rgba(255, 183, 77, 0.15)', text: '#ffb74d' },
+  { bg: 'rgba(77, 182, 172, 0.15)', text: '#4db6ac' },
+  { bg: 'rgba(229, 115, 115, 0.15)', text: '#e57373' },
+  { bg: 'rgba(149, 117, 205, 0.15)', text: '#9575cd' },
+];
+
+function hashStr(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) {
+    h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  }
+  return Math.abs(h);
+}
+
+export function getTagColor(tag: string) {
+  return TAG_COLORS[hashStr(tag) % TAG_COLORS.length];
+}
+
 export function formatDate(ts: number) {
   return new Date(ts).toLocaleDateString('en-US', {
     day: 'numeric',
