@@ -486,7 +486,6 @@ body {
   letter-spacing: 0.04em;
   padding: 2px 6px;
   border-radius: 4px;
-  align-self: flex-start;
 }
 
 .priority-low {
@@ -501,6 +500,53 @@ body {
 
 .priority-high {
   background: rgba(239, 83, 80, 0.15);
+  color: #ef5350;
+}
+
+.task-tags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.deadline-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: capitalize;
+}
+
+.deadline-normal {
+  background: rgba(150, 150, 150, 0.12);
+  color: var(--text-muted);
+}
+
+.deadline-soon {
+  background: rgba(237, 155, 109, 0.15);
+  color: var(--primary);
+}
+
+.deadline-today {
+  background: rgba(255, 183, 77, 0.2);
+  color: #ffb74d;
+}
+
+.deadline-overdue {
+  background: rgba(239, 83, 80, 0.15);
+  color: #ef5350;
+}
+
+.task-overdue {
+  border-left: 2px solid #ef5350;
+}
+
+.stat-overdue strong {
   color: #ef5350;
 }
 
@@ -639,6 +685,16 @@ body {
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+.form-row {
+  display: flex;
+  gap: 12px;
+}
+
+.form-group-half {
+  flex: 1;
+  min-width: 0;
 }
 
 .form-group label {
@@ -822,5 +878,10 @@ body {
 
   .task-desc {
     font-size: 0.8rem;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 16px;
   }
 }

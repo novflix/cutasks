@@ -21,7 +21,9 @@ const STORAGE_KEY = 'cutasks_tasks';
 function loadTasks(): Task[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return parsed.map((t: Task) => ({ ...t, deadline: t.deadline || '' }));
   } catch {
     return [];
   }
@@ -41,6 +43,25 @@ function formatDate(ts: number) {
   });
 }
 
+function formatDeadline(dateStr: string) {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function getDeadlineStatus(dateStr: string, completed: boolean): 'overdue' | 'today' | 'soon' | 'normal' | '' {
+  if (!dateStr || completed) return '';
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  const deadline = new Date(dateStr + 'T00:00:00');
+  const diff = deadline.getTime() - now.getTime();
+  const days = diff / (1000 * 60 * 60 * 24);
+  if (days < 0) return 'overdue';
+  if (days === 0) return 'today';
+  if (days <= 3) return 'soon';
+  return 'normal';
+}
+
 type FilterType = 'all' | 'active' | 'completed';
 
 export default function App() {
@@ -51,6 +72,7 @@ export default function App() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState<Priority>('medium');
+  const [deadline, setDeadline] = useState('');
   const [filter, setFilter] = useState<FilterType>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const titleRef = useRef<HTMLInputElement>(null);
@@ -81,7 +103,13 @@ export default function App() {
     }
     return result.sort((a, b) => {
       if (a.completed !== b.completed) return a.completed ? 1 : -1;
-      return priorityOrder[a.priority] - priorityOrder[b.priority];
+      const pa = priorityOrder[a.priority];
+      const pb = priorityOrder[b.priority];
+      if (pa !== pb) return pa - pb;
+      if (a.deadline && b.deadline) return a.deadline.localeCompare(b.deadline);
+      if (a.deadline) return -1;
+      if (b.deadline) return 1;
+      return b.createdAt - a.createdAt;
     });
   }, [tasks, filter, searchQuery]);
 
@@ -89,6 +117,7 @@ export default function App() {
     total: tasks.length,
     active: tasks.filter((t) => !t.completed).length,
     completed: tasks.filter((t) => t.completed).length,
+    overdue: tasks.filter((t) => !t.completed && getDeadlineStatus(t.deadline, t.completed) === 'overdue').length,
   }), [tasks]);
 
   function openCreateForm() {
@@ -96,6 +125,7 @@ export default function App() {
     setTitle('');
     setDescription('');
     setPriority('medium');
+    setDeadline('');
     setShowForm(true);
   }
 
@@ -108,6 +138,7 @@ export default function App() {
     setTitle(task.title);
     setDescription(task.description);
     setPriority(task.priority);
+    setDeadline(task.deadline || '');
     setShowForm(true);
   }
 
@@ -117,6 +148,7 @@ export default function App() {
     setTitle('');
     setDescription('');
     setPriority('medium');
+    setDeadline('');
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -130,7 +162,7 @@ export default function App() {
       setTasks((prev) =>
         prev.map((t) =>
           t.id === editingTask.id
-            ? { ...t, title: trimmedTitle, description: description.trim(), priority, updatedAt: now }
+            ? { ...t, title: trimmedTitle, description: description.trim(), priority, deadline, updatedAt: now }
             : t
         )
       );
@@ -140,6 +172,7 @@ export default function App() {
         title: trimmedTitle,
         description: description.trim(),
         priority,
+        deadline,
         completed: false,
         createdAt: now,
         updatedAt: now,
@@ -183,6 +216,11 @@ export default function App() {
             <span className="stat stat-done">
               <strong>{stats.completed}</strong> done
             </span>
+            {stats.overdue > 0 && (
+              <span className="stat stat-overdue">
+                <strong>{stats.overdue}</strong> overdue
+              </span>
+            )}
           </div>
         </div>
       </header>
@@ -232,50 +270,61 @@ export default function App() {
           </div>
         ) : (
           <ul className="task-list">
-            {filteredTasks.map((task) => (
-              <li
-                key={task.id}
-                className={`task-item ${task.completed ? 'completed' : ''}`}
-              >
-                <button
-                  className={`task-check ${task.completed ? 'checked' : ''}`}
-                  onClick={() => toggleComplete(task.id)}
-                  title={task.completed ? 'Undo' : 'Complete'}
+            {filteredTasks.map((task) => {
+              const dlStatus = getDeadlineStatus(task.deadline, task.completed);
+              return (
+                <li
+                  key={task.id}
+                  className={`task-item ${task.completed ? 'completed' : ''} ${dlStatus === 'overdue' ? 'task-overdue' : ''}`}
                 >
-                  <span className="particles">
-                    <i /><i /><i /><i /><i /><i />
-                  </span>
-                  <svg viewBox="0 0 24 24" fill="none" className="check-icon">
-                    <polyline points="5 12 10 17 19 7" className="check-path" />
-                  </svg>
-                </button>
-                <div className="task-body" onClick={() => openViewModal(task)}>
-                  <h3 className="task-title">{task.title}</h3>
-                  {task.description && (
-                    <p className="task-desc">{task.description}</p>
-                  )}
-                  <span className={`priority-badge priority-${task.priority}`}>
-                    {task.priority}
-                  </span>
-                </div>
-                <div className="task-actions">
                   <button
-                    className="btn-icon"
-                    onClick={() => openEditForm(task)}
-                    title="Edit"
+                    className={`task-check ${task.completed ? 'checked' : ''}`}
+                    onClick={() => toggleComplete(task.id)}
+                    title={task.completed ? 'Undo' : 'Complete'}
                   >
-                    <Pen size={20} />
+                    <span className="particles">
+                      <i /><i /><i /><i /><i /><i />
+                    </span>
+                    <svg viewBox="0 0 24 24" fill="none" className="check-icon">
+                      <polyline points="5 12 10 17 19 7" className="check-path" />
+                    </svg>
                   </button>
-                  <button
-                    className="btn-icon btn-icon-danger"
-                    onClick={() => deleteTask(task.id)}
-                    title="Delete"
-                  >
-                    <TrashBinMinimalistic size={20} />
-                  </button>
-                </div>
-              </li>
-            ))}
+                  <div className="task-body" onClick={() => openViewModal(task)}>
+                    <h3 className="task-title">{task.title}</h3>
+                    {task.description && (
+                      <p className="task-desc">{task.description}</p>
+                    )}
+                    <div className="task-tags">
+                      <span className={`priority-badge priority-${task.priority}`}>
+                        {task.priority}
+                      </span>
+                      {task.deadline && (
+                        <span className={`deadline-badge deadline-${dlStatus}`}>
+                          <CalendarMinimalistic size={11} />
+                          {formatDeadline(task.deadline)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="task-actions">
+                    <button
+                      className="btn-icon"
+                      onClick={() => openEditForm(task)}
+                      title="Edit"
+                    >
+                      <Pen size={20} />
+                    </button>
+                    <button
+                      className="btn-icon btn-icon-danger"
+                      onClick={() => deleteTask(task.id)}
+                      title="Delete"
+                    >
+                      <TrashBinMinimalistic size={20} />
+                    </button>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         )}
       </main>
@@ -301,6 +350,12 @@ export default function App() {
                 <span className={`status-badge ${viewingTask.completed ? 'status-done' : 'status-active'}`}>
                   {viewingTask.completed ? 'Completed' : 'Active'}
                 </span>
+                {viewingTask.deadline && (
+                  <span className={`deadline-badge deadline-${getDeadlineStatus(viewingTask.deadline, viewingTask.completed)}`}>
+                    <CalendarMinimalistic size={11} />
+                    Due: {formatDeadline(viewingTask.deadline)}
+                  </span>
+                )}
               </div>
               <div className="detail-dates">
                 <div className="date-item">
@@ -366,19 +421,32 @@ export default function App() {
                   rows={3}
                 />
               </div>
-              <div className="form-group">
-                <label>Priority</label>
-                <div className="priority-selector">
-                  {(['low', 'medium', 'high'] as Priority[]).map((p) => (
-                    <button
-                      key={p}
-                      type="button"
-                      className={`priority-option priority-option-${p} ${priority === p ? 'selected' : ''}`}
-                      onClick={() => setPriority(p)}
-                    >
-                      {p}
-                    </button>
-                  ))}
+              <div className="form-row">
+                <div className="form-group form-group-half">
+                  <label>Priority</label>
+                  <div className="priority-selector">
+                    {(['low', 'medium', 'high'] as Priority[]).map((p) => (
+                      <button
+                        key={p}
+                        type="button"
+                        className={`priority-option priority-option-${p} ${priority === p ? 'selected' : ''}`}
+                        onClick={() => setPriority(p)}
+                      >
+                        {p}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div className="form-group form-group-half">
+                  <label htmlFor="task-deadline">Deadline</label>
+                  <input
+                    id="task-deadline"
+                    type="date"
+                    value={deadline}
+                    onChange={(e) => setDeadline(e.target.value)}
+                    className="form-input"
+                    min={new Date().toISOString().split('T')[0]}
+                  />
                 </div>
               </div>
               {editingTask && (
