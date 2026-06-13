@@ -190,6 +190,18 @@
   color: var(--text-dim);
 }
 
+.task-stripe-low {
+  border-left: 3px solid #66bb6a;
+}
+
+.task-stripe-medium {
+  border-left: 3px solid var(--primary);
+}
+
+.task-stripe-high {
+  border-left: 3px solid #ef5350;
+}
+
 .task-overdue {
-  border-left: 2px solid #ef5350;
+  border-left: 3px solid #ef5350;
 }

@@ -16,7 +16,7 @@ export default function TaskCard({ task, searchQuery, onToggle, onView, onEdit, 
   const titleParts = highlightMatch(task.title, searchQuery);
 
   return (
-    <li className={`task-item ${task.completed ? 'completed' : ''} ${dlStatus === 'overdue' ? 'task-overdue' : ''}`}>
+    <li className={`task-item task-stripe-${task.priority} ${task.completed ? 'completed' : ''} ${dlStatus === 'overdue' ? 'task-overdue' : ''}`}>
       <button
         className={`task-check ${task.completed ? 'checked' : ''}`}
         onClick={() => onToggle(task.id)}
