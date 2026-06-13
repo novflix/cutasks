@@ -283,7 +283,7 @@ export default function App() {
             </div>
             <form onSubmit={handleSubmit} className="modal-form">
               <div className="form-group">
-                <label htmlFor="task-title">Title *</label>
+                <label htmlFor="task-title">Title</label>
                 <input
                   ref={titleRef}
                   id="task-title"
@@ -313,7 +313,7 @@ export default function App() {
                   Cancel
                 </button>
                 <button type="submit" className="btn btn-primary" disabled={!title.trim()}>
-                  {editingTask ? 'Save' : 'Add'}
+                  {editingTask ? 'Save Changes' : 'Create Task'}
                 </button>
               </div>
             </form>
