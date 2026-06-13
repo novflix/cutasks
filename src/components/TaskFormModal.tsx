@@ -42,7 +42,7 @@ export default function TaskFormModal({
           </button>
         </div>
 
-        <form onSubmit={onSubmit} className="fm-body">
+        <form id="fm-hidden" onSubmit={onSubmit} className="fm-body">
           <div className="fm-field">
             <label className="fm-label">Title</label>
             <input
