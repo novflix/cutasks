@@ -10,7 +10,7 @@ import {
   PenNewRound,
 } from '@solar-icons/react';
 import './App.css';
-import type { Task } from './types';
+import type { Task, Priority } from './types';
 
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -48,6 +48,7 @@ export default function App() {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [priority, setPriority] = useState<Priority>('medium');
   const [filter, setFilter] = useState<FilterType>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const titleRef = useRef<HTMLInputElement>(null);
@@ -62,6 +63,8 @@ export default function App() {
     }
   }, [showForm]);
 
+  const priorityOrder: Record<Priority, number> = { high: 0, medium: 1, low: 2 };
+
   const filteredTasks = useMemo(() => {
     let result = tasks;
     if (filter === 'active') result = result.filter((t) => !t.completed);
@@ -74,7 +77,10 @@ export default function App() {
           t.description.toLowerCase().includes(q)
       );
     }
-    return result.sort((a, b) => b.createdAt - a.createdAt);
+    return result.sort((a, b) => {
+      if (a.completed !== b.completed) return a.completed ? 1 : -1;
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
+    });
   }, [tasks, filter, searchQuery]);
 
   const stats = useMemo(() => ({
@@ -87,6 +93,7 @@ export default function App() {
     setEditingTask(null);
     setTitle('');
     setDescription('');
+    setPriority('medium');
     setShowForm(true);
   }
 
@@ -94,6 +101,7 @@ export default function App() {
     setEditingTask(task);
     setTitle(task.title);
     setDescription(task.description);
+    setPriority(task.priority);
     setShowForm(true);
   }
 
@@ -102,6 +110,7 @@ export default function App() {
     setEditingTask(null);
     setTitle('');
     setDescription('');
+    setPriority('medium');
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -115,7 +124,7 @@ export default function App() {
       setTasks((prev) =>
         prev.map((t) =>
           t.id === editingTask.id
-            ? { ...t, title: trimmedTitle, description: description.trim(), updatedAt: now }
+            ? { ...t, title: trimmedTitle, description: description.trim(), priority, updatedAt: now }
             : t
         )
       );
@@ -124,6 +133,7 @@ export default function App() {
         id: generateId(),
         title: trimmedTitle,
         description: description.trim(),
+        priority,
         completed: false,
         createdAt: now,
         updatedAt: now,
@@ -234,7 +244,12 @@ export default function App() {
                   </svg>
                 </button>
                 <div className="task-body" onClick={() => toggleComplete(task.id)}>
-                  <h3 className="task-title">{task.title}</h3>
+                  <div className="task-header">
+                    <h3 className="task-title">{task.title}</h3>
+                    <span className={`priority-badge priority-${task.priority}`}>
+                      {task.priority}
+                    </span>
+                  </div>
                   {task.description && (
                     <p className="task-desc">{task.description}</p>
                   )}
@@ -306,6 +321,21 @@ export default function App() {
                   maxLength={500}
                   rows={3}
                 />
+              </div>
+              <div className="form-group">
+                <label>Priority</label>
+                <div className="priority-selector">
+                  {(['low', 'medium', 'high'] as Priority[]).map((p) => (
+                    <button
+                      key={p}
+                      type="button"
+                      className={`priority-option priority-option-${p} ${priority === p ? 'selected' : ''}`}
+                      onClick={() => setPriority(p)}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                </div>
               </div>
               <div className="form-actions">
                 <button type="button" className="btn btn-secondary" onClick={closeForm}>
