@@ -1,7 +1,6 @@
 import { useRef, useEffect } from 'react';
-import { CloseCircle, CalendarMinimalistic, PenNewRound } from '@solar-icons/react';
+import { CloseCircle } from '@solar-icons/react';
 import type { Task, Priority } from '../types';
-import { formatDate } from '../utils';
 import DatePicker from './DatePicker';
 import TagInput from './TagInput';
 
@@ -35,43 +34,44 @@ export default function TaskFormModal({
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
-          <h2>{editingTask ? 'Edit Task' : 'New Task'}</h2>
-          <button className="btn-icon" onClick={onClose}>
-            <CloseCircle size={24} />
+      <div className="modal form-modal" onClick={(e) => e.stopPropagation()}>
+        <div className="fm-header">
+          <h2 className="fm-title">{editingTask ? 'Edit Task' : 'New Task'}</h2>
+          <button className="btn-icon fm-close" onClick={onClose}>
+            <CloseCircle size={20} />
           </button>
         </div>
-        <form onSubmit={onSubmit} className="modal-form">
-          <div className="form-group">
-            <label htmlFor="task-title">Title</label>
+
+        <form onSubmit={onSubmit} className="fm-body">
+          <div className="fm-field">
+            <label className="fm-label">Title</label>
             <input
               ref={titleRef}
-              id="task-title"
               type="text"
               placeholder="What needs to be done?"
               value={title}
               onChange={(e) => onTitleChange(e.target.value)}
-              className="form-input"
+              className="fm-input"
               maxLength={100}
               required
             />
           </div>
-          <div className="form-group">
-            <label htmlFor="task-desc">Description</label>
+
+          <div className="fm-field">
+            <label className="fm-label">Description</label>
             <textarea
-              id="task-desc"
-              placeholder="Additional details..."
+              placeholder="Add details..."
               value={description}
               onChange={(e) => onDescChange(e.target.value)}
-              className="form-input form-textarea"
+              className="fm-textarea"
               maxLength={500}
               rows={3}
             />
           </div>
-          <div className="form-row">
-            <div className="form-group form-group-half">
-              <label>Priority</label>
+
+          <div className="fm-row">
+            <div className="fm-col">
+              <label className="fm-label">Priority</label>
               <div className="priority-selector">
                 {(['low', 'medium', 'high'] as Priority[]).map((p) => (
                   <button
@@ -85,7 +85,7 @@ export default function TaskFormModal({
                 ))}
               </div>
             </div>
-            <div className="form-group form-group-half">
+            <div className="fm-col">
               <DatePicker
                 id="task-deadline"
                 label="Deadline"
@@ -95,7 +95,8 @@ export default function TaskFormModal({
               />
             </div>
           </div>
-          <div className="form-group">
+
+          <div className="fm-field">
             <TagInput
               label="Tags"
               tags={tags}
@@ -103,29 +104,16 @@ export default function TaskFormModal({
               onChange={onTagsChange}
             />
           </div>
-          {editingTask && (
-            <div className="detail-dates">
-              <div className="date-item">
-                <CalendarMinimalistic size={14} />
-                <span>Created: {formatDate(editingTask.createdAt)}</span>
-              </div>
-              {editingTask.updatedAt !== editingTask.createdAt && (
-                <div className="date-item">
-                  <PenNewRound size={14} />
-                  <span>Updated: {formatDate(editingTask.updatedAt)}</span>
-                </div>
-              )}
-            </div>
-          )}
-          <div className="form-actions">
-            <button type="button" className="btn btn-secondary" onClick={onClose}>
-              Cancel
-            </button>
-            <button type="submit" className="btn btn-primary" disabled={!title.trim()}>
-              {editingTask ? 'Save Changes' : 'Create Task'}
-            </button>
-          </div>
         </form>
+
+        <div className="fm-footer">
+          <button type="button" className="btn btn-secondary" onClick={onClose}>
+            Cancel
+          </button>
+          <button type="submit" className="btn btn-primary" disabled={!title.trim()} form="fm-hidden">
+            {editingTask ? 'Save Changes' : 'Create Task'}
+          </button>
+        </div>
       </div>
     </div>
   );
