@@ -11,6 +11,7 @@ import {
 } from '@solar-icons/react';
 import './App.css';
 import type { Task, Priority } from './types';
+import DatePicker from './components/DatePicker';
 
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -438,13 +439,11 @@ export default function App() {
                   </div>
                 </div>
                 <div className="form-group form-group-half">
-                  <label htmlFor="task-deadline">Deadline</label>
-                  <input
+                  <DatePicker
                     id="task-deadline"
-                    type="date"
+                    label="Deadline"
                     value={deadline}
-                    onChange={(e) => setDeadline(e.target.value)}
-                    className="form-input"
+                    onChange={setDeadline}
                     min={new Date().toISOString().split('T')[0]}
                   />
                 </div>
