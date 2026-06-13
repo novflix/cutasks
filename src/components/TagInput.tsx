@@ -80,16 +80,21 @@ export default function TagInput({ tags, allTags, onChange, label }: TagInputPro
       </div>
       {open && suggestions.length > 0 && (
         <div className="tag-dropdown">
-          {suggestions.slice(0, 8).map((tag) => (
-            <button
-              key={tag}
-              type="button"
-              className="tag-dropdown-item"
-              onClick={() => addTag(tag)}
-            >
-              #{tag}
-            </button>
-          ))}
+          {suggestions.slice(0, 8).map((tag) => {
+            const c = getTagColor(tag);
+            return (
+              <button
+                key={tag}
+                type="button"
+                className="tag-dropdown-item"
+                onClick={() => addTag(tag)}
+              >
+                <span className="user-tag" style={{ background: c.bg, color: c.text, borderColor: c.text }}>
+                  #{tag}
+                </span>
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
