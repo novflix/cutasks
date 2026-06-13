@@ -21,6 +21,26 @@
   border-color: var(--border);
 }
 
+.task-item:hover.task-stripe-low {
+  border-color: var(--border);
+  border-left-color: #66bb6a;
+}
+
+.task-item:hover.task-stripe-medium {
+  border-color: var(--border);
+  border-left-color: var(--primary);
+}
+
+.task-item:hover.task-stripe-high {
+  border-color: var(--border);
+  border-left-color: #ef5350;
+}
+
+.task-item:hover.task-overdue {
+  border-color: var(--border);
+  border-left-color: #ef5350;
+}
+
 .task-item.completed {
   opacity: 0.45;
 }
