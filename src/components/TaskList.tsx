@@ -42,6 +42,7 @@ export default function TaskList({ tasks, filter, searchQuery, onToggle, onView,
         <TaskCard
           key={task.id}
           task={task}
+          searchQuery={searchQuery}
           onToggle={onToggle}
           onView={onView}
           onEdit={onEdit}

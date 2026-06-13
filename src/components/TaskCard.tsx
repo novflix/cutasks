@@ -1,17 +1,19 @@
 import { Pen, TrashBinMinimalistic, CalendarMinimalistic } from '@solar-icons/react';
 import type { Task } from '../types';
-import { formatDeadline, getDeadlineStatus, getTagColor } from '../utils';
+import { formatDeadline, getDeadlineStatus, getTagColor, highlightMatch } from '../utils';
 
 interface TaskCardProps {
   task: Task;
+  searchQuery: string;
   onToggle: (id: string) => void;
   onView: (task: Task) => void;
   onEdit: (task: Task) => void;
   onDelete: (id: string) => void;
 }
 
-export default function TaskCard({ task, onToggle, onView, onEdit, onDelete }: TaskCardProps) {
+export default function TaskCard({ task, searchQuery, onToggle, onView, onEdit, onDelete }: TaskCardProps) {
   const dlStatus = getDeadlineStatus(task.deadline, task.completed);
+  const titleParts = highlightMatch(task.title, searchQuery);
 
   return (
     <li className={`task-item ${task.completed ? 'completed' : ''} ${dlStatus === 'overdue' ? 'task-overdue' : ''}`}>
@@ -28,7 +30,11 @@ export default function TaskCard({ task, onToggle, onView, onEdit, onDelete }: T
         </svg>
       </button>
       <div className="task-body" onClick={() => onView(task)}>
-        <h3 className="task-title">{task.title}</h3>
+        <h3 className="task-title">
+          {titleParts.map((part, i) =>
+            part.highlighted ? <mark key={i} className="search-highlight">{part.plain}</mark> : part.plain
+          )}
+        </h3>
         {task.description && (
           <p className="task-desc">{task.description}</p>
         )}

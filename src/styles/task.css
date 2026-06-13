@@ -153,6 +153,13 @@
   word-break: break-word;
 }
 
+.search-highlight {
+  background: rgba(237, 155, 109, 0.25);
+  color: var(--primary);
+  border-radius: 3px;
+  padding: 0 2px;
+}
+
 .task-desc {
   font-size: 0.85rem;
   color: var(--text-muted);

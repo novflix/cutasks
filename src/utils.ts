@@ -2,6 +2,26 @@ export function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
 
+export function highlightMatch(text: string, query: string): { plain: string; highlighted: string }[] {
+  if (!query.trim()) return [{ plain: text, highlighted: '' }];
+  const q = query.toLowerCase();
+  const result: { plain: string; highlighted: string }[] = [];
+  let i = 0;
+  while (i < text.length) {
+    const matchStart = text.toLowerCase().indexOf(q, i);
+    if (matchStart === -1) {
+      result.push({ plain: text.slice(i), highlighted: '' });
+      break;
+    }
+    if (matchStart > i) {
+      result.push({ plain: text.slice(i, matchStart), highlighted: '' });
+    }
+    result.push({ plain: text.slice(matchStart, matchStart + q.length), highlighted: 'mark' });
+    i = matchStart + q.length;
+  }
+  return result;
+}
+
 const TAG_COLORS = [
   { bg: 'rgba(237, 155, 109, 0.15)', text: '#ed9b6d' },
   { bg: 'rgba(102, 187, 106, 0.15)', text: '#66bb6a' },
