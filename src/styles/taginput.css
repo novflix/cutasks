@@ -44,13 +44,9 @@
 .tag-chip-remove {
   display: flex;
   align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  border: 1.5px solid;
-  border-radius: 50%;
+  border: none;
   background: none;
-  color: inherit;
+  color: var(--primary);
   cursor: pointer;
   padding: 0;
   opacity: 0.6;

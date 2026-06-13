@@ -62,12 +62,7 @@ export default function TagInput({ tags, allTags, onChange, label }: TagInputPro
           return (
             <span key={tag} className="user-tag tag-chip" style={{ background: c.bg, color: c.text }}>
               #{tag}
-              <button
-                type="button"
-                className="tag-chip-remove"
-                style={{ borderColor: c.text }}
-                onClick={() => removeTag(tag)}
-              >
+              <button type="button" className="tag-chip-remove" onClick={() => removeTag(tag)}>
                 <CloseCircle size={12} />
               </button>
             </span>
