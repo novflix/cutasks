@@ -752,23 +752,97 @@ body {
   gap: 16px;
 }
 
+/* ======================== DETAIL MODAL ======================== */
+
+.detail-modal {
+  max-width: 500px;
+}
+
+.detail-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 20px 20px 0;
+}
+
+.detail-top-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.detail-check {
+  margin-top: 3px;
+  pointer-events: none;
+}
+
+.detail-top-info {
+  flex: 1;
+  min-width: 0;
+}
+
 .detail-title {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 600;
   line-height: 1.4;
 }
 
 .detail-desc {
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--text-secondary);
-  line-height: 1.5;
+  line-height: 1.55;
+  margin-top: 6px;
 }
 
-.detail-badges {
+.detail-close {
+  flex-shrink: 0;
+}
+
+.detail-divider {
+  height: 1px;
+  background: var(--border-subtle);
+  margin: 16px 20px;
+}
+
+.detail-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0 20px;
+}
+
+.detail-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.detail-meta-row:last-child {
+  border-bottom: none;
+}
+
+.detail-meta-label {
   display: flex;
   align-items: center;
   gap: 8px;
-  flex-wrap: wrap;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.detail-meta-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.detail-meta-value {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 .status-badge {
@@ -790,20 +864,56 @@ body {
   color: #66bb6a;
 }
 
-.detail-dates {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding-top: 12px;
-  border-top: 1px solid var(--border-subtle);
+.deadline-text {
+  font-size: 0.82rem;
+  font-weight: 500;
 }
 
-.date-item {
+.deadline-text-overdue {
+  color: #ef5350;
+}
+
+.deadline-text-today {
+  color: #ffb74d;
+}
+
+.deadline-text-soon {
+  color: var(--primary);
+}
+
+.deadline-text-normal {
+  color: var(--text-secondary);
+}
+
+.detail-section {
+  padding: 0 20px 16px;
+}
+
+.detail-section-title {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
+  font-weight: 600;
   color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 10px;
+}
+
+.detail-tags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.detail-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 20px 20px;
+  border-top: 1px solid var(--border-subtle);
 }
 
 .modal-body {
