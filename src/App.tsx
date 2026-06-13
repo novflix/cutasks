@@ -35,6 +35,7 @@ function formatDate(ts: number) {
   return new Date(ts).toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'short',
+    year: 'numeric',
     hour: '2-digit',
     minute: '2-digit',
   });
@@ -45,6 +46,7 @@ type FilterType = 'all' | 'active' | 'completed';
 export default function App() {
   const [tasks, setTasks] = useState<Task[]>(loadTasks);
   const [showForm, setShowForm] = useState(false);
+  const [viewingTask, setViewingTask] = useState<Task | null>(null);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -95,6 +97,10 @@ export default function App() {
     setDescription('');
     setPriority('medium');
     setShowForm(true);
+  }
+
+  function openViewModal(task: Task) {
+    setViewingTask(task);
   }
 
   function openEditForm(task: Task) {
@@ -243,7 +249,7 @@ export default function App() {
                     <polyline points="5 12 10 17 19 7" className="check-path" />
                   </svg>
                 </button>
-                <div className="task-body" onClick={() => toggleComplete(task.id)}>
+                <div className="task-body" onClick={() => openViewModal(task)}>
                   <div className="task-header">
                     <h3 className="task-title">{task.title}</h3>
                     <span className={`priority-badge priority-${task.priority}`}>
@@ -253,16 +259,6 @@ export default function App() {
                   {task.description && (
                     <p className="task-desc">{task.description}</p>
                   )}
-                  <div className="task-meta">
-                    <CalendarMinimalistic size={14} />
-                    <span>{formatDate(task.createdAt)}</span>
-                    {task.updatedAt !== task.createdAt && (
-                      <>
-                        <PenNewRound size={14} />
-                        <span>{formatDate(task.updatedAt)}</span>
-                      </>
-                    )}
-                  </div>
                 </div>
                 <div className="task-actions">
                   <button
@@ -285,6 +281,56 @@ export default function App() {
           </ul>
         )}
       </main>
+
+      {viewingTask && (
+        <div className="modal-overlay" onClick={() => setViewingTask(null)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Task Details</h2>
+              <button className="btn-icon" onClick={() => setViewingTask(null)}>
+                <CloseCircle size={24} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="detail-section">
+                <span className={`priority-badge priority-${viewingTask.priority}`}>
+                  {viewingTask.priority}
+                </span>
+                <span className={`status-badge ${viewingTask.completed ? 'status-done' : 'status-active'}`}>
+                  {viewingTask.completed ? 'Completed' : 'Active'}
+                </span>
+              </div>
+              <h3 className="detail-title">{viewingTask.title}</h3>
+              {viewingTask.description && (
+                <p className="detail-desc">{viewingTask.description}</p>
+              )}
+              <div className="detail-dates">
+                <div className="date-item">
+                  <CalendarMinimalistic size={14} />
+                  <span>Created: {formatDate(viewingTask.createdAt)}</span>
+                </div>
+                {viewingTask.updatedAt !== viewingTask.createdAt && (
+                  <div className="date-item">
+                    <PenNewRound size={14} />
+                    <span>Updated: {formatDate(viewingTask.updatedAt)}</span>
+                  </div>
+                )}
+              </div>
+              <div className="form-actions">
+                <button className="btn btn-secondary" onClick={() => setViewingTask(null)}>
+                  Close
+                </button>
+                <button className="btn btn-primary" onClick={() => {
+                  setViewingTask(null);
+                  openEditForm(viewingTask);
+                }}>
+                  Edit Task
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showForm && (
         <div className="modal-overlay" onClick={closeForm}>
@@ -337,6 +383,20 @@ export default function App() {
                   ))}
                 </div>
               </div>
+              {editingTask && (
+                <div className="detail-dates">
+                  <div className="date-item">
+                    <CalendarMinimalistic size={14} />
+                    <span>Created: {formatDate(editingTask.createdAt)}</span>
+                  </div>
+                  {editingTask.updatedAt !== editingTask.createdAt && (
+                    <div className="date-item">
+                      <PenNewRound size={14} />
+                      <span>Updated: {formatDate(editingTask.updatedAt)}</span>
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="form-actions">
                 <button type="button" className="btn btn-secondary" onClick={closeForm}>
                   Cancel
