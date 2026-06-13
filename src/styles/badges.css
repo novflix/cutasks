@@ -76,13 +76,13 @@
 .user-tag {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 3px 10px;
+  gap: 3px;
+  padding: 2px 8px;
   background: rgba(150, 150, 150, 0.1);
   color: var(--text-muted);
-  border: 1.5px solid currentColor;
+  border: 1px solid currentColor;
   border-radius: var(--radius-full);
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   white-space: nowrap;
