@@ -250,15 +250,13 @@ export default function App() {
                   </svg>
                 </button>
                 <div className="task-body" onClick={() => openViewModal(task)}>
-                  <div className="task-header">
-                    <h3 className="task-title">{task.title}</h3>
-                    <span className={`priority-badge priority-${task.priority}`}>
-                      {task.priority}
-                    </span>
-                  </div>
+                  <h3 className="task-title">{task.title}</h3>
                   {task.description && (
                     <p className="task-desc">{task.description}</p>
                   )}
+                  <span className={`priority-badge priority-${task.priority}`}>
+                    {task.priority}
+                  </span>
                 </div>
                 <div className="task-actions">
                   <button
@@ -292,7 +290,11 @@ export default function App() {
               </button>
             </div>
             <div className="modal-body">
-              <div className="detail-section">
+              <h3 className="detail-title">{viewingTask.title}</h3>
+              {viewingTask.description && (
+                <p className="detail-desc">{viewingTask.description}</p>
+              )}
+              <div className="detail-badges">
                 <span className={`priority-badge priority-${viewingTask.priority}`}>
                   {viewingTask.priority}
                 </span>
@@ -300,10 +302,6 @@ export default function App() {
                   {viewingTask.completed ? 'Completed' : 'Active'}
                 </span>
               </div>
-              <h3 className="detail-title">{viewingTask.title}</h3>
-              {viewingTask.description && (
-                <p className="detail-desc">{viewingTask.description}</p>
-              )}
               <div className="detail-dates">
                 <div className="date-item">
                   <CalendarMinimalistic size={14} />

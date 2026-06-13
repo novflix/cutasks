@@ -459,12 +459,9 @@ body {
   flex: 1;
   min-width: 0;
   cursor: pointer;
-}
-
-.task-header {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .task-title {
@@ -474,14 +471,22 @@ body {
   word-break: break-word;
 }
 
+.task-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  word-break: break-word;
+  line-height: 1.4;
+}
+
 .priority-badge {
+  display: inline-block;
   font-size: 0.65rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   padding: 2px 6px;
   border-radius: 4px;
-  flex-shrink: 0;
+  align-self: flex-start;
 }
 
 .priority-low {
@@ -543,14 +548,6 @@ body {
 .task-item.completed .task-title {
   text-decoration: line-through;
   color: var(--text-dim);
-}
-
-.task-desc {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  margin-top: 4px;
-  word-break: break-word;
-  line-height: 1.4;
 }
 
 .task-actions {
@@ -699,10 +696,23 @@ body {
   gap: 16px;
 }
 
-.detail-section {
+.detail-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.detail-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.detail-badges {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .status-badge {
@@ -724,23 +734,11 @@ body {
   color: #66bb6a;
 }
 
-.detail-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  line-height: 1.4;
-}
-
-.detail-desc {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
-  line-height: 1.5;
-}
-
 .detail-dates {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding-top: 8px;
+  padding-top: 12px;
   border-top: 1px solid var(--border-subtle);
 }
 
@@ -750,6 +748,13 @@ body {
   gap: 8px;
   font-size: 0.8rem;
   color: var(--text-muted);
+}
+
+.modal-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
 /* ======================== ANIMATIONS ======================== */
