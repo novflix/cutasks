@@ -85,11 +85,11 @@
   top: calc(100% + 4px);
   left: 0;
   right: 0;
-  z-index: 50;
+  z-index: 100;
   background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-lg);
   max-height: 160px;
   overflow-y: auto;
   animation: dpFadeIn 0.12s ease;
