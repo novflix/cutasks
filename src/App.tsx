@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import './App.css';
 import type { Task, Priority } from './types';
 import { generateId } from './utils';
@@ -24,6 +24,35 @@ export default function App() {
   const [tags, setTags] = useState<string[]>([]);
   const [filter, setFilter] = useState<FilterType>('all');
   const [searchQuery, setSearchQuery] = useState('');
+
+  const tasksRef = useRef(tasks);
+  const historyRef = useRef<Task[][]>([]);
+
+  useEffect(() => {
+    tasksRef.current = tasks;
+  });
+
+  const pushHistory = useCallback(() => {
+    historyRef.current.push([...tasksRef.current]);
+    if (historyRef.current.length > 50) historyRef.current.shift();
+  }, []);
+
+  const undo = useCallback(() => {
+    if (historyRef.current.length === 0) return;
+    const prev = historyRef.current.pop()!;
+    setTasks(prev);
+  }, []);
+
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+        e.preventDefault();
+        undo();
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [undo]);
 
   useEffect(() => {
     saveTasks(tasks);
@@ -107,6 +136,7 @@ export default function App() {
     const now = Date.now();
 
     if (editingTask) {
+      pushHistory();
       setTasks((prev) =>
         prev.map((t) =>
           t.id === editingTask.id
@@ -115,6 +145,7 @@ export default function App() {
         )
       );
     } else {
+      pushHistory();
       const newTask: Task = {
         id: generateId(),
         title: trimmedTitle,
@@ -132,6 +163,7 @@ export default function App() {
   }
 
   function toggleComplete(id: string) {
+    pushHistory();
     setTasks((prev) =>
       prev.map((t) =>
         t.id === id ? { ...t, completed: !t.completed, updatedAt: Date.now() } : t
@@ -140,6 +172,7 @@ export default function App() {
   }
 
   function deleteTask(id: string) {
+    pushHistory();
     setTasks((prev) => prev.filter((t) => t.id !== id));
   }
 
