@@ -1,8 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import {
   AddSquare,
-  CheckCircle,
-  CheckRead,
   Pen,
   TrashBinMinimalistic,
   CloseCircle,
@@ -224,15 +222,13 @@ export default function App() {
                 className={`task-item ${task.completed ? 'completed' : ''}`}
               >
                 <button
-                  className="task-check"
+                  className={`task-check ${task.completed ? 'checked' : ''}`}
                   onClick={() => toggleComplete(task.id)}
                   title={task.completed ? 'Undo' : 'Complete'}
                 >
-                  {task.completed ? (
-                    <CheckRead size={24} className="check-done" />
-                  ) : (
-                    <CheckCircle size={24} className="check-pending" />
-                  )}
+                  <svg viewBox="0 0 24 24" fill="none" className="check-icon">
+                    <polyline points="5 12 10 17 19 7" className="check-path" />
+                  </svg>
                 </button>
                 <div className="task-body" onClick={() => toggleComplete(task.id)}>
                   <h3 className="task-title">{task.title}</h3>
