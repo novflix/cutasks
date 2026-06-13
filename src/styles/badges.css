@@ -95,12 +95,15 @@
 
 .priority-option {
   flex: 1;
-  padding: 8px 12px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: var(--bg-input);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius);
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 600;
   text-transform: capitalize;
   cursor: pointer;
@@ -109,6 +112,7 @@
 
 .priority-option:hover {
   border-color: var(--text-dim);
+  color: var(--text-secondary);
 }
 
 .priority-option-low.selected {
