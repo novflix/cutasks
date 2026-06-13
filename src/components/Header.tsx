@@ -18,17 +18,21 @@ export default function Header({ stats, onCreate }: HeaderProps) {
           </button>
         </div>
         <div className="stats">
-          <span className="stat">
+          <span className="stat stat-total">
+            <span className="stat-dot" />
             <strong>{stats.total}</strong> total
           </span>
           <span className="stat stat-active">
+            <span className="stat-dot" />
             <strong>{stats.active}</strong> active
           </span>
           <span className="stat stat-done">
+            <span className="stat-dot" />
             <strong>{stats.completed}</strong> done
           </span>
           {stats.overdue > 0 && (
             <span className="stat stat-overdue">
+              <span className="stat-dot" />
               <strong>{stats.overdue}</strong> overdue
             </span>
           )}

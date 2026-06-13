@@ -34,31 +34,60 @@
 
 .stats {
   display: flex;
-  gap: 20px;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .stat {
-  font-size: 0.8rem;
-  color: var(--text-muted);
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
+  padding: 5px 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 500;
 }
 
 .stat strong {
-  color: var(--text);
+  color: var(--text-secondary);
   font-weight: 700;
-  font-size: 0.9rem;
+  font-size: 0.82rem;
 }
 
-.stat-active strong {
-  color: var(--primary);
+.stat-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 
-.stat-done strong {
-  color: var(--success);
+.stat-total .stat-dot {
+  background: var(--text-muted);
 }
 
-.stat-overdue strong {
-  color: #ef5350;
+.stat-active .stat-dot {
+  background: var(--primary);
+}
+
+.stat-done .stat-dot {
+  background: var(--success);
+}
+
+.stat-overdue .stat-dot {
+  background: #ef5350;
+}
+
+.stat-overdue {
+  border-color: rgba(239, 83, 80, 0.2);
+}
+
+.stat-active {
+  border-color: rgba(237, 155, 109, 0.2);
+}
+
+.stat-done {
+  border-color: rgba(102, 187, 106, 0.2);
 }
