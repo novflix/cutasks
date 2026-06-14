@@ -102,9 +102,11 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
           />
         </div>
         {children.length > 0 && (
-          <ul className="task-children">
-            {children.map((child) => renderTask(child, depth + 1))}
-          </ul>
+          <div className="task-children-wrap">
+            <ul className="task-children">
+              {children.map((child) => renderTask(child, depth + 1))}
+            </ul>
+          </div>
         )}
       </div>
     );

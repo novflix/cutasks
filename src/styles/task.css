@@ -20,44 +20,41 @@
   gap: 0;
 }
 
+/* ======================== CHILDREN ======================== */
+
+.task-children-wrap {
+  margin-left: 18px;
+  padding-left: 16px;
+  border-left: 2px solid var(--border-subtle);
+  margin-top: 2px;
+}
+
 .task-children {
   list-style: none;
-  padding-left: 48px;
-  margin-top: 2px;
+  padding: 4px 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .task-child .task-item {
-  background: var(--bg-card);
+  background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius);
-  position: relative;
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
 }
 
-.task-child .task-item::before {
-  content: '';
-  position: absolute;
-  left: -16px;
-  top: 50%;
-  width: 12px;
-  height: 1px;
-  background: var(--border);
+.task-child .task-item:hover {
+  background: var(--bg-hover);
+  border-color: var(--border);
 }
 
-.task-child .task-item::after {
-  content: '';
-  position: absolute;
-  left: -16px;
-  top: 0;
-  width: 1px;
-  height: 100%;
-  background: var(--border-subtle);
+.task-child .task-item .task-title {
+  font-size: 0.88rem;
 }
 
-.task-child .task-item:last-child::after {
-  height: 50%;
+.task-child .task-item .task-desc {
+  font-size: 0.8rem;
 }
 
 /* ======================== DRAG HANDLE ======================== */
