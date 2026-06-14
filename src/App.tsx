@@ -12,6 +12,8 @@ import { getDeadlineStatus } from './utils';
 
 export type FilterType = 'all' | 'active' | 'completed';
 
+const priorityOrder: Record<Priority, number> = { high: 0, medium: 1, low: 2 };
+
 export default function App() {
   const [tasks, setTasks] = useState<Task[]>(loadTasks);
   const [showForm, setShowForm] = useState(false);
@@ -58,8 +60,6 @@ export default function App() {
   useEffect(() => {
     saveTasks(tasks);
   }, [tasks]);
-
-  const priorityOrder: Record<Priority, number> = { high: 0, medium: 1, low: 2 };
 
   const filteredTasks = useMemo(() => {
     let result = tasks;

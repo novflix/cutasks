@@ -34,26 +34,21 @@ function toDateString(year: number, month: number, day: number) {
   return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
+function parseDate(value: string) {
+  if (value) {
+    const [y, m] = value.split('-').map(Number);
+    return { year: y, month: m - 1 };
+  }
+  const today = new Date();
+  return { year: today.getFullYear(), month: today.getMonth() };
+}
+
 export default function DatePicker({ value, onChange, min, label, id }: DatePickerProps) {
   const today = new Date();
   const [open, setOpen] = useState(false);
-  const [viewYear, setViewYear] = useState(() => {
-    if (value) return Number(value.split('-')[0]);
-    return today.getFullYear();
-  });
-  const [viewMonth, setViewMonth] = useState(() => {
-    if (value) return Number(value.split('-')[1]) - 1;
-    return today.getMonth();
-  });
+  const [viewYear, setViewYear] = useState(() => parseDate(value).year);
+  const [viewMonth, setViewMonth] = useState(() => parseDate(value).month);
   const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (value) {
-      const [y, m] = value.split('-').map(Number);
-      setViewYear(y);
-      setViewMonth(m - 1);
-    }
-  }, [value]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -66,6 +61,17 @@ export default function DatePicker({ value, onChange, min, label, id }: DatePick
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
   }, [open]);
+
+  function syncViewFromDate() {
+    const parsed = parseDate(value);
+    setViewYear(parsed.year);
+    setViewMonth(parsed.month);
+  }
+
+  function toggleOpen() {
+    if (!open) syncViewFromDate();
+    setOpen(!open);
+  }
 
   function prevMonth() {
     if (viewMonth === 0) {
@@ -110,7 +116,7 @@ export default function DatePicker({ value, onChange, min, label, id }: DatePick
         type="button"
         id={id}
         className={`dp-trigger ${open ? 'dp-trigger-focus' : ''}`}
-        onClick={() => setOpen(!open)}
+        onClick={toggleOpen}
       >
         <span className={value ? 'dp-trigger-value' : 'dp-trigger-placeholder'}>
           {value ? formatDateDisplay(value) : 'Select date'}
