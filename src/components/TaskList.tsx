@@ -28,6 +28,7 @@ function isDescendant(childId: string, parentId: string, taskMap: Map<string, Ta
 export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle, onView, onEdit, onDelete, onSetSubtask }: TaskListProps) {
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
+  const [dragOverRoot, setDragOverRoot] = useState(false);
 
   const topLevelTasks = tasks.filter((t) => t.parentId === null);
 
@@ -79,14 +80,11 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
 
   function renderTask(task: Task, depth: number = 0) {
     const children = subtaskMap.get(task.id) ?? [];
-    const isDraggable = depth === 0;
 
     return (
       <div key={task.id} className={`task-node ${depth > 0 ? 'task-child' : ''}`}>
         <div className="task-row">
-          {isDraggable && (
-            <DragHandle taskId={task.id} onDragStart={handleDragStart} />
-          )}
+          <DragHandle taskId={task.id} onDragStart={handleDragStart} child={depth > 0} />
           <TaskCard
             task={task}
             searchQuery={searchQuery}
@@ -139,6 +137,30 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
       className="task-list"
       onDragEnd={handleDragEnd}
     >
+      {draggingId && taskMap.get(draggingId)?.parentId !== null && (
+        <div
+          className={`task-make-root ${dragOverRoot ? 'drag-over' : ''}`}
+          onDragOver={(e) => {
+            e.preventDefault();
+            if (draggingId) {
+              e.dataTransfer.dropEffect = 'move';
+              setDragOverRoot(true);
+            }
+          }}
+          onDragLeave={() => setDragOverRoot(false)}
+          onDrop={(e) => {
+            e.preventDefault();
+            const childId = e.dataTransfer.getData('text/plain');
+            if (childId) {
+              onSetSubtask(childId, null);
+            }
+            setDragOverRoot(false);
+            setDraggingId(null);
+          }}
+        >
+          <span className="task-make-root-text">Drop here to make a top-level task</span>
+        </div>
+      )}
       {topLevelTasks.map((task) => renderTask(task))}
     </div>
   );

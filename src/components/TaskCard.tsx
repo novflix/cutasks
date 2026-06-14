@@ -120,7 +120,7 @@ function GripDots() {
   );
 }
 
-export function DragHandle({ taskId, onDragStart }: { taskId: string; onDragStart: (e: React.DragEvent, id: string) => void }) {
+export function DragHandle({ taskId, onDragStart, child = false }: { taskId: string; onDragStart: (e: React.DragEvent, id: string) => void; child?: boolean }) {
   function handleDragStart(e: React.DragEvent) {
     e.stopPropagation();
     e.dataTransfer.effectAllowed = 'move';
@@ -129,10 +129,10 @@ export function DragHandle({ taskId, onDragStart }: { taskId: string; onDragStar
 
   return (
     <div
-      className="task-drag-handle"
+      className={`task-drag-handle ${child ? 'task-drag-handle-child' : ''}`}
       draggable
       onDragStart={handleDragStart}
-      title="Drag to make subtask"
+      title="Drag to reparent"
     >
       <GripDots />
     </div>
