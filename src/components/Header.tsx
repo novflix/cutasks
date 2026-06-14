@@ -12,7 +12,7 @@ export default function Header({ stats, onCreate }: HeaderProps) {
         <div className="header-top">
           <img src="/logo.svg" alt="CuTasks" className="logo logo-full" />
           <img src="/logo-mini.svg" alt="CuTasks" className="logo logo-mini" />
-          <button className="btn btn-primary btn-add" onClick={onCreate}>
+          <button className="btn btn-primary btn-add header-create-btn" onClick={onCreate}>
             <AddSquare size={20} />
             <span className="btn-label">New Task</span>
           </button>

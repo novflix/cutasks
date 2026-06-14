@@ -44,6 +44,10 @@
     min-width: 38px;
     justify-content: center;
   }
+
+  .header-create-btn {
+    display: none;
+  }
 }
 
 /* ======================== MOBILE (<= 480px) ======================== */

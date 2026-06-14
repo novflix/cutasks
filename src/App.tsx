@@ -8,6 +8,7 @@ import Toolbar from './components/Toolbar';
 import TaskList from './components/TaskList';
 import TaskDetailModal from './components/TaskDetailModal';
 import TaskFormModal from './components/TaskFormModal';
+import MobileNav from './components/MobileNav';
 import { getDeadlineStatus } from './utils';
 
 export type FilterType = 'all' | 'active' | 'completed';
@@ -256,6 +257,8 @@ export default function App() {
           onClose={closeForm}
         />
       )}
+
+      <MobileNav onCreate={openCreateForm} />
     </div>
   );
 }
