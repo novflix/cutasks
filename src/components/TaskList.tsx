@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { NotesMinimalistic } from '@solar-icons/react';
 import type { Task } from '../types';
 import type { FilterType } from '../App';
@@ -29,6 +29,119 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [dragOverRoot, setDragOverRoot] = useState(false);
+
+  const touchDragRef = useRef<{
+    taskId: string;
+    ghost: HTMLElement | null;
+    startX: number;
+    startY: number;
+    currentTarget: string | null;
+  } | null>(null);
+
+  useEffect(() => {
+    function handleTouchMove(e: TouchEvent) {
+      const td = touchDragRef.current;
+      if (!td) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      if (td.ghost) {
+        td.ghost.style.left = `${touch.clientX - 30}px`;
+        td.ghost.style.top = `${touch.clientY - 20}px`;
+      }
+      if (td.ghost) td.ghost.style.display = 'block';
+
+      if (td.ghost) td.ghost.style.pointerEvents = 'none';
+      const el = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (td.ghost) td.ghost.style.pointerEvents = '';
+
+      let foundTarget: string | null = null;
+      let foundIsRoot = false;
+      if (el) {
+        const taskItem = el.closest('.task-item');
+        if (taskItem) {
+          const node = taskItem.closest('.task-node');
+          if (node) {
+            const key = node.getAttribute('data-task-id');
+            if (key && key !== td.taskId) foundTarget = key;
+          }
+        }
+        if (el.closest('.task-make-root')) foundIsRoot = true;
+      }
+
+      setDragOverRoot(foundIsRoot);
+      setDragOverId(foundTarget);
+      td.currentTarget = foundTarget;
+    }
+
+    function handleTouchEnd() {
+      const td = touchDragRef.current;
+      if (!td) return;
+
+      if (td.ghost) {
+        td.ghost.remove();
+        td.ghost = null;
+      }
+
+      if (td.currentTarget) {
+        const draggedTask = taskMap.get(td.taskId);
+        if (draggedTask && draggedTask.parentId !== td.currentTarget && !isDescendant(td.currentTarget, td.taskId, taskMap)) {
+          onSetSubtask(td.taskId, td.currentTarget);
+        }
+      } else if (dragOverRoot) {
+        onSetSubtask(td.taskId, null);
+      }
+
+      touchDragRef.current = null;
+      setDraggingId(null);
+      setDragOverId(null);
+      setDragOverRoot(false);
+    }
+
+    function handleTouchCancel() {
+      if (touchDragRef.current?.ghost) {
+        touchDragRef.current.ghost.remove();
+        touchDragRef.current.ghost = null;
+      }
+      touchDragRef.current = null;
+      setDraggingId(null);
+      setDragOverId(null);
+      setDragOverRoot(false);
+    }
+
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
+    document.addEventListener('touchcancel', handleTouchCancel);
+    return () => {
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+      document.removeEventListener('touchcancel', handleTouchCancel);
+    };
+  }, [taskMap, onSetSubtask, dragOverRoot]);
+
+  function handleTouchDragStart(taskId: string, e: React.TouchEvent) {
+    const touch = e.touches[0];
+    const el = e.currentTarget.closest('.task-node');
+    const rect = el?.getBoundingClientRect();
+
+    const ghost = document.createElement('div');
+    ghost.className = 'touch-drag-ghost';
+    ghost.textContent = taskMap.get(taskId)?.title ?? '';
+    ghost.style.left = `${touch.clientX - 30}px`;
+    ghost.style.top = `${touch.clientY - 20}px`;
+    if (rect) {
+      ghost.style.width = `${rect.width}px`;
+    }
+    document.body.appendChild(ghost);
+
+    touchDragRef.current = {
+      taskId,
+      ghost,
+      startX: touch.clientX,
+      startY: touch.clientY,
+      currentTarget: null,
+    };
+    setDraggingId(taskId);
+  }
 
   const topLevelTasks = tasks.filter((t) => t.parentId === null);
 
@@ -82,9 +195,9 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
     const children = subtaskMap.get(task.id) ?? [];
 
     return (
-      <div key={task.id} className={`task-node ${depth > 0 ? 'task-child' : ''}`}>
+      <div key={task.id} className={`task-node ${depth > 0 ? 'task-child' : ''}`} data-task-id={task.id}>
         <div className="task-row">
-          <DragHandle taskId={task.id} onDragStart={handleDragStart} child={depth > 0} />
+          <DragHandle taskId={task.id} onDragStart={handleDragStart} onTouchDragStart={handleTouchDragStart} child={depth > 0} />
           <TaskCard
             task={task}
             searchQuery={searchQuery}
