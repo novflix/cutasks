@@ -120,11 +120,10 @@ function GripDots() {
   );
 }
 
-export function DragHandle({ taskId, onDragStart, onTouchDragStart, child = false }: { taskId: string; onDragStart: (e: React.DragEvent, id: string) => void; onTouchDragStart?: (id: string, e: React.TouchEvent) => void; child?: boolean }) {
-  function handleDragStart(e: React.DragEvent) {
+export function DragHandle({ taskId, onMouseDown, onTouchDragStart, child = false }: { taskId: string; onMouseDown: (id: string, e: React.MouseEvent) => void; onTouchDragStart?: (id: string, e: React.TouchEvent) => void; child?: boolean }) {
+  function handleMouseDown(e: React.MouseEvent) {
     e.stopPropagation();
-    e.dataTransfer.effectAllowed = 'move';
-    onDragStart(e, taskId);
+    onMouseDown(taskId, e);
   }
 
   function handleTouchStart(e: React.TouchEvent) {
@@ -136,8 +135,7 @@ export function DragHandle({ taskId, onDragStart, onTouchDragStart, child = fals
   return (
     <div
       className={`task-drag-handle ${child ? 'task-drag-handle-child' : ''}`}
-      draggable
-      onDragStart={handleDragStart}
+      onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
       title="Drag to reparent"
     >

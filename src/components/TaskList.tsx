@@ -30,117 +30,175 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [dragOverRoot, setDragOverRoot] = useState(false);
 
-  const touchDragRef = useRef<{
+  const dragStateRef = useRef<{
     taskId: string;
     ghost: HTMLElement | null;
-    startX: number;
-    startY: number;
     currentTarget: string | null;
+    isMouse: boolean;
   } | null>(null);
 
+  function findTargetAtPoint(clientX: number, clientY: number, excludeId: string): { targetId: string | null; isRoot: boolean } {
+    const el = document.elementFromPoint(clientX, clientY);
+    if (!el) return { targetId: null, isRoot: false };
+
+    const taskItem = el.closest('.task-item');
+    if (taskItem) {
+      const node = taskItem.closest('.task-node');
+      if (node) {
+        const key = node.getAttribute('data-task-id');
+        if (key && key !== excludeId) return { targetId: key, isRoot: false };
+      }
+    }
+    if (el.closest('.task-make-root')) return { targetId: null, isRoot: true };
+    return { targetId: null, isRoot: false };
+  }
+
   useEffect(() => {
+    function handleMouseMove(e: MouseEvent) {
+      const ds = dragStateRef.current;
+      if (!ds || !ds.isMouse) return;
+      if (ds.ghost) {
+        ds.ghost.style.left = `${e.clientX - 30}px`;
+        ds.ghost.style.top = `${e.clientY - 20}px`;
+      }
+
+      if (ds.ghost) ds.ghost.style.pointerEvents = 'none';
+      const { targetId, isRoot } = findTargetAtPoint(e.clientX, e.clientY, ds.taskId);
+      if (ds.ghost) ds.ghost.style.pointerEvents = '';
+
+      setDragOverRoot(isRoot);
+      setDragOverId(targetId);
+      ds.currentTarget = targetId;
+    }
+
+    function handleMouseUp() {
+      const ds = dragStateRef.current;
+      if (!ds || !ds.isMouse) return;
+
+      if (ds.ghost) {
+        ds.ghost.remove();
+        ds.ghost = null;
+      }
+
+      if (ds.currentTarget) {
+        const draggedTask = taskMap.get(ds.taskId);
+        if (draggedTask && draggedTask.parentId !== ds.currentTarget && !isDescendant(ds.currentTarget, ds.taskId, taskMap)) {
+          onSetSubtask(ds.taskId, ds.currentTarget);
+        }
+      } else if (dragOverRoot) {
+        onSetSubtask(ds.taskId, null);
+      }
+
+      dragStateRef.current = null;
+      setDraggingId(null);
+      setDragOverId(null);
+      setDragOverRoot(false);
+    }
+
     function handleTouchMove(e: TouchEvent) {
-      const td = touchDragRef.current;
-      if (!td) return;
+      const ds = dragStateRef.current;
+      if (!ds || ds.isMouse) return;
       e.preventDefault();
       const touch = e.touches[0];
-      if (td.ghost) {
-        td.ghost.style.left = `${touch.clientX - 30}px`;
-        td.ghost.style.top = `${touch.clientY - 20}px`;
-      }
-      if (td.ghost) td.ghost.style.display = 'block';
-
-      if (td.ghost) td.ghost.style.pointerEvents = 'none';
-      const el = document.elementFromPoint(touch.clientX, touch.clientY);
-      if (td.ghost) td.ghost.style.pointerEvents = '';
-
-      let foundTarget: string | null = null;
-      let foundIsRoot = false;
-      if (el) {
-        const taskItem = el.closest('.task-item');
-        if (taskItem) {
-          const node = taskItem.closest('.task-node');
-          if (node) {
-            const key = node.getAttribute('data-task-id');
-            if (key && key !== td.taskId) foundTarget = key;
-          }
-        }
-        if (el.closest('.task-make-root')) foundIsRoot = true;
+      if (ds.ghost) {
+        ds.ghost.style.left = `${touch.clientX - 30}px`;
+        ds.ghost.style.top = `${touch.clientY - 20}px`;
       }
 
-      setDragOverRoot(foundIsRoot);
-      setDragOverId(foundTarget);
-      td.currentTarget = foundTarget;
+      if (ds.ghost) ds.ghost.style.pointerEvents = 'none';
+      const { targetId, isRoot } = findTargetAtPoint(touch.clientX, touch.clientY, ds.taskId);
+      if (ds.ghost) ds.ghost.style.pointerEvents = '';
+
+      setDragOverRoot(isRoot);
+      setDragOverId(targetId);
+      ds.currentTarget = targetId;
     }
 
     function handleTouchEnd() {
-      const td = touchDragRef.current;
-      if (!td) return;
+      const ds = dragStateRef.current;
+      if (!ds || ds.isMouse) return;
 
-      if (td.ghost) {
-        td.ghost.remove();
-        td.ghost = null;
+      if (ds.ghost) {
+        ds.ghost.remove();
+        ds.ghost = null;
       }
 
-      if (td.currentTarget) {
-        const draggedTask = taskMap.get(td.taskId);
-        if (draggedTask && draggedTask.parentId !== td.currentTarget && !isDescendant(td.currentTarget, td.taskId, taskMap)) {
-          onSetSubtask(td.taskId, td.currentTarget);
+      if (ds.currentTarget) {
+        const draggedTask = taskMap.get(ds.taskId);
+        if (draggedTask && draggedTask.parentId !== ds.currentTarget && !isDescendant(ds.currentTarget, ds.taskId, taskMap)) {
+          onSetSubtask(ds.taskId, ds.currentTarget);
         }
       } else if (dragOverRoot) {
-        onSetSubtask(td.taskId, null);
+        onSetSubtask(ds.taskId, null);
       }
 
-      touchDragRef.current = null;
+      dragStateRef.current = null;
       setDraggingId(null);
       setDragOverId(null);
       setDragOverRoot(false);
     }
 
-    function handleTouchCancel() {
-      if (touchDragRef.current?.ghost) {
-        touchDragRef.current.ghost.remove();
-        touchDragRef.current.ghost = null;
+    function handleCancel() {
+      if (dragStateRef.current?.ghost) {
+        dragStateRef.current.ghost.remove();
+        dragStateRef.current.ghost = null;
       }
-      touchDragRef.current = null;
+      dragStateRef.current = null;
       setDraggingId(null);
       setDragOverId(null);
       setDragOverRoot(false);
     }
 
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
     document.addEventListener('touchmove', handleTouchMove, { passive: false });
     document.addEventListener('touchend', handleTouchEnd);
-    document.addEventListener('touchcancel', handleTouchCancel);
+    document.addEventListener('touchcancel', handleCancel);
     return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
       document.removeEventListener('touchmove', handleTouchMove);
       document.removeEventListener('touchend', handleTouchEnd);
-      document.removeEventListener('touchcancel', handleTouchCancel);
+      document.removeEventListener('touchcancel', handleCancel);
     };
   }, [taskMap, onSetSubtask, dragOverRoot]);
 
-  function handleTouchDragStart(taskId: string, e: React.TouchEvent) {
-    const touch = e.touches[0];
-    const el = e.currentTarget.closest('.task-node');
+  function createGhost(taskId: string, clientX: number, clientY: number): HTMLElement {
+    const el = document.querySelector(`[data-task-id="${taskId}"]`);
     const rect = el?.getBoundingClientRect();
-
     const ghost = document.createElement('div');
     ghost.className = 'touch-drag-ghost';
     ghost.textContent = taskMap.get(taskId)?.title ?? '';
-    ghost.style.left = `${touch.clientX - 30}px`;
-    ghost.style.top = `${touch.clientY - 20}px`;
-    if (rect) {
-      ghost.style.width = `${rect.width}px`;
-    }
+    ghost.style.left = `${clientX - 30}px`;
+    ghost.style.top = `${clientY - 20}px`;
+    if (rect) ghost.style.width = `${rect.width}px`;
     document.body.appendChild(ghost);
+    return ghost;
+  }
 
-    touchDragRef.current = {
-      taskId,
-      ghost,
-      startX: touch.clientX,
-      startY: touch.clientY,
-      currentTarget: null,
-    };
+  function handleMouseDown(taskId: string, e: React.MouseEvent) {
+    e.preventDefault();
+    const ghost = createGhost(taskId, e.clientX, e.clientY);
+    dragStateRef.current = { taskId, ghost, currentTarget: null, isMouse: true };
     setDraggingId(taskId);
+  }
+
+  function handleTouchDragStart(taskId: string, e: React.TouchEvent) {
+    const touch = e.touches[0];
+    const ghost = createGhost(taskId, touch.clientX, touch.clientY);
+    dragStateRef.current = { taskId, ghost, currentTarget: null, isMouse: false };
+    setDraggingId(taskId);
+  }
+
+  function handleDragOver(e: React.DragEvent) {
+    e.preventDefault();
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+  }
+
+  function handleDragLeave() {
   }
 
   const topLevelTasks = tasks.filter((t) => t.parentId === null);
@@ -157,47 +215,13 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
     return map;
   }, [tasks])();
 
-  function handleDragStart(e: React.DragEvent, taskId: string) {
-    e.dataTransfer.setData('text/plain', taskId);
-    e.dataTransfer.effectAllowed = 'move';
-    setDraggingId(taskId);
-  }
-
-  function handleDragOver(e: React.DragEvent, taskId: string) {
-    if (!draggingId || draggingId === taskId) return;
-    const draggedTask = taskMap.get(draggingId);
-    if (!draggedTask) return;
-    if (draggedTask.parentId === taskId) return;
-    if (isDescendant(taskId, draggingId, taskMap)) return;
-    e.dataTransfer.dropEffect = 'move';
-    setDragOverId(taskId);
-  }
-
-  function handleDragLeave() {
-    setDragOverId(null);
-  }
-
-  function handleDrop(e: React.DragEvent, targetId: string) {
-    const childId = e.dataTransfer.getData('text/plain');
-    if (childId && childId !== targetId && !isDescendant(targetId, childId, taskMap)) {
-      onSetSubtask(childId, targetId);
-    }
-    setDragOverId(null);
-    setDraggingId(null);
-  }
-
-  function handleDragEnd() {
-    setDragOverId(null);
-    setDraggingId(null);
-  }
-
   function renderTask(task: Task, depth: number = 0) {
     const children = subtaskMap.get(task.id) ?? [];
 
     return (
       <div key={task.id} className={`task-node ${depth > 0 ? 'task-child' : ''}`} data-task-id={task.id}>
         <div className="task-row">
-          <DragHandle taskId={task.id} onDragStart={handleDragStart} onTouchDragStart={handleTouchDragStart} child={depth > 0} />
+          <DragHandle taskId={task.id} onMouseDown={handleMouseDown} onTouchDragStart={handleTouchDragStart} child={depth > 0} />
           <TaskCard
             task={task}
             searchQuery={searchQuery}
@@ -246,30 +270,12 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
   }
 
   return (
-    <div
-      className="task-list"
-      onDragEnd={handleDragEnd}
-    >
+    <div className="task-list">
       {draggingId && taskMap.get(draggingId)?.parentId !== null && (
         <div
           className={`task-make-root ${dragOverRoot ? 'drag-over' : ''}`}
-          onDragOver={(e) => {
-            e.preventDefault();
-            if (draggingId) {
-              e.dataTransfer.dropEffect = 'move';
-              setDragOverRoot(true);
-            }
-          }}
-          onDragLeave={() => setDragOverRoot(false)}
-          onDrop={(e) => {
-            e.preventDefault();
-            const childId = e.dataTransfer.getData('text/plain');
-            if (childId) {
-              onSetSubtask(childId, null);
-            }
-            setDragOverRoot(false);
-            setDraggingId(null);
-          }}
+          onMouseOver={() => { if (draggingId) setDragOverRoot(true); }}
+          onMouseLeave={() => setDragOverRoot(false)}
         >
           <span className="task-make-root-text">Drop here to make a top-level task</span>
         </div>
