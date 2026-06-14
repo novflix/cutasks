@@ -1,9 +1,10 @@
-import { CloseCircle, CalendarMinimalistic, PenNewRound, Flag2, Tag } from '@solar-icons/react';
+import { CloseCircle, CalendarMinimalistic, PenNewRound, Flag2, Tag, ArrowDown, ArrowUp } from '@solar-icons/react';
 import type { Task } from '../types';
 import { formatDate, formatDeadline, getDeadlineStatus, getTagColor } from '../utils';
 
 interface TaskDetailModalProps {
   task: Task;
+  tasks: Task[];
   onClose: () => void;
   onEdit: (task: Task) => void;
   onToggle: (id: string) => void;
@@ -13,8 +14,10 @@ function capitalize(s: string) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-export default function TaskDetailModal({ task, onClose, onEdit, onToggle }: TaskDetailModalProps) {
+export default function TaskDetailModal({ task, tasks, onClose, onEdit, onToggle }: TaskDetailModalProps) {
   const dlStatus = getDeadlineStatus(task.deadline, task.completed);
+  const subtasks = tasks.filter((t) => t.parentId === task.id);
+  const parentTask = task.parentId ? tasks.find((t) => t.id === task.parentId) ?? null : null;
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -45,6 +48,18 @@ export default function TaskDetailModal({ task, onClose, onEdit, onToggle }: Tas
         <div className="detail-divider" />
 
         <div className="detail-meta">
+          {parentTask && (
+            <div className="detail-meta-row">
+              <span className="detail-meta-label">
+                <ArrowUp size={14} />
+                Parent
+              </span>
+              <span className="detail-meta-value detail-parent-link" onClick={() => { onClose(); onEdit(parentTask); }}>
+                {parentTask.title}
+              </span>
+            </div>
+          )}
+
           <div className="detail-meta-row">
             <span className="detail-meta-label">
               <Flag2 size={14} />
@@ -119,6 +134,37 @@ export default function TaskDetailModal({ task, onClose, onEdit, onToggle }: Tas
                     </span>
                   );
                 })}
+              </div>
+            </div>
+          </>
+        )}
+
+        {subtasks.length > 0 && (
+          <>
+            <div className="detail-divider" />
+            <div className="detail-section">
+              <span className="detail-section-title">
+                <ArrowDown size={14} />
+                Subtasks ({subtasks.length})
+              </span>
+              <div className="detail-subtasks">
+                {subtasks.map((sub) => (
+                  <div
+                    key={sub.id}
+                    className={`detail-subtask ${sub.completed ? 'completed' : ''}`}
+                    onClick={() => { onClose(); onEdit(sub); }}
+                  >
+                    <button
+                      className={`task-check task-check-sm ${sub.completed ? 'checked' : ''}`}
+                      onClick={(e) => { e.stopPropagation(); onToggle(sub.id); }}
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" className="check-icon">
+                        <polyline points="5 12 10 17 19 7" className="check-path" />
+                      </svg>
+                    </button>
+                    <span className="detail-subtask-title">{sub.title}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </>

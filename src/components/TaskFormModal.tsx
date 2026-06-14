@@ -3,6 +3,7 @@ import { CloseCircle } from '@solar-icons/react';
 import type { Task, Priority } from '../types';
 import DatePicker from './DatePicker';
 import TagInput from './TagInput';
+import ParentTaskSelect from './ParentTaskSelect';
 
 interface TaskFormModalProps {
   editingTask: Task | null;
@@ -11,19 +12,22 @@ interface TaskFormModalProps {
   priority: Priority;
   deadline: string;
   tags: string[];
+  parentId: string | null;
   allTags: string[];
+  allTasks: Task[];
   onTitleChange: (v: string) => void;
   onDescChange: (v: string) => void;
   onPriorityChange: (v: Priority) => void;
   onDeadlineChange: (v: string) => void;
   onTagsChange: (v: string[]) => void;
+  onParentChange: (v: string | null) => void;
   onSubmit: (e: React.FormEvent) => void;
   onClose: () => void;
 }
 
 export default function TaskFormModal({
-  editingTask, title, description, priority, deadline, tags, allTags,
-  onTitleChange, onDescChange, onPriorityChange, onDeadlineChange, onTagsChange,
+  editingTask, title, description, priority, deadline, tags, parentId, allTags, allTasks,
+  onTitleChange, onDescChange, onPriorityChange, onDeadlineChange, onTagsChange, onParentChange,
   onSubmit, onClose,
 }: TaskFormModalProps) {
   const titleRef = useRef<HTMLInputElement>(null);
@@ -102,6 +106,15 @@ export default function TaskFormModal({
               tags={tags}
               allTags={allTags}
               onChange={onTagsChange}
+            />
+          </div>
+
+          <div className="fm-field">
+            <ParentTaskSelect
+              parentId={parentId}
+              currentTaskId={editingTask?.id ?? null}
+              allTasks={allTasks}
+              onChange={onParentChange}
             />
           </div>
         </form>

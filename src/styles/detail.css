@@ -144,3 +144,55 @@
   padding: 16px 20px 20px;
   border-top: 1px solid var(--border-subtle);
 }
+
+/* ======================== DETAIL SUBTASKS ======================== */
+
+.detail-parent-link {
+  color: var(--primary) !important;
+  cursor: pointer;
+  transition: opacity var(--transition);
+}
+
+.detail-parent-link:hover {
+  opacity: 0.8;
+}
+
+.detail-subtasks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-subtask {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.detail-subtask:hover {
+  background: var(--bg-hover);
+  border-color: var(--border);
+}
+
+.detail-subtask.completed {
+  opacity: 0.5;
+}
+
+.detail-subtask.completed .detail-subtask-title {
+  text-decoration: line-through;
+  color: var(--text-dim);
+}
+
+.detail-subtask-title {
+  font-size: 0.85rem;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

@@ -11,6 +11,7 @@ export function loadTasks(): Task[] {
       ...t,
       deadline: t.deadline || '',
       tags: t.tags || [],
+      parentId: t.parentId ?? null,
     }));
   } catch {
     return [];
