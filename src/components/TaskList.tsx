@@ -1,20 +1,116 @@
+import { useState, useCallback } from 'react';
 import { NotesMinimalistic } from '@solar-icons/react';
 import type { Task } from '../types';
 import type { FilterType } from '../App';
-import TaskCard from './TaskCard';
+import TaskCard, { DragHandle } from './TaskCard';
 
 interface TaskListProps {
   tasks: Task[];
+  taskMap: Map<string, Task>;
   filter: FilterType;
   searchQuery: string;
   onToggle: (id: string) => void;
   onView: (task: Task) => void;
   onEdit: (task: Task) => void;
   onDelete: (id: string) => void;
+  onSetSubtask: (childId: string, parentId: string | null) => void;
 }
 
-export default function TaskList({ tasks, filter, searchQuery, onToggle, onView, onEdit, onDelete }: TaskListProps) {
-  if (tasks.length === 0) {
+function isDescendant(childId: string, parentId: string, taskMap: Map<string, Task>): boolean {
+  let current = taskMap.get(childId);
+  while (current?.parentId) {
+    if (current.parentId === parentId) return true;
+    current = taskMap.get(current.parentId);
+  }
+  return false;
+}
+
+export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle, onView, onEdit, onDelete, onSetSubtask }: TaskListProps) {
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
+
+  const topLevelTasks = tasks.filter((t) => t.parentId === null);
+
+  const subtaskMap = useCallback(() => {
+    const map = new Map<string, Task[]>();
+    for (const t of tasks) {
+      if (t.parentId) {
+        const arr = map.get(t.parentId) ?? [];
+        arr.push(t);
+        map.set(t.parentId, arr);
+      }
+    }
+    return map;
+  }, [tasks])();
+
+  function handleDragStart(e: React.DragEvent, taskId: string) {
+    e.dataTransfer.setData('text/plain', taskId);
+    e.dataTransfer.effectAllowed = 'move';
+    setDraggingId(taskId);
+  }
+
+  function handleDragOver(e: React.DragEvent, taskId: string) {
+    if (!draggingId || draggingId === taskId) return;
+    const draggedTask = taskMap.get(draggingId);
+    if (!draggedTask) return;
+    if (draggedTask.parentId === taskId) return;
+    if (isDescendant(taskId, draggingId, taskMap)) return;
+    e.dataTransfer.dropEffect = 'move';
+    setDragOverId(taskId);
+  }
+
+  function handleDragLeave() {
+    setDragOverId(null);
+  }
+
+  function handleDrop(e: React.DragEvent, targetId: string) {
+    const childId = e.dataTransfer.getData('text/plain');
+    if (childId && childId !== targetId && !isDescendant(targetId, childId, taskMap)) {
+      onSetSubtask(childId, targetId);
+    }
+    setDragOverId(null);
+    setDraggingId(null);
+  }
+
+  function handleDragEnd() {
+    setDragOverId(null);
+    setDraggingId(null);
+  }
+
+  function renderTask(task: Task, depth: number = 0) {
+    const children = subtaskMap.get(task.id) ?? [];
+    const isDraggable = depth === 0;
+
+    return (
+      <div key={task.id} className={`task-node ${depth > 0 ? 'task-child' : ''}`}>
+        <div className="task-row">
+          {isDraggable && (
+            <DragHandle taskId={task.id} onDragStart={handleDragStart} />
+          )}
+          <TaskCard
+            task={task}
+            searchQuery={searchQuery}
+            subtaskCount={children.length}
+            isDragOver={dragOverId === task.id}
+            onToggle={onToggle}
+            onView={onView}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+          />
+        </div>
+        {children.length > 0 && (
+          <ul className="task-children">
+            {children.map((child) => renderTask(child, depth + 1))}
+          </ul>
+        )}
+      </div>
+    );
+  }
+
+  if (topLevelTasks.length === 0) {
     return (
       <div className="empty">
         <NotesMinimalistic size={64} className="empty-icon" />
@@ -37,18 +133,11 @@ export default function TaskList({ tasks, filter, searchQuery, onToggle, onView,
   }
 
   return (
-    <ul className="task-list">
-      {tasks.map((task) => (
-        <TaskCard
-          key={task.id}
-          task={task}
-          searchQuery={searchQuery}
-          onToggle={onToggle}
-          onView={onView}
-          onEdit={onEdit}
-          onDelete={onDelete}
-        />
-      ))}
-    </ul>
+    <div
+      className="task-list"
+      onDragEnd={handleDragEnd}
+    >
+      {topLevelTasks.map((task) => renderTask(task))}
+    </div>
   );
 }

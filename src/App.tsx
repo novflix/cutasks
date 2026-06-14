@@ -22,6 +22,7 @@ export default function App() {
   const [priority, setPriority] = useState<Priority>('medium');
   const [deadline, setDeadline] = useState('');
   const [tags, setTags] = useState<string[]>([]);
+  const [parentId, setParentId] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterType>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -98,6 +99,12 @@ export default function App() {
     [tasks, viewingTask]
   );
 
+  const taskMap = useMemo(() => {
+    const map = new Map<string, Task>();
+    for (const t of tasks) map.set(t.id, t);
+    return map;
+  }, [tasks]);
+
   function openCreateForm() {
     setEditingTask(null);
     setTitle('');
@@ -105,6 +112,7 @@ export default function App() {
     setPriority('medium');
     setDeadline('');
     setTags([]);
+    setParentId(null);
     setShowForm(true);
   }
 
@@ -115,6 +123,7 @@ export default function App() {
     setPriority(task.priority);
     setDeadline(task.deadline || '');
     setTags(task.tags || []);
+    setParentId(task.parentId ?? null);
     setShowForm(true);
   }
 
@@ -126,6 +135,7 @@ export default function App() {
     setPriority('medium');
     setDeadline('');
     setTags([]);
+    setParentId(null);
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -140,7 +150,7 @@ export default function App() {
       setTasks((prev) =>
         prev.map((t) =>
           t.id === editingTask.id
-            ? { ...t, title: trimmedTitle, description: description.trim(), priority, deadline, tags, updatedAt: now }
+            ? { ...t, title: trimmedTitle, description: description.trim(), priority, deadline, tags, parentId, updatedAt: now }
             : t
         )
       );
@@ -154,6 +164,7 @@ export default function App() {
         deadline,
         tags,
         completed: false,
+        parentId,
         createdAt: now,
         updatedAt: now,
       };
@@ -173,7 +184,22 @@ export default function App() {
 
   function deleteTask(id: string) {
     pushHistory();
-    setTasks((prev) => prev.filter((t) => t.id !== id));
+    setTasks((prev) => {
+      const updated = prev.filter((t) => t.id !== id);
+      return updated.map((t) =>
+        t.parentId === id ? { ...t, parentId: null } : t
+      );
+    });
+  }
+
+  function setSubtaskOf(childId: string, newParentId: string | null) {
+    if (childId === newParentId) return;
+    pushHistory();
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === childId ? { ...t, parentId: newParentId, updatedAt: Date.now() } : t
+      )
+    );
   }
 
   return (
@@ -188,18 +214,21 @@ export default function App() {
       <main className="main">
         <TaskList
           tasks={filteredTasks}
+          taskMap={taskMap}
           filter={filter}
           searchQuery={searchQuery}
           onToggle={toggleComplete}
           onView={setViewingTask}
           onEdit={openEditForm}
           onDelete={deleteTask}
+          onSetSubtask={setSubtaskOf}
         />
       </main>
 
       {activeViewingTask && (
         <TaskDetailModal
           task={activeViewingTask}
+          tasks={tasks}
           onClose={() => setViewingTask(null)}
           onEdit={openEditForm}
           onToggle={toggleComplete}
@@ -214,12 +243,15 @@ export default function App() {
           priority={priority}
           deadline={deadline}
           tags={tags}
+          parentId={parentId}
           allTags={allTags}
+          allTasks={tasks}
           onTitleChange={setTitle}
           onDescChange={setDescription}
           onPriorityChange={setPriority}
           onDeadlineChange={setDeadline}
           onTagsChange={setTags}
+          onParentChange={setParentId}
           onSubmit={handleSubmit}
           onClose={closeForm}
         />

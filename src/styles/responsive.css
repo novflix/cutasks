@@ -17,6 +17,10 @@
     opacity: 1;
   }
 
+  .task-drag-handle {
+    opacity: 0.5;
+  }
+
   .btn-label {
     display: none;
   }

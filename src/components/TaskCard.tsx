@@ -1,22 +1,53 @@
-import { Pen, TrashBinMinimalistic, CalendarMinimalistic } from '@solar-icons/react';
+import { Pen, TrashBinMinimalistic, CalendarMinimalistic, ArrowDown, Reorder } from '@solar-icons/react';
 import type { Task } from '../types';
 import { formatDeadline, getDeadlineStatus, getTagColor, highlightMatch } from '../utils';
 
 interface TaskCardProps {
   task: Task;
   searchQuery: string;
+  subtaskCount: number;
+  isDragOver: boolean;
   onToggle: (id: string) => void;
   onView: (task: Task) => void;
   onEdit: (task: Task) => void;
   onDelete: (id: string) => void;
+  onDragOver: (e: React.DragEvent, taskId: string) => void;
+  onDragLeave: (e: React.DragEvent) => void;
+  onDrop: (e: React.DragEvent, targetId: string) => void;
 }
 
-export default function TaskCard({ task, searchQuery, onToggle, onView, onEdit, onDelete }: TaskCardProps) {
+export default function TaskCard({
+  task, searchQuery, subtaskCount, isDragOver,
+  onToggle, onView, onEdit, onDelete,
+  onDragOver, onDragLeave, onDrop,
+}: TaskCardProps) {
   const dlStatus = getDeadlineStatus(task.deadline, task.completed);
   const titleParts = highlightMatch(task.title, searchQuery);
 
+  function handleDragOver(e: React.DragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    onDragOver(e, task.id);
+  }
+
+  function handleDragLeave(e: React.DragEvent) {
+    e.stopPropagation();
+    onDragLeave(e);
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    onDrop(e, task.id);
+  }
+
   return (
-    <li className={`task-item task-stripe-${task.priority} ${task.completed ? 'completed' : ''} ${dlStatus === 'overdue' ? 'task-overdue' : ''}`}>
+    <li
+      className={`task-item task-stripe-${task.priority} ${task.completed ? 'completed' : ''} ${dlStatus === 'overdue' ? 'task-overdue' : ''} ${isDragOver ? 'drag-over' : ''}`}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
       <button
         className={`task-check ${task.completed ? 'checked' : ''}`}
         onClick={() => onToggle(task.id)}
@@ -56,6 +87,12 @@ export default function TaskCard({ task, searchQuery, onToggle, onView, onEdit, 
               </span>
             );
           })}
+          {subtaskCount > 0 && (
+            <span className="subtask-badge">
+              <ArrowDown size={11} />
+              {subtaskCount} subtask{subtaskCount !== 1 ? 's' : ''}
+            </span>
+          )}
         </div>
       </div>
       <div className="task-actions">
@@ -67,5 +104,24 @@ export default function TaskCard({ task, searchQuery, onToggle, onView, onEdit, 
         </button>
       </div>
     </li>
+  );
+}
+
+export function DragHandle({ taskId, onDragStart }: { taskId: string; onDragStart: (e: React.DragEvent, id: string) => void }) {
+  function handleDragStart(e: React.DragEvent) {
+    e.stopPropagation();
+    e.dataTransfer.effectAllowed = 'move';
+    onDragStart(e, taskId);
+  }
+
+  return (
+    <div
+      className="task-drag-handle"
+      draggable
+      onDragStart={handleDragStart}
+      title="Drag to make subtask"
+    >
+      <Reorder size={16} />
+    </div>
   );
 }
