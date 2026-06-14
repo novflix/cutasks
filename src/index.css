@@ -52,9 +52,35 @@ body {
 
 button {
   font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
 }
 
 input,
 textarea {
   font-family: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .task-item:hover,
+  .task-item:hover.task-stripe-low,
+  .task-item:hover.task-stripe-medium,
+  .task-item:hover.task-stripe-high,
+  .task-item:hover.task-overdue {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .btn-primary:hover,
+  .btn-secondary:hover,
+  .filter-btn:hover,
+  .filter-btn.active,
+  .stat:hover {
+    transform: none;
+    box-shadow: none;
+  }
 }

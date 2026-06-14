@@ -1,3 +1,5 @@
+/* ======================== DESKTOP+ ======================== */
+
 @media (min-width: 480px) {
   .app {
     padding: 0 28px 60px;
@@ -11,6 +13,8 @@
   .logo-mini { display: none; }
   .logo { height: 46px; }
 }
+
+/* ======================== TABLET (<= 639px) ======================== */
 
 @media (max-width: 639px) {
   .task-actions {
@@ -42,29 +46,405 @@
   }
 }
 
+/* ======================== MOBILE (<= 480px) ======================== */
+
 @media (max-width: 480px) {
+  .app {
+    padding: 0 16px 80px;
+  }
+
+  /* HEADER */
   .header {
-    padding: 20px 0 16px;
+    padding: 16px 0 12px;
   }
 
   .logo {
-    height: 32px;
+    height: 28px;
   }
 
+  .header-top {
+    gap: 8px;
+  }
+
+  .stats {
+    gap: 4px;
+  }
+
+  .stat {
+    padding: 4px 8px;
+    font-size: 0.68rem;
+  }
+
+  .stat strong {
+    font-size: 0.78rem;
+  }
+
+  /* TOOLBAR */
+  .toolbar {
+    gap: 10px;
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+  }
+
+  .search-input {
+    padding: 14px 14px 14px 40px;
+    font-size: 16px;
+  }
+
+  .filters {
+    gap: 6px;
+  }
+
+  .filter-btn {
+    padding: 8px 14px;
+    font-size: 0.78rem;
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* TASK ITEMS */
   .task-item {
-    padding: 14px;
+    padding: 14px 12px;
+    gap: 10px;
+    border-radius: var(--radius-sm);
   }
 
   .task-title {
     font-size: 0.9rem;
+    line-height: 1.35;
   }
 
   .task-desc {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
   }
 
-  .form-row {
+  .task-tags {
+    gap: 4px;
+  }
+
+  .priority-badge {
+    font-size: 0.6rem;
+    padding: 2px 5px;
+  }
+
+  .deadline-badge {
+    font-size: 0.6rem;
+    padding: 2px 5px;
+  }
+
+  .user-tag {
+    font-size: 0.62rem;
+    padding: 2px 6px;
+  }
+
+  .subtask-badge {
+    font-size: 0.6rem;
+    padding: 2px 5px;
+  }
+
+  /* TASK ACTIONS */
+  .task-actions {
+    opacity: 1;
+    transform: none;
+    gap: 0;
+  }
+
+  .btn-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .btn-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* CHECKBOX */
+  .task-check {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* DRAG HANDLE */
+  .task-drag-handle {
+    width: 20px;
+    margin-left: -20px;
+    opacity: 0.4;
+  }
+
+  .task-drag-handle svg {
+    width: 10px;
+    height: 14px;
+  }
+
+  /* CHILDREN */
+  .task-children-wrap {
+    margin-left: 12px;
+    padding-left: 12px;
+  }
+
+  .task-child .task-item {
+    padding: 10px 10px;
+  }
+
+  .task-child .task-item .task-title {
+    font-size: 0.82rem;
+  }
+
+  .task-child .task-item .task-desc {
+    font-size: 0.72rem;
+  }
+
+  /* MODALS — bottom sheet */
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .modal {
+    border-radius: 16px 16px 0 0;
+    max-height: 92vh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    animation: sheetSlideUp 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .form-modal {
+    max-width: 100%;
+  }
+
+  .detail-modal {
+    max-width: 100%;
+  }
+
+  .fm-header {
+    padding: 16px 16px 0;
+  }
+
+  .fm-body {
+    padding: 16px 16px 0;
+    gap: 16px;
+  }
+
+  .fm-footer {
+    padding: 14px 16px;
+    gap: 8px;
+  }
+
+  .fm-footer .btn {
+    flex: 1;
+    justify-content: center;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+  }
+
+  .fm-row {
     flex-direction: column;
     gap: 16px;
+  }
+
+  .fm-input {
+    height: 46px;
+    font-size: 16px;
+  }
+
+  .fm-textarea {
+    min-height: 80px;
+    font-size: 16px;
+  }
+
+  /* DETAIL MODAL */
+  .detail-top {
+    padding: 16px 16px 0;
+  }
+
+  .detail-title {
+    font-size: 1.05rem;
+  }
+
+  .detail-desc {
+    font-size: 0.82rem;
+  }
+
+  .detail-divider {
+    margin: 12px 16px;
+  }
+
+  .detail-meta {
+    padding: 0 16px;
+  }
+
+  .detail-meta-row {
+    padding: 8px 0;
+  }
+
+  .detail-section {
+    padding: 0 16px 12px;
+  }
+
+  .detail-actions {
+    padding: 12px 16px 16px;
+    gap: 8px;
+  }
+
+  .detail-actions .btn {
+    flex: 1;
+    justify-content: center;
+    padding: 12px 16px;
+  }
+
+  /* PRIORITY SELECTOR */
+  .priority-selector {
+    gap: 6px;
+  }
+
+  .priority-option {
+    height: 44px;
+    font-size: 0.78rem;
+  }
+
+  /* TAG INPUT */
+  .tag-input-box {
+    min-height: 44px;
+    padding: 8px 12px;
+  }
+
+  .tag-input-field {
+    font-size: 16px;
+    min-width: 60px;
+  }
+
+  /* PARENT SELECT */
+  .parent-input {
+    font-size: 16px;
+    min-height: 44px;
+  }
+
+  .parent-input-box {
+    min-height: 44px;
+  }
+
+  .parent-dropdown {
+    max-height: 180px;
+  }
+
+  .parent-dropdown-item {
+    padding: 12px 14px;
+    font-size: 0.88rem;
+  }
+
+  /* DATE PICKER */
+  .dp-dropdown {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: auto;
+    border-radius: 16px 16px 0 0;
+    padding: 16px;
+    min-width: 0;
+    width: 100%;
+    max-height: 50vh;
+    overflow-y: auto;
+    animation: sheetSlideUp 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .dp-day {
+    width: 38px;
+    height: 38px;
+    font-size: 0.88rem;
+  }
+
+  .dp-nav {
+    width: 36px;
+    height: 36px;
+  }
+
+  .dp-title {
+    font-size: 0.92rem;
+  }
+
+  /* MAKE ROOT DROP ZONE */
+  .task-make-root {
+    padding: 14px 12px;
+    font-size: 0.78rem;
+  }
+
+  /* EMPTY STATE */
+  .empty {
+    padding: 60px 16px;
+  }
+
+  .empty-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .empty-title {
+    font-size: 1rem;
+  }
+
+  .empty-sub {
+    font-size: 0.8rem;
+  }
+}
+
+/* ======================== SMALL MOBILE (<= 360px) ======================== */
+
+@media (max-width: 360px) {
+  .app {
+    padding: 0 12px 70px;
+  }
+
+  .task-item {
+    padding: 12px 10px;
+    gap: 8px;
+  }
+
+  .task-title {
+    font-size: 0.85rem;
+  }
+
+  .stats {
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 7px 10px;
+    font-size: 0.72rem;
+  }
+
+  .fm-body {
+    padding: 12px 12px 0;
+    gap: 14px;
+  }
+
+  .fm-header {
+    padding: 14px 12px 0;
+  }
+
+  .fm-footer {
+    padding: 12px;
+  }
+
+  .detail-top {
+    padding: 14px 12px 0;
+  }
+
+  .detail-meta {
+    padding: 0 12px;
+  }
+
+  .detail-section {
+    padding: 0 12px 10px;
+  }
+
+  .detail-actions {
+    padding: 10px 12px 14px;
   }
 }
