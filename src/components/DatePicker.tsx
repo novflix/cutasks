@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { ArrowLeft, ArrowRight } from '@solar-icons/react';
 
 interface DatePickerProps {
@@ -46,32 +46,57 @@ function parseDate(value: string) {
 export default function DatePicker({ value, onChange, min, label, id }: DatePickerProps) {
   const today = new Date();
   const [open, setOpen] = useState(false);
+  const [closing, setClosing] = useState(false);
   const [viewYear, setViewYear] = useState(() => parseDate(value).year);
   const [viewMonth, setViewMonth] = useState(() => parseDate(value).month);
   const ref = useRef<HTMLDivElement>(null);
+  const closingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const openRef = useRef(open);
+  const closingRef = useRef(closing);
+
+  useEffect(() => {
+    openRef.current = open;
+    closingRef.current = closing;
+  });
+
+  useEffect(() => {
+    return () => {
+      if (closingTimer.current) clearTimeout(closingTimer.current);
+    };
+  }, []);
+
+  const handleClose = useCallback(() => {
+    if (closingRef.current) return;
+    setClosing(true);
+    closingTimer.current = setTimeout(() => {
+      setOpen(false);
+      setClosing(false);
+    }, 180);
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
+        handleClose();
       }
     }
     if (open) {
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [open]);
+  }, [open, handleClose]);
 
-  function syncViewFromDate() {
-    const parsed = parseDate(value);
-    setViewYear(parsed.year);
-    setViewMonth(parsed.month);
-  }
-
-  function toggleOpen() {
-    if (!open) syncViewFromDate();
-    setOpen(!open);
-  }
+  const toggleOpen = useCallback(() => {
+    if (openRef.current) {
+      handleClose();
+    } else {
+      const parsed = parseDate(value);
+      setViewYear(parsed.year);
+      setViewMonth(parsed.month);
+      setOpen(true);
+      setClosing(false);
+    }
+  }, [handleClose, value]);
 
   function prevMonth() {
     if (viewMonth === 0) {
@@ -95,19 +120,21 @@ export default function DatePicker({ value, onChange, min, label, id }: DatePick
     const dateStr = toDateString(viewYear, viewMonth, day);
     if (min && dateStr < min) return;
     onChange(dateStr);
-    setOpen(false);
+    handleClose();
   }
 
   function clearDate(e: React.MouseEvent) {
     e.stopPropagation();
     onChange('');
-    setOpen(false);
+    handleClose();
   }
 
   const daysInMonth = getDaysInMonth(viewYear, viewMonth);
   const firstDay = getFirstDayOfMonth(viewYear, viewMonth);
   const todayStr = toDateString(today.getFullYear(), today.getMonth(), today.getDate());
   const minDate = min || '';
+
+  const dropdownClass = `dp-dropdown${closing ? ' closing' : ''}`;
 
   return (
     <div className="dp" ref={ref}>
@@ -132,8 +159,8 @@ export default function DatePicker({ value, onChange, min, label, id }: DatePick
           </svg>
         )}
       </button>
-      {open && (
-        <div className="dp-dropdown">
+      {(open || closing) && (
+        <div className={dropdownClass}>
           <div className="dp-header">
             <button type="button" className="dp-nav" onClick={prevMonth}>
               <ArrowLeft size={16} />

@@ -23,12 +23,13 @@ interface TaskFormModalProps {
   onParentChange: (v: string | null) => void;
   onSubmit: (e: React.FormEvent) => void;
   onClose: () => void;
+  isClosing?: boolean;
 }
 
 export default function TaskFormModal({
   editingTask, title, description, priority, deadline, tags, parentId, allTags, allTasks,
   onTitleChange, onDescChange, onPriorityChange, onDeadlineChange, onTagsChange, onParentChange,
-  onSubmit, onClose,
+  onSubmit, onClose, isClosing,
 }: TaskFormModalProps) {
   const titleRef = useRef<HTMLInputElement>(null);
 
@@ -36,9 +37,12 @@ export default function TaskFormModal({
     setTimeout(() => titleRef.current?.focus(), 100);
   }, []);
 
+  const overlayClass = `modal-overlay${isClosing ? ' closing' : ''}`;
+  const modalClass = `modal form-modal${isClosing ? ' closing' : ''}`;
+
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal form-modal" onClick={(e) => e.stopPropagation()}>
+    <div className={overlayClass} onClick={onClose}>
+      <div className={modalClass} onClick={(e) => e.stopPropagation()}>
         <div className="fm-header">
           <h2 className="fm-title">{editingTask ? 'Edit Task' : 'New Task'}</h2>
           <button className="btn-icon fm-close" onClick={onClose}>

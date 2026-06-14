@@ -12,6 +12,10 @@
   animation: overlayEnter 0.2s ease;
 }
 
+.modal-overlay.closing {
+  animation: overlayExit 0.2s ease forwards;
+}
+
 .modal {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
@@ -20,6 +24,23 @@
   max-width: 480px;
   box-shadow: var(--shadow-lg);
   animation: modalEnter 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.modal.closing {
+  animation: modalExit 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes overlayExit {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes modalExit {
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
 }
 
 .modal-header {

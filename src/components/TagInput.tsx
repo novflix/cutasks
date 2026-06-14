@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { CloseCircle } from '@solar-icons/react';
 import { getTagColor } from '../utils';
 
@@ -12,23 +12,53 @@ interface TagInputProps {
 export default function TagInput({ tags, allTags, onChange, label }: TagInputProps) {
   const [input, setInput] = useState('');
   const [open, setOpen] = useState(false);
+  const [closing, setClosing] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const closingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const openRef = useRef(open);
+  const closingRef = useRef(closing);
+
+  useEffect(() => {
+    openRef.current = open;
+    closingRef.current = closing;
+  });
 
   const suggestions = input.trim()
     ? allTags.filter((t) => t.toLowerCase().includes(input.toLowerCase()) && !tags.includes(t))
     : allTags.filter((t) => !tags.includes(t));
 
   useEffect(() => {
+    return () => {
+      if (closingTimer.current) clearTimeout(closingTimer.current);
+    };
+  }, []);
+
+  const handleClose = useCallback(() => {
+    if (closingRef.current) return;
+    setClosing(true);
+    closingTimer.current = setTimeout(() => {
+      setOpen(false);
+      setClosing(false);
+    }, 180);
+  }, []);
+
+  useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
+        handleClose();
       }
     }
     if (open) {
       document.addEventListener('mousedown', handleClickOutside);
       return () => document.removeEventListener('mousedown', handleClickOutside);
     }
-  }, [open]);
+  }, [open, handleClose]);
+
+  const handleOpen = useCallback(() => {
+    if (openRef.current) return;
+    setOpen(true);
+    setClosing(false);
+  }, []);
 
   function addTag(tag: string) {
     const trimmed = tag.trim();
@@ -36,7 +66,7 @@ export default function TagInput({ tags, allTags, onChange, label }: TagInputPro
       onChange([...tags, trimmed]);
     }
     setInput('');
-    setOpen(false);
+    handleClose();
   }
 
   function removeTag(tag: string) {
@@ -53,10 +83,12 @@ export default function TagInput({ tags, allTags, onChange, label }: TagInputPro
     }
   }
 
+  const dropdownClass = `tag-dropdown${closing ? ' closing' : ''}`;
+
   return (
     <div className="tag-input" ref={ref}>
       {label && <label className="tag-input-label">{label}</label>}
-      <div className="tag-input-box" onClick={() => setOpen(true)}>
+      <div className="tag-input-box" onClick={handleOpen}>
         {tags.map((tag) => {
           const c = getTagColor(tag);
           return (
@@ -73,13 +105,13 @@ export default function TagInput({ tags, allTags, onChange, label }: TagInputPro
           className="tag-input-field"
           placeholder={tags.length ? 'Add tag...' : 'Type to add tags...'}
           value={input}
-          onChange={(e) => { setInput(e.target.value); setOpen(true); }}
-          onFocus={() => setOpen(true)}
+          onChange={(e) => { setInput(e.target.value); handleOpen(); }}
+          onFocus={handleOpen}
           onKeyDown={handleKeyDown}
         />
       </div>
-      {open && suggestions.length > 0 && (
-        <div className="tag-dropdown">
+      {(open || closing) && suggestions.length > 0 && (
+        <div className={dropdownClass}>
           {suggestions.slice(0, 8).map((tag) => {
             const c = getTagColor(tag);
             return (

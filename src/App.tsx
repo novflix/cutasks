@@ -18,7 +18,9 @@ const priorityOrder: Record<Priority, number> = { high: 0, medium: 1, low: 2 };
 export default function App() {
   const [tasks, setTasks] = useState<Task[]>(loadTasks);
   const [showForm, setShowForm] = useState(false);
+  const [formClosing, setFormClosing] = useState(false);
   const [viewingTask, setViewingTask] = useState<Task | null>(null);
+  const [detailClosing, setDetailClosing] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -31,10 +33,19 @@ export default function App() {
 
   const tasksRef = useRef(tasks);
   const historyRef = useRef<Task[][]>([]);
+  const formTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const detailTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     tasksRef.current = tasks;
   });
+
+  useEffect(() => {
+    return () => {
+      if (formTimer.current) clearTimeout(formTimer.current);
+      if (detailTimer.current) clearTimeout(detailTimer.current);
+    };
+  }, []);
 
   const pushHistory = useCallback(() => {
     historyRef.current.push([...tasksRef.current]);
@@ -114,6 +125,7 @@ export default function App() {
     setDeadline('');
     setTags([]);
     setParentId(null);
+    setFormClosing(false);
     setShowForm(true);
   }
 
@@ -125,18 +137,23 @@ export default function App() {
     setDeadline(task.deadline || '');
     setTags(task.tags || []);
     setParentId(task.parentId ?? null);
+    setFormClosing(false);
     setShowForm(true);
   }
 
   function closeForm() {
-    setShowForm(false);
-    setEditingTask(null);
-    setTitle('');
-    setDescription('');
-    setPriority('medium');
-    setDeadline('');
-    setTags([]);
-    setParentId(null);
+    setFormClosing(true);
+    formTimer.current = setTimeout(() => {
+      setShowForm(false);
+      setFormClosing(false);
+      setEditingTask(null);
+      setTitle('');
+      setDescription('');
+      setPriority('medium');
+      setDeadline('');
+      setTags([]);
+      setParentId(null);
+    }, 200);
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -172,6 +189,14 @@ export default function App() {
       setTasks((prev) => [newTask, ...prev]);
     }
     closeForm();
+  }
+
+  function closeDetail() {
+    setDetailClosing(true);
+    detailTimer.current = setTimeout(() => {
+      setViewingTask(null);
+      setDetailClosing(false);
+    }, 200);
   }
 
   function toggleComplete(id: string) {
@@ -226,17 +251,18 @@ export default function App() {
         />
       </main>
 
-      {activeViewingTask && (
+      {(activeViewingTask || detailClosing) && (
         <TaskDetailModal
-          task={activeViewingTask}
+          task={activeViewingTask!}
           tasks={tasks}
-          onClose={() => setViewingTask(null)}
-          onEdit={openEditForm}
+          onClose={closeDetail}
+          onEdit={(t) => { closeDetail(); setTimeout(() => openEditForm(t), 220); }}
           onToggle={toggleComplete}
+          isClosing={detailClosing}
         />
       )}
 
-      {showForm && (
+      {(showForm || formClosing) && (
         <TaskFormModal
           editingTask={editingTask}
           title={title}
@@ -255,6 +281,7 @@ export default function App() {
           onParentChange={setParentId}
           onSubmit={handleSubmit}
           onClose={closeForm}
+          isClosing={formClosing}
         />
       )}
 

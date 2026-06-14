@@ -8,20 +8,24 @@ interface TaskDetailModalProps {
   onClose: () => void;
   onEdit: (task: Task) => void;
   onToggle: (id: string) => void;
+  isClosing?: boolean;
 }
 
 function capitalize(s: string) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-export default function TaskDetailModal({ task, tasks, onClose, onEdit, onToggle }: TaskDetailModalProps) {
+export default function TaskDetailModal({ task, tasks, onClose, onEdit, onToggle, isClosing }: TaskDetailModalProps) {
   const dlStatus = getDeadlineStatus(task.deadline, task.completed);
   const subtasks = tasks.filter((t) => t.parentId === task.id);
   const parentTask = task.parentId ? tasks.find((t) => t.id === task.parentId) ?? null : null;
 
+  const overlayClass = `modal-overlay${isClosing ? ' closing' : ''}`;
+  const modalClass = `modal detail-modal${isClosing ? ' closing' : ''}`;
+
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal detail-modal" onClick={(e) => e.stopPropagation()}>
+    <div className={overlayClass} onClick={onClose}>
+      <div className={modalClass} onClick={(e) => e.stopPropagation()}>
         <div className="detail-top">
           <div className="detail-top-left">
             <button

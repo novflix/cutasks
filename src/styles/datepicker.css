@@ -78,7 +78,29 @@
   box-shadow: var(--shadow-lg);
   padding: 12px;
   min-width: 260px;
-  animation: dpFadeIn 0.15s ease;
+  animation: dropdownEnter 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dp-dropdown.closing {
+  animation: dropdownExit 0.18s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes dropdownEnter {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dropdownExit {
+  to {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
 }
 
 .dp-header {
