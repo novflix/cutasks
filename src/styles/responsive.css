@@ -21,6 +21,16 @@
     opacity: 0.5;
   }
 
+  .task-list {
+    margin-left: -28px;
+    padding-left: 28px;
+  }
+
+  .task-drag-handle {
+    width: 22px;
+    margin-left: -28px;
+  }
+
   .btn-label {
     display: none;
   }

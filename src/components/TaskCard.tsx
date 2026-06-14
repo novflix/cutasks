@@ -1,4 +1,4 @@
-import { Pen, TrashBinMinimalistic, CalendarMinimalistic, ArrowDown, Reorder } from '@solar-icons/react';
+import { Pen, TrashBinMinimalistic, CalendarMinimalistic, ArrowDown } from '@solar-icons/react';
 import type { Task } from '../types';
 import { formatDeadline, getDeadlineStatus, getTagColor, highlightMatch } from '../utils';
 
@@ -107,6 +107,19 @@ export default function TaskCard({
   );
 }
 
+function GripDots() {
+  return (
+    <svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor">
+      <circle cx="3" cy="2.5" r="1.5" />
+      <circle cx="9" cy="2.5" r="1.5" />
+      <circle cx="3" cy="8" r="1.5" />
+      <circle cx="9" cy="8" r="1.5" />
+      <circle cx="3" cy="13.5" r="1.5" />
+      <circle cx="9" cy="13.5" r="1.5" />
+    </svg>
+  );
+}
+
 export function DragHandle({ taskId, onDragStart }: { taskId: string; onDragStart: (e: React.DragEvent, id: string) => void }) {
   function handleDragStart(e: React.DragEvent) {
     e.stopPropagation();
@@ -121,7 +134,7 @@ export function DragHandle({ taskId, onDragStart }: { taskId: string; onDragStar
       onDragStart={handleDragStart}
       title="Drag to make subtask"
     >
-      <Reorder size={16} />
+      <GripDots />
     </div>
   );
 }
