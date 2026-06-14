@@ -5,12 +5,14 @@
   justify-content: center;
   padding: 80px 16px;
   text-align: center;
+  animation: fadeIn 0.5s ease;
 }
 
 .empty-icon {
   color: var(--text-dim);
   margin-bottom: 20px;
   opacity: 0.5;
+  animation: float 3s ease-in-out infinite;
 }
 
 .empty-title {
@@ -18,9 +20,11 @@
   font-weight: 600;
   color: var(--text-secondary);
   margin-bottom: 6px;
+  animation: slideUp 0.4s ease 0.1s backwards;
 }
 
 .empty-sub {
   font-size: 0.85rem;
   color: var(--text-dim);
+  animation: slideUp 0.4s ease 0.2s backwards;
 }

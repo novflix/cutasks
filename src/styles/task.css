@@ -69,7 +69,7 @@
   color: var(--text-dim);
   cursor: grab;
   opacity: 0;
-  transition: opacity var(--transition), color var(--transition);
+  transition: opacity 0.25s ease, color 0.2s ease, transform 0.2s ease;
   user-select: none;
 }
 
@@ -78,12 +78,14 @@
 }
 
 .task-drag-handle:hover {
-  color: var(--text-secondary);
+  color: var(--primary);
+  transform: scale(1.15);
 }
 
 .task-drag-handle:active {
   cursor: grabbing;
   color: var(--primary);
+  transform: scale(0.95);
 }
 
 /* ======================== TASK ITEM ======================== */
@@ -98,46 +100,66 @@
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius);
-  transition: background var(--transition), border-color var(--transition), box-shadow var(--transition);
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
+  animation: taskEnter 0.3s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
+
+.task-node:nth-child(1) .task-item { animation-delay: 0.02s; }
+.task-node:nth-child(2) .task-item { animation-delay: 0.05s; }
+.task-node:nth-child(3) .task-item { animation-delay: 0.08s; }
+.task-node:nth-child(4) .task-item { animation-delay: 0.11s; }
+.task-node:nth-child(5) .task-item { animation-delay: 0.14s; }
+.task-node:nth-child(6) .task-item { animation-delay: 0.17s; }
+.task-node:nth-child(7) .task-item { animation-delay: 0.2s; }
+.task-node:nth-child(8) .task-item { animation-delay: 0.23s; }
 
 .task-item:hover {
   background: var(--bg-elevated);
   border-color: var(--border);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .task-item:hover.task-stripe-low {
   border-color: var(--border);
   border-left-color: #66bb6a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 3px 0 0 #66bb6a;
 }
 
 .task-item:hover.task-stripe-medium {
   border-color: var(--border);
   border-left-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 3px 0 0 var(--primary);
 }
 
 .task-item:hover.task-stripe-high {
   border-color: var(--border);
   border-left-color: #ef5350;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 3px 0 0 #ef5350;
 }
 
 .task-item:hover.task-overdue {
   border-color: var(--border);
   border-left-color: #ef5350;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 3px 0 0 #ef5350;
 }
 
 .task-item.completed {
   opacity: 0.45;
+  transition: opacity 0.4s ease, transform 0.3s ease;
 }
 
 .task-item.completed:hover {
   opacity: 0.65;
+  transform: none;
+  box-shadow: none;
 }
 
 .task-item.drag-over {
   border-color: var(--primary);
-  box-shadow: 0 0 0 2px var(--primary-subtle), var(--shadow);
+  box-shadow: 0 0 0 3px var(--primary-subtle), 0 8px 24px rgba(237, 155, 109, 0.15);
   background: var(--bg-elevated);
+  transform: scale(1.01);
 }
 
 .task-item.drag-over::after {
@@ -167,7 +189,7 @@
   padding: 0;
   margin-top: 3px;
   border-radius: 8px;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition: border-color 0.25s ease, background 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
 }
 
 .task-check-sm {
@@ -178,12 +200,18 @@
 
 .task-check:hover {
   border-color: var(--primary);
+  transform: scale(1.1);
+}
+
+.task-check:active {
+  transform: scale(0.9);
 }
 
 .task-check.checked {
   background: var(--primary);
   border-color: var(--primary);
-  animation: checkBounce 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: checkBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 0 8px var(--primary-glow);
 }
 
 .check-icon {
@@ -297,6 +325,7 @@
   color: var(--primary);
   border-radius: 3px;
   padding: 0 2px;
+  animation: badgePulse 2s ease-in-out infinite;
 }
 
 .task-desc {
@@ -325,6 +354,7 @@
   border-radius: 4px;
   background: rgba(100, 181, 246, 0.15);
   color: #64b5f6;
+  animation: tagPop 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 /* ======================== TASK ACTIONS ======================== */
@@ -333,11 +363,13 @@
   display: flex;
   gap: 2px;
   opacity: 0;
-  transition: opacity var(--transition);
+  transform: translateX(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 
 .task-item:hover .task-actions {
   opacity: 1;
+  transform: translateX(0);
 }
 
 .task-item.completed .task-title {

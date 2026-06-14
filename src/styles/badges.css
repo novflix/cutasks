@@ -87,6 +87,12 @@
   letter-spacing: 0.02em;
   white-space: nowrap;
   line-height: 1.4;
+  animation: tagPop 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.2s ease;
+}
+
+.user-tag:hover {
+  transform: scale(1.05);
 }
 
 .priority-selector {
@@ -108,12 +114,22 @@
   font-weight: 600;
   text-transform: capitalize;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .priority-option:hover {
   border-color: var(--text-dim);
   color: var(--text-secondary);
+  transform: translateY(-1px);
+}
+
+.priority-option:active {
+  transform: translateY(0);
+}
+
+.priority-option.selected {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .priority-option-low.selected {

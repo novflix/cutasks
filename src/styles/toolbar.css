@@ -30,7 +30,7 @@
   color: var(--text);
   font-size: 0.9rem;
   outline: none;
-  transition: all var(--transition);
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .search-input::placeholder {
@@ -43,7 +43,7 @@
 
 .search-input:focus {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-subtle);
+  box-shadow: 0 0 0 3px var(--primary-subtle), 0 4px 12px rgba(237, 155, 109, 0.1);
 }
 
 .search-box:focus-within .search-icon {
@@ -64,7 +64,7 @@
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
   white-space: nowrap;
 }
 
@@ -72,6 +72,11 @@
   border-color: var(--text-dim);
   color: var(--text-secondary);
   background: var(--bg-hover);
+  transform: translateY(-1px);
+}
+
+.filter-btn:active {
+  transform: translateY(0);
 }
 
 .filter-btn.active {
@@ -79,4 +84,6 @@
   border-color: var(--primary);
   color: #1a1a1a;
   font-weight: 700;
+  box-shadow: 0 2px 8px var(--primary-glow);
+  transform: translateY(-1px);
 }

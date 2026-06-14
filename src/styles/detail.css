@@ -172,12 +172,13 @@
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   cursor: pointer;
-  transition: all var(--transition);
+  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .detail-subtask:hover {
   background: var(--bg-hover);
   border-color: var(--border);
+  transform: translateX(4px);
 }
 
 .detail-subtask.completed {
