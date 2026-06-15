@@ -15,6 +15,7 @@
     border-right: 1px solid var(--border-subtle);
     z-index: 150;
     animation: sidebarFadeIn 0.3s ease;
+    overflow: hidden;
   }
 
   .sidebar.collapsed {
@@ -28,6 +29,7 @@
     padding: 0 12px 28px;
     border-bottom: 1px solid var(--border-subtle);
     margin-bottom: 12px;
+    overflow: hidden;
   }
 
   .sidebar.collapsed .sidebar-logo {
@@ -37,7 +39,8 @@
   .sidebar-logo-img {
     height: 48px;
     width: auto;
-    transition: height 0.2s ease;
+    max-width: 100%;
+    object-fit: contain;
   }
 
   .sidebar.collapsed .sidebar-logo-img {
@@ -49,12 +52,14 @@
     flex-direction: column;
     gap: 2px;
     flex: 1;
+    overflow: hidden;
   }
 
   .sidebar-nav-btn {
     display: flex;
     align-items: center;
     gap: 12px;
+    min-width: 0;
     width: 100%;
     padding: 10px 14px;
     border: none;
@@ -65,10 +70,8 @@
     font-size: 0.88rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all var(--transition);
+    transition: background var(--transition), color var(--transition);
     -webkit-tap-highlight-color: transparent;
-    overflow: hidden;
-    white-space: nowrap;
   }
 
   .sidebar.collapsed .sidebar-nav-btn {
@@ -98,6 +101,10 @@
 
   .sidebar-nav-label {
     letter-spacing: 0.01em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
   }
 
   .sidebar-resize-handle {
