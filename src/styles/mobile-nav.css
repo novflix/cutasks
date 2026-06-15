@@ -44,6 +44,18 @@
       0 0 0 1px rgba(255, 255, 255, 0.03) inset;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
+    position: relative;
+  }
+
+  .mobile-dot-indicator {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--primary);
+    transition: left 0.18s cubic-bezier(0.4, 0, 0.2, 1), top 0.18s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease;
+    opacity: 0;
+    z-index: 1;
   }
 
   .mobile-nav-btn {
@@ -70,18 +82,6 @@
     color: var(--primary);
     background: var(--primary-subtle);
     transform: scale(1.08);
-  }
-
-  .mobile-nav-btn.active::after {
-    content: '';
-    position: absolute;
-    bottom: 4px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: var(--primary);
   }
 
   .mobile-nav-btn:disabled {

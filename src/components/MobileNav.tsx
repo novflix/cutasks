@@ -1,3 +1,4 @@
+import { useRef, useCallback, useEffect } from 'react';
 import { ClipboardCheck, Folder, SettingsMinimalistic, AddCircle, HomeSmile } from '@solar-icons/react';
 import type { Page } from '../types';
 
@@ -8,9 +9,31 @@ interface MobileNavProps {
 }
 
 export default function MobileNav({ activePage, onNavigate, onCreate }: MobileNavProps) {
+  const navRef = useRef<HTMLDivElement>(null);
+  const indicatorRef = useRef<HTMLDivElement>(null);
+
+  const updateIndicator = useCallback(() => {
+    if (!navRef.current || !indicatorRef.current) return;
+    const activeBtn = navRef.current.querySelector('.mobile-nav-btn.active') as HTMLElement;
+    if (!activeBtn) {
+      indicatorRef.current.style.opacity = '0';
+      return;
+    }
+    const navRect = navRef.current.getBoundingClientRect();
+    const btnRect = activeBtn.getBoundingClientRect();
+    indicatorRef.current.style.left = `${btnRect.left - navRect.left + btnRect.width / 2 - 2}px`;
+    indicatorRef.current.style.top = `${btnRect.top - navRect.top + btnRect.height - 10}px`;
+    indicatorRef.current.style.opacity = '1';
+  }, []);
+
+  useEffect(() => {
+    updateIndicator();
+  }, [activePage, updateIndicator]);
+
   return (
     <div className="mobile-bottom-bar">
-      <nav className="mobile-nav">
+      <nav className="mobile-nav" ref={navRef}>
+        <div className="mobile-dot-indicator" ref={indicatorRef} />
         <button
           className={`mobile-nav-btn${activePage === 'home' ? ' active' : ''}`}
           onClick={() => onNavigate('home')}
