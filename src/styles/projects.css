@@ -436,34 +436,64 @@
 }
 
 .project-section {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .project-section-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
 }
 
 .project-section-name {
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--text-muted);
   text-transform: uppercase;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
 }
 
 .project-section-actions {
   display: flex;
   gap: 2px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.project-section:hover .project-section-actions {
+  opacity: 1;
+}
+
+.section-edit-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.section-edit-input {
+  flex: 1;
+  padding: 4px 8px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-focus);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+  outline: none;
 }
 
 .project-section-tasks {
   list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.project-unsectioned {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -524,7 +554,7 @@
     font-size: 1.15rem;
   }
 
-  .project-section {
-    padding: 12px;
+  .project-section-actions {
+    opacity: 1;
   }
 }

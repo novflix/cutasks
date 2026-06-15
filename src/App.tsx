@@ -14,7 +14,7 @@ import ProjectFormModal from './components/ProjectFormModal';
 import ProjectDetailPage from './components/ProjectDetailPage';
 import MobileNav from './components/MobileNav';
 import { getDeadlineStatus } from './utils';
-import { MinimalisticMagnifier } from '@solar-icons/react';
+import { MinimalisticMagnifier, ArrowLeft, Layers } from '@solar-icons/react';
 
 export type FilterType = 'all' | 'active' | 'completed';
 
@@ -513,14 +513,6 @@ export default function App() {
     });
   }
 
-  function setProjectSubtask(childId: string, newParentId: string | null) {
-    if (childId === newParentId) return;
-    pushProjectTaskHistory();
-    setProjectTasks((prev) =>
-      prev.map((t) => t.id === childId ? { ...t, parentId: newParentId, updatedAt: Date.now() } : t)
-    );
-  }
-
   function closeProjectTaskDetail() {
     setProjectTaskDetailClosing(true);
     detailTimer2.current = setTimeout(() => {
@@ -529,7 +521,7 @@ export default function App() {
     }, 200);
   }
 
-  const handleCreate = activePage === 'tasks' ? openCreateForm : openCreateProject;
+  const handleCreate = activePage === 'project-detail' ? () => openCreateProjectTask(null) : activePage === 'projects' ? openCreateProject : openCreateForm;
 
   return (
     <div className="app" style={{ '--sidebar-w': `${sidebarWidth}px` } as React.CSSProperties}>
@@ -588,6 +580,20 @@ export default function App() {
 
         {activePage === 'project-detail' && activeProject && (
           <>
+            <div className="project-detail-header">
+              <button className="btn-icon project-back-btn" onClick={backToProjects}>
+                <ArrowLeft size={22} />
+              </button>
+              <div className="project-detail-icon" style={{ background: `${activeProject.color}15`, color: activeProject.color }}>
+                <Layers size={24} strokeWidth={1.8} />
+              </div>
+              <div className="project-detail-info">
+                <h1 className="project-detail-name" style={{ color: activeProject.color }}>{activeProject.name}</h1>
+                {activeProject.description && (
+                  <p className="project-detail-desc">{activeProject.description}</p>
+                )}
+              </div>
+            </div>
             <Header stats={projectTaskStats} onCreate={() => openCreateProjectTask(null)} createLabel="New Task" />
             <div className="toolbar">
               <div className="search-box">
@@ -623,7 +629,6 @@ export default function App() {
                 onDeleteTask={deleteProjectTask}
                 onToggleTask={toggleProjectTask}
                 onViewTask={setViewingProjectTask}
-                onSetSubtask={setProjectSubtask}
                 onSaveSections={setSections}
               />
             </main>

@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { ArrowLeft, AddSquare, Layers, TrashBinMinimalistic, NotesMinimalistic } from '@solar-icons/react';
+import { AddSquare, Pen, TrashBinMinimalistic, NotesMinimalistic, CheckCircle, CloseCircle } from '@solar-icons/react';
 import type { Project, Section as SectionType, ProjectTask, Priority } from '../types';
 import { generateId } from '../utils';
 import TaskCard from './TaskCard';
@@ -15,14 +15,13 @@ interface ProjectDetailPageProps {
   onDeleteTask: (id: string) => void;
   onToggleTask: (id: string) => void;
   onViewTask: (task: ProjectTask) => void;
-  onSetSubtask: (childId: string, parentId: string | null) => void;
   onSaveSections: (sections: SectionType[]) => void;
 }
 
 const priorityOrder: Record<Priority, number> = { high: 0, medium: 1, low: 2 };
 
 export default function ProjectDetailPage({
-  project, sections, tasks, onBack,
+  project, sections, tasks,
   onCreateTask, onEditTask, onDeleteTask, onToggleTask, onViewTask,
   onSaveSections,
 }: ProjectDetailPageProps) {
@@ -30,6 +29,8 @@ export default function ProjectDetailPage({
   const [sectionFormClosing, setSectionFormClosing] = useState(false);
   const [sectionName, setSectionName] = useState('');
   const [dragOverId, setDragOverId] = useState<string | null>(null);
+  const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
+  const [editingSectionName, setEditingSectionName] = useState('');
 
   const projectSections = useMemo(
     () => sections.filter((s) => s.projectId === project.id).sort((a, b) => a.order - b.order),
@@ -65,6 +66,23 @@ export default function ProjectDetailPage({
     onSaveSections(sections.filter((s) => s.id !== id));
   }
 
+  function startEditSection(section: SectionType) {
+    setEditingSectionId(section.id);
+    setEditingSectionName(section.name);
+  }
+
+  function saveEditSection(id: string) {
+    const trimmed = editingSectionName.trim();
+    if (trimmed) {
+      onSaveSections(sections.map((s) => s.id === id ? { ...s, name: trimmed } : s));
+    }
+    setEditingSectionId(null);
+  }
+
+  function cancelEditSection() {
+    setEditingSectionId(null);
+  }
+
   function getTasksForSection(sectionId: string | null): ProjectTask[] {
     return tasks
       .filter((t) => t.sectionId === sectionId && t.parentId === null)
@@ -77,36 +95,47 @@ export default function ProjectDetailPage({
   return (
     <>
       <div className="project-detail">
-        <div className="project-detail-header">
-          <button className="btn-icon project-back-btn" onClick={onBack}>
-            <ArrowLeft size={22} />
-          </button>
-          <div className="project-detail-icon" style={{ background: `${project.color}15`, color: project.color }}>
-            <Layers size={24} strokeWidth={1.8} />
-          </div>
-          <div className="project-detail-info">
-            <h1 className="project-detail-name" style={{ color: project.color }}>{project.name}</h1>
-            {project.description && (
-              <p className="project-detail-desc">{project.description}</p>
-            )}
-          </div>
-        </div>
-
         <div className="project-sections">
           {projectSections.map((section) => {
             const sectionTasks = getTasksForSection(section.id);
+            const isEditing = editingSectionId === section.id;
             return (
               <div key={section.id} className="project-section">
                 <div className="project-section-header">
-                  <h3 className="project-section-name">{section.name}</h3>
-                  <div className="project-section-actions">
-                    <button className="btn-icon" onClick={() => onCreateTask(section.id)} title="Add task">
-                      <AddSquare size={18} />
-                    </button>
-                    <button className="btn-icon btn-icon-danger" onClick={() => deleteSection(section.id)} title="Delete section">
-                      <TrashBinMinimalistic size={18} />
-                    </button>
-                  </div>
+                  {isEditing ? (
+                    <div className="section-edit-row">
+                      <input
+                        type="text"
+                        value={editingSectionName}
+                        onChange={(e) => setEditingSectionName(e.target.value)}
+                        className="section-edit-input"
+                        maxLength={50}
+                        autoFocus
+                        onKeyDown={(e) => { if (e.key === 'Enter') saveEditSection(section.id); if (e.key === 'Escape') cancelEditSection(); }}
+                      />
+                      <button className="btn-icon" onClick={() => saveEditSection(section.id)} title="Save">
+                        <CheckCircle size={18} />
+                      </button>
+                      <button className="btn-icon" onClick={cancelEditSection} title="Cancel">
+                        <CloseCircle size={18} />
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <h3 className="project-section-name">{section.name}</h3>
+                      <div className="project-section-actions">
+                        <button className="btn-icon" onClick={() => startEditSection(section)} title="Edit name">
+                          <Pen size={16} />
+                        </button>
+                        <button className="btn-icon" onClick={() => onCreateTask(section.id)} title="Add task">
+                          <AddSquare size={18} />
+                        </button>
+                        <button className="btn-icon btn-icon-danger" onClick={() => deleteSection(section.id)} title="Delete section">
+                          <TrashBinMinimalistic size={18} />
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
                 {sectionTasks.length > 0 ? (
                   <ul className="project-section-tasks">
@@ -138,13 +167,7 @@ export default function ProjectDetailPage({
           })}
 
           {unsectionedTasks.length > 0 && (
-            <div className="project-section">
-              <div className="project-section-header">
-                <h3 className="project-section-name">Unsectioned</h3>
-                <button className="btn-icon" onClick={() => onCreateTask(null)} title="Add task">
-                  <AddSquare size={18} />
-                </button>
-              </div>
+            <div className="project-unsectioned">
               <ul className="project-section-tasks">
                 {unsectionedTasks.map((task) => (
                   <TaskCard
