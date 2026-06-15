@@ -17,7 +17,8 @@ import ProjectRoute from './components/ProjectRoute';
 import SettingsPage from './pages/SettingsPage';
 import MobileNav from './components/MobileNav';
 import { getDeadlineStatus } from './utils';
-import { MinimalisticMagnifier, ArrowLeft, Layers } from '@solar-icons/react';
+import { MinimalisticMagnifier, ArrowLeft } from '@solar-icons/react';
+import { PROJECT_ICONS } from './constants';
 
 export type FilterType = 'all' | 'active' | 'completed';
 
@@ -619,7 +620,10 @@ export default function App() {
                       <ArrowLeft size={22} />
                     </button>
                     <div className="project-detail-icon" style={{ background: `${project.color}15`, color: project.color }}>
-                      <Layers size={24} strokeWidth={1.8} />
+                      {(() => {
+                        const Icon = PROJECT_ICONS.find((i) => i.name === project.icon)?.icon ?? PROJECT_ICONS[0].icon;
+                        return <Icon size={24} strokeWidth={1.8} />;
+                      })()}
                     </div>
                     <div className="project-detail-info">
                       <h1 className="project-detail-name" style={{ color: project.color }}>{project.name}</h1>
