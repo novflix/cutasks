@@ -34,6 +34,12 @@
     <meta name="mobile-web-app-capable" content="yes" />
 
     <title>CuTasks</title>
+    <script>
+      (function() {
+        var theme = localStorage.getItem('cutasks_theme');
+        if (theme) document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
