@@ -577,6 +577,16 @@
   min-width: 0;
 }
 
+.ptask-children {
+  margin-left: 28px;
+  padding-left: 12px;
+  border-left: 1px solid var(--border-subtle);
+}
+
+.pdrag-child {
+  margin-left: -20px;
+}
+
 .project-section-tasks > li.task-drag-over,
 .psection-tasks > li.task-drag-over {
   position: relative;
