@@ -1,6 +1,7 @@
 import { useRef, useCallback, useEffect } from 'react';
 import { ClipboardCheck, Folder, SettingsMinimalistic, HomeSmile } from '@solar-icons/react';
 import type { Page } from '../types';
+import Logo from './Logo';
 
 const MIN_WIDTH = 64;
 const MAX_WIDTH = 220;
@@ -67,11 +68,7 @@ export default function Sidebar({ width, onResize, activePage, onNavigate }: Sid
   return (
     <aside className={`sidebar${collapsed ? ' collapsed' : ''}`} style={{ width }}>
       <div className="sidebar-logo">
-        <img
-          src={collapsed ? '/logo-mini.svg' : '/logo.svg'}
-          alt="CuTasks"
-          className="sidebar-logo-img"
-        />
+        <Logo mini={collapsed} className="sidebar-logo-img" />
       </div>
 
       <nav className="sidebar-nav">

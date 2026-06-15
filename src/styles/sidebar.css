@@ -39,8 +39,20 @@
   .sidebar-logo-img {
     height: 48px;
     width: auto;
-    max-width: 100%;
-    object-fit: contain;
+    display: block;
+    color: var(--text);
+  }
+
+  .logo-text {
+    fill: currentColor;
+  }
+
+  .logo-accent {
+    stroke: currentColor;
+  }
+
+  .logo-check {
+    stroke: var(--primary);
   }
 
   .sidebar.collapsed .sidebar-logo-img {
