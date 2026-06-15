@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
 import { AddSquare, Pen, TrashBinMinimalistic, NotesMinimalistic } from '@solar-icons/react';
 import type { Project, Section as SectionType, ProjectTask, Priority } from '../types';
-import { generateId } from '../utils';
+import { generateId, canAddSubtask, getTaskDepth, MAX_SUBTASK_DEPTH } from '../utils';
 import TaskCard from '../components/TaskCard';
 import SectionFormModal from '../components/SectionFormModal';
 
@@ -30,6 +30,7 @@ export default function ProjectDetailPage({
   const [dragOverSection, setDragOverSection] = useState<string | null>(null);
   const [dragOverUnsectioned, setDragOverUnsectioned] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [maxDepthNotice, setMaxDepthNotice] = useState(false);
   const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
   const [editingSectionName, setEditingSectionName] = useState('');
   const draggingIdRef = useRef<string | null>(null);
@@ -45,6 +46,12 @@ export default function ProjectDetailPage({
     () => tasks.filter((t) => t.sectionId === null),
     [tasks]
   );
+
+  const taskMap = useMemo(() => {
+    const map = new Map<string, { parentId: string | null }>();
+    for (const t of tasks) map.set(t.id, { parentId: t.parentId });
+    return map;
+  }, [tasks]);
 
   useEffect(() => {
     function handleMouseMove(e: MouseEvent) {
@@ -68,6 +75,12 @@ export default function ProjectDetailPage({
         setDragOverId(newTarget);
         setDragOverSection(null);
         setDragOverUnsectioned(false);
+        if (newTarget) {
+          const targetDepth = getTaskDepth(newTarget, taskMap);
+          setMaxDepthNotice(targetDepth >= MAX_SUBTASK_DEPTH);
+        } else {
+          setMaxDepthNotice(false);
+        }
       } else if (sectionEl) {
         const sid = sectionEl.getAttribute('data-section-id');
         dragStateRef.current = { section: sid, unsectioned: false, target: null };
@@ -141,7 +154,7 @@ export default function ProjectDetailPage({
           onUpdateTask(dsId, { sectionId: null, parentId: null });
         } else if (ds.target) {
           const targetTask = tasks.find((t) => t.id === ds.target);
-          if (targetTask) {
+          if (targetTask && canAddSubtask(dsId, ds.target, taskMap)) {
             onUpdateTask(dsId, { sectionId: targetTask.sectionId, parentId: ds.target });
           }
         }
@@ -155,6 +168,7 @@ export default function ProjectDetailPage({
       setDragOverSection(null);
       setDragOverUnsectioned(false);
       setIsDragging(false);
+      setMaxDepthNotice(false);
     }
 
     document.addEventListener('mousemove', handleMouseMove);
@@ -169,7 +183,7 @@ export default function ProjectDetailPage({
       document.removeEventListener('touchend', handleEnd);
       document.removeEventListener('touchcancel', handleEnd);
     };
-  }, [tasks, onUpdateTask]);
+  }, [tasks, onUpdateTask, taskMap]);
 
   function handleDragStart(taskId: string, e: React.MouseEvent) {
     e.preventDefault();
@@ -379,6 +393,12 @@ export default function ProjectDetailPage({
               <span className="project-unsectioned-hint">Drop here to move out of section</span>
             </div>
           ) : null}
+
+          {maxDepthNotice && (
+            <div className="max-depth-notice">
+              Maximum nesting depth reached (3 levels)
+            </div>
+          )}
 
           <button className="project-add-section" onClick={() => setShowSectionForm(true)}>
             <AddSquare size={18} />

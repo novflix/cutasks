@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect, useLayoutEffect } from 'react
 import { NotesMinimalistic } from '@solar-icons/react';
 import type { Task } from '../types';
 import type { FilterType } from '../App';
+import { canAddSubtask, getTaskDepth, MAX_SUBTASK_DEPTH } from '../utils';
 import TaskCard, { DragHandle } from './TaskCard';
 
 interface TaskListProps {
@@ -16,19 +17,11 @@ interface TaskListProps {
   onSetSubtask: (childId: string, parentId: string | null) => void;
 }
 
-function isDescendant(childId: string, parentId: string, taskMap: Map<string, Task>): boolean {
-  let current = taskMap.get(childId);
-  while (current?.parentId) {
-    if (current.parentId === parentId) return true;
-    current = taskMap.get(current.parentId);
-  }
-  return false;
-}
-
 export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle, onView, onEdit, onDelete, onSetSubtask }: TaskListProps) {
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [dragOverRoot, setDragOverRoot] = useState(false);
+  const [maxDepthNotice, setMaxDepthNotice] = useState(false);
 
   const dragStateRef = useRef<{
     taskId: string;
@@ -69,6 +62,13 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
       setDragOverRoot(isRoot);
       setDragOverId(targetId);
       ds.currentTarget = targetId;
+
+      if (targetId) {
+        const targetDepth = getTaskDepth(targetId, taskMap);
+        setMaxDepthNotice(targetDepth >= MAX_SUBTASK_DEPTH);
+      } else {
+        setMaxDepthNotice(false);
+      }
     }
 
     function handleMouseUp() {
@@ -82,7 +82,7 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
 
       if (ds.currentTarget) {
         const draggedTask = taskMap.get(ds.taskId);
-        if (draggedTask && draggedTask.parentId !== ds.currentTarget && !isDescendant(ds.currentTarget, ds.taskId, taskMap)) {
+        if (draggedTask && draggedTask.parentId !== ds.currentTarget && canAddSubtask(ds.taskId, ds.currentTarget, taskMap)) {
           onSetSubtask(ds.taskId, ds.currentTarget);
         }
       } else if (dragOverRoot) {
@@ -93,6 +93,7 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
       setDraggingId(null);
       setDragOverId(null);
       setDragOverRoot(false);
+      setMaxDepthNotice(false);
     }
 
     function handleTouchMove(e: TouchEvent) {
@@ -125,7 +126,7 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
 
       if (ds.currentTarget) {
         const draggedTask = taskMap.get(ds.taskId);
-        if (draggedTask && draggedTask.parentId !== ds.currentTarget && !isDescendant(ds.currentTarget, ds.taskId, taskMap)) {
+        if (draggedTask && draggedTask.parentId !== ds.currentTarget && canAddSubtask(ds.taskId, ds.currentTarget, taskMap)) {
           onSetSubtask(ds.taskId, ds.currentTarget);
         }
       } else if (dragOverRoot) {
@@ -304,6 +305,11 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
           onMouseLeave={() => setDragOverRoot(false)}
         >
           <span className="task-make-root-text">Drop here to make a top-level task</span>
+        </div>
+      )}
+      {maxDepthNotice && (
+        <div className="max-depth-notice">
+          Maximum nesting depth reached (3 levels)
         </div>
       )}
       {topLevelTasks.map((task) => renderTask(task))}

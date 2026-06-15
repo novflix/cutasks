@@ -73,3 +73,26 @@ export function getDeadlineStatus(dateStr: string, completed: boolean): 'overdue
   if (days <= 3) return 'soon';
   return 'normal';
 }
+
+export const MAX_SUBTASK_DEPTH = 3;
+
+export function getTaskDepth(taskId: string, taskMap: Map<string, { parentId: string | null }>): number {
+  let depth = 0;
+  let current = taskMap.get(taskId);
+  while (current?.parentId) {
+    depth++;
+    current = taskMap.get(current.parentId);
+  }
+  return depth;
+}
+
+export function canAddSubtask(childId: string, targetId: string, taskMap: Map<string, { parentId: string | null }>): boolean {
+  const targetDepth = getTaskDepth(targetId, taskMap);
+  if (targetDepth >= MAX_SUBTASK_DEPTH) return false;
+  let current = taskMap.get(childId);
+  while (current?.parentId) {
+    if (current.parentId === targetId) return false;
+    current = taskMap.get(current.parentId);
+  }
+  return true;
+}
