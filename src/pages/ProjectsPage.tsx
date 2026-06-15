@@ -1,6 +1,6 @@
 import { NotesMinimalistic } from '@solar-icons/react';
 import type { Project } from '../types';
-import ProjectCard from './ProjectCard';
+import ProjectCard from '../components/ProjectCard';
 
 interface ProjectsPageProps {
   projects: Project[];

@@ -2,8 +2,8 @@ import { useState, useMemo, useRef, useEffect } from 'react';
 import { AddSquare, Pen, TrashBinMinimalistic, NotesMinimalistic } from '@solar-icons/react';
 import type { Project, Section as SectionType, ProjectTask, Priority } from '../types';
 import { generateId } from '../utils';
-import TaskCard from './TaskCard';
-import SectionFormModal from './SectionFormModal';
+import TaskCard from '../components/TaskCard';
+import SectionFormModal from '../components/SectionFormModal';
 
 interface ProjectDetailPageProps {
   project: Project;
