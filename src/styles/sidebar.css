@@ -99,6 +99,31 @@
   .sidebar-nav-btn.active {
     background: var(--primary-subtle);
     color: var(--primary);
+    position: relative;
+  }
+
+  .sidebar-nav-btn.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    background: var(--primary);
+    border-radius: 0 3px 3px 0;
+    animation: indicatorSlide 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  @keyframes indicatorSlide {
+    from {
+      height: 0;
+      opacity: 0;
+    }
+    to {
+      height: 20px;
+      opacity: 1;
+    }
   }
 
   .sidebar-nav-btn.active:hover {
