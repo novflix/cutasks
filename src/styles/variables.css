@@ -79,6 +79,11 @@ body {
     margin-left: 220px;
     padding: 0 28px 60px;
     box-sizing: border-box;
+    transition: margin-left 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .sidebar-collapsed .app-content {
+    margin-left: 64px;
   }
 
   .header-content,
