@@ -394,7 +394,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 8px 0 20px;
+  padding: 8px 0 0;
 }
 
 .project-back-btn {
@@ -508,7 +508,7 @@
   gap: 0;
 }
 
-.project-section-tasks > li .task-drag-handle {
+.project-section-tasks > li .pdrag-handle {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -522,11 +522,11 @@
   padding-right: 6px;
 }
 
-.project-section-tasks > li:hover .task-drag-handle {
+.project-section-tasks > li:hover .pdrag-handle {
   opacity: 0.5;
 }
 
-.project-section-tasks > li .task-drag-handle:active {
+.project-section-tasks > li .pdrag-handle:active {
   cursor: grabbing;
 }
 
@@ -535,29 +535,55 @@
   min-width: 0;
 }
 
-.task-children {
-  margin-left: 28px;
-  padding-left: 12px;
-  border-left: 1px solid var(--border-subtle);
+.psection-tasks {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0;
+  margin: 0;
 }
 
-.task-child .task-item {
-  padding: 10px 10px;
+.psection-tasks > li {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
 }
 
-.task-child .task-item .task-title {
-  font-size: 0.82rem;
+.psection-tasks > li .pdrag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  flex-shrink: 0;
+  color: var(--text-dim);
+  cursor: grab;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  margin-left: -20px;
+  padding-right: 6px;
 }
 
-.task-child .task-item .task-desc {
-  font-size: 0.72rem;
+.psection-tasks > li:hover .pdrag-handle {
+  opacity: 0.5;
 }
 
-.project-section-tasks > li.task-drag-over {
+.psection-tasks > li .pdrag-handle:active {
+  cursor: grabbing;
+}
+
+.psection-tasks > li .task-item {
+  flex: 1;
+  min-width: 0;
+}
+
+.project-section-tasks > li.task-drag-over,
+.psection-tasks > li.task-drag-over {
   position: relative;
 }
 
-.project-section-tasks > li.task-drag-over::before {
+.project-section-tasks > li.task-drag-over::before,
+.psection-tasks > li.task-drag-over::before {
   content: '';
   position: absolute;
   left: 0;
@@ -629,7 +655,7 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-top: 8px;
+  margin-top: 20px;
 }
 
 .project-add-section:hover {

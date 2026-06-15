@@ -595,6 +595,20 @@ export default function App() {
 
         {activePage === 'project-detail' && activeProject && (
           <>
+            <div className="project-detail-header">
+              <button className="btn-icon project-back-btn" onClick={backToProjects}>
+                <ArrowLeft size={22} />
+              </button>
+              <div className="project-detail-icon" style={{ background: `${activeProject.color}15`, color: activeProject.color }}>
+                <Layers size={24} strokeWidth={1.8} />
+              </div>
+              <div className="project-detail-info">
+                <h1 className="project-detail-name" style={{ color: activeProject.color }}>{activeProject.name}</h1>
+                {activeProject.description && (
+                  <p className="project-detail-desc">{activeProject.description}</p>
+                )}
+              </div>
+            </div>
             <Header stats={projectTaskStats} onCreate={() => openCreateProjectTask(null)} createLabel="New Task" />
             <div className="toolbar">
               <div className="search-box">
@@ -620,20 +634,6 @@ export default function App() {
               </div>
             </div>
             <main className="main">
-              <div className="project-detail-header">
-                <button className="btn-icon project-back-btn" onClick={backToProjects}>
-                  <ArrowLeft size={22} />
-                </button>
-                <div className="project-detail-icon" style={{ background: `${activeProject.color}15`, color: activeProject.color }}>
-                  <Layers size={24} strokeWidth={1.8} />
-                </div>
-                <div className="project-detail-info">
-                  <h1 className="project-detail-name" style={{ color: activeProject.color }}>{activeProject.name}</h1>
-                  {activeProject.description && (
-                    <p className="project-detail-desc">{activeProject.description}</p>
-                  )}
-                </div>
-              </div>
               <ProjectDetailPage
                 project={activeProject}
                 sections={sections}

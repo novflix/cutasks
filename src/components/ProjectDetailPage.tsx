@@ -93,13 +93,13 @@ export default function ProjectDetailPage({
 
       if (dsId) {
         if (ds.section) {
-          onUpdateTask(dsId, { sectionId: ds.section });
+          onUpdateTask(dsId, { sectionId: ds.section, parentId: null });
         } else if (ds.unsectioned) {
-          onUpdateTask(dsId, { sectionId: null });
+          onUpdateTask(dsId, { sectionId: null, parentId: null });
         } else if (ds.target) {
           const targetTask = tasks.find((t) => t.id === ds.target);
           if (targetTask) {
-            onUpdateTask(dsId, { parentId: ds.target, sectionId: targetTask.sectionId });
+            onUpdateTask(dsId, { sectionId: targetTask.sectionId, parentId: ds.target });
           }
         }
       }
@@ -160,7 +160,7 @@ export default function ProjectDetailPage({
       projectId: project.id,
       name: trimmed,
       order: projectSections.length,
-      createdAt: Date.now(),
+      createdAt: Date.now(), // eslint-disable-line react-hooks/purity -- event handler, not render
     };
     onSaveSectionsLocal([...sections, newSection]);
     setSectionName('');
@@ -202,37 +202,29 @@ export default function ProjectDetailPage({
       });
   }
 
-  function renderTaskItem(task: ProjectTask, depth: number = 0) {
-    const children = tasks.filter((t) => t.parentId === task.id);
+  function renderTaskItem(task: ProjectTask) {
     return (
-      <li key={task.id} data-task-id={task.id} className={`task-node${depth > 0 ? ' task-child' : ''}${dragOverId === task.id ? ' task-drag-over' : ''}`}>
-        <div className="task-row">
-          <div className="task-drag-handle" onMouseDown={(e) => handleDragStart(task.id, e)} onTouchStart={(e) => handleTouchStart(task.id, e)}>
-            <svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor">
-              <circle cx="3" cy="2.5" r="1.5" /><circle cx="9" cy="2.5" r="1.5" />
-              <circle cx="3" cy="8" r="1.5" /><circle cx="9" cy="8" r="1.5" />
-              <circle cx="3" cy="13.5" r="1.5" /><circle cx="9" cy="13.5" r="1.5" />
-            </svg>
-          </div>
-          <TaskCard
-            task={task}
-            searchQuery=""
-            subtaskCount={children.length}
-            isDragOver={false}
-            onToggle={onToggleTask}
-            onView={() => onViewTask(task)}
-            onEdit={() => onEditTask(task)}
-            onDelete={onDeleteTask}
-            onDragOver={(e) => e.preventDefault()}
-            onDragLeave={() => {}}
-            onDrop={(e) => e.preventDefault()}
-          />
+      <li key={task.id} data-task-id={task.id} className={dragOverId === task.id ? 'task-drag-over' : ''}>
+        <div className="pdrag-handle" onMouseDown={(e) => handleDragStart(task.id, e)} onTouchStart={(e) => handleTouchStart(task.id, e)}>
+          <svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor">
+            <circle cx="3" cy="2.5" r="1.5" /><circle cx="9" cy="2.5" r="1.5" />
+            <circle cx="3" cy="8" r="1.5" /><circle cx="9" cy="8" r="1.5" />
+            <circle cx="3" cy="13.5" r="1.5" /><circle cx="9" cy="13.5" r="1.5" />
+          </svg>
         </div>
-        {children.length > 0 && (
-          <ul className="project-section-tasks task-children">
-            {children.map((child) => renderTaskItem(child, depth + 1))}
-          </ul>
-        )}
+        <TaskCard
+          task={task}
+          searchQuery=""
+          subtaskCount={tasks.filter((t) => t.parentId === task.id).length}
+          isDragOver={false}
+          onToggle={onToggleTask}
+          onView={() => onViewTask(task)}
+          onEdit={() => onEditTask(task)}
+          onDelete={onDeleteTask}
+          onDragOver={(e) => e.preventDefault()}
+          onDragLeave={() => {}}
+          onDrop={(e) => e.preventDefault()}
+        />
       </li>
     );
   }
@@ -251,21 +243,43 @@ export default function ProjectDetailPage({
                 data-section-id={section.id}
               >
                 <div className="project-section-header">
-                  <h3 className="project-section-name">{section.name}</h3>
-                  <div className="project-section-actions">
-                    <button className="btn-icon" onClick={() => startEditSection(section)} title="Edit name">
-                      <Pen size={16} />
-                    </button>
-                    <button className="btn-icon" onClick={() => onCreateTask(section.id)} title="Add task">
-                      <AddSquare size={18} />
-                    </button>
-                    <button className="btn-icon btn-icon-danger" onClick={() => deleteSection(section.id)} title="Delete section">
-                      <TrashBinMinimalistic size={18} />
-                    </button>
-                  </div>
+                  {editingSectionId === section.id ? (
+                    <div className="section-edit-row">
+                      <input
+                        type="text"
+                        value={editingSectionName}
+                        onChange={(e) => setEditingSectionName(e.target.value)}
+                        className="section-edit-input"
+                        maxLength={50}
+                        autoFocus
+                        onKeyDown={(e) => { if (e.key === 'Enter') saveEditSection(section.id); if (e.key === 'Escape') setEditingSectionId(null); }}
+                      />
+                      <button className="btn-icon" onClick={() => saveEditSection(section.id)} title="Save">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+                      </button>
+                      <button className="btn-icon" onClick={() => setEditingSectionId(null)} title="Cancel">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
+                      </button>
+                    </div>
+                  ) : (
+                    <>
+                      <h3 className="project-section-name">{section.name}</h3>
+                      <div className="project-section-actions">
+                        <button className="btn-icon" onClick={() => startEditSection(section)} title="Edit name">
+                          <Pen size={16} />
+                        </button>
+                        <button className="btn-icon" onClick={() => onCreateTask(section.id)} title="Add task">
+                          <AddSquare size={18} />
+                        </button>
+                        <button className="btn-icon btn-icon-danger" onClick={() => deleteSection(section.id)} title="Delete section">
+                          <TrashBinMinimalistic size={18} />
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
                 {sectionTasks.length > 0 ? (
-                  <ul className="project-section-tasks">
+                  <ul className="psection-tasks">
                     {sectionTasks.map(renderTaskItem)}
                   </ul>
                 ) : (
@@ -283,7 +297,7 @@ export default function ProjectDetailPage({
               className={`project-unsectioned${dragOverUnsectioned ? ' drag-over' : ''}`}
               data-unsectioned
             >
-              <ul className="project-section-tasks">
+              <ul className="psection-tasks">
                 {unsectionedTasks.map(renderTaskItem)}
               </ul>
             </div>
