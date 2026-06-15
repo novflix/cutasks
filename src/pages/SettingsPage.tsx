@@ -29,8 +29,8 @@ export default function SettingsPage() {
 
   return (
     <div className="settings-page">
-      <div className="settings-hero">
-        <h1 className="settings-hero-title">Settings</h1>
+      <div className="page-hero">
+        <h1 className="page-hero-title">Settings</h1>
       </div>
 
       <div className="settings-section">

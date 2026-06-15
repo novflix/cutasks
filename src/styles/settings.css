@@ -5,18 +5,6 @@
   padding-top: 28px;
 }
 
-.settings-hero {
-  padding-bottom: 8px;
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.settings-hero-title {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: var(--text);
-  letter-spacing: -0.02em;
-}
-
 .settings-section {
   display: flex;
   flex-direction: column;
