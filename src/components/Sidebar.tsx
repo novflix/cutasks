@@ -1,5 +1,5 @@
 import { useRef, useCallback, useEffect } from 'react';
-import { ClipboardCheck, Folder, Bell, SettingsMinimalistic } from '@solar-icons/react';
+import { ClipboardCheck, Folder, SettingsMinimalistic, HomeSmile } from '@solar-icons/react';
 import type { Page } from '../types';
 
 const MIN_WIDTH = 64;
@@ -13,9 +13,9 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
+  { icon: HomeSmile, label: 'Home', page: 'home' },
   { icon: ClipboardCheck, label: 'Tasks', page: 'tasks' },
   { icon: Folder, label: 'Projects', page: 'projects' },
-  { icon: Bell, label: 'Notifications', page: 'tasks' },
   { icon: SettingsMinimalistic, label: 'Settings', page: 'settings' },
 ];
 
@@ -76,8 +76,8 @@ export default function Sidebar({ width, onResize, activePage, onNavigate }: Sid
 
       <nav className="sidebar-nav">
         {navItems.map((item) => {
-          const isActive = item.page === activePage && item.label !== 'Notifications';
-          const isDisabled = item.label === 'Notifications';
+          const isActive = item.page === activePage;
+          const isDisabled = false;
           return (
             <button
               key={item.label}

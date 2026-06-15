@@ -13,6 +13,7 @@ import ProjectFormModal from './components/ProjectFormModal';
 import ProjectDetailPage from './pages/ProjectDetailPage';
 import ProjectRoute from './components/ProjectRoute';
 import SettingsPage from './pages/SettingsPage';
+import HomePage from './pages/HomePage';
 import TasksPage from './pages/TasksPage';
 import MobileNav from './components/MobileNav';
 import { getDeadlineStatus } from './utils';
@@ -70,7 +71,7 @@ export default function App() {
   const [ptSectionId, setPtSectionId] = useState<string | null>(null);
   const detailTimer2 = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const activePage: Page = location.pathname.startsWith('/projects') ? (location.pathname.split('/').length > 2 ? 'project-detail' : 'projects') : location.pathname.startsWith('/settings') ? 'settings' : 'tasks';
+  const activePage: Page = location.pathname.startsWith('/projects') ? (location.pathname.split('/').length > 2 ? 'project-detail' : 'projects') : location.pathname.startsWith('/settings') ? 'settings' : location.pathname.startsWith('/home') ? 'home' : 'tasks';
   const activeProjectId = activePage === 'project-detail' ? location.pathname.split('/')[2] : null;
   const activeProject = useMemo(() => activeProjectId ? projects.find((p) => p.id === activeProjectId) ?? null : null, [projects, activeProjectId]);
 
@@ -541,7 +542,8 @@ export default function App() {
   const handleCreate = activePage === 'project-detail' ? () => openCreateProjectTask(null) : activePage === 'projects' ? openCreateProject : openCreateForm;
 
   const sidebarNavigate = useCallback((p: Page) => {
-    if (p === 'tasks') navigate('/tasks');
+    if (p === 'home') navigate('/home');
+    else if (p === 'tasks') navigate('/tasks');
     else if (p === 'projects') navigate('/projects');
     else if (p === 'settings') navigate('/settings');
   }, [navigate]);
@@ -551,6 +553,11 @@ export default function App() {
       <Sidebar width={sidebarWidth} onResize={setSidebarWidth} activePage={activePage} onNavigate={sidebarNavigate} />
       <div className="app-content">
         <Routes>
+          <Route path="/home" element={
+            <main className="main">
+              <HomePage />
+            </main>
+          } />
           <Route path="/tasks" element={
             <TasksPage
               stats={taskStatsFormatted}
@@ -670,7 +677,7 @@ export default function App() {
               <SettingsPage />
             </main>
           } />
-          <Route path="*" element={<Navigate to="/tasks" replace />} />
+          <Route path="*" element={<Navigate to="/home" replace />} />
         </Routes>
       </div>
 

@@ -1,4 +1,4 @@
-import { ClipboardCheck, Folder, Bell, SettingsMinimalistic, AddCircle } from '@solar-icons/react';
+import { ClipboardCheck, Folder, SettingsMinimalistic, AddCircle, HomeSmile } from '@solar-icons/react';
 import type { Page } from '../types';
 
 interface MobileNavProps {
@@ -12,6 +12,13 @@ export default function MobileNav({ activePage, onNavigate, onCreate }: MobileNa
     <div className="mobile-bottom-bar">
       <nav className="mobile-nav">
         <button
+          className={`mobile-nav-btn${activePage === 'home' ? ' active' : ''}`}
+          onClick={() => onNavigate('home')}
+          aria-label="Home"
+        >
+          <HomeSmile size={24} strokeWidth={1.8} />
+        </button>
+        <button
           className={`mobile-nav-btn${activePage === 'tasks' ? ' active' : ''}`}
           onClick={() => onNavigate('tasks')}
           aria-label="Tasks"
@@ -24,9 +31,6 @@ export default function MobileNav({ activePage, onNavigate, onCreate }: MobileNa
           aria-label="Projects"
         >
           <Folder size={24} strokeWidth={1.8} />
-        </button>
-        <button className="mobile-nav-btn" disabled aria-label="Notifications">
-          <Bell size={24} strokeWidth={1.8} />
         </button>
         <button
           className={`mobile-nav-btn${activePage === 'settings' ? ' active' : ''}`}
