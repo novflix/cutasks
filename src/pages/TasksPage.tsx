@@ -26,6 +26,9 @@ export default function TasksPage({
 }: TasksPageProps) {
   return (
     <>
+      <div className="page-hero">
+        <h1 className="page-hero-title">Tasks</h1>
+      </div>
       <Header stats={stats} onCreate={onCreate} />
       <Toolbar
         searchQuery={searchQuery}

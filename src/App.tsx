@@ -577,6 +577,9 @@ export default function App() {
           } />
           <Route path="/projects" element={
             <>
+              <div className="page-hero">
+                <h1 className="page-hero-title">Projects</h1>
+              </div>
               <Header stats={projectStats} onCreate={openCreateProject} createLabel="New Project" />
               <div className="toolbar">
                 <div className="search-box">
