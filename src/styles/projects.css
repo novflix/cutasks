@@ -394,7 +394,7 @@
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 8px 0 0;
+  padding: 16px 0 0;
 }
 
 .project-back-btn {
