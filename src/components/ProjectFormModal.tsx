@@ -132,21 +132,17 @@ export default function ProjectFormModal({
             </div>
           </div>
 
-          <div className="project-preview">
+          <div className="project-preview" style={{ '--preview-color': color } as React.CSSProperties}>
             <span className="project-preview-label">Preview</span>
             <div className="project-preview-card">
-              <div className="project-preview-icon" style={{ background: `${color}18`, color }}>
-                <PreviewIcon size={28} strokeWidth={1.8} />
+              <div className="project-preview-icon" style={{ background: `${color}15`, color }}>
+                <PreviewIcon size={26} strokeWidth={1.8} />
               </div>
               <div className="project-preview-info">
                 <span className="project-preview-name" style={{ color }}>{name || 'Project name'}</span>
                 {description && <span className="project-preview-desc">{description}</span>}
+                <span className={`project-preview-status preview-status-${status}`}>{status}</span>
               </div>
-            </div>
-            <div className="project-preview-meta">
-              <span className="project-preview-tag">Icon: {icon}</span>
-              <span className="project-preview-tag">Color: {color}</span>
-              <span className="project-preview-tag">Status: {status}</span>
             </div>
           </div>
         </form>

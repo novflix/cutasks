@@ -22,8 +22,8 @@ export default function ProjectCard({ project, onEdit, onDelete }: ProjectCardPr
   return (
     <div className="project-card" style={{ '--project-color': project.color } as React.CSSProperties}>
       <div className="project-card-header">
-        <div className="project-card-icon" style={{ background: `${project.color}18`, color: project.color }}>
-          <Icon size={24} strokeWidth={1.8} />
+        <div className="project-card-icon" style={{ background: `${project.color}15`, color: project.color }}>
+          <Icon size={26} strokeWidth={1.8} />
         </div>
         <div className="project-card-actions">
           <button className="btn-icon" onClick={() => onEdit(project)} title="Edit">
@@ -34,10 +34,12 @@ export default function ProjectCard({ project, onEdit, onDelete }: ProjectCardPr
           </button>
         </div>
       </div>
-      <h3 className="project-card-name" style={{ color: project.color }}>{project.name}</h3>
-      {project.description && (
-        <p className="project-card-desc">{project.description}</p>
-      )}
+      <div className="project-card-body">
+        <h3 className="project-card-name" style={{ color: project.color }}>{project.name}</h3>
+        {project.description && (
+          <p className="project-card-desc">{project.description}</p>
+        )}
+      </div>
       <div className="project-card-footer">
         <span className={`project-status-badge project-status-${project.status}`}>
           {STATUS_LABELS[project.status]}
