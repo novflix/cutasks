@@ -84,7 +84,8 @@ body {
   .header-content,
   .toolbar,
   .main,
-  .project-detail-header {
+  .project-detail-header,
+  .page-hero {
     max-width: 680px;
     margin-left: auto;
     margin-right: auto;
