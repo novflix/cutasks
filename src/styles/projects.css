@@ -554,6 +554,18 @@
   border-bottom: none;
 }
 
+.project-unsectioned-empty {
+  padding: 16px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+.project-unsectioned-hint {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
 .project-section-add {
   display: flex;
   align-items: center;

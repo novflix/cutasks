@@ -29,6 +29,7 @@ export default function ProjectDetailPage({
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [dragOverSection, setDragOverSection] = useState<string | null>(null);
   const [dragOverUnsectioned, setDragOverUnsectioned] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
   const [editingSectionName, setEditingSectionName] = useState('');
   const draggingIdRef = useRef<string | null>(null);
@@ -153,6 +154,7 @@ export default function ProjectDetailPage({
       setDragOverId(null);
       setDragOverSection(null);
       setDragOverUnsectioned(false);
+      setIsDragging(false);
     }
 
     document.addEventListener('mousemove', handleMouseMove);
@@ -180,8 +182,9 @@ export default function ProjectDetailPage({
     ghost.style.top = `${e.clientY - 20}px`;
     if (rect) ghost.style.width = `${rect.width}px`;
     document.body.appendChild(ghost);
-    ghostRef.current = ghost;
+      ghostRef.current = ghost;
     draggingIdRef.current = taskId;
+    setIsDragging(true);
   }
 
   function handleTouchStart(taskId: string, e: React.TouchEvent) {
@@ -195,8 +198,9 @@ export default function ProjectDetailPage({
     ghost.style.top = `${touch.clientY - 20}px`;
     if (rect) ghost.style.width = `${rect.width}px`;
     document.body.appendChild(ghost);
-    ghostRef.current = ghost;
+      ghostRef.current = ghost;
     draggingIdRef.current = taskId;
+    setIsDragging(true);
   }
 
   function handleSectionSubmit(e: React.FormEvent) {
@@ -332,7 +336,7 @@ export default function ProjectDetailPage({
             );
           })}
 
-          {unsectionedTasks.length > 0 && (
+          {unsectionedTasks.length > 0 ? (
             <div
               className={`project-unsectioned${dragOverUnsectioned ? ' drag-over' : ''}`}
               data-unsectioned
@@ -341,7 +345,14 @@ export default function ProjectDetailPage({
                 {unsectionedTasks.map((t) => renderTaskItem(t))}
               </div>
             </div>
-          )}
+          ) : isDragging ? (
+            <div
+              className={`project-unsectioned project-unsectioned-empty${dragOverUnsectioned ? ' drag-over' : ''}`}
+              data-unsectioned
+            >
+              <span className="project-unsectioned-hint">Drop here to move out of section</span>
+            </div>
+          ) : null}
 
           <button className="project-add-section" onClick={() => setShowSectionForm(true)}>
             <AddSquare size={18} />
