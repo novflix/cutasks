@@ -231,9 +231,9 @@ export default function App() {
   }
 
   return (
-    <div className="app">
+    <div className="app" style={{ '--sidebar-w': `${sidebarWidth}px` } as React.CSSProperties}>
       <Sidebar width={sidebarWidth} onResize={setSidebarWidth} />
-      <div className="app-content" style={{ marginLeft: sidebarWidth }}>
+      <div className="app-content">
         <Header stats={stats} onCreate={openCreateForm} />
         <Toolbar
           searchQuery={searchQuery}
