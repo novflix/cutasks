@@ -2,12 +2,37 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- ── Viewport ── -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="theme-color" content="#121212" />
-    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- ── Favicon (браузер) ── -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- ── PWA Manifest ── -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- ── Apple PWA ── -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="CuTasks" />
+
+    <!-- Apple Touch Icons (iOS берёт первый подходящий по размеру) -->
+    <!-- 180×180 — iPhone с Retina (основной) -->
+    <link rel="apple-touch-icon" sizes="180x180" href="/icons/apple-touch-icon-180x180.png" />
+    <!-- 167×167 — iPad Pro -->
+    <link rel="apple-touch-icon" sizes="167x167" href="/icons/apple-touch-icon-167x167.png" />
+    <!-- 152×152 — iPad, iPad mini -->
+    <link rel="apple-touch-icon" sizes="152x152" href="/icons/apple-touch-icon-152x152.png" />
+    <!-- 120×120 — iPhone (fallback) -->
+    <link rel="apple-touch-icon" sizes="120x120" href="/icons/apple-touch-icon-120x120.png" />
+
+    <!-- ── Theme color ── -->
+    <meta name="theme-color" content="#121212" />
+
+    <!-- ── Mobile web app (Android Chrome) ── -->
+    <meta name="mobile-web-app-capable" content="yes" />
+
     <title>CuTasks</title>
   </head>
   <body>
