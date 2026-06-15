@@ -22,6 +22,15 @@ import { PROJECT_ICONS } from './constants';
 
 export type FilterType = 'all' | 'active' | 'completed';
 
+function AnimatedRoutes({ routes }: { routes: React.ReactNode }) {
+  const location = useLocation();
+  return (
+    <div key={location.pathname} className="page-transition">
+      {routes}
+    </div>
+  );
+}
+
 const priorityOrder: Record<Priority, number> = { high: 0, medium: 1, low: 2 };
 
 export default function App() {
@@ -552,12 +561,14 @@ export default function App() {
     <div className="app" style={{ '--sidebar-w': `${sidebarWidth}px` } as React.CSSProperties}>
       <Sidebar width={sidebarWidth} onResize={setSidebarWidth} activePage={activePage} onNavigate={sidebarNavigate} />
       <div className="app-content">
-        <Routes>
-          <Route path="/home" element={
-            <main className="main">
-              <HomePage />
-            </main>
-          } />
+        <AnimatedRoutes
+          routes={
+            <Routes>
+              <Route path="/home" element={
+                <main className="main">
+                  <HomePage />
+                </main>
+              } />
           <Route path="/tasks" element={
             <TasksPage
               stats={taskStatsFormatted}
@@ -681,7 +692,9 @@ export default function App() {
             </main>
           } />
           <Route path="*" element={<Navigate to="/home" replace />} />
-        </Routes>
+            </Routes>
+          }
+        />
       </div>
 
       {(activeViewingTask || detailClosing) && (
