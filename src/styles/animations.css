@@ -4,13 +4,13 @@
 }
 
 .page-transition {
-  animation: pageEnter 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: pageEnter 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes pageEnter {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
