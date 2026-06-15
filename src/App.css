@@ -1,4 +1,5 @@
 @import './styles/variables.css';
+@import './styles/themes.css';
 @import './styles/animations.css';
 @import './styles/sidebar.css';
 @import './styles/header.css';
@@ -13,5 +14,6 @@
 @import './styles/taginput.css';
 @import './styles/parentselect.css';
 @import './styles/projects.css';
+@import './styles/settings.css';
 @import './styles/mobile-nav.css';
 @import './styles/responsive.css';

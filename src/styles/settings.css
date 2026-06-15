@@ -1,0 +1,230 @@
+.settings-page {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  padding-top: 20px;
+}
+
+.settings-hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.settings-hero-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--primary-subtle);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.settings-hero-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.settings-hero-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.settings-hero-desc {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.settings-section-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.theme-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.theme-card {
+  position: relative;
+  background: var(--bg-card);
+  border: 2px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  font-family: inherit;
+  overflow: hidden;
+}
+
+.theme-card:hover {
+  border-color: var(--border);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.theme-card.active {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary), 0 8px 32px var(--primary-glow);
+}
+
+.theme-card-preview {
+  height: 80px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+}
+
+.theme-card-sidebar-col {
+  width: 32%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0;
+  gap: 8px;
+}
+
+.theme-card-sidebar-pill {
+  width: 28px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.theme-card-sidebar-icon {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+}
+
+.theme-card-content-col {
+  flex: 1;
+  height: 100%;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.theme-card-content-bar {
+  height: 5px;
+  border-radius: 2px;
+}
+
+.theme-card-content-bar.w60 { width: 60%; }
+.theme-card-content-bar.w40 { width: 40%; }
+.theme-card-content-bar.w80 { width: 80%; }
+
+.theme-card-content-accent {
+  width: 18px;
+  height: 5px;
+  border-radius: 2px;
+  margin-top: auto;
+}
+
+.theme-card-body {
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.theme-card-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.theme-card-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.theme-card.active .theme-card-dot {
+  border-color: var(--primary);
+  background: var(--primary);
+}
+
+.theme-card.active .theme-card-dot::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.settings-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius);
+}
+
+.settings-footer-label {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.settings-footer-value {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  font-family: monospace;
+}
+
+@media (max-width: 520px) {
+  .theme-cards {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .theme-card {
+    display: flex;
+    flex-direction: row;
+    border-radius: var(--radius);
+  }
+
+  .theme-card-preview {
+    width: 100px;
+    height: auto;
+    min-height: 72px;
+    flex-shrink: 0;
+  }
+
+  .theme-card-body {
+    flex: 1;
+    border-top: none;
+    border-left: 1px solid var(--border-subtle);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}
