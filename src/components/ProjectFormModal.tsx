@@ -1,7 +1,13 @@
 import { useRef, useEffect } from 'react';
 import { CloseCircle } from '@solar-icons/react';
-import type { Project } from '../types';
+import type { Project, ProjectStatus } from '../types';
 import { PROJECT_ICONS, PROJECT_COLORS } from '../constants';
+
+const STATUS_OPTIONS: { value: ProjectStatus; label: string }[] = [
+  { value: 'active', label: 'Active' },
+  { value: 'paused', label: 'Paused' },
+  { value: 'completed', label: 'Completed' },
+];
 
 interface ProjectFormModalProps {
   editingProject: Project | null;
@@ -9,18 +15,20 @@ interface ProjectFormModalProps {
   description: string;
   icon: string;
   color: string;
+  status: ProjectStatus;
   onNameChange: (v: string) => void;
   onDescChange: (v: string) => void;
   onIconChange: (v: string) => void;
   onColorChange: (v: string) => void;
+  onStatusChange: (v: ProjectStatus) => void;
   onSubmit: (e: React.FormEvent) => void;
   onClose: () => void;
   isClosing?: boolean;
 }
 
 export default function ProjectFormModal({
-  editingProject, name, description, icon, color,
-  onNameChange, onDescChange, onIconChange, onColorChange,
+  editingProject, name, description, icon, color, status,
+  onNameChange, onDescChange, onIconChange, onColorChange, onStatusChange,
   onSubmit, onClose, isClosing,
 }: ProjectFormModalProps) {
   const nameRef = useRef<HTMLInputElement>(null);
@@ -31,6 +39,8 @@ export default function ProjectFormModal({
 
   const overlayClass = `modal-overlay${isClosing ? ' closing' : ''}`;
   const modalClass = `modal form-modal${isClosing ? ' closing' : ''}`;
+
+  const PreviewIcon = PROJECT_ICONS.find((i) => i.name === icon)?.icon ?? PROJECT_ICONS[0].icon;
 
   return (
     <div className={overlayClass} onClick={onClose}>
@@ -69,6 +79,24 @@ export default function ProjectFormModal({
             />
           </div>
 
+          <div className="fm-row">
+            <div className="fm-col">
+              <label className="fm-label">Status</label>
+              <div className="status-selector">
+                {STATUS_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    className={`status-option status-option-${opt.value}${status === opt.value ? ' selected' : ''}`}
+                    onClick={() => onStatusChange(opt.value)}
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
           <div className="fm-field">
             <label className="fm-label">Icon</label>
             <div className="icon-picker">
@@ -105,13 +133,21 @@ export default function ProjectFormModal({
           </div>
 
           <div className="project-preview">
-            <div className="project-preview-icon" style={{ background: `${color}18`, color }}>
-              {(() => {
-                const Ic = PROJECT_ICONS.find((i) => i.name === icon)?.icon ?? PROJECT_ICONS[0].icon;
-                return <Ic size={28} strokeWidth={1.8} />;
-              })()}
+            <span className="project-preview-label">Preview</span>
+            <div className="project-preview-card">
+              <div className="project-preview-icon" style={{ background: `${color}18`, color }}>
+                <PreviewIcon size={28} strokeWidth={1.8} />
+              </div>
+              <div className="project-preview-info">
+                <span className="project-preview-name" style={{ color }}>{name || 'Project name'}</span>
+                {description && <span className="project-preview-desc">{description}</span>}
+              </div>
             </div>
-            <span className="project-preview-name" style={{ color }}>{name || 'Project name'}</span>
+            <div className="project-preview-meta">
+              <span className="project-preview-tag">Icon: {icon}</span>
+              <span className="project-preview-tag">Color: {color}</span>
+              <span className="project-preview-tag">Status: {status}</span>
+            </div>
           </div>
         </form>
 

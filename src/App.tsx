@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import './App.css';
-import type { Task, Priority, Page, Project } from './types';
+import type { Task, Priority, Page, Project, ProjectStatus } from './types';
 import { generateId } from './utils';
 import { loadTasks, saveTasks, getAllTags, loadProjects, saveProjects } from './storage';
 import Sidebar from './components/Sidebar';
@@ -43,6 +43,8 @@ export default function App() {
   const [projectDesc, setProjectDesc] = useState('');
   const [projectIcon, setProjectIcon] = useState('Folder');
   const [projectColor, setProjectColor] = useState('#ed9b6d');
+  const [projectStatus, setProjectStatus] = useState<ProjectStatus>('active');
+  const [projectSearch, setProjectSearch] = useState('');
 
   const tasksRef = useRef(tasks);
   const historyRef = useRef<Task[][]>([]);
@@ -120,6 +122,33 @@ export default function App() {
     completed: tasks.filter((t) => t.completed).length,
     overdue: tasks.filter((t) => !t.completed && getDeadlineStatus(t.deadline, t.completed) === 'overdue').length,
   }), [tasks]);
+
+  const projectStats = useMemo(() => [
+    { label: 'total', value: projects.length },
+    { label: 'active', value: projects.filter((p) => p.status === 'active').length, color: '#66bb6a' },
+    { label: 'paused', value: projects.filter((p) => p.status === 'paused').length, color: '#ffb74d' },
+    { label: 'done', value: projects.filter((p) => p.status === 'completed').length, color: '#64b5f6' },
+  ], [projects]);
+
+  const filteredProjects = useMemo(() => {
+    let result = projects;
+    if (projectSearch.trim()) {
+      const q = projectSearch.toLowerCase();
+      result = result.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.description.toLowerCase().includes(q)
+      );
+    }
+    return result;
+  }, [projects, projectSearch]);
+
+  const taskStatsFormatted = useMemo(() => [
+    { label: 'total', value: stats.total },
+    { label: 'active', value: stats.active, color: '#ed9b6d' },
+    { label: 'done', value: stats.completed, color: '#66bb6a' },
+    ...(stats.overdue > 0 ? [{ label: 'overdue', value: stats.overdue, color: '#ef5350' }] : []),
+  ], [stats]);
 
   const allTags = useMemo(() => getAllTags(tasks), [tasks]);
 
@@ -251,6 +280,7 @@ export default function App() {
     setProjectDesc('');
     setProjectIcon('Folder');
     setProjectColor('#ed9b6d');
+    setProjectStatus('active');
     setProjectFormClosing(false);
     setShowProjectForm(true);
   }
@@ -261,6 +291,7 @@ export default function App() {
     setProjectDesc(project.description);
     setProjectIcon(project.icon);
     setProjectColor(project.color);
+    setProjectStatus(project.status);
     setProjectFormClosing(false);
     setShowProjectForm(true);
   }
@@ -283,7 +314,7 @@ export default function App() {
       setProjects((prev) =>
         prev.map((p) =>
           p.id === editingProject.id
-            ? { ...p, name: trimmedName, description: projectDesc.trim(), icon: projectIcon, color: projectColor, updatedAt: now }
+            ? { ...p, name: trimmedName, description: projectDesc.trim(), icon: projectIcon, color: projectColor, status: projectStatus, updatedAt: now }
             : p
         )
       );
@@ -294,6 +325,7 @@ export default function App() {
         description: projectDesc.trim(),
         icon: projectIcon,
         color: projectColor,
+        status: projectStatus,
         createdAt: now,
         updatedAt: now,
       };
@@ -314,7 +346,7 @@ export default function App() {
       <div className="app-content">
         {activePage === 'tasks' ? (
           <>
-            <Header stats={stats} onCreate={openCreateForm} />
+            <Header stats={taskStatsFormatted} onCreate={openCreateForm} />
             <Toolbar
               searchQuery={searchQuery}
               onSearch={setSearchQuery}
@@ -337,10 +369,21 @@ export default function App() {
           </>
         ) : (
           <>
-            <Header stats={stats} onCreate={openCreateProject} createLabel="New Project" />
+            <Header stats={projectStats} onCreate={openCreateProject} createLabel="New Project" />
+            <div className="toolbar">
+              <div className="search-box">
+                <input
+                  type="text"
+                  placeholder="Search projects..."
+                  value={projectSearch}
+                  onChange={(e) => setProjectSearch(e.target.value)}
+                  className="search-input"
+                />
+              </div>
+            </div>
             <main className="main">
               <ProjectsPage
-                projects={projects}
+                projects={filteredProjects}
                 onEdit={openEditProject}
                 onDelete={deleteProject}
               />
@@ -390,10 +433,12 @@ export default function App() {
           description={projectDesc}
           icon={projectIcon}
           color={projectColor}
+          status={projectStatus}
           onNameChange={setProjectName}
           onDescChange={setProjectDesc}
           onIconChange={setProjectIcon}
           onColorChange={setProjectColor}
+          onStatusChange={setProjectStatus}
           onSubmit={handleProjectSubmit}
           onClose={closeProjectForm}
           isClosing={projectFormClosing}

@@ -13,12 +13,15 @@ export interface Task {
   updatedAt: number;
 }
 
+export type ProjectStatus = 'active' | 'paused' | 'completed';
+
 export interface Project {
   id: string;
   name: string;
   description: string;
   icon: string;
   color: string;
+  status: ProjectStatus;
   createdAt: number;
   updatedAt: number;
 }

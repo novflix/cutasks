@@ -41,8 +41,9 @@ export function loadProjects(): Project[] {
     return parsed.map((p: Project) => ({
       ...p,
       description: p.description || '',
-      icon: p.icon || 'FolderMinimalistic',
+      icon: p.icon || 'Folder',
       color: p.color || '#ed9b6d',
+      status: p.status || 'active',
     }));
   } catch {
     return [];

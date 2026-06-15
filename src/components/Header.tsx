@@ -1,7 +1,13 @@
 import { AddSquare } from '@solar-icons/react';
 
+interface StatItem {
+  label: string;
+  value: number;
+  color?: string;
+}
+
 interface HeaderProps {
-  stats: { total: number; active: number; completed: number; overdue: number };
+  stats: StatItem[];
   onCreate: () => void;
   createLabel?: string;
 }
@@ -11,24 +17,12 @@ export default function Header({ stats, onCreate, createLabel = 'New Task' }: He
     <header className="header">
       <div className="header-content">
         <div className="stats">
-          <span className="stat stat-total">
-            <span className="stat-dot" />
-            <strong>{stats.total}</strong> total
-          </span>
-          <span className="stat stat-active">
-            <span className="stat-dot" />
-            <strong>{stats.active}</strong> active
-          </span>
-          <span className="stat stat-done">
-            <span className="stat-dot" />
-            <strong>{stats.completed}</strong> done
-          </span>
-          {stats.overdue > 0 && (
-            <span className="stat stat-overdue">
-              <span className="stat-dot" />
-              <strong>{stats.overdue}</strong> overdue
+          {stats.map((s) => (
+            <span key={s.label} className="stat" style={s.color ? { borderColor: `${s.color}33` } : undefined}>
+              <span className="stat-dot" style={s.color ? { background: s.color } : undefined} />
+              <strong>{s.value}</strong> {s.label}
             </span>
-          )}
+          ))}
           <button className="btn btn-primary stat-create-btn" onClick={onCreate}>
             <AddSquare size={16} />
             <span className="btn-label">{createLabel}</span>

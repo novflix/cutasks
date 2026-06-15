@@ -3,6 +3,12 @@ import type { Project } from '../types';
 import { PROJECT_ICONS } from '../constants';
 import { formatDate } from '../utils';
 
+const STATUS_LABELS = {
+  active: 'Active',
+  paused: 'Paused',
+  completed: 'Completed',
+};
+
 interface ProjectCardProps {
   project: Project;
   onEdit: (project: Project) => void;
@@ -32,7 +38,12 @@ export default function ProjectCard({ project, onEdit, onDelete }: ProjectCardPr
       {project.description && (
         <p className="project-card-desc">{project.description}</p>
       )}
-      <span className="project-card-date">Created {formatDate(project.createdAt)}</span>
+      <div className="project-card-footer">
+        <span className={`project-status-badge project-status-${project.status}`}>
+          {STATUS_LABELS[project.status]}
+        </span>
+        <span className="project-card-date">{formatDate(project.createdAt)}</span>
+      </div>
     </div>
   );
 }
