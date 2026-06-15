@@ -57,7 +57,7 @@
     background: transparent;
     color: var(--text-muted);
     cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     -webkit-tap-highlight-color: transparent;
     position: relative;
   }
@@ -69,13 +69,7 @@
   .mobile-nav-btn.active {
     color: var(--primary);
     background: var(--primary-subtle);
-    animation: navBtnPop 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  @keyframes navBtnPop {
-    0% { transform: scale(0.85); }
-    50% { transform: scale(1.05); }
-    100% { transform: scale(1); }
+    transform: scale(1.08);
   }
 
   .mobile-nav-btn.active::after {
@@ -88,12 +82,6 @@
     height: 4px;
     border-radius: 50%;
     background: var(--primary);
-    animation: dotAppear 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  @keyframes dotAppear {
-    from { transform: translateX(-50%) scale(0); }
-    to { transform: translateX(-50%) scale(1); }
   }
 
   .mobile-nav-btn:disabled {
