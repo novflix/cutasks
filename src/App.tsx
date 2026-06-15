@@ -31,7 +31,7 @@ export default function App() {
   const [parentId, setParentId] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterType>('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(220);
 
   const tasksRef = useRef(tasks);
   const historyRef = useRef<Task[][]>([]);
@@ -231,9 +231,9 @@ export default function App() {
   }
 
   return (
-    <div className={`app${sidebarCollapsed ? ' sidebar-collapsed' : ''}`}>
-      <Sidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed((p) => !p)} />
-      <div className="app-content">
+    <div className="app">
+      <Sidebar width={sidebarWidth} onResize={setSidebarWidth} />
+      <div className="app-content" style={{ marginLeft: sidebarWidth }}>
         <Header stats={stats} onCreate={openCreateForm} />
         <Toolbar
           searchQuery={searchQuery}
