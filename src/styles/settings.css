@@ -1,34 +1,13 @@
 .settings-page {
   display: flex;
   flex-direction: column;
-  gap: 48px;
-  padding-top: 20px;
+  gap: 28px;
+  padding-top: 28px;
 }
 
 .settings-hero {
-  display: flex;
-  align-items: center;
-  gap: 16px;
   padding-bottom: 8px;
   border-bottom: 1px solid var(--border-subtle);
-}
-
-.settings-hero-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: var(--primary-subtle);
-  color: var(--primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.settings-hero-text {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
 }
 
 .settings-hero-title {
@@ -36,11 +15,6 @@
   font-weight: 700;
   color: var(--text);
   letter-spacing: -0.02em;
-}
-
-.settings-hero-desc {
-  font-size: 0.82rem;
-  color: var(--text-muted);
 }
 
 .settings-section {

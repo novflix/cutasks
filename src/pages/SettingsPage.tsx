@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { SettingsMinimalistic } from '@solar-icons/react';
 
 interface ThemeOption {
   id: string;
@@ -31,13 +30,7 @@ export default function SettingsPage() {
   return (
     <div className="settings-page">
       <div className="settings-hero">
-        <div className="settings-hero-icon">
-          <SettingsMinimalistic size={24} strokeWidth={1.8} />
-        </div>
-        <div className="settings-hero-text">
-          <h1 className="settings-hero-title">Settings</h1>
-          <p className="settings-hero-desc">Customize your experience</p>
-        </div>
+        <h1 className="settings-hero-title">Settings</h1>
       </div>
 
       <div className="settings-section">
