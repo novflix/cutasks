@@ -205,33 +205,41 @@ export default function ProjectDetailPage({
   function renderTaskItem(task: ProjectTask, depth: number = 0) {
     const children = tasks.filter((t) => t.parentId === task.id);
     return (
-      <li key={task.id} data-task-id={task.id} className={dragOverId === task.id ? 'task-drag-over' : ''}>
-        <div className={`pdrag-handle${depth > 0 ? ' pdrag-child' : ''}`} onMouseDown={(e) => handleDragStart(task.id, e)} onTouchStart={(e) => handleTouchStart(task.id, e)}>
-          <svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor">
-            <circle cx="3" cy="2.5" r="1.5" /><circle cx="9" cy="2.5" r="1.5" />
-            <circle cx="3" cy="8" r="1.5" /><circle cx="9" cy="8" r="1.5" />
-            <circle cx="3" cy="13.5" r="1.5" /><circle cx="9" cy="13.5" r="1.5" />
-          </svg>
+      <div key={task.id} className={`task-node${depth > 0 ? ' task-child' : ''}`} data-task-id={task.id}>
+        <div className="task-row">
+          <div
+            className={`task-drag-handle${depth > 0 ? ' task-drag-handle-child' : ''}`}
+            onMouseDown={(e) => handleDragStart(task.id, e)}
+            onTouchStart={(e) => handleTouchStart(task.id, e)}
+          >
+            <svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor">
+              <circle cx="3" cy="2.5" r="1.5" /><circle cx="9" cy="2.5" r="1.5" />
+              <circle cx="3" cy="8" r="1.5" /><circle cx="9" cy="8" r="1.5" />
+              <circle cx="3" cy="13.5" r="1.5" /><circle cx="9" cy="13.5" r="1.5" />
+            </svg>
+          </div>
+          <TaskCard
+            task={task}
+            searchQuery=""
+            subtaskCount={children.length}
+            isDragOver={dragOverId === task.id}
+            onToggle={onToggleTask}
+            onView={() => onViewTask(task)}
+            onEdit={() => onEditTask(task)}
+            onDelete={onDeleteTask}
+            onDragOver={(e) => e.preventDefault()}
+            onDragLeave={() => {}}
+            onDrop={(e) => e.preventDefault()}
+          />
         </div>
-        <TaskCard
-          task={task}
-          searchQuery=""
-          subtaskCount={children.length}
-          isDragOver={false}
-          onToggle={onToggleTask}
-          onView={() => onViewTask(task)}
-          onEdit={() => onEditTask(task)}
-          onDelete={onDeleteTask}
-          onDragOver={(e) => e.preventDefault()}
-          onDragLeave={() => {}}
-          onDrop={(e) => e.preventDefault()}
-        />
         {children.length > 0 && (
-          <ul className="psection-tasks ptask-children">
-            {children.map((child) => renderTaskItem(child, depth + 1))}
-          </ul>
+          <div className="task-children-wrap">
+            <ul className="task-children">
+              {children.map((child) => renderTaskItem(child, depth + 1))}
+            </ul>
+          </div>
         )}
-      </li>
+      </div>
     );
   }
 
@@ -285,9 +293,9 @@ export default function ProjectDetailPage({
                   )}
                 </div>
                 {sectionTasks.length > 0 ? (
-                  <ul className="psection-tasks">
-                    {sectionTasks.map(renderTaskItem)}
-                  </ul>
+                  <div className="task-list">
+                    {sectionTasks.map((t) => renderTaskItem(t))}
+                  </div>
                 ) : (
                   <button className="project-section-add" onClick={() => onCreateTask(section.id)}>
                     <AddSquare size={16} />
@@ -303,9 +311,9 @@ export default function ProjectDetailPage({
               className={`project-unsectioned${dragOverUnsectioned ? ' drag-over' : ''}`}
               data-unsectioned
             >
-              <ul className="psection-tasks">
-                {unsectionedTasks.map(renderTaskItem)}
-              </ul>
+              <div className="task-list">
+                {unsectionedTasks.map((t) => renderTaskItem(t))}
+              </div>
             </div>
           )}
 

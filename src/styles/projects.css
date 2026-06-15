@@ -535,60 +535,7 @@
   min-width: 0;
 }
 
-.psection-tasks {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 0;
-  margin: 0;
-}
-
-.psection-tasks > li {
-  display: flex;
-  align-items: stretch;
-  gap: 0;
-}
-
-.psection-tasks > li .pdrag-handle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  flex-shrink: 0;
-  color: var(--text-dim);
-  cursor: grab;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-  margin-left: -20px;
-  padding-right: 6px;
-}
-
-.psection-tasks > li:hover .pdrag-handle {
-  opacity: 0.5;
-}
-
-.psection-tasks > li .pdrag-handle:active {
-  cursor: grabbing;
-}
-
-.psection-tasks > li .task-item {
-  flex: 1;
-  min-width: 0;
-}
-
-.ptask-children {
-  margin-left: 28px;
-  padding-left: 12px;
-  border-left: 1px solid var(--border-subtle);
-}
-
-.pdrag-child {
-  margin-left: -20px;
-}
-
-.project-section-tasks > li.task-drag-over,
-.psection-tasks > li.task-drag-over {
+.project-section-tasks > li.task-drag-over {
   position: relative;
 }
 
