@@ -16,7 +16,7 @@ const navItems: NavItem[] = [
   { icon: ClipboardCheck, label: 'Tasks', page: 'tasks' },
   { icon: Folder, label: 'Projects', page: 'projects' },
   { icon: Bell, label: 'Notifications', page: 'tasks' },
-  { icon: SettingsMinimalistic, label: 'Settings', page: 'tasks' },
+  { icon: SettingsMinimalistic, label: 'Settings', page: 'settings' },
 ];
 
 interface SidebarProps {

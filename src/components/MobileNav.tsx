@@ -28,7 +28,11 @@ export default function MobileNav({ activePage, onNavigate, onCreate }: MobileNa
         <button className="mobile-nav-btn" disabled aria-label="Notifications">
           <Bell size={24} strokeWidth={1.8} />
         </button>
-        <button className="mobile-nav-btn" disabled aria-label="Settings">
+        <button
+          className={`mobile-nav-btn${activePage === 'settings' ? ' active' : ''}`}
+          onClick={() => onNavigate('settings')}
+          aria-label="Settings"
+        >
           <SettingsMinimalistic size={24} strokeWidth={1.8} />
         </button>
       </nav>

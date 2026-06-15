@@ -39,4 +39,4 @@ export interface ProjectTask extends Task {
   sectionId: string | null;
 }
 
-export type Page = 'tasks' | 'projects' | 'project-detail';
+export type Page = 'tasks' | 'projects' | 'project-detail' | 'settings';

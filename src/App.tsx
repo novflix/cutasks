@@ -14,6 +14,7 @@ import ProjectsPage from './components/ProjectsPage';
 import ProjectFormModal from './components/ProjectFormModal';
 import ProjectDetailPage from './components/ProjectDetailPage';
 import ProjectRoute from './components/ProjectRoute';
+import SettingsPage from './components/SettingsPage';
 import MobileNav from './components/MobileNav';
 import { getDeadlineStatus } from './utils';
 import { MinimalisticMagnifier, ArrowLeft, Layers } from '@solar-icons/react';
@@ -69,7 +70,7 @@ export default function App() {
   const [ptSectionId, setPtSectionId] = useState<string | null>(null);
   const detailTimer2 = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const activePage: Page = location.pathname.startsWith('/projects') ? (location.pathname.split('/').length > 2 ? 'project-detail' : 'projects') : 'tasks';
+  const activePage: Page = location.pathname.startsWith('/projects') ? (location.pathname.split('/').length > 2 ? 'project-detail' : 'projects') : location.pathname.startsWith('/settings') ? 'settings' : 'tasks';
   const activeProjectId = activePage === 'project-detail' ? location.pathname.split('/')[2] : null;
   const activeProject = useMemo(() => activeProjectId ? projects.find((p) => p.id === activeProjectId) ?? null : null, [projects, activeProjectId]);
 
@@ -542,6 +543,7 @@ export default function App() {
   const sidebarNavigate = useCallback((p: Page) => {
     if (p === 'tasks') navigate('/tasks');
     else if (p === 'projects') navigate('/projects');
+    else if (p === 'settings') navigate('/settings');
   }, [navigate]);
 
   return (
@@ -666,6 +668,11 @@ export default function App() {
                 </>
               )}
             </ProjectRoute>
+          } />
+          <Route path="/settings" element={
+            <main className="main">
+              <SettingsPage />
+            </main>
           } />
           <Route path="*" element={<Navigate to="/tasks" replace />} />
         </Routes>
