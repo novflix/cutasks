@@ -7,14 +7,13 @@
 .project-card {
   position: relative;
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 24px 20px 20px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 14px;
   transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  overflow: hidden;
 }
 
 .project-card::before {
@@ -25,42 +24,56 @@
   right: 0;
   height: 3px;
   background: var(--project-color);
-  opacity: 0.7;
+  border-radius: var(--radius) var(--radius) 0 0;
+  opacity: 0.6;
   transition: opacity 0.3s ease;
 }
 
 .project-card:hover {
-  border-color: color-mix(in srgb, var(--project-color) 30%, var(--border));
-  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--project-color) 40%, var(--border));
+  transform: translateY(-2px);
   box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    0 0 0 1px color-mix(in srgb, var(--project-color) 10%, transparent),
-    0 0 40px color-mix(in srgb, var(--project-color) 8%, transparent);
+    0 4px 20px rgba(0, 0, 0, 0.25),
+    0 0 20px color-mix(in srgb, var(--project-color) 10%, transparent);
 }
 
 .project-card:hover::before {
   opacity: 1;
 }
 
-.project-card-header {
+.project-card-top {
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
 }
 
 .project-card-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.project-card:hover .project-card-icon {
-  transform: scale(1.05);
+.project-card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.project-card-name {
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .project-card-actions {
@@ -69,24 +82,12 @@
   opacity: 0;
   transform: translateX(4px);
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .project-card:hover .project-card-actions {
   opacity: 1;
   transform: translateX(0);
-}
-
-.project-card-body {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.project-card-name {
-  font-size: 1.05rem;
-  font-weight: 700;
-  line-height: 1.3;
-  letter-spacing: -0.01em;
 }
 
 .project-card-desc {
@@ -264,7 +265,7 @@
   position: relative;
   background: var(--bg-elevated);
   border-radius: var(--radius);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid var(--border);
   overflow: hidden;
 }
 
@@ -286,20 +287,20 @@
   color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  padding: 12px 16px 0;
+  padding: 14px 16px 0;
 }
 
 .project-preview-card {
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 12px 16px 16px;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px 16px;
 }
 
 .project-preview-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -309,13 +310,13 @@
 .project-preview-info {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   min-width: 0;
   flex: 1;
 }
 
 .project-preview-name {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 700;
   line-height: 1.3;
   white-space: nowrap;
@@ -337,12 +338,13 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 0.68rem;
+  font-size: 0.65rem;
   font-weight: 600;
-  padding: 3px 8px;
+  padding: 2px 7px;
   border-radius: var(--radius-full);
   width: fit-content;
   text-transform: capitalize;
+  margin-top: 2px;
 }
 
 .project-preview-status::before {
