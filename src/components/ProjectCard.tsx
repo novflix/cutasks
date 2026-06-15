@@ -13,14 +13,22 @@ interface ProjectCardProps {
   project: Project;
   onEdit: (project: Project) => void;
   onDelete: (id: string) => void;
+  onOpen: (project: Project) => void;
 }
 
-export default function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
+export default function ProjectCard({ project, onEdit, onDelete, onOpen }: ProjectCardProps) {
   const iconDef = PROJECT_ICONS.find((i) => i.name === project.icon) ?? PROJECT_ICONS[0];
   const Icon = iconDef.icon;
 
   return (
-    <div className="project-card" style={{ '--project-color': project.color } as React.CSSProperties}>
+    <div
+      className="project-card"
+      style={{ '--project-color': project.color } as React.CSSProperties}
+      onClick={() => onOpen(project)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter') onOpen(project); }}
+    >
       <div className="project-card-top">
         <div className="project-card-icon" style={{ background: `${project.color}15`, color: project.color }}>
           <Icon size={22} strokeWidth={1.8} />
@@ -28,10 +36,10 @@ export default function ProjectCard({ project, onEdit, onDelete }: ProjectCardPr
         <div className="project-card-title-row">
           <h3 className="project-card-name" style={{ color: project.color }}>{project.name}</h3>
           <div className="project-card-actions">
-            <button className="btn-icon" onClick={() => onEdit(project)} title="Edit">
+            <button className="btn-icon" onClick={(e) => { e.stopPropagation(); onEdit(project); }} title="Edit">
               <Pen size={18} />
             </button>
-            <button className="btn-icon btn-icon-danger" onClick={() => onDelete(project.id)} title="Delete">
+            <button className="btn-icon btn-icon-danger" onClick={(e) => { e.stopPropagation(); onDelete(project.id); }} title="Delete">
               <TrashBinMinimalistic size={18} />
             </button>
           </div>

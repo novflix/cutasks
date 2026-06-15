@@ -1,8 +1,8 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import './App.css';
-import type { Task, Priority, Page, Project, ProjectStatus } from './types';
+import type { Task, Priority, Page, Project, ProjectStatus, Section, ProjectTask } from './types';
 import { generateId } from './utils';
-import { loadTasks, saveTasks, getAllTags, loadProjects, saveProjects } from './storage';
+import { loadTasks, saveTasks, getAllTags, loadProjects, saveProjects, loadSections, saveSections, loadProjectTasks, saveProjectTasks } from './storage';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import Toolbar from './components/Toolbar';
@@ -11,8 +11,10 @@ import TaskDetailModal from './components/TaskDetailModal';
 import TaskFormModal from './components/TaskFormModal';
 import ProjectsPage from './components/ProjectsPage';
 import ProjectFormModal from './components/ProjectFormModal';
+import ProjectDetailPage from './components/ProjectDetailPage';
 import MobileNav from './components/MobileNav';
 import { getDeadlineStatus } from './utils';
+import { MinimalisticMagnifier } from '@solar-icons/react';
 
 export type FilterType = 'all' | 'active' | 'completed';
 
@@ -45,6 +47,24 @@ export default function App() {
   const [projectColor, setProjectColor] = useState('#ed9b6d');
   const [projectStatus, setProjectStatus] = useState<ProjectStatus>('active');
   const [projectSearch, setProjectSearch] = useState('');
+  const [activeProject, setActiveProject] = useState<Project | null>(null);
+  const [projectTasks, setProjectTasks] = useState<ProjectTask[]>(loadProjectTasks);
+  const [sections, setSections] = useState<Section[]>(loadSections);
+  const [projectTaskFilter, setProjectTaskFilter] = useState<FilterType>('all');
+  const [projectTaskSearch, setProjectTaskSearch] = useState('');
+  const [showProjectTaskForm, setShowProjectTaskForm] = useState(false);
+  const [projectTaskFormClosing, setProjectTaskFormClosing] = useState(false);
+  const [editingProjectTask, setEditingProjectTask] = useState<ProjectTask | null>(null);
+  const [viewingProjectTask, setViewingProjectTask] = useState<ProjectTask | null>(null);
+  const [projectTaskDetailClosing, setProjectTaskDetailClosing] = useState(false);
+  const [ptTitle, setPtTitle] = useState('');
+  const [ptDescription, setPtDescription] = useState('');
+  const [ptPriority, setPtPriority] = useState<Priority>('medium');
+  const [ptDeadline, setPtDeadline] = useState('');
+  const [ptTags, setPtTags] = useState<string[]>([]);
+  const [ptParentId, setPtParentId] = useState<string | null>(null);
+  const [ptSectionId, setPtSectionId] = useState<string | null>(null);
+  const detailTimer2 = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const tasksRef = useRef(tasks);
   const historyRef = useRef<Task[][]>([]);
@@ -91,6 +111,14 @@ export default function App() {
   useEffect(() => {
     saveProjects(projects);
   }, [projects]);
+
+  useEffect(() => {
+    saveProjectTasks(projectTasks);
+  }, [projectTasks]);
+
+  useEffect(() => {
+    saveSections(sections);
+  }, [sections]);
 
   const filteredTasks = useMemo(() => {
     let result = tasks;
@@ -336,15 +364,178 @@ export default function App() {
 
   function deleteProject(id: string) {
     setProjects((prev) => prev.filter((p) => p.id !== id));
+    setProjectTasks((prev) => prev.filter((t) => t.projectId !== id));
+    setSections((prev) => prev.filter((s) => s.projectId !== id));
+    if (activeProject?.id === id) setActiveProject(null);
   }
 
-  const handleCreate = activePage === 'projects' ? openCreateProject : openCreateForm;
+  function openProject(project: Project) {
+    setActiveProject(project);
+    setActivePage('project-detail');
+  }
+
+  function backToProjects() {
+    setActiveProject(null);
+    setActivePage('projects');
+  }
+
+  const activeProjectTasks = useMemo(
+    () => activeProject ? projectTasks.filter((t) => t.projectId === activeProject.id) : [],
+    [projectTasks, activeProject]
+  );
+
+  const filteredProjectTasks = useMemo(() => {
+    let result = activeProjectTasks;
+    if (projectTaskFilter === 'active') result = result.filter((t) => !t.completed);
+    if (projectTaskFilter === 'completed') result = result.filter((t) => t.completed);
+    if (projectTaskSearch.trim()) {
+      const q = projectTaskSearch.toLowerCase();
+      result = result.filter(
+        (t) => t.title.toLowerCase().includes(q) || t.description.toLowerCase().includes(q)
+      );
+    }
+    return result.sort((a, b) => {
+      if (a.completed !== b.completed) return a.completed ? 1 : -1;
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
+    });
+  }, [activeProjectTasks, projectTaskFilter, projectTaskSearch]);
+
+  const projectTaskStats = useMemo(() => {
+    if (!activeProject) return [];
+    const total = activeProjectTasks.length;
+    const active = activeProjectTasks.filter((t) => !t.completed).length;
+    const done = activeProjectTasks.filter((t) => t.completed).length;
+    const overdue = activeProjectTasks.filter((t) => !t.completed && getDeadlineStatus(t.deadline, t.completed) === 'overdue').length;
+    return [
+      { label: 'total', value: total },
+      { label: 'active', value: active, color: activeProject.color },
+      { label: 'done', value: done, color: '#66bb6a' },
+      ...(overdue > 0 ? [{ label: 'overdue', value: overdue, color: '#ef5350' }] : []),
+    ];
+  }, [activeProjectTasks, activeProject]);
+
+  const allProjectTags = useMemo(() => getAllTags(projectTasks), [projectTasks]);
+
+  const activeViewingProjectTask = useMemo(
+    () => (viewingProjectTask ? projectTasks.find((t) => t.id === viewingProjectTask.id) ?? null : null),
+    [projectTasks, viewingProjectTask]
+  );
+
+  const projectTaskHistoryRef = useRef<ProjectTask[][]>([]);
+
+  const pushProjectTaskHistory = useCallback(() => {
+    projectTaskHistoryRef.current.push([...projectTasks]);
+    if (projectTaskHistoryRef.current.length > 50) projectTaskHistoryRef.current.shift();
+  }, [projectTasks]);
+
+  function openCreateProjectTask(sectionId: string | null) {
+    setEditingProjectTask(null);
+    setPtTitle('');
+    setPtDescription('');
+    setPtPriority('medium');
+    setPtDeadline('');
+    setPtTags([]);
+    setPtParentId(null);
+    setPtSectionId(sectionId);
+    setProjectTaskFormClosing(false);
+    setShowProjectTaskForm(true);
+  }
+
+  function openEditProjectTask(task: ProjectTask) {
+    setEditingProjectTask(task);
+    setPtTitle(task.title);
+    setPtDescription(task.description);
+    setPtPriority(task.priority);
+    setPtDeadline(task.deadline || '');
+    setPtTags(task.tags || []);
+    setPtParentId(task.parentId ?? null);
+    setPtSectionId(task.sectionId ?? null);
+    setProjectTaskFormClosing(false);
+    setShowProjectTaskForm(true);
+  }
+
+  function closeProjectTaskForm() {
+    setProjectTaskFormClosing(true);
+    formTimer.current = setTimeout(() => {
+      setShowProjectTaskForm(false);
+      setProjectTaskFormClosing(false);
+      setEditingProjectTask(null);
+    }, 200);
+  }
+
+  function handleProjectTaskSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const trimmedTitle = ptTitle.trim();
+    if (!trimmedTitle || !activeProject) return;
+    const now = Date.now();
+    if (editingProjectTask) {
+      pushProjectTaskHistory();
+      setProjectTasks((prev) =>
+        prev.map((t) =>
+          t.id === editingProjectTask.id
+            ? { ...t, title: trimmedTitle, description: ptDescription.trim(), priority: ptPriority, deadline: ptDeadline, tags: ptTags, parentId: ptParentId, sectionId: ptSectionId, updatedAt: now }
+            : t
+        )
+      );
+    } else {
+      pushProjectTaskHistory();
+      const newTask: ProjectTask = {
+        id: generateId(),
+        projectId: activeProject.id,
+        title: trimmedTitle,
+        description: ptDescription.trim(),
+        priority: ptPriority,
+        deadline: ptDeadline,
+        tags: ptTags,
+        completed: false,
+        parentId: ptParentId,
+        sectionId: ptSectionId,
+        createdAt: now,
+        updatedAt: now,
+      };
+      setProjectTasks((prev) => [newTask, ...prev]);
+    }
+    closeProjectTaskForm();
+  }
+
+  function toggleProjectTask(id: string) {
+    pushProjectTaskHistory();
+    setProjectTasks((prev) =>
+      prev.map((t) => t.id === id ? { ...t, completed: !t.completed, updatedAt: Date.now() } : t)
+    );
+  }
+
+  function deleteProjectTask(id: string) {
+    pushProjectTaskHistory();
+    setProjectTasks((prev) => {
+      const updated = prev.filter((t) => t.id !== id);
+      return updated.map((t) => t.parentId === id ? { ...t, parentId: null } : t);
+    });
+  }
+
+  function setProjectSubtask(childId: string, newParentId: string | null) {
+    if (childId === newParentId) return;
+    pushProjectTaskHistory();
+    setProjectTasks((prev) =>
+      prev.map((t) => t.id === childId ? { ...t, parentId: newParentId, updatedAt: Date.now() } : t)
+    );
+  }
+
+  function closeProjectTaskDetail() {
+    setProjectTaskDetailClosing(true);
+    detailTimer2.current = setTimeout(() => {
+      setViewingProjectTask(null);
+      setProjectTaskDetailClosing(false);
+    }, 200);
+  }
+
+  const handleCreate = activePage === 'tasks' ? openCreateForm : openCreateProject;
 
   return (
     <div className="app" style={{ '--sidebar-w': `${sidebarWidth}px` } as React.CSSProperties}>
-      <Sidebar width={sidebarWidth} onResize={setSidebarWidth} activePage={activePage} onNavigate={setActivePage} />
+      <Sidebar width={sidebarWidth} onResize={setSidebarWidth} activePage={activePage} onNavigate={(p) => { setActivePage(p); if (p !== 'project-detail') setActiveProject(null); }} />
       <div className="app-content">
-        {activePage === 'tasks' ? (
+        {activePage === 'tasks' && (
           <>
             <Header stats={taskStatsFormatted} onCreate={openCreateForm} />
             <Toolbar
@@ -367,11 +558,14 @@ export default function App() {
               />
             </main>
           </>
-        ) : (
+        )}
+
+        {activePage === 'projects' && !activeProject && (
           <>
             <Header stats={projectStats} onCreate={openCreateProject} createLabel="New Project" />
             <div className="toolbar">
               <div className="search-box">
+                <MinimalisticMagnifier size={18} className="search-icon" />
                 <input
                   type="text"
                   placeholder="Search projects..."
@@ -386,6 +580,51 @@ export default function App() {
                 projects={filteredProjects}
                 onEdit={openEditProject}
                 onDelete={deleteProject}
+                onOpen={openProject}
+              />
+            </main>
+          </>
+        )}
+
+        {activePage === 'project-detail' && activeProject && (
+          <>
+            <Header stats={projectTaskStats} onCreate={() => openCreateProjectTask(null)} createLabel="New Task" />
+            <div className="toolbar">
+              <div className="search-box">
+                <MinimalisticMagnifier size={18} className="search-icon" />
+                <input
+                  type="text"
+                  placeholder="Search tasks..."
+                  value={projectTaskSearch}
+                  onChange={(e) => setProjectTaskSearch(e.target.value)}
+                  className="search-input"
+                />
+              </div>
+              <div className="filters">
+                {(['all', 'active', 'completed'] as FilterType[]).map((f) => (
+                  <button
+                    key={f}
+                    className={`filter-btn ${projectTaskFilter === f ? 'active' : ''}`}
+                    onClick={() => setProjectTaskFilter(f)}
+                  >
+                    {f === 'all' ? 'All' : f === 'active' ? 'Active' : 'Done'}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <main className="main">
+              <ProjectDetailPage
+                project={activeProject}
+                sections={sections}
+                tasks={filteredProjectTasks}
+                onBack={backToProjects}
+                onCreateTask={openCreateProjectTask}
+                onEditTask={openEditProjectTask}
+                onDeleteTask={deleteProjectTask}
+                onToggleTask={toggleProjectTask}
+                onViewTask={setViewingProjectTask}
+                onSetSubtask={setProjectSubtask}
+                onSaveSections={setSections}
               />
             </main>
           </>
@@ -400,6 +639,17 @@ export default function App() {
           onEdit={(t) => { closeDetail(); setTimeout(() => openEditForm(t), 220); }}
           onToggle={toggleComplete}
           isClosing={detailClosing}
+        />
+      )}
+
+      {(activeViewingProjectTask || projectTaskDetailClosing) && (
+        <TaskDetailModal
+          task={activeViewingProjectTask!}
+          tasks={projectTasks}
+          onClose={closeProjectTaskDetail}
+          onEdit={(t) => { closeProjectTaskDetail(); setTimeout(() => openEditProjectTask(t as ProjectTask), 220); }}
+          onToggle={toggleProjectTask}
+          isClosing={projectTaskDetailClosing}
         />
       )}
 
@@ -426,6 +676,29 @@ export default function App() {
         />
       )}
 
+      {(showProjectTaskForm || projectTaskFormClosing) && (
+        <TaskFormModal
+          editingTask={editingProjectTask}
+          title={ptTitle}
+          description={ptDescription}
+          priority={ptPriority}
+          deadline={ptDeadline}
+          tags={ptTags}
+          parentId={ptParentId}
+          allTags={allProjectTags}
+          allTasks={projectTasks}
+          onTitleChange={setPtTitle}
+          onDescChange={setPtDescription}
+          onPriorityChange={setPtPriority}
+          onDeadlineChange={setPtDeadline}
+          onTagsChange={setPtTags}
+          onParentChange={setPtParentId}
+          onSubmit={handleProjectTaskSubmit}
+          onClose={closeProjectTaskForm}
+          isClosing={projectTaskFormClosing}
+        />
+      )}
+
       {(showProjectForm || projectFormClosing) && (
         <ProjectFormModal
           editingProject={editingProject}
@@ -445,7 +718,7 @@ export default function App() {
         />
       )}
 
-      <MobileNav activePage={activePage} onNavigate={setActivePage} onCreate={handleCreate} />
+      <MobileNav activePage={activePage} onNavigate={(p) => { setActivePage(p); if (p !== 'project-detail') setActiveProject(null); }} onCreate={handleCreate} />
     </div>
   );
 }

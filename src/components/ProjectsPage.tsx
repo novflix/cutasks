@@ -6,9 +6,10 @@ interface ProjectsPageProps {
   projects: Project[];
   onEdit: (project: Project) => void;
   onDelete: (id: string) => void;
+  onOpen: (project: Project) => void;
 }
 
-export default function ProjectsPage({ projects, onEdit, onDelete }: ProjectsPageProps) {
+export default function ProjectsPage({ projects, onEdit, onDelete, onOpen }: ProjectsPageProps) {
   if (projects.length === 0) {
     return (
       <div className="empty">
@@ -27,6 +28,7 @@ export default function ProjectsPage({ projects, onEdit, onDelete }: ProjectsPag
           project={project}
           onEdit={onEdit}
           onDelete={onDelete}
+          onOpen={onOpen}
         />
       ))}
     </div>

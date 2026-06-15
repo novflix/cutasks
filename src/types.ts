@@ -26,4 +26,17 @@ export interface Project {
   updatedAt: number;
 }
 
-export type Page = 'tasks' | 'projects';
+export interface Section {
+  id: string;
+  projectId: string;
+  name: string;
+  order: number;
+  createdAt: number;
+}
+
+export interface ProjectTask extends Task {
+  projectId: string;
+  sectionId: string | null;
+}
+
+export type Page = 'tasks' | 'projects' | 'project-detail';

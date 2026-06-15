@@ -1,7 +1,9 @@
-import type { Task, Project } from './types';
+import type { Task, Project, Section, ProjectTask } from './types';
 
 const STORAGE_KEY = 'cutasks_tasks';
 const PROJECTS_KEY = 'cutasks_projects';
+const SECTIONS_KEY = 'cutasks_sections';
+const PROJECT_TASKS_KEY = 'cutasks_project_tasks';
 
 export function loadTasks(): Task[] {
   try {
@@ -52,4 +54,39 @@ export function loadProjects(): Project[] {
 
 export function saveProjects(projects: Project[]) {
   localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+}
+
+export function loadSections(): Section[] {
+  try {
+    const raw = localStorage.getItem(SECTIONS_KEY);
+    if (!raw) return [];
+    return JSON.parse(raw);
+  } catch {
+    return [];
+  }
+}
+
+export function saveSections(sections: Section[]) {
+  localStorage.setItem(SECTIONS_KEY, JSON.stringify(sections));
+}
+
+export function loadProjectTasks(): ProjectTask[] {
+  try {
+    const raw = localStorage.getItem(PROJECT_TASKS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return parsed.map((t: ProjectTask) => ({
+      ...t,
+      deadline: t.deadline || '',
+      tags: t.tags || [],
+      parentId: t.parentId ?? null,
+      sectionId: t.sectionId ?? null,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export function saveProjectTasks(tasks: ProjectTask[]) {
+  localStorage.setItem(PROJECT_TASKS_KEY, JSON.stringify(tasks));
 }

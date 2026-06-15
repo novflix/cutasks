@@ -14,6 +14,7 @@
   flex-direction: column;
   gap: 14px;
   transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  cursor: pointer;
 }
 
 .project-card:hover {
@@ -380,5 +381,150 @@
 
   .status-selector {
     flex-direction: column;
+  }
+}
+
+.project-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.project-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.project-back-btn {
+  flex-shrink: 0;
+}
+
+.project-detail-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.project-detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.project-detail-name {
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.project-detail-desc {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.project-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.project-section {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+
+.project-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.project-section-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.project-section-actions {
+  display: flex;
+  gap: 2px;
+}
+
+.project-section-tasks {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.project-section-add {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.project-section-add:hover {
+  border-color: var(--text-dim);
+  color: var(--text-secondary);
+  background: var(--bg-hover);
+}
+
+.project-add-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.project-add-section:hover {
+  border-color: var(--text-dim);
+  color: var(--text-secondary);
+  background: var(--bg-card);
+}
+
+@media (max-width: 480px) {
+  .project-detail-header {
+    gap: 12px;
+  }
+
+  .project-detail-name {
+    font-size: 1.15rem;
+  }
+
+  .project-section {
+    padding: 12px;
   }
 }
