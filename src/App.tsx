@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
-import { Routes, Route, useNavigate, useParams, useLocation, Navigate } from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import './App.css';
 import type { Task, Priority, Page, Project, ProjectStatus, Section, ProjectTask } from './types';
 import { generateId } from './utils';
@@ -13,6 +13,7 @@ import TaskFormModal from './components/TaskFormModal';
 import ProjectsPage from './components/ProjectsPage';
 import ProjectFormModal from './components/ProjectFormModal';
 import ProjectDetailPage from './components/ProjectDetailPage';
+import ProjectRoute from './components/ProjectRoute';
 import MobileNav from './components/MobileNav';
 import { getDeadlineStatus } from './utils';
 import { MinimalisticMagnifier, ArrowLeft, Layers } from '@solar-icons/react';
@@ -24,7 +25,6 @@ const priorityOrder: Record<Priority, number> = { high: 0, medium: 1, low: 2 };
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { projectId } = useParams<{ projectId: string }>();
 
   const [tasks, setTasks] = useState<Task[]>(loadTasks);
   const [showForm, setShowForm] = useState(false);
@@ -69,8 +69,9 @@ export default function App() {
   const [ptSectionId, setPtSectionId] = useState<string | null>(null);
   const detailTimer2 = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const activePage: Page = location.pathname.startsWith('/projects') ? (projectId ? 'project-detail' : 'projects') : 'tasks';
-  const activeProject = useMemo(() => projectId ? projects.find((p) => p.id === projectId) ?? null : null, [projects, projectId]);
+  const activePage: Page = location.pathname.startsWith('/projects') ? (location.pathname.split('/').length > 2 ? 'project-detail' : 'projects') : 'tasks';
+  const activeProjectId = activePage === 'project-detail' ? location.pathname.split('/')[2] : null;
+  const activeProject = useMemo(() => activeProjectId ? projects.find((p) => p.id === activeProjectId) ?? null : null, [projects, activeProjectId]);
 
   const tasksRef = useRef(tasks);
   const historyRef = useRef<Task[][]>([]);
@@ -379,10 +380,6 @@ export default function App() {
     navigate(`/projects/${project.id}`);
   }
 
-  function backToProjects() {
-    navigate('/projects');
-  }
-
   const activeProjectTasks = useMemo(
     () => activeProject ? projectTasks.filter((t) => t.projectId === activeProject.id) : [],
     [projectTasks, activeProject]
@@ -602,68 +599,73 @@ export default function App() {
             </>
           } />
           <Route path="/projects/:projectId" element={
-            activeProject ? (
-            <>
-              <div className="project-detail-header">
-                <button className="btn-icon project-back-btn" onClick={backToProjects}>
-                  <ArrowLeft size={22} />
-                </button>
-                <div className="project-detail-icon" style={{ background: `${activeProject.color}15`, color: activeProject.color }}>
-                  <Layers size={24} strokeWidth={1.8} />
-                </div>
-                <div className="project-detail-info">
-                  <h1 className="project-detail-name" style={{ color: activeProject.color }}>{activeProject.name}</h1>
-                  {activeProject.description && (
-                    <p className="project-detail-desc">{activeProject.description}</p>
-                  )}
-                </div>
-              </div>
-              <Header stats={projectTaskStats} onCreate={() => openCreateProjectTask(null)} createLabel="New Task" />
-              <div className="toolbar">
-                <div className="search-box">
-                  <MinimalisticMagnifier size={18} className="search-icon" />
-                  <input
-                    type="text"
-                    placeholder="Search tasks..."
-                    value={projectTaskSearch}
-                    onChange={(e) => setProjectTaskSearch(e.target.value)}
-                    className="search-input"
-                  />
-                </div>
-                <div className="filters">
-                  {(['all', 'active', 'completed'] as FilterType[]).map((f) => (
-                    <button
-                      key={f}
-                      className={`filter-btn ${projectTaskFilter === f ? 'active' : ''}`}
-                      onClick={() => setProjectTaskFilter(f)}
-                    >
-                      {f === 'all' ? 'All' : f === 'active' ? 'Active' : 'Done'}
+            <ProjectRoute
+              projects={projects}
+              fallback={
+                <main className="main">
+                  <div className="empty">
+                    <p className="empty-title">Project not found</p>
+                    <button className="btn btn-primary" onClick={() => navigate('/projects')}>Back to Projects</button>
+                  </div>
+                </main>
+              }
+            >
+              {(project) => (
+                <>
+                  <div className="project-detail-header">
+                    <button className="btn-icon project-back-btn" onClick={() => navigate('/projects')}>
+                      <ArrowLeft size={22} />
                     </button>
-                  ))}
-                </div>
-              </div>
-              <main className="main">
-                <ProjectDetailPage
-                  project={activeProject}
-                  sections={sections}
-                  tasks={filteredProjectTasks}
-                  onCreateTask={openCreateProjectTask}
-                  onEditTask={openEditProjectTask}
-                  onDeleteTask={deleteProjectTask}
-                  onToggleTask={toggleProjectTask}
-                  onViewTask={setViewingProjectTask}
-                  onUpdateTask={updateProjectTask}
-                />
-              </main>
-            </>
-            ) : (
-              <main className="main">
-                <div className="empty">
-                  <p className="empty-title">Project not found</p>
-                  <button className="btn btn-primary" onClick={backToProjects}>Back to Projects</button>
-                </div>
-              </main>
-            )
+                    <div className="project-detail-icon" style={{ background: `${project.color}15`, color: project.color }}>
+                      <Layers size={24} strokeWidth={1.8} />
+                    </div>
+                    <div className="project-detail-info">
+                      <h1 className="project-detail-name" style={{ color: project.color }}>{project.name}</h1>
+                      {project.description && (
+                        <p className="project-detail-desc">{project.description}</p>
+                      )}
+                    </div>
+                  </div>
+                  <Header stats={projectTaskStats} onCreate={() => openCreateProjectTask(null)} createLabel="New Task" />
+                  <div className="toolbar">
+                    <div className="search-box">
+                      <MinimalisticMagnifier size={18} className="search-icon" />
+                      <input
+                        type="text"
+                        placeholder="Search tasks..."
+                        value={projectTaskSearch}
+                        onChange={(e) => setProjectTaskSearch(e.target.value)}
+                        className="search-input"
+                      />
+                    </div>
+                    <div className="filters">
+                      {(['all', 'active', 'completed'] as FilterType[]).map((f) => (
+                        <button
+                          key={f}
+                          className={`filter-btn ${projectTaskFilter === f ? 'active' : ''}`}
+                          onClick={() => setProjectTaskFilter(f)}
+                        >
+                          {f === 'all' ? 'All' : f === 'active' ? 'Active' : 'Done'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <main className="main">
+                    <ProjectDetailPage
+                      project={project}
+                      sections={sections}
+                      tasks={filteredProjectTasks}
+                      onCreateTask={openCreateProjectTask}
+                      onEditTask={openEditProjectTask}
+                      onDeleteTask={deleteProjectTask}
+                      onToggleTask={toggleProjectTask}
+                      onViewTask={setViewingProjectTask}
+                      onUpdateTask={updateProjectTask}
+                    />
+                  </main>
+                </>
+              )}
+            </ProjectRoute>
           } />
           <Route path="*" element={<Navigate to="/tasks" replace />} />
         </Routes>
