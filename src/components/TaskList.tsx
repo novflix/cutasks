@@ -22,6 +22,7 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [dragOverRoot, setDragOverRoot] = useState(false);
   const maxDepthRef = useRef<HTMLDivElement>(null);
+  const isDraggingRef = useRef(false);
 
   const dragStateRef = useRef<{
     taskId: string;
@@ -93,6 +94,7 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
       setDraggingId(null);
       setDragOverId(null);
       setDragOverRoot(false);
+      isDraggingRef.current = false;
       if (maxDepthRef.current) maxDepthRef.current.style.display = 'none';
     }
 
@@ -144,6 +146,7 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
       setDraggingId(null);
       setDragOverId(null);
       setDragOverRoot(false);
+      isDraggingRef.current = false;
       if (maxDepthRef.current) maxDepthRef.current.style.display = 'none';
     }
 
@@ -156,6 +159,7 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
       setDraggingId(null);
       setDragOverId(null);
       setDragOverRoot(false);
+      isDraggingRef.current = false;
       if (maxDepthRef.current) maxDepthRef.current.style.display = 'none';
     }
 
@@ -191,6 +195,7 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
     const ghost = createGhost(taskId, e.clientX, e.clientY);
     dragStateRef.current = { taskId, ghost, currentTarget: null, isMouse: true };
     setDraggingId(taskId);
+    isDraggingRef.current = true;
   }
 
   function handleTouchDragStart(taskId: string, e: React.TouchEvent) {
@@ -198,6 +203,7 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
     const ghost = createGhost(taskId, touch.clientX, touch.clientY);
     dragStateRef.current = { taskId, ghost, currentTarget: null, isMouse: false };
     setDraggingId(taskId);
+    isDraggingRef.current = true;
   }
 
   function handleDragOver(e: React.DragEvent) {
@@ -261,6 +267,7 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
   const tasksRef = useRef(tasks);
 
   useLayoutEffect(() => {
+    if (isDraggingRef.current) return;
     if (tasksRef.current === tasks) return;
     tasksRef.current = tasks;
     const prev = prevPositionsRef.current;
