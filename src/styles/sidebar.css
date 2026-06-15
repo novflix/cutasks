@@ -74,7 +74,7 @@
     width: 3px;
     background: var(--primary);
     border-radius: 0 3px 3px 0;
-    transition: top 0.3s cubic-bezier(0.4, 0, 0.2, 1), height 0.2s ease, opacity 0.2s ease;
+    transition: top 0.18s cubic-bezier(0.4, 0, 0.2, 1), height 0.15s ease, opacity 0.15s ease;
     opacity: 0;
     z-index: 1;
   }

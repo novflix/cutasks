@@ -35,6 +35,8 @@ export default function Sidebar({ width, onResize, activePage, onNavigate }: Sid
   const navRef = useRef<HTMLDivElement>(null);
   const indicatorRef = useRef<HTMLDivElement>(null);
 
+  const INDICATOR_HEIGHT = 16;
+
   const updateIndicator = useCallback(() => {
     if (!navRef.current || !indicatorRef.current) return;
     const activeBtn = navRef.current.querySelector('.sidebar-nav-btn.active') as HTMLElement;
@@ -44,8 +46,9 @@ export default function Sidebar({ width, onResize, activePage, onNavigate }: Sid
     }
     const navRect = navRef.current.getBoundingClientRect();
     const btnRect = activeBtn.getBoundingClientRect();
-    indicatorRef.current.style.top = `${btnRect.top - navRect.top}px`;
-    indicatorRef.current.style.height = `${btnRect.height}px`;
+    const offset = (btnRect.height - INDICATOR_HEIGHT) / 2;
+    indicatorRef.current.style.top = `${btnRect.top - navRect.top + offset}px`;
+    indicatorRef.current.style.height = `${INDICATOR_HEIGHT}px`;
     indicatorRef.current.style.opacity = '1';
   }, []);
 
