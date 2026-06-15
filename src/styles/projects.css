@@ -7,7 +7,7 @@
 .project-card {
   position: relative;
   background: var(--bg-card);
-  border: 1px solid var(--border);
+  border: 1.5px solid color-mix(in srgb, var(--project-color) 25%, var(--border));
   border-radius: var(--radius);
   padding: 20px;
   display: flex;
@@ -16,29 +16,12 @@
   transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.project-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--project-color);
-  border-radius: var(--radius) var(--radius) 0 0;
-  opacity: 0.6;
-  transition: opacity 0.3s ease;
-}
-
 .project-card:hover {
-  border-color: color-mix(in srgb, var(--project-color) 40%, var(--border));
+  border-color: color-mix(in srgb, var(--project-color) 55%, var(--border));
   transform: translateY(-2px);
   box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.25),
-    0 0 20px color-mix(in srgb, var(--project-color) 10%, transparent);
-}
-
-.project-card:hover::before {
-  opacity: 1;
+    0 0 24px color-mix(in srgb, var(--project-color) 12%, transparent);
 }
 
 .project-card-top {
@@ -265,19 +248,8 @@
   position: relative;
   background: var(--bg-elevated);
   border-radius: var(--radius);
-  border: 1px solid var(--border);
+  border: 1.5px solid color-mix(in srgb, var(--preview-color, var(--border)) 25%, var(--border));
   overflow: hidden;
-}
-
-.project-preview::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--preview-color, var(--border-subtle));
-  opacity: 0.8;
 }
 
 .project-preview-label {
