@@ -1,23 +1,32 @@
 import { useRef, useCallback, useEffect } from 'react';
-import { ClipboardCheck, CalendarMinimalistic, Bell, SettingsMinimalistic } from '@solar-icons/react';
+import { ClipboardCheck, Folder, Bell, SettingsMinimalistic } from '@solar-icons/react';
+import type { Page } from '../types';
 
 const MIN_WIDTH = 64;
 const MAX_WIDTH = 220;
 const COLLAPSE_THRESHOLD = 100;
 
-const navItems = [
-  { icon: ClipboardCheck, label: 'Tasks', active: true },
-  { icon: CalendarMinimalistic, label: 'Calendar', active: false },
-  { icon: Bell, label: 'Notifications', active: false },
-  { icon: SettingsMinimalistic, label: 'Settings', active: false },
+interface NavItem {
+  icon: typeof ClipboardCheck;
+  label: string;
+  page: Page;
+}
+
+const navItems: NavItem[] = [
+  { icon: ClipboardCheck, label: 'Tasks', page: 'tasks' },
+  { icon: Folder, label: 'Projects', page: 'projects' },
+  { icon: Bell, label: 'Notifications', page: 'tasks' },
+  { icon: SettingsMinimalistic, label: 'Settings', page: 'tasks' },
 ];
 
 interface SidebarProps {
   width: number;
   onResize: (width: number) => void;
+  activePage: Page;
+  onNavigate: (page: Page) => void;
 }
 
-export default function Sidebar({ width, onResize }: SidebarProps) {
+export default function Sidebar({ width, onResize, activePage, onNavigate }: SidebarProps) {
   const collapsed = width < COLLAPSE_THRESHOLD;
   const dragging = useRef(false);
   const startX = useRef(0);
@@ -66,17 +75,22 @@ export default function Sidebar({ width, onResize }: SidebarProps) {
       </div>
 
       <nav className="sidebar-nav">
-        {navItems.map((item) => (
-          <button
-            key={item.label}
-            className={`sidebar-nav-btn ${item.active ? 'active' : ''}`}
-            disabled={!item.active}
-            title={collapsed ? item.label : undefined}
-          >
-            <item.icon size={22} strokeWidth={1.8} />
-            {!collapsed && <span className="sidebar-nav-label">{item.label}</span>}
-          </button>
-        ))}
+        {navItems.map((item) => {
+          const isActive = item.page === activePage && item.label !== 'Notifications' && item.label !== 'Settings';
+          const isDisabled = item.label === 'Notifications' || item.label === 'Settings';
+          return (
+            <button
+              key={item.label}
+              className={`sidebar-nav-btn${isActive ? ' active' : ''}`}
+              disabled={isDisabled}
+              title={collapsed ? item.label : undefined}
+              onClick={() => !isDisabled && onNavigate(item.page)}
+            >
+              <item.icon size={22} strokeWidth={1.8} />
+              {!collapsed && <span className="sidebar-nav-label">{item.label}</span>}
+            </button>
+          );
+        })}
       </nav>
 
       <div className="sidebar-resize-handle" onMouseDown={handleMouseDown} />

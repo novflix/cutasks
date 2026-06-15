@@ -3,9 +3,10 @@ import { AddSquare } from '@solar-icons/react';
 interface HeaderProps {
   stats: { total: number; active: number; completed: number; overdue: number };
   onCreate: () => void;
+  createLabel?: string;
 }
 
-export default function Header({ stats, onCreate }: HeaderProps) {
+export default function Header({ stats, onCreate, createLabel = 'New Task' }: HeaderProps) {
   return (
     <header className="header">
       <div className="header-content">
@@ -30,7 +31,7 @@ export default function Header({ stats, onCreate }: HeaderProps) {
           )}
           <button className="btn btn-primary stat-create-btn" onClick={onCreate}>
             <AddSquare size={16} />
-            <span className="btn-label">New Task</span>
+            <span className="btn-label">{createLabel}</span>
           </button>
         </div>
       </div>

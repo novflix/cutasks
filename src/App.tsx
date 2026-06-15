@@ -1,14 +1,16 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import './App.css';
-import type { Task, Priority } from './types';
+import type { Task, Priority, Page, Project } from './types';
 import { generateId } from './utils';
-import { loadTasks, saveTasks, getAllTags } from './storage';
+import { loadTasks, saveTasks, getAllTags, loadProjects, saveProjects } from './storage';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import Toolbar from './components/Toolbar';
 import TaskList from './components/TaskList';
 import TaskDetailModal from './components/TaskDetailModal';
 import TaskFormModal from './components/TaskFormModal';
+import ProjectsPage from './components/ProjectsPage';
+import ProjectFormModal from './components/ProjectFormModal';
 import MobileNav from './components/MobileNav';
 import { getDeadlineStatus } from './utils';
 
@@ -32,6 +34,15 @@ export default function App() {
   const [filter, setFilter] = useState<FilterType>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sidebarWidth, setSidebarWidth] = useState(220);
+  const [activePage, setActivePage] = useState<Page>('tasks');
+  const [projects, setProjects] = useState<Project[]>(loadProjects);
+  const [showProjectForm, setShowProjectForm] = useState(false);
+  const [projectFormClosing, setProjectFormClosing] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [projectName, setProjectName] = useState('');
+  const [projectDesc, setProjectDesc] = useState('');
+  const [projectIcon, setProjectIcon] = useState('Folder');
+  const [projectColor, setProjectColor] = useState('#ed9b6d');
 
   const tasksRef = useRef(tasks);
   const historyRef = useRef<Task[][]>([]);
@@ -74,6 +85,10 @@ export default function App() {
   useEffect(() => {
     saveTasks(tasks);
   }, [tasks]);
+
+  useEffect(() => {
+    saveProjects(projects);
+  }, [projects]);
 
   const filteredTasks = useMemo(() => {
     let result = tasks;
@@ -230,30 +245,108 @@ export default function App() {
     );
   }
 
+  function openCreateProject() {
+    setEditingProject(null);
+    setProjectName('');
+    setProjectDesc('');
+    setProjectIcon('Folder');
+    setProjectColor('#ed9b6d');
+    setProjectFormClosing(false);
+    setShowProjectForm(true);
+  }
+
+  function openEditProject(project: Project) {
+    setEditingProject(project);
+    setProjectName(project.name);
+    setProjectDesc(project.description);
+    setProjectIcon(project.icon);
+    setProjectColor(project.color);
+    setProjectFormClosing(false);
+    setShowProjectForm(true);
+  }
+
+  function closeProjectForm() {
+    setProjectFormClosing(true);
+    formTimer.current = setTimeout(() => {
+      setShowProjectForm(false);
+      setProjectFormClosing(false);
+      setEditingProject(null);
+    }, 200);
+  }
+
+  function handleProjectSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const trimmedName = projectName.trim();
+    if (!trimmedName) return;
+    const now = Date.now();
+    if (editingProject) {
+      setProjects((prev) =>
+        prev.map((p) =>
+          p.id === editingProject.id
+            ? { ...p, name: trimmedName, description: projectDesc.trim(), icon: projectIcon, color: projectColor, updatedAt: now }
+            : p
+        )
+      );
+    } else {
+      const newProject: Project = {
+        id: generateId(),
+        name: trimmedName,
+        description: projectDesc.trim(),
+        icon: projectIcon,
+        color: projectColor,
+        createdAt: now,
+        updatedAt: now,
+      };
+      setProjects((prev) => [newProject, ...prev]);
+    }
+    closeProjectForm();
+  }
+
+  function deleteProject(id: string) {
+    setProjects((prev) => prev.filter((p) => p.id !== id));
+  }
+
+  const handleCreate = activePage === 'projects' ? openCreateProject : openCreateForm;
+
   return (
     <div className="app" style={{ '--sidebar-w': `${sidebarWidth}px` } as React.CSSProperties}>
-      <Sidebar width={sidebarWidth} onResize={setSidebarWidth} />
+      <Sidebar width={sidebarWidth} onResize={setSidebarWidth} activePage={activePage} onNavigate={setActivePage} />
       <div className="app-content">
-        <Header stats={stats} onCreate={openCreateForm} />
-        <Toolbar
-          searchQuery={searchQuery}
-          onSearch={setSearchQuery}
-          filter={filter}
-          onFilter={setFilter}
-        />
-        <main className="main">
-          <TaskList
-            tasks={filteredTasks}
-            taskMap={taskMap}
-            filter={filter}
-            searchQuery={searchQuery}
-            onToggle={toggleComplete}
-            onView={setViewingTask}
-            onEdit={openEditForm}
-            onDelete={deleteTask}
-            onSetSubtask={setSubtaskOf}
-          />
-        </main>
+        {activePage === 'tasks' ? (
+          <>
+            <Header stats={stats} onCreate={openCreateForm} />
+            <Toolbar
+              searchQuery={searchQuery}
+              onSearch={setSearchQuery}
+              filter={filter}
+              onFilter={setFilter}
+            />
+            <main className="main">
+              <TaskList
+                tasks={filteredTasks}
+                taskMap={taskMap}
+                filter={filter}
+                searchQuery={searchQuery}
+                onToggle={toggleComplete}
+                onView={setViewingTask}
+                onEdit={openEditForm}
+                onDelete={deleteTask}
+                onSetSubtask={setSubtaskOf}
+              />
+            </main>
+          </>
+        ) : (
+          <>
+            <Header stats={stats} onCreate={openCreateProject} createLabel="New Project" />
+            <main className="main">
+              <ProjectsPage
+                projects={projects}
+                onEdit={openEditProject}
+                onDelete={deleteProject}
+              />
+            </main>
+          </>
+        )}
       </div>
 
       {(activeViewingTask || detailClosing) && (
@@ -290,7 +383,24 @@ export default function App() {
         />
       )}
 
-      <MobileNav onCreate={openCreateForm} />
+      {(showProjectForm || projectFormClosing) && (
+        <ProjectFormModal
+          editingProject={editingProject}
+          name={projectName}
+          description={projectDesc}
+          icon={projectIcon}
+          color={projectColor}
+          onNameChange={setProjectName}
+          onDescChange={setProjectDesc}
+          onIconChange={setProjectIcon}
+          onColorChange={setProjectColor}
+          onSubmit={handleProjectSubmit}
+          onClose={closeProjectForm}
+          isClosing={projectFormClosing}
+        />
+      )}
+
+      <MobileNav activePage={activePage} onNavigate={setActivePage} onCreate={handleCreate} />
     </div>
   );
 }

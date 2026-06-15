@@ -1,6 +1,7 @@
-import type { Task } from './types';
+import type { Task, Project } from './types';
 
 const STORAGE_KEY = 'cutasks_tasks';
+const PROJECTS_KEY = 'cutasks_projects';
 
 export function loadTasks(): Task[] {
   try {
@@ -30,4 +31,24 @@ export function getAllTags(tasks: Task[]): string[] {
     }
   }
   return Array.from(set).sort();
+}
+
+export function loadProjects(): Project[] {
+  try {
+    const raw = localStorage.getItem(PROJECTS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return parsed.map((p: Project) => ({
+      ...p,
+      description: p.description || '',
+      icon: p.icon || 'FolderMinimalistic',
+      color: p.color || '#ed9b6d',
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export function saveProjects(projects: Project[]) {
+  localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
 }

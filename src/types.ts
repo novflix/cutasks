@@ -12,3 +12,15 @@ export interface Task {
   createdAt: number;
   updatedAt: number;
 }
+
+export interface Project {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export type Page = 'tasks' | 'projects';
