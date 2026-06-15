@@ -76,8 +76,8 @@ export default function Sidebar({ width, onResize, activePage, onNavigate }: Sid
 
       <nav className="sidebar-nav">
         {navItems.map((item) => {
-          const isActive = item.page === activePage && item.label !== 'Notifications' && item.label !== 'Settings';
-          const isDisabled = item.label === 'Notifications' || item.label === 'Settings';
+          const isActive = item.page === activePage && item.label !== 'Notifications';
+          const isDisabled = item.label === 'Notifications';
           return (
             <button
               key={item.label}
