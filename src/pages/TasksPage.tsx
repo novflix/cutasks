@@ -1,0 +1,51 @@
+import Header from '../components/Header';
+import Toolbar from '../components/Toolbar';
+import TaskList from '../components/TaskList';
+import type { Task } from '../types';
+import type { FilterType } from '../App';
+
+interface TasksPageProps {
+  stats: { label: string; value: number; color?: string }[];
+  tasks: Task[];
+  taskMap: Map<string, Task>;
+  filter: FilterType;
+  searchQuery: string;
+  onSearch: (query: string) => void;
+  onFilter: (filter: FilterType) => void;
+  onCreate: () => void;
+  onToggle: (id: string) => void;
+  onView: (task: Task) => void;
+  onEdit: (task: Task) => void;
+  onDelete: (id: string) => void;
+  onSetSubtask: (childId: string, parentId: string | null) => void;
+}
+
+export default function TasksPage({
+  stats, tasks, taskMap, filter, searchQuery,
+  onSearch, onFilter, onCreate, onToggle, onView, onEdit, onDelete, onSetSubtask,
+}: TasksPageProps) {
+  return (
+    <>
+      <Header stats={stats} onCreate={onCreate} />
+      <Toolbar
+        searchQuery={searchQuery}
+        onSearch={onSearch}
+        filter={filter}
+        onFilter={onFilter}
+      />
+      <main className="main">
+        <TaskList
+          tasks={tasks}
+          taskMap={taskMap}
+          filter={filter}
+          searchQuery={searchQuery}
+          onToggle={onToggle}
+          onView={onView}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          onSetSubtask={onSetSubtask}
+        />
+      </main>
+    </>
+  );
+}

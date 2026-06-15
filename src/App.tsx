@@ -6,8 +6,6 @@ import { generateId } from './utils';
 import { loadTasks, saveTasks, getAllTags, loadProjects, saveProjects, loadSections, saveSections, loadProjectTasks, saveProjectTasks } from './storage';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
-import Toolbar from './components/Toolbar';
-import TaskList from './components/TaskList';
 import TaskDetailModal from './components/TaskDetailModal';
 import TaskFormModal from './components/TaskFormModal';
 import ProjectsPage from './pages/ProjectsPage';
@@ -15,6 +13,7 @@ import ProjectFormModal from './components/ProjectFormModal';
 import ProjectDetailPage from './pages/ProjectDetailPage';
 import ProjectRoute from './components/ProjectRoute';
 import SettingsPage from './pages/SettingsPage';
+import TasksPage from './pages/TasksPage';
 import MobileNav from './components/MobileNav';
 import { getDeadlineStatus } from './utils';
 import { MinimalisticMagnifier, ArrowLeft } from '@solar-icons/react';
@@ -553,28 +552,21 @@ export default function App() {
       <div className="app-content">
         <Routes>
           <Route path="/tasks" element={
-            <>
-              <Header stats={taskStatsFormatted} onCreate={openCreateForm} />
-              <Toolbar
-                searchQuery={searchQuery}
-                onSearch={setSearchQuery}
-                filter={filter}
-                onFilter={setFilter}
-              />
-              <main className="main">
-                <TaskList
-                  tasks={filteredTasks}
-                  taskMap={taskMap}
-                  filter={filter}
-                  searchQuery={searchQuery}
-                  onToggle={toggleComplete}
-                  onView={setViewingTask}
-                  onEdit={openEditForm}
-                  onDelete={deleteTask}
-                  onSetSubtask={setSubtaskOf}
-                />
-              </main>
-            </>
+            <TasksPage
+              stats={taskStatsFormatted}
+              tasks={filteredTasks}
+              taskMap={taskMap}
+              filter={filter}
+              searchQuery={searchQuery}
+              onSearch={setSearchQuery}
+              onFilter={setFilter}
+              onCreate={openCreateForm}
+              onToggle={toggleComplete}
+              onView={setViewingTask}
+              onEdit={openEditForm}
+              onDelete={deleteTask}
+              onSetSubtask={setSubtaskOf}
+            />
           } />
           <Route path="/projects" element={
             <>
