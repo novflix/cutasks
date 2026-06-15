@@ -21,7 +21,7 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [dragOverRoot, setDragOverRoot] = useState(false);
-  const [maxDepthNotice, setMaxDepthNotice] = useState(false);
+  const maxDepthRef = useRef<HTMLDivElement>(null);
 
   const dragStateRef = useRef<{
     taskId: string;
@@ -65,9 +65,9 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
 
       if (targetId) {
         const targetDepth = getTaskDepth(targetId, taskMap);
-        setMaxDepthNotice(targetDepth >= MAX_SUBTASK_DEPTH);
-      } else {
-        setMaxDepthNotice(false);
+        if (maxDepthRef.current) maxDepthRef.current.style.display = targetDepth >= MAX_SUBTASK_DEPTH ? '' : 'none';
+      } else if (maxDepthRef.current) {
+        maxDepthRef.current.style.display = 'none';
       }
     }
 
@@ -93,7 +93,7 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
       setDraggingId(null);
       setDragOverId(null);
       setDragOverRoot(false);
-      setMaxDepthNotice(false);
+      if (maxDepthRef.current) maxDepthRef.current.style.display = 'none';
     }
 
     function handleTouchMove(e: TouchEvent) {
@@ -116,9 +116,9 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
 
       if (targetId) {
         const targetDepth = getTaskDepth(targetId, taskMap);
-        setMaxDepthNotice(targetDepth >= MAX_SUBTASK_DEPTH);
-      } else {
-        setMaxDepthNotice(false);
+        if (maxDepthRef.current) maxDepthRef.current.style.display = targetDepth >= MAX_SUBTASK_DEPTH ? '' : 'none';
+      } else if (maxDepthRef.current) {
+        maxDepthRef.current.style.display = 'none';
       }
     }
 
@@ -144,7 +144,7 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
       setDraggingId(null);
       setDragOverId(null);
       setDragOverRoot(false);
-      setMaxDepthNotice(false);
+      if (maxDepthRef.current) maxDepthRef.current.style.display = 'none';
     }
 
     function handleCancel() {
@@ -156,6 +156,7 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
       setDraggingId(null);
       setDragOverId(null);
       setDragOverRoot(false);
+      if (maxDepthRef.current) maxDepthRef.current.style.display = 'none';
     }
 
     document.addEventListener('mousemove', handleMouseMove);
@@ -318,11 +319,9 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
           <span className="task-make-root-text">Drop here to make a top-level task</span>
         </div>
       )}
-      {maxDepthNotice && (
-        <div className="max-depth-notice">
-          Maximum nesting depth reached (3 levels)
-        </div>
-      )}
+      <div ref={maxDepthRef} className="max-depth-notice" style={{ display: 'none' }}>
+        Maximum nesting depth reached (3 levels)
+      </div>
       {topLevelTasks.map((task) => renderTask(task))}
     </div>
   );
