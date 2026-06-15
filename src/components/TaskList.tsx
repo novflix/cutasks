@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useLayoutEffect } from 'react';
 import { NotesMinimalistic } from '@solar-icons/react';
 import type { Task } from '../types';
 import type { FilterType } from '../App';
@@ -246,6 +246,32 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
       </div>
     );
   }
+
+  const prevPositionsRef = useRef<Map<string, DOMRect>>(new Map());
+
+  useLayoutEffect(() => {
+    const prev = prevPositionsRef.current;
+    const nodes = document.querySelectorAll('.task-list [data-task-id]');
+    nodes.forEach((node) => {
+      const id = node.getAttribute('data-task-id');
+      if (!id) return;
+      const el = node as HTMLElement;
+      const newRect = el.getBoundingClientRect();
+      const oldRect = prev.get(id);
+      if (oldRect) {
+        const dy = oldRect.top - newRect.top;
+        if (Math.abs(dy) > 1) {
+          el.style.transform = `translateY(${dy}px)`;
+          el.style.transition = 'none';
+          requestAnimationFrame(() => {
+            el.style.transition = 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)';
+            el.style.transform = '';
+          });
+        }
+      }
+      prev.set(id, newRect);
+    });
+  });
 
   if (topLevelTasks.length === 0) {
     return (

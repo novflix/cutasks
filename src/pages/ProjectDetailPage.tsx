@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
 import { AddSquare, Pen, TrashBinMinimalistic, NotesMinimalistic } from '@solar-icons/react';
 import type { Project, Section as SectionType, ProjectTask, Priority } from '../types';
 import { generateId } from '../utils';
@@ -294,6 +294,32 @@ export default function ProjectDetailPage({
       </div>
     );
   }
+
+  const prevPositionsRef = useRef<Map<string, DOMRect>>(new Map());
+
+  useLayoutEffect(() => {
+    const prev = prevPositionsRef.current;
+    const nodes = document.querySelectorAll('[data-task-id]');
+    nodes.forEach((node) => {
+      const id = node.getAttribute('data-task-id');
+      if (!id) return;
+      const el = node as HTMLElement;
+      const newRect = el.getBoundingClientRect();
+      const oldRect = prev.get(id);
+      if (oldRect) {
+        const dy = oldRect.top - newRect.top;
+        if (Math.abs(dy) > 1) {
+          el.style.transform = `translateY(${dy}px)`;
+          el.style.transition = 'none';
+          requestAnimationFrame(() => {
+            el.style.transition = 'transform 0.3s cubic-bezier(0.22, 1, 0.36, 1)';
+            el.style.transform = '';
+          });
+        }
+      }
+      prev.set(id, newRect);
+    });
+  });
 
   return (
     <>
