@@ -67,6 +67,18 @@ body {
   padding: 0 20px 60px;
 }
 
+.page-hero {
+  padding: 20px 0 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.page-hero-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
 @media (min-width: 768px) {
   .app {
     max-width: none;
@@ -94,13 +106,9 @@ body {
 
   .page-hero {
     padding: 32px 0 16px;
-    border-bottom: 1px solid var(--border-subtle);
   }
 
   .page-hero-title {
     font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: -0.02em;
   }
 }
