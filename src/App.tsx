@@ -521,6 +521,21 @@ export default function App() {
     }, 200);
   }
 
+  function updateProjectTask(id: string, changes: Partial<ProjectTask>) {
+    pushProjectTaskHistory();
+    setProjectTasks((prev) =>
+      prev.map((t) => t.id === id ? { ...t, ...changes, updatedAt: Date.now() } : t)
+    );
+  }
+
+  useEffect(() => {
+    function handleSaveSections(e: Event) {
+      setSections((e as CustomEvent).detail);
+    }
+    window.addEventListener('save-sections', handleSaveSections);
+    return () => window.removeEventListener('save-sections', handleSaveSections);
+  }, []);
+
   const handleCreate = activePage === 'project-detail' ? () => openCreateProjectTask(null) : activePage === 'projects' ? openCreateProject : openCreateForm;
 
   return (
@@ -623,13 +638,12 @@ export default function App() {
                 project={activeProject}
                 sections={sections}
                 tasks={filteredProjectTasks}
-                onBack={backToProjects}
                 onCreateTask={openCreateProjectTask}
                 onEditTask={openEditProjectTask}
                 onDeleteTask={deleteProjectTask}
                 onToggleTask={toggleProjectTask}
                 onViewTask={setViewingProjectTask}
-                onSaveSections={setSections}
+                onUpdateTask={updateProjectTask}
               />
             </main>
           </>
