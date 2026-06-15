@@ -160,7 +160,7 @@ export default function ProjectDetailPage({
       projectId: project.id,
       name: trimmed,
       order: projectSections.length,
-      createdAt: Date.now(), // eslint-disable-line react-hooks/purity -- event handler, not render
+      createdAt: Date.now(),
     };
     onSaveSectionsLocal([...sections, newSection]);
     setSectionName('');
@@ -257,40 +257,18 @@ export default function ProjectDetailPage({
                 data-section-id={section.id}
               >
                 <div className="project-section-header">
-                  {editingSectionId === section.id ? (
-                    <div className="section-edit-row">
-                      <input
-                        type="text"
-                        value={editingSectionName}
-                        onChange={(e) => setEditingSectionName(e.target.value)}
-                        className="section-edit-input"
-                        maxLength={50}
-                        autoFocus
-                        onKeyDown={(e) => { if (e.key === 'Enter') saveEditSection(section.id); if (e.key === 'Escape') setEditingSectionId(null); }}
-                      />
-                      <button className="btn-icon" onClick={() => saveEditSection(section.id)} title="Save">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
-                      </button>
-                      <button className="btn-icon" onClick={() => setEditingSectionId(null)} title="Cancel">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></svg>
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      <h3 className="project-section-name">{section.name}</h3>
-                      <div className="project-section-actions">
-                        <button className="btn-icon" onClick={() => startEditSection(section)} title="Edit name">
-                          <Pen size={16} />
-                        </button>
-                        <button className="btn-icon" onClick={() => onCreateTask(section.id)} title="Add task">
-                          <AddSquare size={18} />
-                        </button>
-                        <button className="btn-icon btn-icon-danger" onClick={() => deleteSection(section.id)} title="Delete section">
-                          <TrashBinMinimalistic size={18} />
-                        </button>
-                      </div>
-                    </>
-                  )}
+                  <h3 className="project-section-name">{section.name}</h3>
+                  <div className="project-section-actions">
+                    <button className="btn-icon" onClick={() => startEditSection(section)} title="Edit name">
+                      <Pen size={16} />
+                    </button>
+                    <button className="btn-icon" onClick={() => onCreateTask(section.id)} title="Add task">
+                      <AddSquare size={18} />
+                    </button>
+                    <button className="btn-icon btn-icon-danger" onClick={() => deleteSection(section.id)} title="Delete section">
+                      <TrashBinMinimalistic size={18} />
+                    </button>
+                  </div>
                 </div>
                 {sectionTasks.length > 0 ? (
                   <div className="task-list">

@@ -473,26 +473,6 @@
   opacity: 1;
 }
 
-.section-edit-row {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex: 1;
-}
-
-.section-edit-input {
-  flex: 1;
-  padding: 4px 8px;
-  background: var(--bg-input);
-  border: 1px solid var(--border-focus);
-  border-radius: var(--radius-sm);
-  color: var(--text);
-  font-family: inherit;
-  font-size: 0.82rem;
-  font-weight: 600;
-  outline: none;
-}
-
 .project-section-tasks {
   list-style: none;
   display: flex;
