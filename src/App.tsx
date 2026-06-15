@@ -601,7 +601,8 @@ export default function App() {
               </main>
             </>
           } />
-          <Route path="/projects/:projectId" element={activeProject ? (
+          <Route path="/projects/:projectId" element={
+            activeProject ? (
             <>
               <div className="project-detail-header">
                 <button className="btn-icon project-back-btn" onClick={backToProjects}>
@@ -655,7 +656,15 @@ export default function App() {
                 />
               </main>
             </>
-          ) : <Navigate to="/projects" replace />} />
+            ) : (
+              <main className="main">
+                <div className="empty">
+                  <p className="empty-title">Project not found</p>
+                  <button className="btn btn-primary" onClick={backToProjects}>Back to Projects</button>
+                </div>
+              </main>
+            )
+          } />
           <Route path="*" element={<Navigate to="/tasks" replace />} />
         </Routes>
       </div>
