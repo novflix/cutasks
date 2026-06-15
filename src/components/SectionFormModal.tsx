@@ -7,9 +7,10 @@ interface SectionFormModalProps {
   onSubmit: (e: React.FormEvent) => void;
   onClose: () => void;
   isClosing?: boolean;
+  editing?: boolean;
 }
 
-export default function SectionFormModal({ sectionName, onNameChange, onSubmit, onClose, isClosing }: SectionFormModalProps) {
+export default function SectionFormModal({ sectionName, onNameChange, onSubmit, onClose, isClosing, editing }: SectionFormModalProps) {
   const nameRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -23,7 +24,7 @@ export default function SectionFormModal({ sectionName, onNameChange, onSubmit, 
     <div className={overlayClass} onClick={onClose}>
       <div className={modalClass} onClick={(e) => e.stopPropagation()}>
         <div className="fm-header">
-          <h2 className="fm-title">New Section</h2>
+          <h2 className="fm-title">{editing ? 'Rename Section' : 'New Section'}</h2>
           <button className="btn-icon fm-close" onClick={onClose}>
             <CloseCircle size={20} />
           </button>
@@ -50,7 +51,7 @@ export default function SectionFormModal({ sectionName, onNameChange, onSubmit, 
             Cancel
           </button>
           <button type="submit" className="btn btn-primary" disabled={!sectionName.trim()} form="section-form">
-            Create Section
+            {editing ? 'Save' : 'Create Section'}
           </button>
         </div>
       </div>

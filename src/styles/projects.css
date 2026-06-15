@@ -535,6 +535,24 @@
   min-width: 0;
 }
 
+.task-children {
+  margin-left: 28px;
+  padding-left: 12px;
+  border-left: 1px solid var(--border-subtle);
+}
+
+.task-child .task-item {
+  padding: 10px 10px;
+}
+
+.task-child .task-item .task-title {
+  font-size: 0.82rem;
+}
+
+.task-child .task-item .task-desc {
+  font-size: 0.72rem;
+}
+
 .project-section-tasks > li.task-drag-over {
   position: relative;
 }
@@ -611,6 +629,7 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
+  margin-top: 8px;
 }
 
 .project-add-section:hover {

@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { AddSquare, Pen, TrashBinMinimalistic, NotesMinimalistic, CheckCircle, CloseCircle } from '@solar-icons/react';
+import { AddSquare, Pen, TrashBinMinimalistic, NotesMinimalistic } from '@solar-icons/react';
 import type { Project, Section as SectionType, ProjectTask, Priority } from '../types';
 import { generateId } from '../utils';
 import TaskCard from './TaskCard';
@@ -99,7 +99,7 @@ export default function ProjectDetailPage({
         } else if (ds.target) {
           const targetTask = tasks.find((t) => t.id === ds.target);
           if (targetTask) {
-            onUpdateTask(dsId, { sectionId: targetTask.sectionId, parentId: targetTask.parentId });
+            onUpdateTask(dsId, { parentId: ds.target, sectionId: targetTask.sectionId });
           }
         }
       }
@@ -160,7 +160,7 @@ export default function ProjectDetailPage({
       projectId: project.id,
       name: trimmed,
       order: projectSections.length,
-      createdAt: Date.now(), // eslint-disable-line react-hooks/purity
+      createdAt: Date.now(),
     };
     onSaveSectionsLocal([...sections, newSection]);
     setSectionName('');
@@ -193,10 +193,6 @@ export default function ProjectDetailPage({
     setEditingSectionId(null);
   }
 
-  function cancelEditSection() {
-    setEditingSectionId(null);
-  }
-
   function getTasksForSection(sectionId: string | null): ProjectTask[] {
     return tasks
       .filter((t) => t.sectionId === sectionId && t.parentId === null)
@@ -206,29 +202,37 @@ export default function ProjectDetailPage({
       });
   }
 
-  function renderTaskItem(task: ProjectTask) {
+  function renderTaskItem(task: ProjectTask, depth: number = 0) {
+    const children = tasks.filter((t) => t.parentId === task.id);
     return (
-      <li key={task.id} data-task-id={task.id} className={dragOverId === task.id ? 'task-drag-over' : ''}>
-        <div className="task-drag-handle" onMouseDown={(e) => handleDragStart(task.id, e)} onTouchStart={(e) => handleTouchStart(task.id, e)}>
-          <svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor">
-            <circle cx="3" cy="2.5" r="1.5" /><circle cx="9" cy="2.5" r="1.5" />
-            <circle cx="3" cy="8" r="1.5" /><circle cx="9" cy="8" r="1.5" />
-            <circle cx="3" cy="13.5" r="1.5" /><circle cx="9" cy="13.5" r="1.5" />
-          </svg>
+      <li key={task.id} data-task-id={task.id} className={`task-node${depth > 0 ? ' task-child' : ''}${dragOverId === task.id ? ' task-drag-over' : ''}`}>
+        <div className="task-row">
+          <div className="task-drag-handle" onMouseDown={(e) => handleDragStart(task.id, e)} onTouchStart={(e) => handleTouchStart(task.id, e)}>
+            <svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor">
+              <circle cx="3" cy="2.5" r="1.5" /><circle cx="9" cy="2.5" r="1.5" />
+              <circle cx="3" cy="8" r="1.5" /><circle cx="9" cy="8" r="1.5" />
+              <circle cx="3" cy="13.5" r="1.5" /><circle cx="9" cy="13.5" r="1.5" />
+            </svg>
+          </div>
+          <TaskCard
+            task={task}
+            searchQuery=""
+            subtaskCount={children.length}
+            isDragOver={false}
+            onToggle={onToggleTask}
+            onView={() => onViewTask(task)}
+            onEdit={() => onEditTask(task)}
+            onDelete={onDeleteTask}
+            onDragOver={(e) => e.preventDefault()}
+            onDragLeave={() => {}}
+            onDrop={(e) => e.preventDefault()}
+          />
         </div>
-        <TaskCard
-          task={task}
-          searchQuery=""
-          subtaskCount={tasks.filter((t) => t.parentId === task.id).length}
-          isDragOver={false}
-          onToggle={onToggleTask}
-          onView={() => onViewTask(task)}
-          onEdit={() => onEditTask(task)}
-          onDelete={onDeleteTask}
-          onDragOver={(e) => e.preventDefault()}
-          onDragLeave={() => {}}
-          onDrop={(e) => e.preventDefault()}
-        />
+        {children.length > 0 && (
+          <ul className="project-section-tasks task-children">
+            {children.map((child) => renderTaskItem(child, depth + 1))}
+          </ul>
+        )}
       </li>
     );
   }
@@ -239,7 +243,6 @@ export default function ProjectDetailPage({
         <div className="project-sections">
           {projectSections.map((section) => {
             const sectionTasks = getTasksForSection(section.id);
-            const isEditing = editingSectionId === section.id;
             const isDropTarget = dragOverSection === section.id;
             return (
               <div
@@ -248,40 +251,18 @@ export default function ProjectDetailPage({
                 data-section-id={section.id}
               >
                 <div className="project-section-header">
-                  {isEditing ? (
-                    <div className="section-edit-row">
-                      <input
-                        type="text"
-                        value={editingSectionName}
-                        onChange={(e) => setEditingSectionName(e.target.value)}
-                        className="section-edit-input"
-                        maxLength={50}
-                        autoFocus
-                        onKeyDown={(e) => { if (e.key === 'Enter') saveEditSection(section.id); if (e.key === 'Escape') cancelEditSection(); }}
-                      />
-                      <button className="btn-icon" onClick={() => saveEditSection(section.id)} title="Save">
-                        <CheckCircle size={18} />
-                      </button>
-                      <button className="btn-icon" onClick={cancelEditSection} title="Cancel">
-                        <CloseCircle size={18} />
-                      </button>
-                    </div>
-                  ) : (
-                    <>
-                      <h3 className="project-section-name">{section.name}</h3>
-                      <div className="project-section-actions">
-                        <button className="btn-icon" onClick={() => startEditSection(section)} title="Edit name">
-                          <Pen size={16} />
-                        </button>
-                        <button className="btn-icon" onClick={() => onCreateTask(section.id)} title="Add task">
-                          <AddSquare size={18} />
-                        </button>
-                        <button className="btn-icon btn-icon-danger" onClick={() => deleteSection(section.id)} title="Delete section">
-                          <TrashBinMinimalistic size={18} />
-                        </button>
-                      </div>
-                    </>
-                  )}
+                  <h3 className="project-section-name">{section.name}</h3>
+                  <div className="project-section-actions">
+                    <button className="btn-icon" onClick={() => startEditSection(section)} title="Edit name">
+                      <Pen size={16} />
+                    </button>
+                    <button className="btn-icon" onClick={() => onCreateTask(section.id)} title="Add task">
+                      <AddSquare size={18} />
+                    </button>
+                    <button className="btn-icon btn-icon-danger" onClick={() => deleteSection(section.id)} title="Delete section">
+                      <TrashBinMinimalistic size={18} />
+                    </button>
+                  </div>
                 </div>
                 {sectionTasks.length > 0 ? (
                   <ul className="project-section-tasks">
@@ -334,6 +315,23 @@ export default function ProjectDetailPage({
               setShowSectionForm(false);
               setSectionFormClosing(false);
               setSectionName('');
+            }, 200);
+          }}
+          isClosing={sectionFormClosing}
+        />
+      )}
+
+      {(editingSectionId && !showSectionForm) && (
+        <SectionFormModal
+          editing
+          sectionName={editingSectionName}
+          onNameChange={setEditingSectionName}
+          onSubmit={(e) => { e.preventDefault(); saveEditSection(editingSectionId); }}
+          onClose={() => {
+            setSectionFormClosing(true);
+            setTimeout(() => {
+              setEditingSectionId(null);
+              setSectionFormClosing(false);
             }, 200);
           }}
           isClosing={sectionFormClosing}
