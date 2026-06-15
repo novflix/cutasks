@@ -86,7 +86,49 @@ export default function ProjectDetailPage({
       }
     }
 
-    function handleMouseUp() {
+    function handleTouchMove(e: TouchEvent) {
+      if (!ghostRef.current) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      ghostRef.current.style.left = `${touch.clientX - 30}px`;
+      ghostRef.current.style.top = `${touch.clientY - 20}px`;
+
+      ghostRef.current.style.pointerEvents = 'none';
+      const el = document.elementFromPoint(touch.clientX, touch.clientY);
+      ghostRef.current.style.pointerEvents = '';
+      if (!el) return;
+
+      const sectionEl = el.closest('[data-section-id]');
+      const unsectionedEl = el.closest('[data-unsectioned]');
+      const taskNode = el.closest('.task-item')?.closest('[data-task-id]');
+
+      if (taskNode) {
+        const taskId = taskNode.getAttribute('data-task-id');
+        const newTarget = taskId && taskId !== draggingIdRef.current ? taskId : null;
+        dragStateRef.current = { section: null, unsectioned: false, target: newTarget };
+        setDragOverId(newTarget);
+        setDragOverSection(null);
+        setDragOverUnsectioned(false);
+      } else if (sectionEl) {
+        const sid = sectionEl.getAttribute('data-section-id');
+        dragStateRef.current = { section: sid, unsectioned: false, target: null };
+        setDragOverSection(sid);
+        setDragOverId(null);
+        setDragOverUnsectioned(false);
+      } else if (unsectionedEl) {
+        dragStateRef.current = { section: null, unsectioned: true, target: null };
+        setDragOverUnsectioned(true);
+        setDragOverSection(null);
+        setDragOverId(null);
+      } else {
+        dragStateRef.current = { section: null, unsectioned: false, target: null };
+        setDragOverId(null);
+        setDragOverSection(null);
+        setDragOverUnsectioned(false);
+      }
+    }
+
+    function handleEnd() {
       if (!ghostRef.current) return;
       const dsId = draggingIdRef.current;
       const ds = dragStateRef.current;
@@ -114,10 +156,16 @@ export default function ProjectDetailPage({
     }
 
     document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mouseup', handleEnd);
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleEnd);
+    document.addEventListener('touchcancel', handleEnd);
     return () => {
       document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mouseup', handleEnd);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleEnd);
+      document.removeEventListener('touchcancel', handleEnd);
     };
   }, [tasks, onUpdateTask]);
 
