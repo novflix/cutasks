@@ -42,6 +42,7 @@
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
   padding: 10px 14px;
+  border-left-width: 3px;
 }
 
 .task-child .task-item:hover {

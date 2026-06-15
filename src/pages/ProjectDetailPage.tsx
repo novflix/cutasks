@@ -310,8 +310,11 @@ export default function ProjectDetailPage({
   }
 
   const prevPositionsRef = useRef<Map<string, DOMRect>>(new Map());
+  const tasksRef = useRef(tasks);
 
   useLayoutEffect(() => {
+    if (tasksRef.current === tasks) return;
+    tasksRef.current = tasks;
     const prev = prevPositionsRef.current;
     const nodes = document.querySelectorAll('[data-task-id]');
     nodes.forEach((node) => {

@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect, useLayoutEffect } from 'react';
+import { useState, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
 import { NotesMinimalistic } from '@solar-icons/react';
 import type { Task } from '../types';
 import type { FilterType } from '../App';
@@ -113,6 +113,13 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
       setDragOverRoot(isRoot);
       setDragOverId(targetId);
       ds.currentTarget = targetId;
+
+      if (targetId) {
+        const targetDepth = getTaskDepth(targetId, taskMap);
+        setMaxDepthNotice(targetDepth >= MAX_SUBTASK_DEPTH);
+      } else {
+        setMaxDepthNotice(false);
+      }
     }
 
     function handleTouchEnd() {
@@ -137,6 +144,7 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
       setDraggingId(null);
       setDragOverId(null);
       setDragOverRoot(false);
+      setMaxDepthNotice(false);
     }
 
     function handleCancel() {
@@ -204,7 +212,7 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
 
   const topLevelTasks = tasks.filter((t) => t.parentId === null);
 
-  const subtaskMap = useCallback(() => {
+  const subtaskMap = useMemo(() => {
     const map = new Map<string, Task[]>();
     for (const t of tasks) {
       if (t.parentId) {
@@ -214,7 +222,7 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
       }
     }
     return map;
-  }, [tasks])();
+  }, [tasks]);
 
   function renderTask(task: Task, depth: number = 0) {
     const children = subtaskMap.get(task.id) ?? [];
@@ -240,7 +248,7 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
         {children.length > 0 && (
           <div className="task-children-wrap">
             <ul className="task-children">
-              {children.map((child) => renderTask(child, depth + 1))}
+              {children.map((child: Task) => renderTask(child, depth + 1))}
             </ul>
           </div>
         )}
@@ -249,8 +257,11 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
   }
 
   const prevPositionsRef = useRef<Map<string, DOMRect>>(new Map());
+  const tasksRef = useRef(tasks);
 
   useLayoutEffect(() => {
+    if (tasksRef.current === tasks) return;
+    tasksRef.current = tasks;
     const prev = prevPositionsRef.current;
     const nodes = document.querySelectorAll('.task-list [data-task-id]');
     nodes.forEach((node) => {
