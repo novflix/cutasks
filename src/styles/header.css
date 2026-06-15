@@ -12,30 +12,11 @@
   gap: 18px;
 }
 
-.header-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.logo {
-  height: 38px;
-  width: auto;
-  display: block;
-}
-
-.logo-full {
-  display: none;
-}
-
-.logo-mini {
-  display: block;
-}
-
 .stats {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .stat {
@@ -97,4 +78,39 @@
 
 .stat-done {
   border-color: rgba(102, 187, 106, 0.2);
+}
+
+.stats .stat-create-btn {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .stats .stat-create-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    height: auto;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--primary);
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    -webkit-tap-highlight-color: transparent;
+    white-space: nowrap;
+    margin-left: auto;
+  }
+
+  .stats .stat-create-btn:hover {
+    background: var(--primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px var(--primary-glow);
+  }
+
+  .stats .stat-create-btn:active {
+    transform: translateY(0);
+  }
 }

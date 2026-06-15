@@ -1,17 +1,15 @@
 /* ======================== DESKTOP+ ======================== */
 
 @media (min-width: 480px) {
-  .app {
-    padding: 0 28px 60px;
-  }
-
   .modal-overlay {
     align-items: center;
   }
+}
 
-  .logo-full { display: block; }
-  .logo-mini { display: none; }
-  .logo { height: 46px; }
+@media (min-width: 768px) {
+  .header {
+    padding: 28px 0 20px;
+  }
 }
 
 /* ======================== TABLET (<= 639px) ======================== */
@@ -44,10 +42,6 @@
     min-width: 38px;
     justify-content: center;
   }
-
-  .header-create-btn {
-    display: none;
-  }
 }
 
 /* ======================== MOBILE (<= 480px) ======================== */
@@ -60,14 +54,6 @@
   /* HEADER */
   .header {
     padding: 16px 0 12px;
-  }
-
-  .logo {
-    height: 28px;
-  }
-
-  .header-top {
-    gap: 8px;
   }
 
   .stats {

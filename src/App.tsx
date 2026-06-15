@@ -3,6 +3,7 @@ import './App.css';
 import type { Task, Priority } from './types';
 import { generateId } from './utils';
 import { loadTasks, saveTasks, getAllTags } from './storage';
+import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import Toolbar from './components/Toolbar';
 import TaskList from './components/TaskList';
@@ -230,26 +231,29 @@ export default function App() {
 
   return (
     <div className="app">
-      <Header stats={stats} onCreate={openCreateForm} />
-      <Toolbar
-        searchQuery={searchQuery}
-        onSearch={setSearchQuery}
-        filter={filter}
-        onFilter={setFilter}
-      />
-      <main className="main">
-        <TaskList
-          tasks={filteredTasks}
-          taskMap={taskMap}
-          filter={filter}
+      <Sidebar />
+      <div className="app-content">
+        <Header stats={stats} onCreate={openCreateForm} />
+        <Toolbar
           searchQuery={searchQuery}
-          onToggle={toggleComplete}
-          onView={setViewingTask}
-          onEdit={openEditForm}
-          onDelete={deleteTask}
-          onSetSubtask={setSubtaskOf}
+          onSearch={setSearchQuery}
+          filter={filter}
+          onFilter={setFilter}
         />
-      </main>
+        <main className="main">
+          <TaskList
+            tasks={filteredTasks}
+            taskMap={taskMap}
+            filter={filter}
+            searchQuery={searchQuery}
+            onToggle={toggleComplete}
+            onView={setViewingTask}
+            onEdit={openEditForm}
+            onDelete={deleteTask}
+            onSetSubtask={setSubtaskOf}
+          />
+        </main>
+      </div>
 
       {(activeViewingTask || detailClosing) && (
         <TaskDetailModal

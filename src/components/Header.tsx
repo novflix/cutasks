@@ -9,14 +9,6 @@ export default function Header({ stats, onCreate }: HeaderProps) {
   return (
     <header className="header">
       <div className="header-content">
-        <div className="header-top">
-          <img src="/logo.svg" alt="CuTasks" className="logo logo-full" />
-          <img src="/logo-mini.svg" alt="CuTasks" className="logo logo-mini" />
-          <button className="btn btn-primary btn-add header-create-btn" onClick={onCreate}>
-            <AddSquare size={20} />
-            <span className="btn-label">New Task</span>
-          </button>
-        </div>
         <div className="stats">
           <span className="stat stat-total">
             <span className="stat-dot" />
@@ -36,6 +28,10 @@ export default function Header({ stats, onCreate }: HeaderProps) {
               <strong>{stats.overdue}</strong> overdue
             </span>
           )}
+          <button className="btn btn-primary stat-create-btn" onClick={onCreate}>
+            <AddSquare size={16} />
+            <span className="btn-label">New Task</span>
+          </button>
         </div>
       </div>
     </header>
