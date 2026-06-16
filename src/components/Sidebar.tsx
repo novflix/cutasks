@@ -53,6 +53,11 @@ export default function Sidebar({ width, onResize, activePage, onNavigate }: Sid
 
   useEffect(() => {
     updateIndicator();
+    function handleResize() {
+      requestAnimationFrame(updateIndicator);
+    }
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, [activePage, collapsed, width, updateIndicator]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {

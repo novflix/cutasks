@@ -28,6 +28,11 @@ export default function MobileNav({ activePage, onNavigate, onCreate }: MobileNa
 
   useEffect(() => {
     updateIndicator();
+    function handleResize() {
+      requestAnimationFrame(updateIndicator);
+    }
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, [activePage, updateIndicator]);
 
   return (
