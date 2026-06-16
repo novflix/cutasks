@@ -68,6 +68,9 @@ body {
 }
 
 .page-hero {
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 20px 0 12px;
   border-bottom: 1px solid var(--border-subtle);
 }

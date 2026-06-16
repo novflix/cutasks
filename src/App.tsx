@@ -16,6 +16,8 @@ import ProjectDetailPage from './pages/ProjectDetailPage';
 import ProjectRoute from './components/ProjectRoute';
 import SettingsPage from './pages/SettingsPage';
 import HomePage from './pages/HomePage';
+import HabitsPage from './pages/HabitsPage';
+import PomodoroPage from './pages/PomodoroPage';
 import TasksPage from './pages/TasksPage';
 import MobileNav from './components/MobileNav';
 import AuthPage from './pages/AuthPage';
@@ -84,7 +86,7 @@ export default function App() {
   const detailTimer2 = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fsLoadedRef = useRef(false);
 
-  const activePage: Page = location.pathname.startsWith('/projects/') ? 'project-detail' : location.pathname.startsWith('/projects') ? 'projects' : location.pathname.startsWith('/settings') ? 'settings' : location.pathname.startsWith('/home') ? 'home' : 'tasks';
+  const activePage: Page = location.pathname.startsWith('/projects/') ? 'project-detail' : location.pathname.startsWith('/projects') ? 'projects' : location.pathname.startsWith('/settings') ? 'settings' : location.pathname.startsWith('/habits') || location.pathname.startsWith('/pomodoro') || location.pathname.startsWith('/home') ? 'home' : 'tasks';
   const activeProjectId = activePage === 'project-detail' ? location.pathname.split('/')[2] : null;
   const activeProject = useMemo(() => activeProjectId ? projects.find((p) => p.id === activeProjectId) ?? null : null, [projects, activeProjectId]);
 
@@ -595,6 +597,20 @@ export default function App() {
                 <ProtectedRoute>
                   <main className="main">
                     <HomePage />
+                  </main>
+                </ProtectedRoute>
+              } />
+              <Route path="/habits" element={
+                <ProtectedRoute>
+                  <main className="main">
+                    <HabitsPage />
+                  </main>
+                </ProtectedRoute>
+              } />
+              <Route path="/pomodoro" element={
+                <ProtectedRoute>
+                  <main className="main">
+                    <PomodoroPage />
                   </main>
                 </ProtectedRoute>
               } />

@@ -1,0 +1,410 @@
+.home-banners {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 12px 0 20px;
+}
+
+/* ── Entrance animation ── */
+.banner-card {
+  animation: bannerSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.banner-card:nth-child(1) { animation-delay: 0.05s; }
+.banner-card:nth-child(2) { animation-delay: 0.15s; }
+
+@keyframes bannerSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ── Base card ── */
+.banner-card {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  text-align: left;
+  width: 100%;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.banner-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+}
+
+.banner-card:active {
+  transform: translateY(-1px) scale(0.99);
+  transition-duration: 0.1s;
+}
+
+/* ── Shine sweep on hover ── */
+.banner-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.12) 45%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.12) 55%,
+    transparent 60%
+  );
+  transform: translateX(-120%);
+  transition: none;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.banner-card:hover::after {
+  transform: translateX(120%);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ── Habits theme ── */
+.banner-habits {
+  background: linear-gradient(135deg, #cc7a00 0%, #ff9600 40%, #ffb740 100%);
+}
+
+.banner-habits:hover {
+  box-shadow: 0 12px 40px rgba(255, 150, 0, 0.4);
+}
+
+/* ── Pomodoro theme ── */
+.banner-pomodoro {
+  background: linear-gradient(135deg, #0d8ed9 0%, #1cb0f6 40%, #5cc8ff 100%);
+}
+
+.banner-pomodoro:hover {
+  box-shadow: 0 12px 40px rgba(28, 176, 246, 0.4);
+}
+
+/* ── Visual panel (left side with icon + deco) ── */
+.banner-visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  min-height: 110px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.banner-deco {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* ── Deco circles float ── */
+.banner-deco circle,
+.banner-deco rect {
+  animation: decoFloat 6s ease-in-out infinite alternate;
+}
+
+.banner-deco circle:nth-child(2) { animation-delay: -1.5s; animation-duration: 7s; }
+.banner-deco circle:nth-child(3) { animation-delay: -3s; animation-duration: 5s; }
+.banner-deco rect:nth-child(4) { animation-delay: -0.5s; animation-duration: 8s; }
+.banner-deco rect:nth-child(5) { animation-delay: -2s; animation-duration: 6.5s; }
+.banner-deco rect:nth-child(6) { animation-delay: -4s; animation-duration: 7.5s; }
+
+@keyframes decoFloat {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(3px, -4px); }
+}
+
+/* ── Bubbles ── */
+.banner-bubbles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bubble {
+  position: absolute;
+  bottom: -10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+  animation: bubbleRise linear infinite;
+}
+
+/* Habits bubbles — warm tint */
+.banner-habits .bubble { background: rgba(255, 200, 100, 0.12); }
+
+/* Pomodoro bubbles — cool tint */
+.banner-pomodoro .bubble { background: rgba(120, 210, 255, 0.12); }
+
+.bubble-1 { width: 6px; height: 6px; left: 15%; animation-duration: 4.5s; animation-delay: 0s; }
+.bubble-2 { width: 4px; height: 4px; left: 40%; animation-duration: 5.5s; animation-delay: -1.2s; }
+.bubble-3 { width: 8px; height: 8px; left: 60%; animation-duration: 6s; animation-delay: -2.8s; }
+.bubble-4 { width: 5px; height: 5px; left: 78%; animation-duration: 5s; animation-delay: -0.6s; }
+.bubble-5 { width: 3px; height: 3px; left: 30%; animation-duration: 7s; animation-delay: -3.5s; }
+
+@keyframes bubbleRise {
+  0% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-120px) translateX(12px) scale(0.5);
+    opacity: 0;
+  }
+}
+
+/* ── Icon container ── */
+.banner-icon-big {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s ease;
+}
+
+/* ── Habits icon: fire flicker ── */
+.banner-habits .banner-icon-big img {
+  animation: fireFlicker 2s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+@keyframes fireFlicker {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  15% { transform: scale(1.03) rotate(-1.5deg); }
+  30% { transform: scale(0.98) rotate(1deg); }
+  50% { transform: scale(1.04) rotate(-0.5deg); }
+  70% { transform: scale(0.99) rotate(1.5deg); }
+  85% { transform: scale(1.02) rotate(-1deg); }
+}
+
+/* ── Habits container: warm glow pulse ── */
+.banner-habits .banner-icon-big {
+  animation: warmGlow 3s ease-in-out infinite;
+}
+
+@keyframes warmGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 150, 0, 0); }
+  50% { box-shadow: 0 0 20px 4px rgba(255, 150, 0, 0.15); }
+}
+
+/* ── Pomodoro icon: pendulum tick ── */
+.banner-pomodoro .banner-icon-big img {
+  animation: pendulumTick 2.5s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+@keyframes pendulumTick {
+  0%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(6deg); }
+  30% { transform: rotate(-5deg); }
+  45% { transform: rotate(4deg); }
+  60% { transform: rotate(-3deg); }
+  75% { transform: rotate(2deg); }
+  90% { transform: rotate(-1deg); }
+}
+
+/* ── Pomodoro container: cool pulse ── */
+.banner-pomodoro .banner-icon-big {
+  animation: coolPulse 3s ease-in-out infinite;
+}
+
+@keyframes coolPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(28, 176, 246, 0); }
+  50% { box-shadow: 0 0 20px 4px rgba(28, 176, 246, 0.15); }
+}
+
+/* ── Icon hover: scale + glow ring ── */
+.banner-card:hover .banner-icon-big {
+  transform: scale(1.12);
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.1), 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* ── Content (right side) ── */
+.banner-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 18px 20px 18px 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Badge glow pulse ── */
+.banner-badge {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 2px 8px;
+  border-radius: 6px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.9);
+  animation: badgePulse 3s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+  50% { box-shadow: 0 0 8px 1px rgba(255, 255, 255, 0.15); }
+}
+
+.banner-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.3;
+  margin: 2px 0 0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  transition: text-shadow 0.3s ease;
+}
+
+.banner-card:hover .banner-title {
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.25);
+}
+
+.banner-desc {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.75);
+  line-height: 1.4;
+  max-width: 260px;
+  transition: color 0.3s ease;
+}
+
+.banner-card:hover .banner-desc {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ── Arrow ── */
+.banner-arrow {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.3);
+  transition: color 0.3s, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  opacity: 0;
+}
+
+.banner-card:hover .banner-arrow {
+  color: rgba(255, 255, 255, 0.9);
+  transform: translateY(-50%) translateX(4px);
+  opacity: 1;
+}
+
+/* ── Mobile: compact ── */
+@media (max-width: 479px) {
+  .banner-visual {
+    width: 100px;
+    min-height: 100px;
+  }
+
+  .banner-icon-big {
+    width: 54px;
+    height: 54px;
+    border-radius: 14px;
+  }
+
+  .banner-icon-big img {
+    width: 36px;
+    height: 36px;
+  }
+
+  .banner-content {
+    padding: 14px 16px 14px 12px;
+  }
+
+  .banner-title {
+    font-size: 1.05rem;
+  }
+
+  .banner-desc {
+    font-size: 0.75rem;
+  }
+}
+
+/* ── Desktop: wider ── */
+@media (min-width: 768px) {
+  .banner-visual {
+    width: 160px;
+    min-height: 130px;
+  }
+
+  .banner-icon-big {
+    width: 72px;
+    height: 72px;
+    border-radius: 20px;
+  }
+
+  .banner-icon-big img {
+    width: 48px;
+    height: 48px;
+  }
+
+  .banner-content {
+    padding: 22px 24px 22px 20px;
+    gap: 6px;
+  }
+
+  .banner-title {
+    font-size: 1.25rem;
+  }
+
+  .banner-desc {
+    font-size: 0.85rem;
+    max-width: 320px;
+  }
+
+  .home-banners {
+    gap: 16px;
+  }
+}
+
+/* ── Reduce motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .banner-card,
+  .banner-card::after,
+  .banner-icon-big,
+  .banner-icon-big img,
+  .banner-deco circle,
+  .banner-deco rect,
+  .banner-badge,
+  .banner-title,
+  .banner-desc,
+  .banner-arrow {
+    animation: none !important;
+    transition-duration: 0.01s !important;
+  }
+}
