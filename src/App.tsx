@@ -5,7 +5,7 @@ import type { Task, Priority, Page, FilterType, Project, ProjectStatus, Section,
 import { generateId } from './utils';
 import { loadTasks, saveTasks as localSaveTasks, getAllTags, loadProjects, saveProjects as localSaveProjects, loadSections, saveSections as localSaveSections, loadProjectTasks, saveProjectTasks as localSaveProjectTasks } from './storage';
 import { useAuth } from './contexts/AuthContext';
-import { saveTasks as fsSaveTasks, saveProjects as fsSaveProjects, saveSections as fsSaveSections, saveProjectTasks as fsSaveProjectTasks } from './services/firestore';
+import { saveTasks as fsSaveTasks, saveProjects as fsSaveProjects, saveSections as fsSaveSections, saveProjectTasks as fsSaveProjectTasks, loadAllData } from './services/firestore';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import TaskDetailModal from './components/TaskDetailModal';
@@ -82,6 +82,7 @@ export default function App() {
   const [ptParentId, setPtParentId] = useState<string | null>(null);
   const [ptSectionId, setPtSectionId] = useState<string | null>(null);
   const detailTimer2 = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const fsLoadedRef = useRef(false);
 
   const activePage: Page = location.pathname.startsWith('/projects/') ? 'project-detail' : location.pathname.startsWith('/projects') ? 'projects' : location.pathname.startsWith('/settings') ? 'settings' : location.pathname.startsWith('/home') ? 'home' : 'tasks';
   const activeProjectId = activePage === 'project-detail' ? location.pathname.split('/')[2] : null;
@@ -103,6 +104,19 @@ export default function App() {
       if (detailTimer2.current) clearTimeout(detailTimer2.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    loadAllData(user.uid).then((data) => {
+      setTasks(data.tasks);
+      setProjects(data.projects);
+      setSections(data.sections);
+      setProjectTasks(data.projectTasks);
+      fsLoadedRef.current = true;
+    }).catch(() => {
+      fsLoadedRef.current = true;
+    });
+  }, [user]);
 
   const pushHistory = useCallback(() => {
     historyRef.current.push([...tasksRef.current]);
@@ -128,22 +142,22 @@ export default function App() {
 
   useEffect(() => {
     localSaveTasks(tasks);
-    if (user) fsSaveTasks(user.uid, tasks).catch(() => {});
+    if (user && fsLoadedRef.current) fsSaveTasks(user.uid, tasks).catch(() => {});
   }, [tasks, user]);
 
   useEffect(() => {
     localSaveProjects(projects);
-    if (user) fsSaveProjects(user.uid, projects).catch(() => {});
+    if (user && fsLoadedRef.current) fsSaveProjects(user.uid, projects).catch(() => {});
   }, [projects, user]);
 
   useEffect(() => {
     localSaveProjectTasks(projectTasks);
-    if (user) fsSaveProjectTasks(user.uid, projectTasks).catch(() => {});
+    if (user && fsLoadedRef.current) fsSaveProjectTasks(user.uid, projectTasks).catch(() => {});
   }, [projectTasks, user]);
 
   useEffect(() => {
     localSaveSections(sections);
-    if (user) fsSaveSections(user.uid, sections).catch(() => {});
+    if (user && fsLoadedRef.current) fsSaveSections(user.uid, sections).catch(() => {});
   }, [sections, user]);
 
   const filteredTasks = useMemo(() => {
