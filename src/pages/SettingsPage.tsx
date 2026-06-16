@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react';
+import { Logout } from '@solar-icons/react';
+import { logout } from '../services/auth';
+import { useAuth } from '../contexts/AuthContext';
 
 interface ThemeOption {
   id: string;
@@ -18,6 +21,7 @@ const themes: ThemeOption[] = [
 ];
 
 export default function SettingsPage() {
+  const { user } = useAuth();
   const [activeTheme, setActiveTheme] = useState<string>(() => {
     return localStorage.getItem('cutasks_theme') || 'dark';
   });
@@ -73,6 +77,19 @@ export default function SettingsPage() {
           <span className="settings-footer-value">1.0.0</span>
         </div>
       </div>
+
+      {user && (
+        <div className="settings-section">
+          <span className="settings-section-label">Account</span>
+          <div className="settings-footer">
+            <span className="settings-footer-label">{user.displayName || user.email}</span>
+            <button className="btn btn-secondary settings-logout-btn" onClick={logout}>
+              <Logout size={16} />
+              Sign Out
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -3,7 +3,9 @@ import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-
 import './App.css';
 import type { Task, Priority, Page, FilterType, Project, ProjectStatus, Section, ProjectTask } from './types';
 import { generateId } from './utils';
-import { loadTasks, saveTasks, getAllTags, loadProjects, saveProjects, loadSections, saveSections, loadProjectTasks, saveProjectTasks } from './storage';
+import { loadTasks, saveTasks as localSaveTasks, getAllTags, loadProjects, saveProjects as localSaveProjects, loadSections, saveSections as localSaveSections, loadProjectTasks, saveProjectTasks as localSaveProjectTasks } from './storage';
+import { useAuth } from './contexts/AuthContext';
+import { saveTasks as fsSaveTasks, saveProjects as fsSaveProjects, saveSections as fsSaveSections, saveProjectTasks as fsSaveProjectTasks } from './services/firestore';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import TaskDetailModal from './components/TaskDetailModal';
@@ -16,6 +18,8 @@ import SettingsPage from './pages/SettingsPage';
 import HomePage from './pages/HomePage';
 import TasksPage from './pages/TasksPage';
 import MobileNav from './components/MobileNav';
+import AuthPage from './pages/AuthPage';
+import ProtectedRoute from './components/ProtectedRoute';
 import { getDeadlineStatus } from './utils';
 import { MinimalisticMagnifier, ArrowLeft } from '@solar-icons/react';
 import { PROJECT_ICONS } from './constants';
@@ -34,6 +38,7 @@ function AnimatedRoutes({ routes }: { routes: React.ReactNode }) {
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
 
   const [tasks, setTasks] = useState<Task[]>(loadTasks);
   const [showForm, setShowForm] = useState(false);
@@ -122,20 +127,24 @@ export default function App() {
   }, [undo]);
 
   useEffect(() => {
-    saveTasks(tasks);
-  }, [tasks]);
+    localSaveTasks(tasks);
+    if (user) fsSaveTasks(user.uid, tasks).catch(() => {});
+  }, [tasks, user]);
 
   useEffect(() => {
-    saveProjects(projects);
-  }, [projects]);
+    localSaveProjects(projects);
+    if (user) fsSaveProjects(user.uid, projects).catch(() => {});
+  }, [projects, user]);
 
   useEffect(() => {
-    saveProjectTasks(projectTasks);
-  }, [projectTasks]);
+    localSaveProjectTasks(projectTasks);
+    if (user) fsSaveProjectTasks(user.uid, projectTasks).catch(() => {});
+  }, [projectTasks, user]);
 
   useEffect(() => {
-    saveSections(sections);
-  }, [sections]);
+    localSaveSections(sections);
+    if (user) fsSaveSections(user.uid, sections).catch(() => {});
+  }, [sections, user]);
 
   const filteredTasks = useMemo(() => {
     let result = tasks;
@@ -557,6 +566,10 @@ export default function App() {
     else if (p === 'settings') navigate('/settings');
   }, [navigate]);
 
+  if (location.pathname === '/auth') {
+    return <AuthPage />;
+  }
+
   return (
     <div className="app" style={{ '--sidebar-w': `${sidebarWidth}px` } as React.CSSProperties}>
       <Sidebar width={sidebarWidth} onResize={setSidebarWidth} activePage={activePage} onNavigate={sidebarNavigate} />
@@ -565,11 +578,14 @@ export default function App() {
           routes={
             <Routes>
               <Route path="/home" element={
-                <main className="main">
-                  <HomePage />
-                </main>
+                <ProtectedRoute>
+                  <main className="main">
+                    <HomePage />
+                  </main>
+                </ProtectedRoute>
               } />
           <Route path="/tasks" element={
+            <ProtectedRoute>
             <TasksPage
               stats={taskStatsFormatted}
               tasks={filteredTasks}
@@ -585,8 +601,10 @@ export default function App() {
               onDelete={deleteTask}
               onSetSubtask={setSubtaskOf}
             />
+            </ProtectedRoute>
           } />
           <Route path="/projects" element={
+            <ProtectedRoute>
             <>
               <div className="page-hero">
                 <h1 className="page-hero-title">Projects</h1>
@@ -613,8 +631,10 @@ export default function App() {
                 />
               </main>
             </>
+            </ProtectedRoute>
           } />
           <Route path="/projects/:projectId" element={
+            <ProtectedRoute>
             <ProjectRoute
               projects={projects}
               fallback={
@@ -685,11 +705,14 @@ export default function App() {
                 </>
               )}
             </ProjectRoute>
+            </ProtectedRoute>
           } />
           <Route path="/settings" element={
+            <ProtectedRoute>
             <main className="main">
               <SettingsPage />
             </main>
+            </ProtectedRoute>
           } />
           <Route path="*" element={<Navigate to="/home" replace />} />
             </Routes>

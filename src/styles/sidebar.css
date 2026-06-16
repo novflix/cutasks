@@ -47,14 +47,6 @@
     fill: currentColor;
   }
 
-  .logo-accent {
-    stroke: currentColor;
-  }
-
-  .logo-check {
-    stroke: var(--primary);
-  }
-
   .sidebar.collapsed .sidebar-logo-img {
     height: 32px;
   }
