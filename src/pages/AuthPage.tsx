@@ -79,6 +79,7 @@ export default function AuthPage() {
       if (code === 'auth/email-already-in-use') setError('An account with this email already exists');
       else if (code === 'auth/invalid-email') setError('Invalid email address');
       else if (code === 'auth/weak-password') setError('Password must be at least 6 characters');
+      else if (code === 'auth/invalid-credential') setError('Invalid email or password');
       else if (code === 'auth/user-not-found') setError('No account found with this email');
       else if (code === 'auth/wrong-password') setError('Incorrect password');
       else if (code === 'auth/too-many-requests') setError('Too many attempts. Try again later');
