@@ -20,6 +20,20 @@ const themes: ThemeOption[] = [
   { id: 'midnight', name: 'Midnight', bg: '#0d1117', card: '#161b22', elevated: '#1c2128', text: '#e6edf3', textMuted: '#484f58', accent: '#ed9b6d' },
 ];
 
+function getInitials(name: string | null | undefined, email: string | null | undefined): string {
+  const source = name || email || '?';
+  const parts = source.split(/[@\s]+/).filter(Boolean);
+  if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+  return source.slice(0, 2).toUpperCase();
+}
+
+function hashColor(s: string): string {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  const colors = ['#ed9b6d', '#66bb6a', '#64b5f6', '#ba68c8', '#ffb74d', '#4db6ac', '#e57373', '#9575cd'];
+  return colors[Math.abs(h) % colors.length];
+}
+
 export default function SettingsPage() {
   const { user } = useAuth();
   const [activeTheme, setActiveTheme] = useState<string>(() => {
@@ -31,11 +45,31 @@ export default function SettingsPage() {
     localStorage.setItem('cutasks_theme', activeTheme);
   }, [activeTheme]);
 
+  const initials = user ? getInitials(user.displayName, user.email) : '?';
+  const avatarColor = user ? hashColor(user.email || user.displayName || '') : '#ed9b6d';
+
   return (
     <div className="settings-page">
       <div className="page-hero">
         <h1 className="page-hero-title">Settings</h1>
       </div>
+
+      {user && (
+        <div className="settings-section">
+          <div className="account-card">
+            <div className="account-avatar" style={{ background: `${avatarColor}20`, color: avatarColor }}>
+              <span className="account-avatar-text">{initials}</span>
+            </div>
+            <div className="account-info">
+              <span className="account-name">{user.displayName || 'User'}</span>
+              <span className="account-email">{user.email}</span>
+            </div>
+            <button className="account-logout" onClick={logout} title="Sign out">
+              <Logout size={18} />
+            </button>
+          </div>
+        </div>
+      )}
 
       <div className="settings-section">
         <span className="settings-section-label">Theme</span>
@@ -77,19 +111,6 @@ export default function SettingsPage() {
           <span className="settings-footer-value">1.0.0</span>
         </div>
       </div>
-
-      {user && (
-        <div className="settings-section">
-          <span className="settings-section-label">Account</span>
-          <div className="settings-footer">
-            <span className="settings-footer-label">{user.displayName || user.email}</span>
-            <button className="btn btn-secondary settings-logout-btn" onClick={logout}>
-              <Logout size={16} />
-              Sign Out
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
