@@ -40,3 +40,5 @@ export interface ProjectTask extends Task {
 }
 
 export type Page = 'home' | 'tasks' | 'projects' | 'project-detail' | 'settings';
+
+export type FilterType = 'all' | 'active' | 'completed';

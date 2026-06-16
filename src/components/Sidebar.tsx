@@ -6,6 +6,7 @@ import Logo from './Logo';
 const MIN_WIDTH = 64;
 const MAX_WIDTH = 220;
 const COLLAPSE_THRESHOLD = 100;
+const INDICATOR_HEIGHT = 16;
 
 interface NavItem {
   icon: typeof ClipboardCheck;
@@ -34,8 +35,6 @@ export default function Sidebar({ width, onResize, activePage, onNavigate }: Sid
   const startWidth = useRef(0);
   const navRef = useRef<HTMLDivElement>(null);
   const indicatorRef = useRef<HTMLDivElement>(null);
-
-  const INDICATOR_HEIGHT = 16;
 
   const updateIndicator = useCallback(() => {
     if (!navRef.current || !indicatorRef.current) return;

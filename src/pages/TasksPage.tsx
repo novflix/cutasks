@@ -2,7 +2,7 @@ import Header from '../components/Header';
 import Toolbar from '../components/Toolbar';
 import TaskList from '../components/TaskList';
 import type { Task } from '../types';
-import type { FilterType } from '../App';
+import type { FilterType } from '../types';
 
 interface TasksPageProps {
   stats: { label: string; value: number; color?: string }[];

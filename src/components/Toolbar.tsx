@@ -1,5 +1,5 @@
 import { MinimalisticMagnifier } from '@solar-icons/react';
-import type { FilterType } from '../App';
+import type { FilterType } from '../types';
 
 interface ToolbarProps {
   searchQuery: string;

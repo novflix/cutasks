@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
 import { NotesMinimalistic } from '@solar-icons/react';
 import type { Task } from '../types';
-import type { FilterType } from '../App';
+import type { FilterType } from '../types';
 import { canAddSubtask, getTaskDepth, MAX_SUBTASK_DEPTH } from '../utils';
 import TaskCard, { DragHandle } from './TaskCard';
 

@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import './App.css';
-import type { Task, Priority, Page, Project, ProjectStatus, Section, ProjectTask } from './types';
+import type { Task, Priority, Page, FilterType, Project, ProjectStatus, Section, ProjectTask } from './types';
 import { generateId } from './utils';
 import { loadTasks, saveTasks, getAllTags, loadProjects, saveProjects, loadSections, saveSections, loadProjectTasks, saveProjectTasks } from './storage';
 import Sidebar from './components/Sidebar';
@@ -20,7 +20,7 @@ import { getDeadlineStatus } from './utils';
 import { MinimalisticMagnifier, ArrowLeft } from '@solar-icons/react';
 import { PROJECT_ICONS } from './constants';
 
-export type FilterType = 'all' | 'active' | 'completed';
+const priorityOrder: Record<Priority, number> = { high: 0, medium: 1, low: 2 };
 
 function AnimatedRoutes({ routes }: { routes: React.ReactNode }) {
   const location = useLocation();
@@ -30,8 +30,6 @@ function AnimatedRoutes({ routes }: { routes: React.ReactNode }) {
     </div>
   );
 }
-
-const priorityOrder: Record<Priority, number> = { high: 0, medium: 1, low: 2 };
 
 export default function App() {
   const navigate = useNavigate();
@@ -80,7 +78,7 @@ export default function App() {
   const [ptSectionId, setPtSectionId] = useState<string | null>(null);
   const detailTimer2 = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const activePage: Page = location.pathname.startsWith('/projects') ? (location.pathname.split('/').length > 2 ? 'project-detail' : 'projects') : location.pathname.startsWith('/settings') ? 'settings' : location.pathname.startsWith('/home') ? 'home' : 'tasks';
+  const activePage: Page = location.pathname.startsWith('/projects/') ? 'project-detail' : location.pathname.startsWith('/projects') ? 'projects' : location.pathname.startsWith('/settings') ? 'settings' : location.pathname.startsWith('/home') ? 'home' : 'tasks';
   const activeProjectId = activePage === 'project-detail' ? location.pathname.split('/')[2] : null;
   const activeProject = useMemo(() => activeProjectId ? projects.find((p) => p.id === activeProjectId) ?? null : null, [projects, activeProjectId]);
 
@@ -97,6 +95,7 @@ export default function App() {
     return () => {
       if (formTimer.current) clearTimeout(formTimer.current);
       if (detailTimer.current) clearTimeout(detailTimer.current);
+      if (detailTimer2.current) clearTimeout(detailTimer2.current);
     };
   }, []);
 
@@ -381,6 +380,7 @@ export default function App() {
   }
 
   function deleteProject(id: string) {
+    pushHistory();
     setProjects((prev) => prev.filter((p) => p.id !== id));
     setProjectTasks((prev) => prev.filter((t) => t.projectId !== id));
     setSections((prev) => prev.filter((s) => s.projectId !== id));
