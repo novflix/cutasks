@@ -3,7 +3,7 @@
 .parent-select {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
   position: relative;
 }
 
@@ -22,17 +22,17 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
+  padding: 11px 14px;
   background: var(--primary-subtle);
-  border: 1px solid var(--primary);
-  border-radius: var(--radius);
-  min-height: 42px;
-  animation: tagPop 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  border: 1.5px solid var(--primary);
+  border-radius: 14px;
+  min-height: 44px;
+  animation: tagPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .parent-selected-title {
   font-size: 0.88rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--primary);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -43,37 +43,41 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border: none;
   background: none;
   color: var(--primary);
   cursor: pointer;
   padding: 0;
   opacity: 0.6;
-  transition: all var(--transition-fast);
+  transition:
+    opacity 0.2s ease,
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   flex-shrink: 0;
   margin-left: 8px;
 }
 
 .parent-selected-remove:hover {
   opacity: 1;
-  transform: scale(1.1);
+  transform: scale(1.15);
 }
 
 .parent-input-box {
   display: flex;
   align-items: center;
-  min-height: 42px;
+  min-height: 44px;
   padding: 0 16px;
   background: var(--bg-input);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  transition: all var(--transition);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 14px;
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .parent-input-box:hover {
-  border-color: var(--text-dim);
+  border-color: var(--border);
 }
 
 .parent-input-box:focus-within {
@@ -89,7 +93,7 @@
   font-size: 0.88rem;
   font-family: inherit;
   outline: none;
-  min-height: 40px;
+  min-height: 42px;
 }
 
 .parent-input::placeholder {
@@ -98,17 +102,17 @@
 
 .parent-dropdown {
   position: absolute;
-  top: calc(100% + 4px);
+  top: calc(100% + 6px);
   left: 0;
   right: 0;
   z-index: 100;
   background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-lg);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
   max-height: 220px;
   overflow-y: auto;
-  animation: dropdownEnter 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  animation: dropdownEnter 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .parent-dropdown.closing {
@@ -118,7 +122,7 @@
 @keyframes dropdownEnter {
   from {
     opacity: 0;
-    transform: translateY(-6px) scale(0.96);
+    transform: translateY(-8px) scale(0.96);
   }
   to {
     opacity: 1;
@@ -129,7 +133,7 @@
 @keyframes dropdownExit {
   to {
     opacity: 0;
-    transform: translateY(-6px) scale(0.96);
+    transform: translateY(-8px) scale(0.96);
   }
 }
 
@@ -138,7 +142,7 @@
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 10px 14px;
+  padding: 11px 14px;
   border: none;
   background: none;
   color: var(--text-secondary);
@@ -146,7 +150,9 @@
   font-family: inherit;
   text-align: left;
   cursor: pointer;
-  transition: all var(--transition);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .parent-dropdown-item:hover {
@@ -161,7 +167,7 @@
 }
 
 .parent-dropdown-empty {
-  padding: 14px;
+  padding: 16px;
   text-align: center;
 }
 

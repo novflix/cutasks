@@ -6,7 +6,7 @@
   display: flex;
   align-items: flex-start;
   gap: 14px;
-  padding: 20px 20px 0;
+  padding: 22px 22px 0;
 }
 
 .detail-top-left {
@@ -27,16 +27,16 @@
 }
 
 .detail-title {
-  font-size: 1.15rem;
-  font-weight: 600;
+  font-size: 1.2rem;
+  font-weight: 700;
   line-height: 1.4;
 }
 
 .detail-desc {
   font-size: 0.88rem;
   color: var(--text-secondary);
-  line-height: 1.55;
-  margin-top: 6px;
+  line-height: 1.6;
+  margin-top: 8px;
 }
 
 .detail-close {
@@ -45,22 +45,22 @@
 
 .detail-divider {
   height: 1px;
-  background: var(--border-subtle);
-  margin: 16px 20px;
+  background: linear-gradient(90deg, transparent, var(--border-subtle), transparent);
+  margin: 16px 22px;
 }
 
 .detail-meta {
   display: flex;
   flex-direction: column;
   gap: 0;
-  padding: 0 20px;
+  padding: 0 22px;
 }
 
 .detail-meta-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 0;
+  padding: 12px 0;
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -90,7 +90,7 @@
 
 .deadline-text {
   font-size: 0.82rem;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .deadline-text-overdue {
@@ -110,7 +110,7 @@
 }
 
 .detail-section {
-  padding: 0 20px 16px;
+  padding: 0 22px 18px;
 }
 
 .detail-section-title {
@@ -122,7 +122,7 @@
   color: var(--text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
 
 .detail-tags {
@@ -141,7 +141,7 @@
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  padding: 16px 20px 20px;
+  padding: 16px 22px 22px;
   border-top: 1px solid var(--border-subtle);
 }
 
@@ -150,7 +150,7 @@
 .detail-parent-link {
   color: var(--primary) !important;
   cursor: pointer;
-  transition: opacity var(--transition);
+  transition: opacity 0.2s ease;
 }
 
 .detail-parent-link:hover {
@@ -160,25 +160,28 @@
 .detail-subtasks {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .detail-subtask {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 12px;
+  padding: 11px 14px;
   background: var(--bg-input);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 12px;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .detail-subtask:hover {
   background: var(--bg-hover);
   border-color: var(--border);
-  transform: translateX(4px);
+  transform: translateX(4px) scale(1.01);
 }
 
 .detail-subtask.completed {
