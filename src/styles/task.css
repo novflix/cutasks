@@ -3,7 +3,7 @@
 .task-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   margin-left: -36px;
   padding-left: 36px;
 }
@@ -26,7 +26,7 @@
   margin-left: 18px;
   padding-left: 16px;
   border-left: 2px solid var(--border-subtle);
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 .task-children {
@@ -34,14 +34,14 @@
   padding: 4px 0;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 4px;
 }
 
 .task-child .task-item {
   background: var(--bg-elevated);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 14px;
+  padding: 12px 14px;
   border-left-width: 3px;
 }
 
@@ -105,31 +105,35 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 16px;
-  margin-bottom: 4px;
+  padding: 14px 18px;
+  margin-bottom: 6px;
   border: 2px dashed var(--border);
-  border-radius: var(--radius);
-  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .task-make-root.drag-over {
   border-color: var(--primary);
   background: var(--primary-subtle);
+  transform: scale(1.01);
+  box-shadow: 0 0 0 3px rgba(237, 155, 109, 0.1);
 }
 
 .task-make-root-text {
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   color: var(--text-dim);
   font-weight: 500;
 }
 
 .task-make-root.drag-over .task-make-root-text {
   color: var(--primary);
+  font-weight: 600;
 }
 
 /* ======================== TASK ITEM ======================== */
 
 .task-item {
+  position: relative;
   display: flex;
   align-items: flex-start;
   gap: 12px;
@@ -137,50 +141,60 @@
   min-width: 0;
   padding: 16px 18px;
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius);
-  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
-  animation: taskEnter 0.3s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 16px;
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.3s ease;
+  animation: taskEnter 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 
-.task-node:nth-child(1) .task-item { animation-delay: 0.02s; }
-.task-node:nth-child(2) .task-item { animation-delay: 0.05s; }
-.task-node:nth-child(3) .task-item { animation-delay: 0.08s; }
-.task-node:nth-child(4) .task-item { animation-delay: 0.11s; }
-.task-node:nth-child(5) .task-item { animation-delay: 0.14s; }
-.task-node:nth-child(6) .task-item { animation-delay: 0.17s; }
-.task-node:nth-child(7) .task-item { animation-delay: 0.2s; }
-.task-node:nth-child(8) .task-item { animation-delay: 0.23s; }
+.task-node:nth-child(1) .task-item { animation-delay: 0.03s; }
+.task-node:nth-child(2) .task-item { animation-delay: 0.06s; }
+.task-node:nth-child(3) .task-item { animation-delay: 0.09s; }
+.task-node:nth-child(4) .task-item { animation-delay: 0.12s; }
+.task-node:nth-child(5) .task-item { animation-delay: 0.15s; }
+.task-node:nth-child(6) .task-item { animation-delay: 0.18s; }
+.task-node:nth-child(7) .task-item { animation-delay: 0.21s; }
+.task-node:nth-child(8) .task-item { animation-delay: 0.24s; }
 
 .task-item:hover {
   background: var(--bg-elevated);
   border-color: var(--border);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px) scale(1.005);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.task-item:active {
+  transform: scale(0.995);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .task-item:hover.task-stripe-low {
-  border-color: var(--border);
+  border-color: #66bb6a;
   border-left-color: #66bb6a;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 3px 0 0 #66bb6a;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2), -2px 0 0 #66bb6a;
 }
 
 .task-item:hover.task-stripe-medium {
-  border-color: var(--border);
+  border-color: var(--primary);
   border-left-color: var(--primary);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 3px 0 0 var(--primary);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2), -2px 0 0 var(--primary);
 }
 
 .task-item:hover.task-stripe-high {
-  border-color: var(--border);
+  border-color: #ef5350;
   border-left-color: #ef5350;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 3px 0 0 #ef5350;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2), -2px 0 0 #ef5350;
 }
 
 .task-item:hover.task-overdue {
-  border-color: var(--border);
+  border-color: #ef5350;
   border-left-color: #ef5350;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 3px 0 0 #ef5350;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2), -2px 0 0 #ef5350;
 }
 
 .task-item.completed {
@@ -196,9 +210,9 @@
 
 .task-item.drag-over {
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px var(--primary-subtle), 0 8px 24px rgba(237, 155, 109, 0.15);
+  box-shadow: 0 0 0 4px var(--primary-subtle), 0 8px 28px rgba(237, 155, 109, 0.15);
   background: var(--bg-elevated);
-  transform: scale(1.01);
+  transform: scale(1.015);
 }
 
 .task-item.drag-over::after {
@@ -220,49 +234,54 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 20px;
-  height: 20px;
-  border: 2px solid var(--text-dim);
+  width: 24px;
+  height: 24px;
+  border: 2.5px solid var(--border);
   background: none;
   cursor: pointer;
   padding: 0;
-  margin-top: 3px;
-  border-radius: 8px;
-  transition: border-color 0.25s ease, background 0.25s ease, transform 0.2s ease, box-shadow 0.25s ease;
+  margin-top: 2px;
+  border-radius: 10px;
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease,
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.25s ease;
 }
 
 .task-check-sm {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   margin-top: 2px;
 }
 
 .task-check:hover {
   border-color: var(--primary);
-  transform: scale(1.1);
+  transform: scale(1.15);
+  box-shadow: 0 0 0 3px var(--primary-subtle);
 }
 
 .task-check:active {
-  transform: scale(0.9);
+  transform: scale(0.85);
 }
 
 .task-check.checked {
-  background: var(--primary);
-  border-color: var(--primary);
+  background: var(--success);
+  border-color: var(--success);
   animation: checkBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 0 0 8px var(--primary-glow);
+  box-shadow: 0 0 10px rgba(102, 187, 106, 0.3);
 }
 
 .check-icon {
-  width: 11px;
-  height: 11px;
-  stroke: #1a1a1a;
-  stroke-width: 2.5;
+  width: 12px;
+  height: 12px;
+  stroke: #fff;
+  stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
   opacity: 0;
   transform: scale(0.5) rotate(-45deg);
-  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .task-check-sm .check-icon {
@@ -296,48 +315,48 @@
 }
 
 .task-check.checked .particles i {
-  animation: particleBurst 0.5s ease-out forwards;
+  animation: particleBurst 0.6s ease-out forwards;
 }
 
 .task-check.checked .particles i:nth-child(1) {
-  background: var(--primary);
-  --tx: -14px;
+  background: var(--success);
+  --tx: -16px;
   --ty: -10px;
   animation-delay: 0s;
 }
 
 .task-check.checked .particles i:nth-child(2) {
-  background: var(--success);
-  --tx: 12px;
-  --ty: -12px;
+  background: var(--primary);
+  --tx: 14px;
+  --ty: -14px;
   animation-delay: 0.03s;
 }
 
 .task-check.checked .particles i:nth-child(3) {
-  background: var(--primary-hover);
-  --tx: 14px;
-  --ty: 6px;
+  background: #64b5f6;
+  --tx: 16px;
+  --ty: 8px;
   animation-delay: 0.05s;
 }
 
 .task-check.checked .particles i:nth-child(4) {
   background: var(--success);
-  --tx: -10px;
-  --ty: 12px;
+  --tx: -12px;
+  --ty: 14px;
   animation-delay: 0.02s;
 }
 
 .task-check.checked .particles i:nth-child(5) {
   background: #fff;
-  --tx: 2px;
-  --ty: -14px;
+  --tx: 3px;
+  --ty: -16px;
   animation-delay: 0.04s;
 }
 
 .task-check.checked .particles i:nth-child(6) {
-  background: var(--primary);
-  --tx: -6px;
-  --ty: 10px;
+  background: var(--primary-hover);
+  --tx: -8px;
+  --ty: 12px;
   animation-delay: 0.01s;
 }
 
@@ -349,29 +368,34 @@
   cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
 }
 
 .task-title {
   font-size: 0.95rem;
-  font-weight: 500;
-  line-height: 1.4;
+  font-weight: 600;
+  line-height: 1.45;
   word-break: break-word;
+  transition: color 0.2s ease;
+}
+
+.task-item:hover .task-title {
+  color: var(--text);
 }
 
 .search-highlight {
   background: rgba(237, 155, 109, 0.25);
   color: var(--primary);
-  border-radius: 3px;
-  padding: 0 2px;
+  border-radius: 4px;
+  padding: 0 3px;
   animation: badgePulse 2s ease-in-out infinite;
 }
 
 .task-desc {
-  font-size: 0.85rem;
+  font-size: 0.83rem;
   color: var(--text-muted);
   word-break: break-word;
-  line-height: 1.4;
+  line-height: 1.45;
 }
 
 .task-tags {
@@ -387,11 +411,11 @@
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: rgba(100, 181, 246, 0.15);
+  padding: 3px 8px;
+  border-radius: 8px;
+  background: rgba(100, 181, 246, 0.12);
   color: #64b5f6;
   animation: tagPop 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -439,16 +463,16 @@
 .touch-drag-ghost {
   position: fixed;
   z-index: 9999;
-  padding: 10px 14px;
+  padding: 12px 16px;
   background: var(--bg-card);
   border: 2px solid var(--primary);
-  border-radius: var(--radius);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
   font-size: 0.88rem;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text);
   pointer-events: none;
-  opacity: 0.92;
+  opacity: 0.95;
   max-width: 260px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -458,13 +482,13 @@
 
 .max-depth-notice {
   text-align: center;
-  padding: 10px 16px;
-  font-size: 0.78rem;
-  font-weight: 500;
+  padding: 12px 18px;
+  font-size: 0.82rem;
+  font-weight: 600;
   color: #ffb74d;
-  background: rgba(255, 183, 77, 0.1);
-  border: 1px solid rgba(255, 183, 77, 0.25);
-  border-radius: var(--radius-sm);
+  background: rgba(255, 183, 77, 0.08);
+  border: 1.5px solid rgba(255, 183, 77, 0.2);
+  border-radius: 14px;
   animation: fadeIn 0.2s ease;
 }
 

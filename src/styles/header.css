@@ -12,44 +12,57 @@
   gap: 18px;
 }
 
+/* ── Stats row ── */
+
 .stats {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: stretch;
 }
 
 .stat {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 5px 10px;
+  gap: 8px;
+  height: 38px;
+  padding: 0 14px;
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
-  font-size: 0.72rem;
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 12px;
+  font-size: 0.82rem;
   color: var(--text-muted);
   font-weight: 500;
-  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  line-height: 1;
+  transition:
+    background 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease;
 }
 
 .stat:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.stat:active {
+  transform: scale(0.98);
 }
 
 .stat strong {
   color: var(--text-secondary);
   font-weight: 700;
-  font-size: 0.82rem;
+  font-size: 0.9rem;
+  line-height: 1;
   animation: countUp 0.3s ease backwards;
 }
 
 .stat-dot {
-  width: 5px;
-  height: 5px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
+  box-shadow: 0 0 4px currentColor;
 }
 
 .stat-total .stat-dot {
@@ -58,14 +71,17 @@
 
 .stat-active .stat-dot {
   background: var(--primary);
+  color: var(--primary);
 }
 
 .stat-done .stat-dot {
   background: var(--success);
+  color: var(--success);
 }
 
 .stat-overdue .stat-dot {
   background: #ef5350;
+  color: #ef5350;
 }
 
 .stat-overdue {
@@ -84,33 +100,44 @@
   display: none;
 }
 
+/* ── Desktop: create button ── */
+
 @media (min-width: 768px) {
   .stats .stat-create-btn {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 7px 14px;
-    height: auto;
-    font-size: 0.78rem;
-    font-weight: 600;
+    gap: 8px;
+    height: 38px;
+    padding: 0 18px;
+    font-size: 0.85rem;
+    font-weight: 700;
     border: none;
-    border-radius: var(--radius-sm);
+    border-radius: 12px;
     background: var(--primary);
     color: #fff;
     cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    transition:
+      background 0.25s ease,
+      transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 0.3s ease;
     -webkit-tap-highlight-color: transparent;
     white-space: nowrap;
     margin-left: auto;
+    line-height: 1;
+  }
+
+  .stats .stat-create-btn svg {
+    width: 18px;
+    height: 18px;
   }
 
   .stats .stat-create-btn:hover {
     background: var(--primary-hover);
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px var(--primary-glow);
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 6px 20px var(--primary-glow);
   }
 
   .stats .stat-create-btn:active {
-    transform: translateY(0);
+    transform: scale(0.97);
   }
 }

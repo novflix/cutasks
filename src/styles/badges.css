@@ -1,27 +1,31 @@
+/* ── Priority badges ── */
+
 .priority-badge {
   display: inline-block;
   font-size: 0.65rem;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 3px 8px;
+  border-radius: 8px;
 }
 
 .priority-low {
-  background: rgba(102, 187, 106, 0.15);
+  background: rgba(102, 187, 106, 0.12);
   color: #66bb6a;
 }
 
 .priority-medium {
-  background: rgba(237, 155, 109, 0.15);
+  background: rgba(237, 155, 109, 0.12);
   color: var(--primary);
 }
 
 .priority-high {
-  background: rgba(239, 83, 80, 0.15);
+  background: rgba(239, 83, 80, 0.12);
   color: #ef5350;
 }
+
+/* ── Deadline badges ── */
 
 .deadline-badge {
   display: inline-flex;
@@ -29,71 +33,77 @@
   gap: 4px;
   font-size: 0.65rem;
   font-weight: 600;
-  padding: 2px 6px;
-  border-radius: 4px;
+  padding: 3px 8px;
+  border-radius: 8px;
   text-transform: capitalize;
 }
 
 .deadline-normal {
-  background: rgba(150, 150, 150, 0.12);
+  background: rgba(150, 150, 150, 0.1);
   color: var(--text-muted);
 }
 
 .deadline-soon {
-  background: rgba(237, 155, 109, 0.15);
+  background: rgba(237, 155, 109, 0.12);
   color: var(--primary);
 }
 
 .deadline-today {
-  background: rgba(255, 183, 77, 0.2);
+  background: rgba(255, 183, 77, 0.15);
   color: #ffb74d;
 }
 
 .deadline-overdue {
-  background: rgba(239, 83, 80, 0.15);
+  background: rgba(239, 83, 80, 0.12);
   color: #ef5350;
 }
 
+/* ── Status badges ── */
+
 .status-badge {
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  padding: 3px 8px;
-  border-radius: 4px;
+  padding: 3px 10px;
+  border-radius: 8px;
 }
 
 .status-active {
-  background: rgba(237, 155, 109, 0.15);
+  background: rgba(237, 155, 109, 0.12);
   color: var(--primary);
 }
 
 .status-done {
-  background: rgba(102, 187, 106, 0.15);
+  background: rgba(102, 187, 106, 0.12);
   color: #66bb6a;
 }
+
+/* ── User tags ── */
 
 .user-tag {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  padding: 2px 8px;
-  background: rgba(150, 150, 150, 0.1);
+  padding: 3px 10px;
+  background: rgba(150, 150, 150, 0.08);
   color: var(--text-muted);
-  border: 1px solid currentColor;
-  border-radius: var(--radius-full);
-  font-size: 0.68rem;
+  border: 1.5px solid currentColor;
+  border-radius: 10px;
+  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   white-space: nowrap;
   line-height: 1.4;
   animation: tagPop 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  transition: transform 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .user-tag:hover {
-  transform: scale(1.05);
+  transform: scale(1.08);
 }
+
+/* ── Priority selector ── */
 
 .priority-selector {
   display: flex;
@@ -102,50 +112,58 @@
 
 .priority-option {
   flex: 1;
-  height: 42px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--bg-input);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border: 2px solid var(--border-subtle);
+  border-radius: 14px;
   color: var(--text-muted);
   font-size: 0.82rem;
   font-weight: 600;
   text-transform: capitalize;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease;
 }
 
 .priority-option:hover {
-  border-color: var(--text-dim);
+  border-color: var(--border);
   color: var(--text-secondary);
-  transform: translateY(-1px);
+  transform: translateY(-1px) scale(1.02);
 }
 
 .priority-option:active {
-  transform: translateY(0);
+  transform: scale(0.97);
 }
 
 .priority-option.selected {
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .priority-option-low.selected {
-  background: rgba(102, 187, 106, 0.15);
+  background: rgba(102, 187, 106, 0.12);
   border-color: #66bb6a;
   color: #66bb6a;
+  box-shadow: 0 4px 12px rgba(102, 187, 106, 0.15);
 }
 
 .priority-option-medium.selected {
-  background: rgba(237, 155, 109, 0.15);
+  background: rgba(237, 155, 109, 0.12);
   border-color: var(--primary);
   color: var(--primary);
+  box-shadow: 0 4px 12px rgba(237, 155, 109, 0.15);
 }
 
 .priority-option-high.selected {
-  background: rgba(239, 83, 80, 0.15);
+  background: rgba(239, 83, 80, 0.12);
   border-color: #ef5350;
   color: #ef5350;
+  box-shadow: 0 4px 12px rgba(239, 83, 80, 0.15);
 }
