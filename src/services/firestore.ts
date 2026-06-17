@@ -1,7 +1,9 @@
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
+  setDoc,
   writeBatch,
   serverTimestamp,
   type DocumentData,
@@ -259,4 +261,23 @@ export async function saveProjectTasks(uid: string, tasks: ProjectTask[]) {
     }
   }
   await batch.commit();
+}
+
+export interface UserSettings {
+  theme: string;
+  deleteMode: string;
+}
+
+export async function loadSettings(uid: string): Promise<UserSettings | null> {
+  const snap = await getDoc(doc(db, 'users', uid, 'settings', 'prefs'));
+  if (!snap.exists()) return null;
+  const d = snap.data();
+  return { theme: d.t || 'dark', deleteMode: d.d || 'instant' };
+}
+
+export async function saveSettings(uid: string, settings: UserSettings) {
+  await setDoc(doc(db, 'users', uid, 'settings', 'prefs'), {
+    t: settings.theme,
+    d: settings.deleteMode,
+  });
 }

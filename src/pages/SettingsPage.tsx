@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Logout } from '@solar-icons/react';
 import { logout } from '../services/auth';
+import { saveSettings } from '../services/firestore';
 import { useAuth } from '../contexts/AuthContext';
 
 type DeleteMode = 'instant' | '3days' | '7days';
@@ -54,11 +55,13 @@ export default function SettingsPage() {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', activeTheme);
     localStorage.setItem('cutasks_theme', activeTheme);
-  }, [activeTheme]);
+    if (user) saveSettings(user.uid, { theme: activeTheme, deleteMode }).catch(() => {});
+  }, [activeTheme, deleteMode, user]);
 
   useEffect(() => {
     localStorage.setItem('cutasks_delete_mode', deleteMode);
-  }, [deleteMode]);
+    if (user) saveSettings(user.uid, { theme: activeTheme, deleteMode }).catch(() => {});
+  }, [deleteMode, activeTheme, user]);
 
   const initials = user ? getInitials(user.displayName, user.email) : '?';
   const avatarColor = user ? hashColor(user.email || user.displayName || '') : '#ed9b6d';

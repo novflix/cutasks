@@ -5,7 +5,7 @@ import type { Task, Priority, Page, FilterType, Project, ProjectStatus, Section,
 import { generateId } from './utils';
 import { loadTasks, saveTasks as localSaveTasks, getAllTags, loadProjects, saveProjects as localSaveProjects, loadSections, saveSections as localSaveSections, loadProjectTasks, saveProjectTasks as localSaveProjectTasks } from './storage';
 import { useAuth } from './contexts/AuthContext';
-import { saveTasks as fsSaveTasks, saveProjects as fsSaveProjects, saveSections as fsSaveSections, saveProjectTasks as fsSaveProjectTasks, loadAllData } from './services/firestore';
+import { saveTasks as fsSaveTasks, saveProjects as fsSaveProjects, saveSections as fsSaveSections, saveProjectTasks as fsSaveProjectTasks, loadAllData, loadSettings } from './services/firestore';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import TaskDetailModal from './components/TaskDetailModal';
@@ -110,6 +110,14 @@ export default function App() {
   useEffect(() => {
     if (!user) return;
     loadAllData(user.uid).then((data) => {
+      loadSettings(user.uid).then((settings) => {
+        if (settings) {
+          localStorage.setItem('cutasks_theme', settings.theme);
+          localStorage.setItem('cutasks_delete_mode', settings.deleteMode);
+          document.documentElement.setAttribute('data-theme', settings.theme);
+        }
+      }).catch(() => {});
+
       const mode = (localStorage.getItem('cutasks_delete_mode') || 'instant') as 'instant' | '3days' | '7days';
       let tasks = data.tasks;
       let projectTasks = data.projectTasks;
