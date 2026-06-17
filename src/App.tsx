@@ -90,6 +90,9 @@ export default function App() {
 
   const tasksRef = useRef(tasks);
   tasksRef.current = tasks;
+  const historyRef = useRef<Task[][]>([]);
+  const formTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const detailTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     return () => {
