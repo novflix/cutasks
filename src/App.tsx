@@ -122,10 +122,10 @@ export default function App() {
       );
       return {
         tasks: expiredTaskIds.size > 0
-          ? tasks.filter((t) => !expiredTaskIds.has(t.id)).map((t) => expiredTaskIds.has(t.parentId!) ? { ...t, parentId: null } : t)
+          ? tasks.filter((t) => !expiredTaskIds.has(t.id)).map((t) => t.parentId && expiredTaskIds.has(t.parentId) ? { ...t, parentId: null } : t)
           : tasks,
         projectTasks: expiredPtIds.size > 0
-          ? projectTasks.filter((t) => !expiredPtIds.has(t.id)).map((t) => expiredPtIds.has(t.parentId!) ? { ...t, parentId: null } : t)
+          ? projectTasks.filter((t) => !expiredPtIds.has(t.id)).map((t) => t.parentId && expiredPtIds.has(t.parentId) ? { ...t, parentId: null } : t)
           : projectTasks,
       };
     }
