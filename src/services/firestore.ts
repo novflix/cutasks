@@ -161,49 +161,98 @@ export async function saveAllData(
   const metaRef = doc(db, 'users', uid);
   batch.set(metaRef, { updatedAt: serverTimestamp() }, { merge: true });
 
-  const writeCollection = <T>(colName: string, items: T[], toDoc: (item: T) => DocumentData) => {
+  const syncCollection = async <T extends { id: string }>(
+    colName: string,
+    items: T[],
+    toDoc: (item: T) => DocumentData
+  ) => {
+    const snap = await getDocs(userCol(uid, colName));
+    const currentIds = new Set(snap.docs.map((d) => d.id));
+    const newIds = new Set(items.map((i) => i.id));
+
     for (const item of items) {
-      const id = (item as { id: string }).id;
-      batch.set(userDoc(uid, colName, id), toDoc(item));
+      batch.set(userDoc(uid, colName, item.id), toDoc(item));
+    }
+
+    for (const id of currentIds) {
+      if (!newIds.has(id)) {
+        batch.delete(userDoc(uid, colName, id));
+      }
     }
   };
 
-  writeCollection('tasks', data.tasks, taskToDoc);
-  writeCollection('projects', data.projects, projectToDoc);
-  writeCollection('sections', data.sections, sectionToDoc);
-  writeCollection('projectTasks', data.projectTasks, projectTaskToDoc);
+  await syncCollection('tasks', data.tasks, taskToDoc);
+  await syncCollection('projects', data.projects, projectToDoc);
+  await syncCollection('sections', data.sections, sectionToDoc);
+  await syncCollection('projectTasks', data.projectTasks, projectTaskToDoc);
 
   await batch.commit();
 }
 
 export async function saveTasks(uid: string, tasks: Task[]) {
+  const snap = await getDocs(userCol(uid, 'tasks'));
+  const currentIds = new Set(snap.docs.map((d) => d.id));
+  const newIds = new Set(tasks.map((t) => t.id));
+
   const batch = writeBatch(db);
   for (const t of tasks) {
     batch.set(userDoc(uid, 'tasks', t.id), taskToDoc(t));
+  }
+  for (const id of currentIds) {
+    if (!newIds.has(id)) {
+      batch.delete(userDoc(uid, 'tasks', id));
+    }
   }
   await batch.commit();
 }
 
 export async function saveProjects(uid: string, projects: Project[]) {
+  const snap = await getDocs(userCol(uid, 'projects'));
+  const currentIds = new Set(snap.docs.map((d) => d.id));
+  const newIds = new Set(projects.map((p) => p.id));
+
   const batch = writeBatch(db);
   for (const p of projects) {
     batch.set(userDoc(uid, 'projects', p.id), projectToDoc(p));
+  }
+  for (const id of currentIds) {
+    if (!newIds.has(id)) {
+      batch.delete(userDoc(uid, 'projects', id));
+    }
   }
   await batch.commit();
 }
 
 export async function saveSections(uid: string, sections: Section[]) {
+  const snap = await getDocs(userCol(uid, 'sections'));
+  const currentIds = new Set(snap.docs.map((d) => d.id));
+  const newIds = new Set(sections.map((s) => s.id));
+
   const batch = writeBatch(db);
   for (const s of sections) {
     batch.set(userDoc(uid, 'sections', s.id), sectionToDoc(s));
+  }
+  for (const id of currentIds) {
+    if (!newIds.has(id)) {
+      batch.delete(userDoc(uid, 'sections', id));
+    }
   }
   await batch.commit();
 }
 
 export async function saveProjectTasks(uid: string, tasks: ProjectTask[]) {
+  const snap = await getDocs(userCol(uid, 'projectTasks'));
+  const currentIds = new Set(snap.docs.map((d) => d.id));
+  const newIds = new Set(tasks.map((t) => t.id));
+
   const batch = writeBatch(db);
   for (const t of tasks) {
     batch.set(userDoc(uid, 'projectTasks', t.id), projectTaskToDoc(t));
+  }
+  for (const id of currentIds) {
+    if (!newIds.has(id)) {
+      batch.delete(userDoc(uid, 'projectTasks', id));
+    }
   }
   await batch.commit();
 }
