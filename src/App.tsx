@@ -110,10 +110,35 @@ export default function App() {
   useEffect(() => {
     if (!user) return;
     loadAllData(user.uid).then((data) => {
-      setTasks(data.tasks);
+      const mode = (localStorage.getItem('cutasks_delete_mode') || 'instant') as 'instant' | '3days' | '7days';
+      let tasks = data.tasks;
+      let projectTasks = data.projectTasks;
+
+      if (mode !== 'instant') {
+        const retentionMs = mode === '3days' ? 3 * 24 * 60 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000;
+        const now = Date.now();
+        const expiredTaskIds = new Set(
+          tasks.filter((t) => t.completed && t.completedAt && now - t.completedAt > retentionMs).map((t) => t.id)
+        );
+        const expiredPtIds = new Set(
+          projectTasks.filter((t) => t.completed && t.completedAt && now - t.completedAt > retentionMs).map((t) => t.id)
+        );
+        if (expiredTaskIds.size > 0) {
+          tasks = tasks
+            .filter((t) => !expiredTaskIds.has(t.id))
+            .map((t) => expiredTaskIds.has(t.parentId!) ? { ...t, parentId: null } : t);
+        }
+        if (expiredPtIds.size > 0) {
+          projectTasks = projectTasks
+            .filter((t) => !expiredPtIds.has(t.id))
+            .map((t) => expiredPtIds.has(t.parentId!) ? { ...t, parentId: null } : t);
+        }
+      }
+
+      setTasks(tasks);
       setProjects(data.projects);
       setSections(data.sections);
-      setProjectTasks(data.projectTasks);
+      setProjectTasks(projectTasks);
       fsLoadedRef.current = true;
     }).catch(() => {
       fsLoadedRef.current = true;
@@ -317,11 +342,25 @@ export default function App() {
 
   function toggleComplete(id: string) {
     pushHistory();
+    const mode = (localStorage.getItem('cutasks_delete_mode') || 'instant') as 'instant' | '3days' | '7days';
+
     setTasks((prev) =>
       prev.map((t) =>
-        t.id === id ? { ...t, completed: !t.completed, updatedAt: Date.now() } : t
+        t.id === id ? { ...t, completed: !t.completed, completedAt: !t.completed ? Date.now() : null, updatedAt: Date.now() } : t
       )
     );
+
+    if (mode === 'instant') {
+      setTimeout(() => {
+        setTasks((prev) => {
+          const task = prev.find((t) => t.id === id);
+          if (!task || !task.completed) return prev;
+          return prev
+            .filter((t) => t.id !== id)
+            .map((t) => t.parentId === id ? { ...t, parentId: null } : t);
+        });
+      }, 800);
+    }
   }
 
   function deleteTask(id: string) {
@@ -537,9 +576,23 @@ export default function App() {
 
   function toggleProjectTask(id: string) {
     pushProjectTaskHistory();
+    const mode = (localStorage.getItem('cutasks_delete_mode') || 'instant') as 'instant' | '3days' | '7days';
+
     setProjectTasks((prev) =>
-      prev.map((t) => t.id === id ? { ...t, completed: !t.completed, updatedAt: Date.now() } : t)
+      prev.map((t) => t.id === id ? { ...t, completed: !t.completed, completedAt: !t.completed ? Date.now() : null, updatedAt: Date.now() } : t)
     );
+
+    if (mode === 'instant') {
+      setTimeout(() => {
+        setProjectTasks((prev) => {
+          const task = prev.find((t) => t.id === id);
+          if (!task || !task.completed) return prev;
+          return prev
+            .filter((t) => t.id !== id)
+            .map((t) => t.parentId === id ? { ...t, parentId: null } : t);
+        });
+      }, 800);
+    }
   }
 
   function deleteProjectTask(id: string) {

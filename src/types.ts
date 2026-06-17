@@ -8,6 +8,7 @@ export interface Task {
   deadline: string;
   tags: string[];
   completed: boolean;
+  completedAt: number | null;
   parentId: string | null;
   createdAt: number;
   updatedAt: number;

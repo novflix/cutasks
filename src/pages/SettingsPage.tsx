@@ -3,6 +3,14 @@ import { Logout } from '@solar-icons/react';
 import { logout } from '../services/auth';
 import { useAuth } from '../contexts/AuthContext';
 
+type DeleteMode = 'instant' | '3days' | '7days';
+
+const DELETE_OPTIONS: { value: DeleteMode; label: string; desc: string }[] = [
+  { value: 'instant', label: 'Immediately', desc: 'Delete right after completion' },
+  { value: '3days', label: 'After 3 days', desc: 'Keep for 3 days, then remove' },
+  { value: '7days', label: 'After 7 days', desc: 'Keep for a week, then remove' },
+];
+
 interface ThemeOption {
   id: string;
   name: string;
@@ -39,11 +47,18 @@ export default function SettingsPage() {
   const [activeTheme, setActiveTheme] = useState<string>(() => {
     return localStorage.getItem('cutasks_theme') || 'dark';
   });
+  const [deleteMode, setDeleteMode] = useState<DeleteMode>(() => {
+    return (localStorage.getItem('cutasks_delete_mode') as DeleteMode) || 'instant';
+  });
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', activeTheme);
     localStorage.setItem('cutasks_theme', activeTheme);
   }, [activeTheme]);
+
+  useEffect(() => {
+    localStorage.setItem('cutasks_delete_mode', deleteMode);
+  }, [deleteMode]);
 
   const initials = user ? getInitials(user.displayName, user.email) : '?';
   const avatarColor = user ? hashColor(user.email || user.displayName || '') : '#ed9b6d';
@@ -98,6 +113,27 @@ export default function SettingsPage() {
               <div className="theme-card-body">
                 <span className="theme-card-label">{theme.name}</span>
                 <div className="theme-card-dot" />
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="settings-section">
+        <span className="settings-section-label">Completed tasks</span>
+        <div className="delete-options">
+          {DELETE_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              className={`delete-option${deleteMode === opt.value ? ' active' : ''}`}
+              onClick={() => setDeleteMode(opt.value)}
+            >
+              <div className="delete-option-radio">
+                <div className="delete-option-dot" />
+              </div>
+              <div className="delete-option-info">
+                <span className="delete-option-label">{opt.label}</span>
+                <span className="delete-option-desc">{opt.desc}</span>
               </div>
             </button>
           ))}

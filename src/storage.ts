@@ -14,6 +14,7 @@ export function loadTasks(): Task[] {
       ...t,
       deadline: t.deadline || '',
       tags: t.tags || [],
+      completedAt: t.completedAt ?? null,
       parentId: t.parentId ?? null,
     }));
   } catch {
@@ -79,6 +80,7 @@ export function loadProjectTasks(): ProjectTask[] {
       ...t,
       deadline: t.deadline || '',
       tags: t.tags || [],
+      completedAt: t.completedAt ?? null,
       parentId: t.parentId ?? null,
       sectionId: t.sectionId ?? null,
     }));

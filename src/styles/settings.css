@@ -152,6 +152,93 @@
   background: #fff;
 }
 
+/* ── Delete options ── */
+
+.delete-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.delete-option {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  width: 100%;
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease,
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.delete-option:hover {
+  border-color: var(--border);
+  background: var(--bg-elevated);
+}
+
+.delete-option:active {
+  transform: scale(0.98);
+}
+
+.delete-option.active {
+  border-color: var(--primary);
+  background: var(--primary-subtle);
+}
+
+.delete-option-radio {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: border-color 0.25s ease;
+}
+
+.delete-option.active .delete-option-radio {
+  border-color: var(--primary);
+}
+
+.delete-option-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: transparent;
+  transition: background 0.25s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.delete-option.active .delete-option-dot {
+  background: var(--primary);
+  transform: scale(1);
+}
+
+.delete-option-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.delete-option-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.delete-option-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
 /* ── Settings footer ── */
 
 .settings-footer {
