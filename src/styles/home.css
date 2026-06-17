@@ -42,7 +42,7 @@
 
 .banner-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
 .banner-card:active {
@@ -58,9 +58,9 @@
   background: linear-gradient(
     105deg,
     transparent 40%,
-    rgba(255, 255, 255, 0.12) 45%,
-    rgba(255, 255, 255, 0.2) 50%,
-    rgba(255, 255, 255, 0.12) 55%,
+    rgba(255, 255, 255, 0.06) 45%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.06) 55%,
     transparent 60%
   );
   transform: translateX(-120%);
@@ -76,20 +76,20 @@
 
 /* ── Habits theme ── */
 .banner-habits {
-  background: linear-gradient(135deg, #cc7a00 0%, #ff9600 40%, #ffb740 100%);
+  background: linear-gradient(135deg, #3d2a10 0%, #5a3a14 40%, #6d4a1a 100%);
 }
 
 .banner-habits:hover {
-  box-shadow: 0 12px 40px rgba(255, 150, 0, 0.4);
+  box-shadow: 0 12px 40px rgba(237, 155, 109, 0.2);
 }
 
 /* ── Pomodoro theme ── */
 .banner-pomodoro {
-  background: linear-gradient(135deg, #0d8ed9 0%, #1cb0f6 40%, #5cc8ff 100%);
+  background: linear-gradient(135deg, #0f2a3d 0%, #163a52 40%, #1c4a64 100%);
 }
 
 .banner-pomodoro:hover {
-  box-shadow: 0 12px 40px rgba(28, 176, 246, 0.4);
+  box-shadow: 0 12px 40px rgba(100, 181, 246, 0.2);
 }
 
 /* ── Visual panel (left side with icon + deco) ── */
@@ -146,10 +146,10 @@
 }
 
 /* Habits bubbles — warm tint */
-.banner-habits .bubble { background: rgba(255, 200, 100, 0.12); }
+.banner-habits .bubble { background: rgba(237, 155, 109, 0.08); }
 
 /* Pomodoro bubbles — cool tint */
-.banner-pomodoro .bubble { background: rgba(120, 210, 255, 0.12); }
+.banner-pomodoro .bubble { background: rgba(100, 181, 246, 0.08); }
 
 .bubble-1 { width: 6px; height: 6px; left: 15%; animation-duration: 4.5s; animation-delay: 0s; }
 .bubble-2 { width: 4px; height: 4px; left: 40%; animation-duration: 5.5s; animation-delay: -1.2s; }
@@ -211,8 +211,8 @@
 }
 
 @keyframes warmGlow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 150, 0, 0); }
-  50% { box-shadow: 0 0 20px 4px rgba(255, 150, 0, 0.15); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(237, 155, 109, 0); }
+  50% { box-shadow: 0 0 16px 3px rgba(237, 155, 109, 0.1); }
 }
 
 /* ── Pomodoro icon: pendulum tick ── */
@@ -237,8 +237,8 @@
 }
 
 @keyframes coolPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(28, 176, 246, 0); }
-  50% { box-shadow: 0 0 20px 4px rgba(28, 176, 246, 0.15); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(100, 181, 246, 0); }
+  50% { box-shadow: 0 0 16px 3px rgba(100, 181, 246, 0.1); }
 }
 
 /* ── Icon hover: scale + glow ring ── */
@@ -277,7 +277,7 @@
 
 @keyframes badgePulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
-  50% { box-shadow: 0 0 8px 1px rgba(255, 255, 255, 0.15); }
+  50% { box-shadow: 0 0 6px 1px rgba(255, 255, 255, 0.08); }
 }
 
 .banner-title {
