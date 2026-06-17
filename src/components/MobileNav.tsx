@@ -22,7 +22,7 @@ export default function MobileNav({ activePage, onNavigate, onCreate }: MobileNa
     const navRect = navRef.current.getBoundingClientRect();
     const btnRect = activeBtn.getBoundingClientRect();
     indicatorRef.current.style.left = `${btnRect.left - navRect.left + btnRect.width / 2 - 2.5}px`;
-    indicatorRef.current.style.top = `${btnRect.top - navRect.top + btnRect.height - 4}px`;
+    indicatorRef.current.style.top = `${btnRect.top - navRect.top + btnRect.height - 7}px`;
     indicatorRef.current.style.opacity = '1';
   }, []);
 
