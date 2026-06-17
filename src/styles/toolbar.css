@@ -20,6 +20,7 @@
   left: 16px;
   color: var(--text-dim);
   pointer-events: none;
+  z-index: 1;
   transition: color 0.3s ease, transform 0.3s ease;
 }
 
