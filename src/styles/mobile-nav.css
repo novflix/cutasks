@@ -15,15 +15,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 14px;
     position: fixed;
-    bottom: 14px;
+    bottom: 16px;
     left: 0;
     right: 0;
     z-index: 200;
     padding: 0 16px;
     pointer-events: none;
-    animation: slideUpFade 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    animation: slideUpFade 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
   }
 
   .mobile-bottom-bar > * {
@@ -35,12 +35,12 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    padding: 10px 16px;
+    padding: 10px 18px;
     background: var(--bg-elevated);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-full);
+    border: 1.5px solid var(--border-subtle);
+    border-radius: 24px;
     box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.5),
+      0 12px 40px rgba(0, 0, 0, 0.4),
       0 0 0 1px rgba(255, 255, 255, 0.03) inset;
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
@@ -49,13 +49,18 @@
 
   .mobile-dot-indicator {
     position: absolute;
-    width: 4px;
-    height: 4px;
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
     background: var(--primary);
-    transition: left 0.18s cubic-bezier(0.4, 0, 0.2, 1), top 0.18s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.15s ease;
+    transition:
+      left 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+      top 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+      opacity 0.2s ease,
+      transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
     opacity: 0;
     z-index: 1;
+    box-shadow: 0 0 6px rgba(237, 155, 109, 0.3);
   }
 
   .mobile-nav-btn {
@@ -69,19 +74,22 @@
     background: transparent;
     color: var(--text-muted);
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition:
+      background 0.25s ease,
+      color 0.25s ease,
+      transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     -webkit-tap-highlight-color: transparent;
     position: relative;
   }
 
   .mobile-nav-btn:active:not(:disabled) {
-    transform: scale(0.88);
+    transform: scale(0.85);
   }
 
   .mobile-nav-btn.active {
     color: var(--primary);
     background: var(--primary-subtle);
-    transform: scale(1.08);
+    transform: scale(1.1);
   }
 
   .mobile-nav-btn:disabled {
@@ -101,25 +109,27 @@
     color: #fff;
     cursor: pointer;
     box-shadow:
-      0 6px 24px var(--primary-glow),
+      0 8px 28px var(--primary-glow),
       0 0 0 1px rgba(255, 255, 255, 0.08) inset;
-    transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    transition:
+      transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+      box-shadow 0.3s ease;
     -webkit-tap-highlight-color: transparent;
     flex-shrink: 0;
-    animation: fabPulse 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.2s backwards;
+    animation: fabPulse 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s backwards;
   }
 
   .mobile-fab:active {
-    transform: scale(0.9);
+    transform: scale(0.88);
     box-shadow:
-      0 2px 12px var(--primary-glow),
+      0 4px 16px var(--primary-glow),
       0 0 0 1px rgba(255, 255, 255, 0.08) inset;
   }
 
   @keyframes slideUpFade {
     from {
       opacity: 0;
-      transform: translateY(20px);
+      transform: translateY(24px);
     }
     to {
       opacity: 1;
@@ -130,7 +140,7 @@
   @keyframes fabPulse {
     from {
       opacity: 0;
-      transform: scale(0.5);
+      transform: scale(0.4);
     }
     to {
       opacity: 1;
@@ -142,11 +152,11 @@
 @media (max-width: 360px) {
   .mobile-bottom-bar {
     gap: 10px;
-    bottom: 10px;
+    bottom: 12px;
   }
 
   .mobile-nav {
-    padding: 8px 12px;
+    padding: 8px 14px;
     gap: 8px;
   }
 
