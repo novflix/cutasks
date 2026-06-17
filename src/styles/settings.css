@@ -1,7 +1,7 @@
 .settings-page {
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 32px;
 }
 
 .settings-section {
@@ -11,12 +11,14 @@
 }
 
 .settings-section-label {
-  font-size: 0.72rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 700;
   color: var(--text-dim);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
+
+/* ── Theme cards ── */
 
 .theme-cards {
   display: grid;
@@ -28,18 +30,25 @@
   position: relative;
   background: var(--bg-card);
   border: 2px solid var(--border-subtle);
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 0;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    border-color 0.3s ease,
+    transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.35s ease;
   font-family: inherit;
   overflow: hidden;
 }
 
 .theme-card:hover {
   border-color: var(--border);
-  transform: translateY(-3px);
+  transform: translateY(-3px) scale(1.02);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.theme-card:active {
+  transform: scale(0.98);
 }
 
 .theme-card.active {
@@ -87,7 +96,7 @@
 
 .theme-card-content-bar {
   height: 5px;
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
 .theme-card-content-bar.w60 { width: 60%; }
@@ -97,7 +106,7 @@
 .theme-card-content-accent {
   width: 18px;
   height: 5px;
-  border-radius: 2px;
+  border-radius: 3px;
   margin-top: auto;
 }
 
@@ -110,25 +119,29 @@
 }
 
 .theme-card-label {
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 0.92rem;
+  font-weight: 700;
   color: var(--text);
 }
 
 .theme-card-dot {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  border: 2px solid var(--border);
+  border: 2.5px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease,
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .theme-card.active .theme-card-dot {
   border-color: var(--primary);
   background: var(--primary);
+  transform: scale(1.1);
 }
 
 .theme-card.active .theme-card-dot::after {
@@ -139,14 +152,16 @@
   background: #fff;
 }
 
+/* ── Settings footer ── */
+
 .settings-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 18px;
+  padding: 16px 20px;
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 14px;
 }
 
 .settings-footer-label {
@@ -161,25 +176,30 @@
   font-family: monospace;
 }
 
+/* ── Account card ── */
+
 .account-card {
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 18px 20px;
+  padding: 18px 22px;
   background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius);
-  transition: border-color 0.2s;
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 16px;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 .account-card:hover {
   border-color: var(--border);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
 }
 
 .account-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 14px;
+  width: 50px;
+  height: 50px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -187,7 +207,7 @@
 }
 
 .account-avatar-text {
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 700;
   line-height: 1;
   letter-spacing: 0.02em;
@@ -202,7 +222,7 @@
 }
 
 .account-name {
-  font-size: 0.9375rem;
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--text);
   overflow: hidden;
@@ -211,7 +231,7 @@
 }
 
 .account-email {
-  font-size: 0.8125rem;
+  font-size: 0.82rem;
   color: var(--text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -219,29 +239,36 @@
 }
 
 .account-logout {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: none;
-  border: 1px solid var(--border-subtle);
-  border-radius: 10px;
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 12px;
   color: var(--text-muted);
   cursor: pointer;
   flex-shrink: 0;
-  transition: all 0.15s;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .account-logout:hover {
   color: #ef5350;
   border-color: rgba(239, 83, 80, 0.3);
   background: rgba(239, 83, 80, 0.06);
+  transform: scale(1.05);
 }
 
 .account-logout:active {
   transform: scale(0.92);
 }
+
+/* ── Mobile ── */
 
 @media (max-width: 520px) {
   .theme-cards {
@@ -252,7 +279,7 @@
   .theme-card {
     display: flex;
     flex-direction: row;
-    border-radius: var(--radius);
+    border-radius: 14px;
   }
 
   .theme-card-preview {
