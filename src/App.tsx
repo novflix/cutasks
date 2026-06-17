@@ -109,6 +109,29 @@ export default function App() {
 
   useEffect(() => {
     if (!user) return;
+
+    function cleanupExpired(tasks: Task[], projectTasks: ProjectTask[]): { tasks: Task[]; projectTasks: ProjectTask[] } {
+      const mode = (localStorage.getItem('cutasks_delete_mode') || 'instant') as 'instant' | '3days' | '7days';
+      if (mode === 'instant') return { tasks, projectTasks };
+
+      const retentionMs = mode === '3days' ? 3 * 24 * 60 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000;
+      const now = Date.now();
+      const expiredTaskIds = new Set(
+        tasks.filter((t) => t.completed && t.completedAt && now - t.completedAt > retentionMs).map((t) => t.id)
+      );
+      const expiredPtIds = new Set(
+        projectTasks.filter((t) => t.completed && t.completedAt && now - t.completedAt > retentionMs).map((t) => t.id)
+      );
+      return {
+        tasks: expiredTaskIds.size > 0
+          ? tasks.filter((t) => !expiredTaskIds.has(t.id)).map((t) => expiredTaskIds.has(t.parentId!) ? { ...t, parentId: null } : t)
+          : tasks,
+        projectTasks: expiredPtIds.size > 0
+          ? projectTasks.filter((t) => !expiredPtIds.has(t.id)).map((t) => expiredPtIds.has(t.parentId!) ? { ...t, parentId: null } : t)
+          : projectTasks,
+      };
+    }
+
     loadAllData(user.uid).then((data) => {
       loadSettings(user.uid).then((settings) => {
         if (settings) {
@@ -116,38 +139,20 @@ export default function App() {
           localStorage.setItem('cutasks_delete_mode', settings.deleteMode);
           document.documentElement.setAttribute('data-theme', settings.theme);
         }
-      }).catch(() => {});
-
-      const mode = (localStorage.getItem('cutasks_delete_mode') || 'instant') as 'instant' | '3days' | '7days';
-      let tasks = data.tasks;
-      let projectTasks = data.projectTasks;
-
-      if (mode !== 'instant') {
-        const retentionMs = mode === '3days' ? 3 * 24 * 60 * 60 * 1000 : 7 * 24 * 60 * 60 * 1000;
-        const now = Date.now();
-        const expiredTaskIds = new Set(
-          tasks.filter((t) => t.completed && t.completedAt && now - t.completedAt > retentionMs).map((t) => t.id)
-        );
-        const expiredPtIds = new Set(
-          projectTasks.filter((t) => t.completed && t.completedAt && now - t.completedAt > retentionMs).map((t) => t.id)
-        );
-        if (expiredTaskIds.size > 0) {
-          tasks = tasks
-            .filter((t) => !expiredTaskIds.has(t.id))
-            .map((t) => expiredTaskIds.has(t.parentId!) ? { ...t, parentId: null } : t);
-        }
-        if (expiredPtIds.size > 0) {
-          projectTasks = projectTasks
-            .filter((t) => !expiredPtIds.has(t.id))
-            .map((t) => expiredPtIds.has(t.parentId!) ? { ...t, parentId: null } : t);
-        }
-      }
-
-      setTasks(tasks);
-      setProjects(data.projects);
-      setSections(data.sections);
-      setProjectTasks(projectTasks);
-      fsLoadedRef.current = true;
+        const cleaned = cleanupExpired(data.tasks, data.projectTasks);
+        setTasks(cleaned.tasks);
+        setProjects(data.projects);
+        setSections(data.sections);
+        setProjectTasks(cleaned.projectTasks);
+        fsLoadedRef.current = true;
+      }).catch(() => {
+        const cleaned = cleanupExpired(data.tasks, data.projectTasks);
+        setTasks(cleaned.tasks);
+        setProjects(data.projects);
+        setSections(data.sections);
+        setProjectTasks(cleaned.projectTasks);
+        fsLoadedRef.current = true;
+      });
     }).catch(() => {
       fsLoadedRef.current = true;
     });
