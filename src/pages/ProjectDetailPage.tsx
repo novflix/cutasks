@@ -1,7 +1,7 @@
 import { useState, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
 import { AddSquare, Pen, TrashBinMinimalistic, NotesMinimalistic } from '@solar-icons/react';
-import type { Project, Section as SectionType, ProjectTask, Priority } from '../types';
-import { generateId, canAddSubtask, getTaskDepth, MAX_SUBTASK_DEPTH } from '../utils';
+import type { Project, Section as SectionType, ProjectTask } from '../types';
+import { generateId, canAddSubtask, getTaskDepth, MAX_SUBTASK_DEPTH, priorityOrder } from '../utils';
 import TaskCard from '../components/TaskCard';
 import SectionFormModal from '../components/SectionFormModal';
 
@@ -16,8 +16,6 @@ interface ProjectDetailPageProps {
   onViewTask: (task: ProjectTask) => void;
   onUpdateTask: (id: string, changes: Partial<ProjectTask>) => void;
 }
-
-const priorityOrder: Record<Priority, number> = { high: 0, medium: 1, low: 2 };
 
 export default function ProjectDetailPage({
   project, sections, tasks,

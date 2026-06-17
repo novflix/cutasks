@@ -1,3 +1,7 @@
+import type { Priority } from './types';
+
+export const priorityOrder: Record<Priority, number> = { high: 0, medium: 1, low: 2 };
+
 export function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }

@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import './App.css';
 import type { Task, Priority, Page, FilterType, Project, ProjectStatus, Section, ProjectTask } from './types';
-import { generateId } from './utils';
+import { generateId, priorityOrder } from './utils';
 import { loadTasks, saveTasks as localSaveTasks, getAllTags, loadProjects, saveProjects as localSaveProjects, loadSections, saveSections as localSaveSections, loadProjectTasks, saveProjectTasks as localSaveProjectTasks } from './storage';
 import { useAuth } from './contexts/AuthContext';
 import { saveTasks as fsSaveTasks, saveProjects as fsSaveProjects, saveSections as fsSaveSections, saveProjectTasks as fsSaveProjectTasks, loadAllData, loadSettings } from './services/firestore';
@@ -25,8 +25,6 @@ import ProtectedRoute from './components/ProtectedRoute';
 import { getDeadlineStatus } from './utils';
 import { MinimalisticMagnifier, ArrowLeft } from '@solar-icons/react';
 import { PROJECT_ICONS } from './constants';
-
-const priorityOrder: Record<Priority, number> = { high: 0, medium: 1, low: 2 };
 
 function AnimatedRoutes({ routes }: { routes: React.ReactNode }) {
   const location = useLocation();
