@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, AltArrowLeft, AltArrowRight, AddSquare, CloseCircle,
   Book, Running, Meditation, Waterdrop, Heart, MoonStars,
-  CupHot, Flame, Target, MedalStar, Shield, Leaf, Star, Bolt, Alarm,
+  CupHot, Target, MedalStar, Shield, Leaf, Star, Bolt, Alarm,
   SmileCircle, Football, CodeSquare, Palette, MusicNote, Notes,
 } from '@solar-icons/react';
 import type { Habit } from '../types';
@@ -439,8 +439,6 @@ export default function HabitsPage({ habits, onHabitsChange }: HabitsPageProps) 
                 type="submit"
                 className="btn btn-primary"
                 disabled={!newName.trim()}
-                form="habits-new-form"
-                onClick={handleFormSubmit}
               >
                 Create Habit
               </button>
