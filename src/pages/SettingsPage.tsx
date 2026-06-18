@@ -70,6 +70,7 @@ export default function SettingsPage() {
   useEffect(() => {
     localStorage.setItem('cutasks_delete_mode', deleteMode);
     localStorage.setItem('cutasks_week_start', weekStartDay);
+    window.dispatchEvent(new CustomEvent('week-start-changed', { detail: weekStartDay }));
     if (user) saveSettings(user.uid, { theme: activeTheme, deleteMode, weekStart: weekStartDay }).catch(() => {});
   }, [deleteMode, weekStartDay, activeTheme, user]);
 

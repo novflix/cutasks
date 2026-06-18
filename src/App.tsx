@@ -642,8 +642,15 @@ export default function App() {
     function handleSaveSections(e: Event) {
       setSections((e as CustomEvent).detail);
     }
+    function handleWeekStartChange(e: Event) {
+      setWeekStart((e as CustomEvent).detail);
+    }
     window.addEventListener('save-sections', handleSaveSections);
-    return () => window.removeEventListener('save-sections', handleSaveSections);
+    window.addEventListener('week-start-changed', handleWeekStartChange);
+    return () => {
+      window.removeEventListener('save-sections', handleSaveSections);
+      window.removeEventListener('week-start-changed', handleWeekStartChange);
+    };
   }, []);
 
   const handleCreate = activePage === 'project-detail' ? () => openCreateProjectTask(null) : activePage === 'projects' ? openCreateProject : openCreateForm;
