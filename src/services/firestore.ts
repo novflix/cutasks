@@ -9,7 +9,7 @@ import {
   type DocumentData,
 } from 'firebase/firestore';
 import { db } from '../firebase';
-import type { Task, Project, Section, ProjectTask } from '../types';
+import type { Task, Project, Section, ProjectTask, Habit } from '../types';
 
 function userCol(uid: string, name: string) {
   return collection(db, 'users', uid, name);
@@ -137,12 +137,40 @@ function docToProjectTask(id: string, data: DocumentData): ProjectTask {
   };
 }
 
+function habitToDoc(h: Habit): DocumentData {
+  return stripUndefined({
+    name: h.name,
+    icon: h.icon,
+    color: h.color,
+    streak: h.streak,
+    weekdays: h.weekdays || [0, 1, 2, 3, 4, 5, 6],
+    completions: h.completions || {},
+    createdAt: h.createdAt,
+    updatedAt: h.updatedAt,
+  });
+}
+
+function docToHabit(id: string, data: DocumentData): Habit {
+  return {
+    id,
+    name: data.name ?? '',
+    icon: data.icon ?? 'Book',
+    color: data.color ?? '#ed9b6d',
+    streak: data.streak ?? 0,
+    weekdays: data.weekdays ?? [0, 1, 2, 3, 4, 5, 6],
+    completions: data.completions ?? {},
+    createdAt: data.createdAt ?? 0,
+    updatedAt: data.updatedAt ?? 0,
+  };
+}
+
 export async function loadAllData(uid: string) {
-  const [taskSnap, projectSnap, sectionSnap, ptSnap] = await Promise.all([
+  const [taskSnap, projectSnap, sectionSnap, ptSnap, habitSnap] = await Promise.all([
     getDocs(userCol(uid, 'tasks')),
     getDocs(userCol(uid, 'projects')),
     getDocs(userCol(uid, 'sections')),
     getDocs(userCol(uid, 'projectTasks')),
+    getDocs(userCol(uid, 'habits')),
   ]);
 
   return {
@@ -150,6 +178,7 @@ export async function loadAllData(uid: string) {
     projects: projectSnap.docs.map((d) => docToProject(d.id, d.data())),
     sections: sectionSnap.docs.map((d) => docToSection(d.id, d.data())),
     projectTasks: ptSnap.docs.map((d) => docToProjectTask(d.id, d.data())),
+    habits: habitSnap.docs.map((d) => docToHabit(d.id, d.data())),
   };
 }
 
@@ -258,6 +287,23 @@ export async function saveProjectTasks(uid: string, tasks: ProjectTask[]) {
   for (const id of currentIds) {
     if (!newIds.has(id)) {
       batch.delete(userDoc(uid, 'projectTasks', id));
+    }
+  }
+  await batch.commit();
+}
+
+export async function saveHabits(uid: string, habits: Habit[]) {
+  const snap = await getDocs(userCol(uid, 'habits'));
+  const currentIds = new Set(snap.docs.map((d) => d.id));
+  const newIds = new Set(habits.map((h) => h.id));
+
+  const batch = writeBatch(db);
+  for (const h of habits) {
+    batch.set(userDoc(uid, 'habits', h.id), habitToDoc(h));
+  }
+  for (const id of currentIds) {
+    if (!newIds.has(id)) {
+      batch.delete(userDoc(uid, 'habits', id));
     }
   }
   await batch.commit();

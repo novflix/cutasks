@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import './App.css';
-import type { Task, Priority, Page, FilterType, Project, ProjectStatus, Section, ProjectTask } from './types';
+import type { Task, Priority, Page, FilterType, Project, ProjectStatus, Section, ProjectTask, Habit } from './types';
 import { generateId, priorityOrder } from './utils';
-import { loadTasks, saveTasks as localSaveTasks, getAllTags, loadProjects, saveProjects as localSaveProjects, loadSections, saveSections as localSaveSections, loadProjectTasks, saveProjectTasks as localSaveProjectTasks } from './storage';
+import { loadTasks, saveTasks as localSaveTasks, getAllTags, loadProjects, saveProjects as localSaveProjects, loadSections, saveSections as localSaveSections, loadProjectTasks, saveProjectTasks as localSaveProjectTasks, loadHabits, saveHabits as localSaveHabits } from './storage';
 import { useAuth } from './contexts/AuthContext';
-import { saveTasks as fsSaveTasks, saveProjects as fsSaveProjects, saveSections as fsSaveSections, saveProjectTasks as fsSaveProjectTasks, loadAllData, loadSettings } from './services/firestore';
+import { saveTasks as fsSaveTasks, saveProjects as fsSaveProjects, saveSections as fsSaveSections, saveProjectTasks as fsSaveProjectTasks, saveHabits as fsSaveHabits, loadAllData, loadSettings } from './services/firestore';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import TaskDetailModal from './components/TaskDetailModal';
@@ -67,6 +67,7 @@ export default function App() {
   const [projectSearch, setProjectSearch] = useState('');
   const [projectTasks, setProjectTasks] = useState<ProjectTask[]>(loadProjectTasks);
   const [sections, setSections] = useState<Section[]>(loadSections);
+  const [habits, setHabits] = useState<Habit[]>(loadHabits);
   const [projectTaskFilter, setProjectTaskFilter] = useState<FilterType>('all');
   const [projectTaskSearch, setProjectTaskSearch] = useState('');
   const [showProjectTaskForm, setShowProjectTaskForm] = useState(false);
@@ -139,6 +140,7 @@ export default function App() {
         setProjects(data.projects);
         setSections(data.sections);
         setProjectTasks(cleaned.projectTasks);
+        setHabits(data.habits);
         fsLoadedRef.current = true;
       }).catch(() => {
         const cleaned = cleanupExpired(data.tasks, data.projectTasks);
@@ -146,6 +148,7 @@ export default function App() {
         setProjects(data.projects);
         setSections(data.sections);
         setProjectTasks(cleaned.projectTasks);
+        setHabits(data.habits);
         fsLoadedRef.current = true;
       });
     }).catch(() => {
@@ -194,6 +197,11 @@ export default function App() {
     localSaveSections(sections);
     if (user && fsLoadedRef.current) fsSaveSections(user.uid, sections).catch(() => {});
   }, [sections, user]);
+
+  useEffect(() => {
+    localSaveHabits(habits);
+    if (user && fsLoadedRef.current) fsSaveHabits(user.uid, habits).catch(() => {});
+  }, [habits, user]);
 
   const filteredTasks = useMemo(() => {
     let result = tasks;
@@ -666,7 +674,7 @@ export default function App() {
               <Route path="/habits" element={
                 <ProtectedRoute>
                   <main className="main">
-                    <HabitsPage />
+                    <HabitsPage habits={habits} onHabitsChange={setHabits} />
                   </main>
                 </ProtectedRoute>
               } />

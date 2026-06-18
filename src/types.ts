@@ -43,3 +43,15 @@ export interface ProjectTask extends Task {
 export type Page = 'home' | 'tasks' | 'projects' | 'project-detail' | 'settings';
 
 export type FilterType = 'all' | 'active' | 'completed';
+
+export interface Habit {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  streak: number;
+  weekdays: number[];
+  completions: Record<string, boolean>;
+  createdAt: number;
+  updatedAt: number;
+}

@@ -1,4 +1,4 @@
-import type { Task, Project, Section, ProjectTask } from './types';
+import type { Task, Project, Section, ProjectTask, Habit } from './types';
 
 const STORAGE_KEY = 'cutasks_tasks';
 const PROJECTS_KEY = 'cutasks_projects';
@@ -91,4 +91,30 @@ export function loadProjectTasks(): ProjectTask[] {
 
 export function saveProjectTasks(tasks: ProjectTask[]) {
   localStorage.setItem(PROJECT_TASKS_KEY, JSON.stringify(tasks));
+}
+
+const HABITS_KEY = 'cutasks_habits';
+
+export function loadHabits(): Habit[] {
+  try {
+    const raw = localStorage.getItem(HABITS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return parsed.map((h: Habit) => ({
+      ...h,
+      icon: h.icon || 'Book',
+      color: h.color || '#ed9b6d',
+      streak: h.streak || 0,
+      weekdays: h.weekdays || [0, 1, 2, 3, 4, 5, 6],
+      completions: h.completions || {},
+      createdAt: h.createdAt || Date.now(),
+      updatedAt: h.updatedAt || Date.now(),
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export function saveHabits(habits: Habit[]) {
+  localStorage.setItem(HABITS_KEY, JSON.stringify(habits));
 }
