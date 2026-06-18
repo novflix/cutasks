@@ -68,6 +68,7 @@ export default function App() {
   const [projectTasks, setProjectTasks] = useState<ProjectTask[]>(loadProjectTasks);
   const [sections, setSections] = useState<Section[]>(loadSections);
   const [habits, setHabits] = useState<Habit[]>(loadHabits);
+  const [weekStart, setWeekStart] = useState<string>(() => localStorage.getItem('cutasks_week_start') || 'monday');
   const [projectTaskFilter, setProjectTaskFilter] = useState<FilterType>('all');
   const [projectTaskSearch, setProjectTaskSearch] = useState('');
   const [showProjectTaskForm, setShowProjectTaskForm] = useState(false);
@@ -133,6 +134,7 @@ export default function App() {
         if (settings) {
           localStorage.setItem('cutasks_theme', settings.theme);
           localStorage.setItem('cutasks_delete_mode', settings.deleteMode);
+          localStorage.setItem('cutasks_week_start', settings.weekStart);
           document.documentElement.setAttribute('data-theme', settings.theme);
         }
         const cleaned = cleanupExpired(data.tasks, data.projectTasks);
@@ -674,7 +676,7 @@ export default function App() {
               <Route path="/habits" element={
                 <ProtectedRoute>
                   <main className="main">
-                    <HabitsPage habits={habits} onHabitsChange={setHabits} />
+                    <HabitsPage habits={habits} onHabitsChange={setHabits} weekStartDay={weekStart} />
                   </main>
                 </ProtectedRoute>
               } />

@@ -312,18 +312,20 @@ export async function saveHabits(uid: string, habits: Habit[]) {
 export interface UserSettings {
   theme: string;
   deleteMode: string;
+  weekStart: string;
 }
 
 export async function loadSettings(uid: string): Promise<UserSettings | null> {
   const snap = await getDoc(doc(db, 'users', uid, 'settings', 'prefs'));
   if (!snap.exists()) return null;
   const d = snap.data();
-  return { theme: d.t || 'dark', deleteMode: d.d || 'instant' };
+  return { theme: d.t || 'dark', deleteMode: d.d || 'instant', weekStart: d.w || 'monday' };
 }
 
 export async function saveSettings(uid: string, settings: UserSettings) {
   await setDoc(doc(db, 'users', uid, 'settings', 'prefs'), {
     t: settings.theme,
     d: settings.deleteMode,
+    w: settings.weekStart,
   });
 }

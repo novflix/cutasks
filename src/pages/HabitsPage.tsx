@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import {
   ArrowLeft, AltArrowLeft, AltArrowRight, AddSquare, CloseCircle,
   Book, Running, Meditation, Waterdrop, Heart, MoonStars,
-  CupHot, Target, MedalStar, Shield, Leaf, Star, Bolt, Alarm,
+  CupHot, Flame, Target, MedalStar, Shield, Leaf, Star, Bolt, Alarm,
   SmileCircle, Football, CodeSquare, Palette, MusicNote, Notes,
 } from '@solar-icons/react';
 import type { Habit } from '../types';
 import HabitDetailModal from '../components/HabitDetailModal';
 
-const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const ALL_DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December',
@@ -45,12 +45,18 @@ const HABIT_COLORS = [
   '#aed581', '#ff8a65',
 ];
 
-function getMonday(date: Date): Date {
+function getWeekStart(date: Date, mode: string): Date {
   const d = new Date(date);
-  const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-  d.setDate(diff);
   d.setHours(0, 0, 0, 0);
+  if (mode === 'saturday') {
+    const day = d.getDay();
+    const diff = d.getDate() - ((day + 1) % 7);
+    d.setDate(diff);
+  } else {
+    const day = d.getDay();
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    d.setDate(diff);
+  }
   return d;
 }
 
@@ -115,9 +121,10 @@ function calcStreak(completions: Record<string, boolean>, weekdays: number[]): n
 interface HabitsPageProps {
   habits: Habit[];
   onHabitsChange: (habits: Habit[] | ((prev: Habit[]) => Habit[])) => void;
+  weekStartDay: string;
 }
 
-export default function HabitsPage({ habits, onHabitsChange }: HabitsPageProps) {
+export default function HabitsPage({ habits, onHabitsChange, weekStartDay }: HabitsPageProps) {
   const navigate = useNavigate();
   const today = useMemo(() => {
     const d = new Date();
@@ -125,7 +132,7 @@ export default function HabitsPage({ habits, onHabitsChange }: HabitsPageProps) 
     return d;
   }, []);
 
-  const [weekStart, setWeekStart] = useState(() => getMonday(today));
+  const [weekStart, setWeekStart] = useState(() => getWeekStart(today, weekStartDay));
   const [selectedDay, setSelectedDay] = useState<Date>(today);
   const [showForm, setShowForm] = useState(false);
   const [formClosing, setFormClosing] = useState(false);
@@ -154,10 +161,17 @@ export default function HabitsPage({ habits, onHabitsChange }: HabitsPageProps) 
     });
   }, [weekStart]);
 
+  const dayNames = useMemo(() => {
+    if (weekStartDay === 'saturday') {
+      return ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+    }
+    return ALL_DAY_NAMES;
+  }, [weekStartDay]);
+
   const isCurrentWeek = useMemo(() => {
-    const todayMonday = getMonday(today);
-    return isSameDay(weekStart, todayMonday);
-  }, [weekStart, today]);
+    const todayWeekStart = getWeekStart(today, weekStartDay);
+    return isSameDay(weekStart, todayWeekStart);
+  }, [weekStart, today, weekStartDay]);
 
   const selectedKey = dateKey(selectedDay);
   const selectedDow = getDayOfWeek(selectedDay);
@@ -289,7 +303,7 @@ export default function HabitsPage({ habits, onHabitsChange }: HabitsPageProps) 
               className={`habits-day ${isToday ? 'habits-day--today' : ''} ${isSelected && !isToday ? 'habits-day--selected' : ''} ${isPast ? 'habits-day--past' : ''}`}
               onClick={() => setSelectedDay(day)}
             >
-              <span className="habits-day-name">{DAY_NAMES[i]}</span>
+              <span className="habits-day-name">{dayNames[i]}</span>
               <div className="habits-day-pill">
                 <span className="habits-day-num">{dayNum}</span>
               </div>
@@ -412,7 +426,7 @@ export default function HabitsPage({ habits, onHabitsChange }: HabitsPageProps) 
               <div className="fm-field">
                 <label className="fm-label">Repeat on</label>
                 <div className="habits-weekday-picker">
-                  {DAY_NAMES.map((name, i) => (
+                  {dayNames.map((name, i) => (
                     <button
                       key={i}
                       type="button"

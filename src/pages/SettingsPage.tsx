@@ -5,11 +5,17 @@ import { saveSettings } from '../services/firestore';
 import { useAuth } from '../contexts/AuthContext';
 
 type DeleteMode = 'instant' | '3days' | '7days';
+type WeekStartDay = 'monday' | 'saturday';
 
 const DELETE_OPTIONS: { value: DeleteMode; label: string; desc: string }[] = [
   { value: 'instant', label: 'Immediately', desc: 'Delete right after completion' },
   { value: '3days', label: 'After 3 days', desc: 'Keep for 3 days, then remove' },
   { value: '7days', label: 'After 7 days', desc: 'Keep for a week, then remove' },
+];
+
+const WEEK_START_OPTIONS: { value: WeekStartDay; label: string; desc: string }[] = [
+  { value: 'monday', label: 'Monday', desc: 'Week starts on Monday' },
+  { value: 'saturday', label: 'Saturday', desc: 'Week starts on Saturday' },
 ];
 
 interface ThemeOption {
@@ -51,17 +57,21 @@ export default function SettingsPage() {
   const [deleteMode, setDeleteMode] = useState<DeleteMode>(() => {
     return (localStorage.getItem('cutasks_delete_mode') as DeleteMode) || 'instant';
   });
+  const [weekStartDay, setWeekStartDay] = useState<WeekStartDay>(() => {
+    return (localStorage.getItem('cutasks_week_start') as WeekStartDay) || 'monday';
+  });
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', activeTheme);
     localStorage.setItem('cutasks_theme', activeTheme);
-    if (user) saveSettings(user.uid, { theme: activeTheme, deleteMode }).catch(() => {});
-  }, [activeTheme, deleteMode, user]);
+    if (user) saveSettings(user.uid, { theme: activeTheme, deleteMode, weekStart: weekStartDay }).catch(() => {});
+  }, [activeTheme, deleteMode, weekStartDay, user]);
 
   useEffect(() => {
     localStorage.setItem('cutasks_delete_mode', deleteMode);
-    if (user) saveSettings(user.uid, { theme: activeTheme, deleteMode }).catch(() => {});
-  }, [deleteMode, activeTheme, user]);
+    localStorage.setItem('cutasks_week_start', weekStartDay);
+    if (user) saveSettings(user.uid, { theme: activeTheme, deleteMode, weekStart: weekStartDay }).catch(() => {});
+  }, [deleteMode, weekStartDay, activeTheme, user]);
 
   const initials = user ? getInitials(user.displayName, user.email) : '?';
   const avatarColor = user ? hashColor(user.email || user.displayName || '') : '#ed9b6d';
@@ -130,6 +140,27 @@ export default function SettingsPage() {
               key={opt.value}
               className={`delete-option${deleteMode === opt.value ? ' active' : ''}`}
               onClick={() => setDeleteMode(opt.value)}
+            >
+              <div className="delete-option-radio">
+                <div className="delete-option-dot" />
+              </div>
+              <div className="delete-option-info">
+                <span className="delete-option-label">{opt.label}</span>
+                <span className="delete-option-desc">{opt.desc}</span>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="settings-section">
+        <span className="settings-section-label">Week starts on</span>
+        <div className="delete-options">
+          {WEEK_START_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              className={`delete-option${weekStartDay === opt.value ? ' active' : ''}`}
+              onClick={() => setWeekStartDay(opt.value)}
             >
               <div className="delete-option-radio">
                 <div className="delete-option-dot" />
