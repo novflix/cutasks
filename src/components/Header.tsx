@@ -23,9 +23,9 @@ export default function Header({ stats, onCreate, createLabel = 'New Task' }: He
               <strong>{s.value}</strong> {s.label}
             </span>
           ))}
-          <button className="btn btn-primary stat-create-btn" onClick={onCreate}>
+          <button className="btn-add" onClick={onCreate}>
             <AddSquare size={18} />
-            <span className="btn-label">{createLabel}</span>
+            <span>{createLabel}</span>
           </button>
         </div>
       </div>
