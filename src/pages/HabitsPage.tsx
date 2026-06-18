@@ -160,6 +160,12 @@ export default function HabitsPage({ habits, onHabitsChange }: HabitsPageProps) 
   }, [weekStart, today]);
 
   const selectedKey = dateKey(selectedDay);
+  const selectedDow = getDayOfWeek(selectedDay);
+
+  const visibleHabits = useMemo(
+    () => habits.filter((h) => h.weekdays.includes(selectedDow)),
+    [habits, selectedDow]
+  );
 
   function toggleHabit(id: string) {
     onHabitsChange((prev) =>
@@ -299,13 +305,13 @@ export default function HabitsPage({ habits, onHabitsChange }: HabitsPageProps) 
       </div>
 
       <div className="habits-list">
-        {habits.length === 0 ? (
+        {visibleHabits.length === 0 ? (
           <div className="habits-empty">
-            <p className="habits-empty-title">No habits yet</p>
-            <p className="habits-empty-sub">Tap "New" to create your first habit</p>
+            <p className="habits-empty-title">No habits for this day</p>
+            <p className="habits-empty-sub">{habits.length === 0 ? 'Tap "New" to create your first habit' : 'No habits scheduled'}</p>
           </div>
         ) : (
-          habits.map((habit, i) => {
+          visibleHabits.map((habit, i) => {
             const isDone = !!habit.completions[selectedKey];
             return (
               <div
