@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { Logout } from '@solar-icons/react';
-import { logout } from '../services/auth';
+import { useState, useEffect, useRef } from 'react';
+import { Logout, Key, CheckCircle, CloseCircle } from '@solar-icons/react';
+import { logout, changePassword } from '../services/auth';
 import { saveSettings } from '../services/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import type { PomoConfig } from './PomodoroPage';
@@ -67,6 +67,15 @@ export default function SettingsPage() {
   const [pomoConfig, setPomoConfig] = useState<PomoConfig>(() => {
     try { const r = localStorage.getItem(POMO_STORAGE); return r ? { ...DEFAULT_POMO, ...JSON.parse(r) } : DEFAULT_POMO; } catch { return DEFAULT_POMO; }
   });
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordModalClosing, setPasswordModalClosing] = useState(false);
+  const passwordModalTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', activeTheme);
@@ -86,8 +95,65 @@ export default function SettingsPage() {
     window.dispatchEvent(new CustomEvent('pomo-config-changed', { detail: pomoConfig }));
   }, [pomoConfig]);
 
+  function openPasswordModal() {
+    setPasswordModalClosing(false);
+    setShowPasswordModal(true);
+    setPasswordError('');
+    setPasswordSuccess(false);
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+  }
+
+  function closePasswordModal() {
+    setPasswordModalClosing(true);
+    passwordModalTimer.current = setTimeout(() => {
+      setShowPasswordModal(false);
+      setPasswordModalClosing(false);
+      setPasswordError('');
+      setPasswordSuccess(false);
+    }, 200);
+  }
+
   const initials = user ? getInitials(user.displayName, user.email) : '?';
   const avatarColor = user ? hashColor(user.email || user.displayName || '') : '#ed9b6d';
+
+  async function handleChangePassword() {
+    setPasswordError('');
+    setPasswordSuccess(false);
+    if (!currentPassword || !newPassword) {
+      setPasswordError('Fill in all fields');
+      return;
+    }
+    if (newPassword.length < 6) {
+      setPasswordError('New password must be at least 6 characters');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordError('Passwords do not match');
+      return;
+    }
+    setPasswordLoading(true);
+    try {
+      await changePassword(currentPassword, newPassword);
+      setPasswordSuccess(true);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setTimeout(() => closePasswordModal(), 1500);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Failed to change password';
+      if (msg.includes('wrong-password') || msg.includes('invalid-credential')) {
+        setPasswordError('Current password is incorrect');
+      } else if (msg.includes('weak-password')) {
+        setPasswordError('New password is too weak');
+      } else {
+        setPasswordError('Failed to change password');
+      }
+    } finally {
+      setPasswordLoading(false);
+    }
+  }
 
   return (
     <div className="settings-page">
@@ -107,6 +173,26 @@ export default function SettingsPage() {
             </div>
             <button className="account-logout" onClick={logout} title="Sign out">
               <Logout size={18} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {user && (
+        <div className="settings-section">
+          <span className="settings-section-label">Account</span>
+          <div className="account-actions-row">
+            <button className="account-action-btn" onClick={openPasswordModal}>
+              <div className="account-action-icon">
+                <Key size={18} />
+              </div>
+              <span className="account-action-text">Change password</span>
+            </button>
+            <button className="account-action-btn" disabled>
+              <div className="account-action-icon account-action-icon-muted">
+                <div className="delete-option-dot" />
+              </div>
+              <span className="account-action-text">Coming soon</span>
             </button>
           </div>
         </div>
@@ -224,6 +310,74 @@ export default function SettingsPage() {
           <span className="settings-footer-value">0.1.0</span>
         </div>
       </div>
+
+      {(showPasswordModal || passwordModalClosing) && (
+        <div className={`modal-overlay${passwordModalClosing ? ' closing' : ''}`} onClick={closePasswordModal}>
+          <div className={`modal${passwordModalClosing ? ' closing' : ''}`} onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Change password</h2>
+              <button className="btn-icon" onClick={closePasswordModal}>
+                <CloseCircle size={22} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="password-field">
+                <label className="password-label">Current password</label>
+                <input
+                  type="password"
+                  className="password-input"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="Enter current password"
+                />
+              </div>
+              <div className="password-field">
+                <label className="password-label">New password</label>
+                <input
+                  type="password"
+                  className="password-input"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password"
+                />
+              </div>
+              <div className="password-field">
+                <label className="password-label">Confirm new password</label>
+                <input
+                  type="password"
+                  className="password-input"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm new password"
+                />
+              </div>
+              {passwordError && (
+                <span className="password-error">{passwordError}</span>
+              )}
+              {passwordSuccess && (
+                <span className="password-success">
+                  <CheckCircle size={16} />
+                  Password changed successfully
+                </span>
+              )}
+              <button
+                className="password-submit"
+                onClick={handleChangePassword}
+                disabled={passwordLoading}
+              >
+                {passwordLoading ? (
+                  <span className="password-spinner" />
+                ) : (
+                  <>
+                    <Key size={16} />
+                    Change password
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
