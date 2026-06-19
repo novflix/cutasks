@@ -146,6 +146,9 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
   const nameRef = useRef<HTMLInputElement>(null);
   const formTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const detailTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [draggingId, setDraggingId] = useState<string | null>(null);
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
+  const dragStateRef = useRef<{ habitId: string; ghost: HTMLElement | null; currentTarget: string | null; isMouse: boolean } | null>(null);
 
   useEffect(() => {
     return () => {
@@ -260,6 +263,135 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
     onHabitsChange((prev) => prev.filter((h) => h.id !== id));
   }
 
+  function moveHabit(fromId: string, toId: string) {
+    onHabitsChange((prev) => {
+      const fromIdx = prev.findIndex((h) => h.id === fromId);
+      const toIdx = prev.findIndex((h) => h.id === toId);
+      if (fromIdx === -1 || toIdx === -1 || fromIdx === toIdx) return prev;
+      const next = [...prev];
+      const [moved] = next.splice(fromIdx, 1);
+      next.splice(toIdx, 0, moved);
+      return next;
+    });
+  }
+
+  function findTargetAtPoint(clientX: number, clientY: number, excludeId: string): string | null {
+    const el = document.elementFromPoint(clientX, clientY);
+    if (!el) return null;
+    const row = el.closest('.habits-drag-row');
+    if (!row) return null;
+    const id = row.getAttribute('data-habit-id');
+    if (id && id !== excludeId) return id;
+    return null;
+  }
+
+  useEffect(() => {
+    function handleMouseMove(e: MouseEvent) {
+      const ds = dragStateRef.current;
+      if (!ds || !ds.isMouse) return;
+      if (ds.ghost) {
+        ds.ghost.style.left = `${e.clientX - 30}px`;
+        ds.ghost.style.top = `${e.clientY - 20}px`;
+      }
+      if (ds.ghost) ds.ghost.style.pointerEvents = 'none';
+      const targetId = findTargetAtPoint(e.clientX, e.clientY, ds.habitId);
+      if (ds.ghost) ds.ghost.style.pointerEvents = '';
+      setDragOverId(targetId);
+      ds.currentTarget = targetId;
+    }
+
+    function handleMouseUp() {
+      const ds = dragStateRef.current;
+      if (!ds || !ds.isMouse) return;
+      if (ds.ghost) { ds.ghost.remove(); ds.ghost = null; }
+      if (ds.currentTarget) {
+        moveHabit(ds.habitId, ds.currentTarget);
+      }
+      dragStateRef.current = null;
+      setDraggingId(null);
+      setDragOverId(null);
+    }
+
+    function handleTouchMove(e: TouchEvent) {
+      const ds = dragStateRef.current;
+      if (!ds || ds.isMouse) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      if (ds.ghost) {
+        ds.ghost.style.left = `${touch.clientX - 30}px`;
+        ds.ghost.style.top = `${touch.clientY - 20}px`;
+      }
+      if (ds.ghost) ds.ghost.style.pointerEvents = 'none';
+      const targetId = findTargetAtPoint(touch.clientX, touch.clientY, ds.habitId);
+      if (ds.ghost) ds.ghost.style.pointerEvents = '';
+      setDragOverId(targetId);
+      ds.currentTarget = targetId;
+    }
+
+    function handleTouchEnd() {
+      const ds = dragStateRef.current;
+      if (!ds || ds.isMouse) return;
+      if (ds.ghost) { ds.ghost.remove(); ds.ghost = null; }
+      if (ds.currentTarget) {
+        moveHabit(ds.habitId, ds.currentTarget);
+      }
+      dragStateRef.current = null;
+      setDraggingId(null);
+      setDragOverId(null);
+    }
+
+    function handleCancel() {
+      if (dragStateRef.current?.ghost) {
+        dragStateRef.current.ghost.remove();
+        dragStateRef.current.ghost = null;
+      }
+      dragStateRef.current = null;
+      setDraggingId(null);
+      setDragOverId(null);
+    }
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd);
+    document.addEventListener('touchcancel', handleCancel);
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+      document.removeEventListener('touchcancel', handleCancel);
+    };
+  }, []);
+
+  function createGhost(habitId: string, clientX: number, clientY: number): HTMLElement {
+    const el = document.querySelector(`[data-habit-id="${habitId}"] .habits-item`);
+    const rect = el?.getBoundingClientRect();
+    const habit = habits.find((h) => h.id === habitId);
+    const ghost = document.createElement('div');
+    ghost.className = 'habits-drag-ghost';
+    ghost.textContent = habit?.name ?? '';
+    ghost.style.left = `${clientX - 30}px`;
+    ghost.style.top = `${clientY - 20}px`;
+    if (rect) ghost.style.width = `${rect.width}px`;
+    document.body.appendChild(ghost);
+    return ghost;
+  }
+
+  function handleMouseDown(habitId: string, e: React.MouseEvent) {
+    e.preventDefault();
+    const ghost = createGhost(habitId, e.clientX, e.clientY);
+    dragStateRef.current = { habitId, ghost, currentTarget: null, isMouse: true };
+    setDraggingId(habitId);
+  }
+
+  function handleTouchStart(habitId: string, e: React.TouchEvent) {
+    const touch = e.touches[0];
+    const ghost = createGhost(habitId, touch.clientX, touch.clientY);
+    dragStateRef.current = { habitId, ghost, currentTarget: null, isMouse: false };
+    setDraggingId(habitId);
+  }
+
   return (
     <>
       <div className="page-hero">
@@ -333,12 +465,26 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
         ) : (
           visibleHabits.map((habit, i) => {
             const isDone = !!habit.completions[selectedKey];
+            const isDragging = draggingId === habit.id;
+            const isDragOver = dragOverId === habit.id;
             return (
-              <div
-                key={habit.id}
-                className={`habits-item ${isDone ? 'habits-item--done' : ''}`}
-                style={{ animationDelay: `${i * 0.05}s` }}
-              >
+              <div key={habit.id} className="habits-drag-row" data-habit-id={habit.id}>
+                <div
+                  className="habits-drag-handle"
+                  onMouseDown={(e) => handleMouseDown(habit.id, e)}
+                  onTouchStart={(e) => handleTouchStart(habit.id, e)}
+                  title="Drag to reorder"
+                >
+                  <svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor">
+                    <circle cx="3" cy="2.5" r="1.5" /><circle cx="9" cy="2.5" r="1.5" />
+                    <circle cx="3" cy="8" r="1.5" /><circle cx="9" cy="8" r="1.5" />
+                    <circle cx="3" cy="13.5" r="1.5" /><circle cx="9" cy="13.5" r="1.5" />
+                  </svg>
+                </div>
+                <div
+                  className={`habits-item ${isDone ? 'habits-item--done' : ''} ${isDragging ? 'habits-item--dragging' : ''} ${isDragOver ? 'habits-item--drag-over' : ''}`}
+                  style={{ animationDelay: `${i * 0.05}s` }}
+                >
                 <button
                   className={`habits-check ${isDone ? 'habits-check--checked' : ''}`}
                   onClick={() => toggleHabit(habit.id)}
@@ -361,6 +507,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
                   <img src="/icons/streak.svg" alt="" className="habits-streak-icon" width="16" height="16" />
                   <span className="habits-streak-num">{habit.streak}</span>
                 </div>
+              </div>
               </div>
             );
           })
