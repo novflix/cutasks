@@ -31,7 +31,6 @@ export default function HomePage() {
             </div>
           </div>
           <div className="banner-content">
-            <div className="banner-badge">Coming soon</div>
             <h2 className="banner-title">Habits</h2>
             <p className="banner-desc">Build streaks, track daily routines, and become better every day</p>
             <div className="banner-arrow">
@@ -64,7 +63,6 @@ export default function HomePage() {
             </div>
           </div>
           <div className="banner-content">
-            <div className="banner-badge">Coming soon</div>
             <h2 className="banner-title">Pomodoro Timer</h2>
             <p className="banner-desc">Stay focused with timed work sessions and short breaks</p>
             <div className="banner-arrow">
