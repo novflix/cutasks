@@ -3,8 +3,9 @@ import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-
 import './App.css';
 import type { Task, Priority, Page, FilterType, Project, ProjectStatus, Section, ProjectTask, Habit } from './types';
 import type { PomoMode, PomoConfig } from './pages/PomodoroPage';
-import { LONG_BREAK_INTERVAL } from './pages/PomodoroPage';
+import { LONG_BREAK_INTERVAL } from './constants/pomo';
 import { generateId, priorityOrder } from './utils';
+import { loadPomoConfig, loadPomoSavedState, savePomoState, loadPomoRunning } from './utils/pomo';
 import { loadTasks, saveTasks as localSaveTasks, getAllTags, loadProjects, saveProjects as localSaveProjects, loadSections, saveSections as localSaveSections, loadProjectTasks, saveProjectTasks as localSaveProjectTasks, loadHabits, saveHabits as localSaveHabits } from './storage';
 import { useAuth } from './contexts/AuthContext';
 import { saveTasks as fsSaveTasks, saveProjects as fsSaveProjects, saveSections as fsSaveSections, saveProjectTasks as fsSaveProjectTasks, saveHabits as fsSaveHabits, loadAllData, loadSettings } from './services/firestore';
@@ -90,32 +91,11 @@ export default function App() {
   const fsLoadedRef = useRef(false);
   const habitFormOpenerRef = useRef<(() => void) | null>(null);
 
-  const POMO_STORAGE = 'cutasks_pomodoro';
-  const POMO_STATE = 'cutasks_pomodoro_state';
-  const defaultPomoConfig: PomoConfig = { work: 25, short: 5, long: 15 };
-  const [pomoConfig, setPomoConfig] = useState<PomoConfig>(() => {
-    try { const r = localStorage.getItem(POMO_STORAGE); return r ? { ...defaultPomoConfig, ...JSON.parse(r) } : defaultPomoConfig; } catch { return defaultPomoConfig; }
-  });
-
-  function loadPomoState() {
-    try {
-      const raw = localStorage.getItem(POMO_STATE);
-      if (!raw) return null;
-      const s: { running?: boolean; savedAt?: number; mode?: string; secondsLeft?: number; completedSessions?: number } = JSON.parse(raw);
-      if (s.running && s.savedAt) {
-        const elapsed = Math.floor((Date.now() - s.savedAt) / 1000);
-        const remaining = Math.max(0, (s.secondsLeft ?? 0) - elapsed);
-        if (remaining <= 0) return null;
-        return { mode: (s.mode ?? 'work') as PomoMode, secondsLeft: remaining, completedSessions: s.completedSessions ?? 0 };
-      }
-      return { mode: (s.mode ?? 'work') as PomoMode, secondsLeft: s.secondsLeft ?? 0, completedSessions: s.completedSessions ?? 0 };
-    } catch { return null; }
-  }
-
-  const savedPomo = loadPomoState();
+  const [pomoConfig, setPomoConfig] = useState<PomoConfig>(loadPomoConfig);
+  const savedPomo = loadPomoSavedState();
   const [pomoMode, setPomoMode] = useState<PomoMode>(savedPomo?.mode ?? 'work');
-  const [pomoSeconds, setPomoSeconds] = useState(() => savedPomo?.secondsLeft ?? pomoConfig.work * 60);
-  const [pomoRunning, setPomoRunning] = useState(false);
+  const [pomoSeconds, setPomoSeconds] = useState(savedPomo?.secondsLeft ?? pomoConfig.work * 60);
+  const [pomoRunning, setPomoRunning] = useState(loadPomoRunning);
   const [pomoSessions, setPomoSessions] = useState(savedPomo?.completedSessions ?? 0);
   const [pomoCelebrate, setPomoCelebrate] = useState(false);
   const [pomoMiniVisible, setPomoMiniVisible] = useState(false);
@@ -124,12 +104,13 @@ export default function App() {
   const pomoMiniTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    const state = { mode: pomoMode, secondsLeft: pomoSeconds, completedSessions: pomoSessions, running: pomoRunning, savedAt: Date.now() };
-    localStorage.setItem(POMO_STATE, JSON.stringify(state));
+    savePomoState(pomoMode, pomoSeconds, pomoSessions, pomoRunning);
   }, [pomoMode, pomoSeconds, pomoSessions, pomoRunning]);
 
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     if (pomoRunning) {
+      if (pomoMiniTimer.current) clearTimeout(pomoMiniTimer.current);
       setPomoMiniClosing(false);
       setPomoMiniVisible(true);
     } else if (pomoMiniVisible) {
@@ -140,24 +121,15 @@ export default function App() {
       }, 300);
     }
     return () => { if (pomoMiniTimer.current) clearTimeout(pomoMiniTimer.current); };
-  }, [pomoRunning]);
-
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(POMO_STATE);
-      if (raw) {
-        const s = JSON.parse(raw);
-        if (s.running && s.secondsLeft > 0) setPomoRunning(true);
-      }
-    } catch { /* ignore */ }
-  }, []);
+  }, [pomoRunning, pomoMiniVisible]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   const activePage: Page = location.pathname.startsWith('/projects/') ? 'project-detail' : location.pathname.startsWith('/projects') ? 'projects' : location.pathname.startsWith('/settings') ? 'settings' : location.pathname.startsWith('/habits') || location.pathname.startsWith('/pomodoro') || location.pathname.startsWith('/home') ? 'home' : 'tasks';
   const activeProjectId = activePage === 'project-detail' ? location.pathname.split('/')[2] : null;
   const activeProject = useMemo(() => activeProjectId ? projects.find((p) => p.id === activeProjectId) ?? null : null, [projects, activeProjectId]);
 
   const tasksRef = useRef(tasks);
-  tasksRef.current = tasks;
+  useEffect(() => { tasksRef.current = tasks; });
   const historyRef = useRef<Task[][]>([]);
   const formTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const detailTimer = useRef<ReturnType<typeof setTimeout> | null>(null);

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import type { PomoMode } from '../pages/PomodoroPage';
-import { MODE_META } from '../pages/PomodoroPage';
+import { MODE_META } from '../constants/pomo';
 
 interface PomoMiniTimerProps {
   mode: PomoMode;
