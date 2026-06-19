@@ -16,7 +16,7 @@
     align-items: center;
     justify-content: center;
     position: fixed;
-    bottom: 16px;
+    bottom: 28px;
     left: 0;
     right: 0;
     z-index: 200;
@@ -166,7 +166,7 @@
 @media (max-width: 360px) {
   .mobile-bottom-bar {
     gap: 10px;
-    bottom: 12px;
+    bottom: 24px;
   }
 
   .mobile-nav {
