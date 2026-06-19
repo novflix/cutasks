@@ -467,6 +467,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
             const isDone = !!habit.completions[selectedKey];
             const isDragging = draggingId === habit.id;
             const isDragOver = dragOverId === habit.id;
+            const isFuture = selectedDay > today;
             return (
               <div key={habit.id} className="habits-drag-row" data-habit-id={habit.id}>
                 <div
@@ -486,8 +487,9 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
                   style={{ animationDelay: `${i * 0.05}s` }}
                 >
                 <button
-                  className={`habits-check ${isDone ? 'habits-check--checked' : ''}`}
-                  onClick={() => toggleHabit(habit.id)}
+                  className={`habits-check ${isDone ? 'habits-check--checked' : ''} ${isFuture ? 'habits-check--disabled' : ''}`}
+                  onClick={() => { if (!isFuture) toggleHabit(habit.id); }}
+                  disabled={isFuture}
                   aria-label={isDone ? `Undo ${habit.name}` : `Complete ${habit.name}`}
                 >
                   <span className="habits-check-particles">
