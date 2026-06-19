@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { Logout, Key, CheckCircle, CloseCircle } from '@solar-icons/react';
-import { logout, changePassword } from '../services/auth';
+import { Logout, Key, CheckCircle, CloseCircle, TrashBinMinimalistic } from '@solar-icons/react';
+import { logout, changePassword, deleteAccount } from '../services/auth';
 import { saveSettings } from '../services/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import type { PomoConfig } from './PomodoroPage';
@@ -76,6 +76,12 @@ export default function SettingsPage() {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordModalClosing, setPasswordModalClosing] = useState(false);
   const passwordModalTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteModalClosing, setDeleteModalClosing] = useState(false);
+  const deleteModalTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteError, setDeleteError] = useState('');
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', activeTheme);
@@ -155,6 +161,44 @@ export default function SettingsPage() {
     }
   }
 
+  function openDeleteModal() {
+    setDeleteModalClosing(false);
+    setShowDeleteModal(true);
+    setDeleteError('');
+    setDeletePassword('');
+  }
+
+  function closeDeleteModal() {
+    setDeleteModalClosing(true);
+    deleteModalTimer.current = setTimeout(() => {
+      setShowDeleteModal(false);
+      setDeleteModalClosing(false);
+      setDeleteError('');
+      setDeletePassword('');
+    }, 200);
+  }
+
+  async function handleDeleteAccount() {
+    setDeleteError('');
+    if (!deletePassword) {
+      setDeleteError('Enter your password to confirm');
+      return;
+    }
+    setDeleteLoading(true);
+    try {
+      await deleteAccount(deletePassword);
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Failed to delete account';
+      if (msg.includes('wrong-password') || msg.includes('invalid-credential')) {
+        setDeleteError('Incorrect password');
+      } else {
+        setDeleteError('Failed to delete account');
+      }
+    } finally {
+      setDeleteLoading(false);
+    }
+  }
+
   return (
     <div className="settings-page">
       <div className="page-hero">
@@ -163,6 +207,7 @@ export default function SettingsPage() {
 
       {user && (
         <div className="settings-section">
+          <span className="settings-section-label">Account</span>
           <div className="account-card">
             <div className="account-avatar" style={{ background: `${avatarColor}20`, color: avatarColor }}>
               <span className="account-avatar-text">{initials}</span>
@@ -175,12 +220,6 @@ export default function SettingsPage() {
               <Logout size={18} />
             </button>
           </div>
-        </div>
-      )}
-
-      {user && (
-        <div className="settings-section">
-          <span className="settings-section-label">Account</span>
           <div className="account-actions-row">
             <button className="account-action-btn" onClick={openPasswordModal}>
               <div className="account-action-icon">
@@ -188,11 +227,11 @@ export default function SettingsPage() {
               </div>
               <span className="account-action-text">Change password</span>
             </button>
-            <button className="account-action-btn" disabled>
-              <div className="account-action-icon account-action-icon-muted">
-                <div className="delete-option-dot" />
+            <button className="account-action-btn account-action-danger" onClick={openDeleteModal}>
+              <div className="account-action-icon account-action-icon-danger">
+                <TrashBinMinimalistic size={18} />
               </div>
-              <span className="account-action-text">Coming soon</span>
+              <span className="account-action-text">Delete account</span>
             </button>
           </div>
         </div>
@@ -371,6 +410,51 @@ export default function SettingsPage() {
                   <>
                     <Key size={16} />
                     Change password
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {(showDeleteModal || deleteModalClosing) && (
+        <div className={`modal-overlay${deleteModalClosing ? ' closing' : ''}`} onClick={closeDeleteModal}>
+          <div className={`modal${deleteModalClosing ? ' closing' : ''}`} onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Delete account</h2>
+              <button className="btn-icon" onClick={closeDeleteModal}>
+                <CloseCircle size={22} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <p className="delete-warning-text">
+                This action is <strong>irreversible</strong>. All your data including tasks, projects, habits, and settings will be permanently deleted.
+              </p>
+              <div className="password-field">
+                <label className="password-label">Enter your password to confirm</label>
+                <input
+                  type="password"
+                  className="password-input"
+                  value={deletePassword}
+                  onChange={(e) => setDeletePassword(e.target.value)}
+                  placeholder="Your password"
+                />
+              </div>
+              {deleteError && (
+                <span className="password-error">{deleteError}</span>
+              )}
+              <button
+                className="delete-account-submit"
+                onClick={handleDeleteAccount}
+                disabled={deleteLoading}
+              >
+                {deleteLoading ? (
+                  <span className="password-spinner" />
+                ) : (
+                  <>
+                    <TrashBinMinimalistic size={16} />
+                    Delete my account
                   </>
                 )}
               </button>
