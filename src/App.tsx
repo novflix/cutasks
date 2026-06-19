@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import './App.css';
 import type { Task, Priority, Page, FilterType, Project, ProjectStatus, Section, ProjectTask, Habit } from './types';
+import type { PomoMode, PomoConfig } from './pages/PomodoroPage';
+import { LONG_BREAK_INTERVAL } from './pages/PomodoroPage';
 import { generateId, priorityOrder } from './utils';
 import { loadTasks, saveTasks as localSaveTasks, getAllTags, loadProjects, saveProjects as localSaveProjects, loadSections, saveSections as localSaveSections, loadProjectTasks, saveProjectTasks as localSaveProjectTasks, loadHabits, saveHabits as localSaveHabits } from './storage';
 import { useAuth } from './contexts/AuthContext';
@@ -86,6 +88,22 @@ export default function App() {
   const detailTimer2 = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fsLoadedRef = useRef(false);
   const habitFormOpenerRef = useRef<(() => void) | null>(null);
+
+  const POMO_STORAGE = 'cutasks_pomodoro';
+  const defaultPomoConfig: PomoConfig = { work: 25, short: 5, long: 15 };
+  const [pomoConfig, setPomoConfig] = useState<PomoConfig>(() => {
+    try { const r = localStorage.getItem(POMO_STORAGE); return r ? { ...defaultPomoConfig, ...JSON.parse(r) } : defaultPomoConfig; } catch { return defaultPomoConfig; }
+  });
+  const [pomoMode, setPomoMode] = useState<PomoMode>('work');
+  const [pomoSeconds, setPomoSeconds] = useState(() => pomoConfig.work * 60);
+  const [pomoRunning, setPomoRunning] = useState(false);
+  const [pomoSessions, setPomoSessions] = useState(0);
+  const [pomoCelebrate, setPomoCelebrate] = useState(false);
+  const [pomoShowSettings, setPomoShowSettings] = useState(false);
+  const [pomoSettingsClosing, setPomoSettingsClosing] = useState(false);
+  const [pomoTempConfig, setPomoTempConfig] = useState<PomoConfig>(pomoConfig);
+  const pomoIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pomoSettingsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const activePage: Page = location.pathname.startsWith('/projects/') ? 'project-detail' : location.pathname.startsWith('/projects') ? 'projects' : location.pathname.startsWith('/settings') ? 'settings' : location.pathname.startsWith('/habits') || location.pathname.startsWith('/pomodoro') || location.pathname.startsWith('/home') ? 'home' : 'tasks';
   const activeProjectId = activePage === 'project-detail' ? location.pathname.split('/')[2] : null;
@@ -654,6 +672,93 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => () => { if (pomoIntervalRef.current) clearInterval(pomoIntervalRef.current); }, []);
+  useEffect(() => () => { if (pomoSettingsTimer.current) clearTimeout(pomoSettingsTimer.current); }, []);
+
+  const pomoSwitchMode = useCallback((newMode: PomoMode) => {
+    if (pomoIntervalRef.current) clearInterval(pomoIntervalRef.current);
+    setPomoRunning(false);
+    setPomoMode(newMode);
+    setPomoSeconds(pomoConfig[newMode] * 60);
+  }, [pomoConfig]);
+
+  const pomoSkipSession = useCallback(() => {
+    if (pomoMode === 'work') {
+      const next = (pomoSessions + 1) % LONG_BREAK_INTERVAL === 0 ? 'long' : 'short';
+      setPomoSessions((s) => s + 1);
+      pomoSwitchMode(next);
+    } else {
+      pomoSwitchMode('work');
+    }
+  }, [pomoMode, pomoSessions, pomoSwitchMode]);
+
+  useEffect(() => {
+    if (!pomoRunning) {
+      if (pomoIntervalRef.current) clearInterval(pomoIntervalRef.current);
+      return;
+    }
+    pomoIntervalRef.current = setInterval(() => {
+      setPomoSeconds((prev) => {
+        if (prev <= 1) {
+          clearInterval(pomoIntervalRef.current!);
+          pomoIntervalRef.current = null;
+          setPomoRunning(false);
+          setPomoCelebrate(true);
+          setTimeout(() => setPomoCelebrate(false), 2000);
+
+          if (pomoMode === 'work') {
+            setPomoSessions((s) => s + 1);
+            const next = (pomoSessions + 1) % LONG_BREAK_INTERVAL === 0 ? 'long' : 'short';
+            setTimeout(() => pomoSwitchMode(next), 600);
+          } else {
+            setTimeout(() => pomoSwitchMode('work'), 600);
+          }
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => { if (pomoIntervalRef.current) clearInterval(pomoIntervalRef.current); };
+  }, [pomoRunning, pomoMode, pomoSessions, pomoSwitchMode]);
+
+  useEffect(() => {
+    if (pomoRunning) {
+      const m = Math.floor(pomoSeconds / 60);
+      const s = pomoSeconds % 60;
+      const label = pomoMode === 'work' ? 'Focus' : pomoMode === 'short' ? 'Short Break' : 'Long Break';
+      document.title = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')} — ${label} | CuTasks`;
+    } else if (location.pathname !== '/pomodoro') {
+      document.title = 'CuTasks';
+    }
+  }, [pomoRunning, pomoSeconds, pomoMode, location.pathname]);
+
+  function pomoToggleRunning() { setPomoRunning((r) => !r); }
+  function pomoReset() {
+    if (pomoIntervalRef.current) clearInterval(pomoIntervalRef.current);
+    setPomoRunning(false);
+    setPomoSeconds(pomoConfig[pomoMode] * 60);
+  }
+  function pomoOpenSettings() {
+    setPomoTempConfig(pomoConfig);
+    setPomoSettingsClosing(false);
+    setPomoShowSettings(true);
+  }
+  function pomoCloseSettings() {
+    setPomoSettingsClosing(true);
+    pomoSettingsTimer.current = setTimeout(() => { setPomoShowSettings(false); setPomoSettingsClosing(false); }, 200);
+  }
+  function pomoSaveSettings() {
+    const c = {
+      work: Math.max(1, Math.min(120, pomoTempConfig.work)),
+      short: Math.max(1, Math.min(60, pomoTempConfig.short)),
+      long: Math.max(1, Math.min(60, pomoTempConfig.long)),
+    };
+    setPomoConfig(c);
+    localStorage.setItem(POMO_STORAGE, JSON.stringify(c));
+    if (!pomoRunning) setPomoSeconds(c[pomoMode] * 60);
+    pomoCloseSettings();
+  }
+
   const handleCreate = location.pathname.startsWith('/habits')
     ? () => habitFormOpenerRef.current?.()
     : activePage === 'project-detail' ? () => openCreateProjectTask(null) : activePage === 'projects' ? openCreateProject : openCreateForm;
@@ -693,7 +798,25 @@ export default function App() {
               <Route path="/pomodoro" element={
                 <ProtectedRoute>
                   <main className="main">
-                    <PomodoroPage />
+                    <PomodoroPage
+                      mode={pomoMode}
+                      secondsLeft={pomoSeconds}
+                      running={pomoRunning}
+                      completedSessions={pomoSessions}
+                      config={pomoConfig}
+                      celebrate={pomoCelebrate}
+                      showSettings={pomoShowSettings}
+                      settingsClosing={pomoSettingsClosing}
+                      tempConfig={pomoTempConfig}
+                      onToggleRunning={pomoToggleRunning}
+                      onReset={pomoReset}
+                      onSwitchMode={pomoSwitchMode}
+                      onSkipSession={pomoSkipSession}
+                      onOpenSettings={pomoOpenSettings}
+                      onCloseSettings={pomoCloseSettings}
+                      onSaveSettings={pomoSaveSettings}
+                      onTempConfigChange={setPomoTempConfig}
+                    />
                   </main>
                 </ProtectedRoute>
               } />
