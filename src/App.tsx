@@ -118,12 +118,29 @@ export default function App() {
   const [pomoRunning, setPomoRunning] = useState(false);
   const [pomoSessions, setPomoSessions] = useState(savedPomo?.completedSessions ?? 0);
   const [pomoCelebrate, setPomoCelebrate] = useState(false);
+  const [pomoMiniVisible, setPomoMiniVisible] = useState(false);
+  const [pomoMiniClosing, setPomoMiniClosing] = useState(false);
   const pomoIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const pomoMiniTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const state = { mode: pomoMode, secondsLeft: pomoSeconds, completedSessions: pomoSessions, running: pomoRunning, savedAt: Date.now() };
     localStorage.setItem(POMO_STATE, JSON.stringify(state));
   }, [pomoMode, pomoSeconds, pomoSessions, pomoRunning]);
+
+  useEffect(() => {
+    if (pomoRunning) {
+      setPomoMiniClosing(false);
+      setPomoMiniVisible(true);
+    } else if (pomoMiniVisible) {
+      setPomoMiniClosing(true);
+      pomoMiniTimer.current = setTimeout(() => {
+        setPomoMiniVisible(false);
+        setPomoMiniClosing(false);
+      }, 300);
+    }
+    return () => { if (pomoMiniTimer.current) clearTimeout(pomoMiniTimer.current); };
+  }, [pomoRunning]);
 
   useEffect(() => {
     try {
@@ -1057,18 +1074,20 @@ export default function App() {
         activePage={activePage}
         onNavigate={sidebarNavigate}
         onCreate={handleCreate}
-        miniTimer={pomoRunning && location.pathname !== '/pomodoro' ? (
-          <PomoMiniTimer
-            mode={pomoMode}
-            secondsLeft={pomoSeconds}
-            running={pomoRunning}
-            onToggleRunning={pomoToggleRunning}
-          />
+        miniTimer={(pomoMiniVisible || pomoMiniClosing) && location.pathname !== '/pomodoro' ? (
+          <div className={pomoMiniClosing ? 'pomo-mini-exit' : ''}>
+            <PomoMiniTimer
+              mode={pomoMode}
+              secondsLeft={pomoSeconds}
+              running={pomoRunning}
+              onToggleRunning={pomoToggleRunning}
+            />
+          </div>
         ) : undefined}
       />
 
-      {pomoRunning && location.pathname !== '/pomodoro' && (
-        <div className="pomo-mini-desktop-only">
+      {(pomoMiniVisible || pomoMiniClosing) && location.pathname !== '/pomodoro' && (
+        <div className={`pomo-mini-desktop-only${pomoMiniClosing ? ' pomo-mini-exit' : ''}`}>
           <PomoMiniTimer
             mode={pomoMode}
             secondsLeft={pomoSeconds}
