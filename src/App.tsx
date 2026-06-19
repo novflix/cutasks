@@ -85,6 +85,7 @@ export default function App() {
   const [ptSectionId, setPtSectionId] = useState<string | null>(null);
   const detailTimer2 = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fsLoadedRef = useRef(false);
+  const habitFormOpenerRef = useRef<(() => void) | null>(null);
 
   const activePage: Page = location.pathname.startsWith('/projects/') ? 'project-detail' : location.pathname.startsWith('/projects') ? 'projects' : location.pathname.startsWith('/settings') ? 'settings' : location.pathname.startsWith('/habits') || location.pathname.startsWith('/pomodoro') || location.pathname.startsWith('/home') ? 'home' : 'tasks';
   const activeProjectId = activePage === 'project-detail' ? location.pathname.split('/')[2] : null;
@@ -653,7 +654,9 @@ export default function App() {
     };
   }, []);
 
-  const handleCreate = activePage === 'project-detail' ? () => openCreateProjectTask(null) : activePage === 'projects' ? openCreateProject : openCreateForm;
+  const handleCreate = location.pathname.startsWith('/habits')
+    ? () => habitFormOpenerRef.current?.()
+    : activePage === 'project-detail' ? () => openCreateProjectTask(null) : activePage === 'projects' ? openCreateProject : openCreateForm;
 
   const sidebarNavigate = useCallback((p: Page) => {
     if (p === 'home') navigate('/home');
@@ -683,7 +686,7 @@ export default function App() {
               <Route path="/habits" element={
                 <ProtectedRoute>
                   <main className="main">
-                    <HabitsPage habits={habits} onHabitsChange={setHabits} weekStartDay={weekStart} />
+                    <HabitsPage habits={habits} onHabitsChange={setHabits} weekStartDay={weekStart} formOpenerRef={habitFormOpenerRef} />
                   </main>
                 </ProtectedRoute>
               } />

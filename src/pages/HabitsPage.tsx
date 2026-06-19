@@ -122,9 +122,10 @@ interface HabitsPageProps {
   habits: Habit[];
   onHabitsChange: (habits: Habit[] | ((prev: Habit[]) => Habit[])) => void;
   weekStartDay: string;
+  formOpenerRef?: React.MutableRefObject<(() => void) | null>;
 }
 
-export default function HabitsPage({ habits, onHabitsChange, weekStartDay }: HabitsPageProps) {
+export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formOpenerRef }: HabitsPageProps) {
   const navigate = useNavigate();
   const today = useMemo(() => {
     const d = new Date();
@@ -152,6 +153,11 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay }: Hab
       if (detailTimerRef.current) clearTimeout(detailTimerRef.current);
     };
   }, []);
+
+  useEffect(() => {
+    if (formOpenerRef) formOpenerRef.current = openForm;
+    return () => { if (formOpenerRef) formOpenerRef.current = null; };
+  });
 
   const days = useMemo(() => {
     return Array.from({ length: 7 }, (_, i) => {

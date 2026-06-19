@@ -697,6 +697,11 @@
     display: none;
   }
 
+  .habits-form-modal {
+    width: 100%;
+    max-width: none;
+  }
+
   .habits-week-nav {
     gap: 8px;
   }
