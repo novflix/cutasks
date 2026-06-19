@@ -91,16 +91,49 @@ export default function App() {
   const habitFormOpenerRef = useRef<(() => void) | null>(null);
 
   const POMO_STORAGE = 'cutasks_pomodoro';
+  const POMO_STATE = 'cutasks_pomodoro_state';
   const defaultPomoConfig: PomoConfig = { work: 25, short: 5, long: 15 };
   const [pomoConfig, setPomoConfig] = useState<PomoConfig>(() => {
     try { const r = localStorage.getItem(POMO_STORAGE); return r ? { ...defaultPomoConfig, ...JSON.parse(r) } : defaultPomoConfig; } catch { return defaultPomoConfig; }
   });
-  const [pomoMode, setPomoMode] = useState<PomoMode>('work');
-  const [pomoSeconds, setPomoSeconds] = useState(() => pomoConfig.work * 60);
+
+  function loadPomoState() {
+    try {
+      const raw = localStorage.getItem(POMO_STATE);
+      if (!raw) return null;
+      const s: { running?: boolean; savedAt?: number; mode?: string; secondsLeft?: number; completedSessions?: number } = JSON.parse(raw);
+      if (s.running && s.savedAt) {
+        const elapsed = Math.floor((Date.now() - s.savedAt) / 1000);
+        const remaining = Math.max(0, (s.secondsLeft ?? 0) - elapsed);
+        if (remaining <= 0) return null;
+        return { mode: (s.mode ?? 'work') as PomoMode, secondsLeft: remaining, completedSessions: s.completedSessions ?? 0 };
+      }
+      return { mode: (s.mode ?? 'work') as PomoMode, secondsLeft: s.secondsLeft ?? 0, completedSessions: s.completedSessions ?? 0 };
+    } catch { return null; }
+  }
+
+  const savedPomo = loadPomoState();
+  const [pomoMode, setPomoMode] = useState<PomoMode>(savedPomo?.mode ?? 'work');
+  const [pomoSeconds, setPomoSeconds] = useState(() => savedPomo?.secondsLeft ?? pomoConfig.work * 60);
   const [pomoRunning, setPomoRunning] = useState(false);
-  const [pomoSessions, setPomoSessions] = useState(0);
+  const [pomoSessions, setPomoSessions] = useState(savedPomo?.completedSessions ?? 0);
   const [pomoCelebrate, setPomoCelebrate] = useState(false);
   const pomoIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    const state = { mode: pomoMode, secondsLeft: pomoSeconds, completedSessions: pomoSessions, running: pomoRunning, savedAt: Date.now() };
+    localStorage.setItem(POMO_STATE, JSON.stringify(state));
+  }, [pomoMode, pomoSeconds, pomoSessions, pomoRunning]);
+
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(POMO_STATE);
+      if (raw) {
+        const s = JSON.parse(raw);
+        if (s.running && s.secondsLeft > 0) setPomoRunning(true);
+      }
+    } catch { /* ignore */ }
+  }, []);
 
   const activePage: Page = location.pathname.startsWith('/projects/') ? 'project-detail' : location.pathname.startsWith('/projects') ? 'projects' : location.pathname.startsWith('/settings') ? 'settings' : location.pathname.startsWith('/habits') || location.pathname.startsWith('/pomodoro') || location.pathname.startsWith('/home') ? 'home' : 'tasks';
   const activeProjectId = activePage === 'project-detail' ? location.pathname.split('/')[2] : null;
@@ -689,7 +722,7 @@ export default function App() {
   const pomoSkipSession = useCallback(() => {
     if (pomoMode === 'work') {
       const next = (pomoSessions + 1) % LONG_BREAK_INTERVAL === 0 ? 'long' : 'short';
-      setPomoSessions((s) => s + 1);
+      setPomoSessions((s: number) => s + 1);
       pomoSwitchMode(next);
     } else {
       pomoSwitchMode('work');
@@ -702,7 +735,7 @@ export default function App() {
       return;
     }
     pomoIntervalRef.current = setInterval(() => {
-      setPomoSeconds((prev) => {
+      setPomoSeconds((prev: number) => {
         if (prev <= 1) {
           clearInterval(pomoIntervalRef.current!);
           pomoIntervalRef.current = null;
@@ -711,7 +744,7 @@ export default function App() {
           setTimeout(() => setPomoCelebrate(false), 2000);
 
           if (pomoMode === 'work') {
-            setPomoSessions((s) => s + 1);
+            setPomoSessions((s: number) => s + 1);
             const next = (pomoSessions + 1) % LONG_BREAK_INTERVAL === 0 ? 'long' : 'short';
             setTimeout(() => pomoSwitchMode(next), 600);
           } else {
