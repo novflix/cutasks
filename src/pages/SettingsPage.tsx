@@ -196,7 +196,6 @@ export default function SettingsPage() {
         ]).map((item) => (
           <div key={item.key} className="pomo-setting-row">
             <div className="pomo-setting-info">
-              <span className="pomo-setting-dot" style={{ background: item.color }} />
               <span className="pomo-setting-label">{item.label}</span>
             </div>
             <div className="pomo-setting-controls">
