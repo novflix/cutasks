@@ -20,6 +20,7 @@ import SettingsPage from './pages/SettingsPage';
 import HomePage from './pages/HomePage';
 import HabitsPage from './pages/HabitsPage';
 import PomodoroPage from './pages/PomodoroPage';
+import PomoMiniTimer from './components/PomoMiniTimer';
 import TasksPage from './pages/TasksPage';
 import MobileNav from './components/MobileNav';
 import AuthPage from './pages/AuthPage';
@@ -1019,7 +1020,30 @@ export default function App() {
         />
       )}
 
-      <MobileNav activePage={activePage} onNavigate={sidebarNavigate} onCreate={handleCreate} />
+      <MobileNav
+        activePage={activePage}
+        onNavigate={sidebarNavigate}
+        onCreate={handleCreate}
+        miniTimer={pomoRunning && location.pathname !== '/pomodoro' ? (
+          <PomoMiniTimer
+            mode={pomoMode}
+            secondsLeft={pomoSeconds}
+            running={pomoRunning}
+            onToggleRunning={pomoToggleRunning}
+          />
+        ) : undefined}
+      />
+
+      {pomoRunning && location.pathname !== '/pomodoro' && (
+        <div className="pomo-mini-desktop-only">
+          <PomoMiniTimer
+            mode={pomoMode}
+            secondsLeft={pomoSeconds}
+            running={pomoRunning}
+            onToggleRunning={pomoToggleRunning}
+          />
+        </div>
+      )}
     </div>
   );
 }

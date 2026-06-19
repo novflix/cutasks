@@ -1,4 +1,4 @@
-import { useRef, useCallback, useEffect } from 'react';
+import { useRef, useCallback, useEffect, type ReactNode } from 'react';
 import { ClipboardCheck, Folder, SettingsMinimalistic, AddCircle, HomeSmile } from '@solar-icons/react';
 import type { Page } from '../types';
 
@@ -6,9 +6,10 @@ interface MobileNavProps {
   activePage: Page;
   onNavigate: (page: Page) => void;
   onCreate?: () => void;
+  miniTimer?: ReactNode;
 }
 
-export default function MobileNav({ activePage, onNavigate, onCreate }: MobileNavProps) {
+export default function MobileNav({ activePage, onNavigate, onCreate, miniTimer }: MobileNavProps) {
   const navRef = useRef<HTMLDivElement>(null);
   const indicatorRef = useRef<HTMLDivElement>(null);
 
@@ -37,40 +38,45 @@ export default function MobileNav({ activePage, onNavigate, onCreate }: MobileNa
 
   return (
     <div className="mobile-bottom-bar">
-      <nav className="mobile-nav" ref={navRef}>
-        <div className="mobile-dot-indicator" ref={indicatorRef} />
-        <button
-          className={`mobile-nav-btn${activePage === 'home' ? ' active' : ''}`}
-          onClick={() => onNavigate('home')}
-          aria-label="Home"
-        >
-          <HomeSmile size={24} strokeWidth={1.8} />
-        </button>
-        <button
-          className={`mobile-nav-btn${activePage === 'tasks' ? ' active' : ''}`}
-          onClick={() => onNavigate('tasks')}
-          aria-label="Tasks"
-        >
-          <ClipboardCheck size={24} strokeWidth={1.8} />
-        </button>
-        <button
-          className={`mobile-nav-btn${activePage === 'projects' ? ' active' : ''}`}
-          onClick={() => onNavigate('projects')}
-          aria-label="Projects"
-        >
-          <Folder size={24} strokeWidth={1.8} />
-        </button>
-        <button
-          className={`mobile-nav-btn${activePage === 'settings' ? ' active' : ''}`}
-          onClick={() => onNavigate('settings')}
-          aria-label="Settings"
-        >
-          <SettingsMinimalistic size={24} strokeWidth={1.8} />
-        </button>
-      </nav>
-      <button className="mobile-fab" onClick={onCreate} aria-label={activePage === 'projects' ? 'Add project' : 'Add task'}>
-        <AddCircle size={30} strokeWidth={1.8} />
-      </button>
+      <div className="mobile-bottom-bar-inner">
+        {miniTimer && <div className="pomo-mini-wrap">{miniTimer}</div>}
+        <div className="mobile-bottom-bar-row">
+          <nav className="mobile-nav" ref={navRef}>
+            <div className="mobile-dot-indicator" ref={indicatorRef} />
+            <button
+              className={`mobile-nav-btn${activePage === 'home' ? ' active' : ''}`}
+              onClick={() => onNavigate('home')}
+              aria-label="Home"
+            >
+              <HomeSmile size={24} strokeWidth={1.8} />
+            </button>
+            <button
+              className={`mobile-nav-btn${activePage === 'tasks' ? ' active' : ''}`}
+              onClick={() => onNavigate('tasks')}
+              aria-label="Tasks"
+            >
+              <ClipboardCheck size={24} strokeWidth={1.8} />
+            </button>
+            <button
+              className={`mobile-nav-btn${activePage === 'projects' ? ' active' : ''}`}
+              onClick={() => onNavigate('projects')}
+              aria-label="Projects"
+            >
+              <Folder size={24} strokeWidth={1.8} />
+            </button>
+            <button
+              className={`mobile-nav-btn${activePage === 'settings' ? ' active' : ''}`}
+              onClick={() => onNavigate('settings')}
+              aria-label="Settings"
+            >
+              <SettingsMinimalistic size={24} strokeWidth={1.8} />
+            </button>
+          </nav>
+          <button className="mobile-fab" onClick={onCreate} aria-label={activePage === 'projects' ? 'Add project' : 'Add task'}>
+            <AddCircle size={30} strokeWidth={1.8} />
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -15,7 +15,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 14px;
     position: fixed;
     bottom: 16px;
     left: 0;
@@ -28,6 +27,21 @@
 
   .mobile-bottom-bar > * {
     pointer-events: auto;
+  }
+
+  .mobile-bottom-bar-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: fit-content;
+  }
+
+  .mobile-bottom-bar-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
   }
 
   .mobile-nav {
