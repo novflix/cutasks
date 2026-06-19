@@ -456,9 +456,10 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
                 Cancel
               </button>
               <button
-                type="submit"
+                type="button"
                 className="btn btn-primary"
                 disabled={!newName.trim()}
+                onClick={handleFormSubmit}
               >
                 Create Habit
               </button>
