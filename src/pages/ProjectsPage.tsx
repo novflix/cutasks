@@ -1,21 +1,27 @@
 import { NotesMinimalistic } from '@solar-icons/react';
-import type { Project } from '../types';
+import type { Project, ProjectTask } from '../types';
 import ProjectCard from '../components/ProjectCard';
 
 interface ProjectsPageProps {
   projects: Project[];
+  projectTasks: ProjectTask[];
+  searchQuery: string;
   onEdit: (project: Project) => void;
   onDelete: (id: string) => void;
   onOpen: (project: Project) => void;
 }
 
-export default function ProjectsPage({ projects, onEdit, onDelete, onOpen }: ProjectsPageProps) {
+export default function ProjectsPage({ projects, projectTasks, searchQuery, onEdit, onDelete, onOpen }: ProjectsPageProps) {
   if (projects.length === 0) {
     return (
       <div className="empty">
         <NotesMinimalistic size={64} className="empty-icon" />
-        <p className="empty-title">No projects yet</p>
-        <p className="empty-sub">Click "New Project" to get started</p>
+        <p className="empty-title">
+          {searchQuery ? 'Nothing found' : 'No projects yet'}
+        </p>
+        <p className="empty-sub">
+          {searchQuery ? 'Try a different search' : 'Click "New Project" to get started'}
+        </p>
       </div>
     );
   }
@@ -26,6 +32,8 @@ export default function ProjectsPage({ projects, onEdit, onDelete, onOpen }: Pro
         <ProjectCard
           key={project.id}
           project={project}
+          searchQuery={searchQuery}
+          projectTasks={projectTasks}
           onEdit={onEdit}
           onDelete={onDelete}
           onOpen={onOpen}

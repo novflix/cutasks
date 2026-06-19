@@ -96,6 +96,30 @@
   overflow: hidden;
 }
 
+.project-card-tasks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.project-card-task-item {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  padding: 4px 10px;
+  background: var(--bg-hover);
+  border-radius: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.project-card-task-more {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  padding-left: 10px;
+}
+
 .project-card-footer {
   display: flex;
   align-items: center;

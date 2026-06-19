@@ -9,6 +9,7 @@ interface ProjectDetailPageProps {
   project: Project;
   sections: SectionType[];
   tasks: ProjectTask[];
+  searchQuery: string;
   onCreateTask: (sectionId: string | null) => void;
   onEditTask: (task: ProjectTask) => void;
   onDeleteTask: (id: string) => void;
@@ -18,7 +19,7 @@ interface ProjectDetailPageProps {
 }
 
 export default function ProjectDetailPage({
-  project, sections, tasks,
+  project, sections, tasks, searchQuery,
   onCreateTask, onEditTask, onDeleteTask, onToggleTask, onViewTask, onUpdateTask,
 }: ProjectDetailPageProps) {
   const [showSectionForm, setShowSectionForm] = useState(false);
@@ -284,7 +285,7 @@ export default function ProjectDetailPage({
           </div>
           <TaskCard
             task={task}
-            searchQuery=""
+            searchQuery={searchQuery}
             subtaskCount={children.length}
             isDragOver={dragOverId === task.id}
             onToggle={onToggleTask}

@@ -1,7 +1,7 @@
 import { Pen, TrashBinMinimalistic } from '@solar-icons/react';
-import type { Project } from '../types';
+import type { Project, ProjectTask } from '../types';
 import { PROJECT_ICONS } from '../constants';
-import { formatDate } from '../utils';
+import { formatDate, highlightMatch } from '../utils';
 
 const STATUS_LABELS = {
   active: 'Active',
@@ -11,14 +11,24 @@ const STATUS_LABELS = {
 
 interface ProjectCardProps {
   project: Project;
+  searchQuery: string;
+  projectTasks: ProjectTask[];
   onEdit: (project: Project) => void;
   onDelete: (id: string) => void;
   onOpen: (project: Project) => void;
 }
 
-export default function ProjectCard({ project, onEdit, onDelete, onOpen }: ProjectCardProps) {
+export default function ProjectCard({ project, searchQuery, projectTasks, onEdit, onDelete, onOpen }: ProjectCardProps) {
   const iconDef = PROJECT_ICONS.find((i) => i.name === project.icon) ?? PROJECT_ICONS[0];
   const Icon = iconDef.icon;
+
+  const nameParts = highlightMatch(project.name, searchQuery);
+
+  const matchingTasks = searchQuery.trim()
+    ? projectTasks.filter(
+        (t) => t.projectId === project.id && t.title.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : [];
 
   return (
     <div
@@ -34,7 +44,13 @@ export default function ProjectCard({ project, onEdit, onDelete, onOpen }: Proje
           <Icon size={22} strokeWidth={1.8} />
         </div>
         <div className="project-card-title-row">
-          <h3 className="project-card-name" style={{ color: project.color }}>{project.name}</h3>
+          <h3 className="project-card-name" style={{ color: project.color }}>
+            {searchQuery.trim()
+              ? nameParts.map((part, i) =>
+                  part.highlighted ? <mark key={i} className="search-highlight">{part.plain}</mark> : part.plain
+                )
+              : project.name}
+          </h3>
           <div className="project-card-actions">
             <button className="btn-icon" onClick={(e) => { e.stopPropagation(); onEdit(project); }} title="Edit">
               <Pen size={18} />
@@ -47,6 +63,23 @@ export default function ProjectCard({ project, onEdit, onDelete, onOpen }: Proje
       </div>
       {project.description && (
         <p className="project-card-desc">{project.description}</p>
+      )}
+      {matchingTasks.length > 0 && (
+        <div className="project-card-tasks">
+          {matchingTasks.slice(0, 3).map((task) => {
+            const taskParts = highlightMatch(task.title, searchQuery);
+            return (
+              <span key={task.id} className="project-card-task-item">
+                {taskParts.map((part, i) =>
+                  part.highlighted ? <mark key={i} className="search-highlight">{part.plain}</mark> : part.plain
+                )}
+              </span>
+            );
+          })}
+          {matchingTasks.length > 3 && (
+            <span className="project-card-task-more">+{matchingTasks.length - 3} more</span>
+          )}
+        </div>
       )}
       <div className="project-card-footer">
         <span className={`project-status-badge project-status-${project.status}`}>

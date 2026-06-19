@@ -313,14 +313,20 @@ export default function App() {
     let result = projects;
     if (projectSearch.trim()) {
       const q = projectSearch.toLowerCase();
+      const projectIdsWithMatchingTasks = new Set(
+        projectTasks
+          .filter((t) => t.title.toLowerCase().includes(q))
+          .map((t) => t.projectId)
+      );
       result = result.filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q)
+          p.description.toLowerCase().includes(q) ||
+          projectIdsWithMatchingTasks.has(p.id)
       );
     }
     return result;
-  }, [projects, projectSearch]);
+  }, [projects, projectSearch, projectTasks]);
 
   const taskStatsFormatted = useMemo(() => [
     { label: 'total', value: stats.total },
@@ -888,6 +894,8 @@ export default function App() {
               <main className="main">
                 <ProjectsPage
                   projects={filteredProjects}
+                  projectTasks={projectTasks}
+                  searchQuery={projectSearch}
                   onEdit={openEditProject}
                   onDelete={deleteProject}
                   onOpen={openProject}
@@ -957,6 +965,7 @@ export default function App() {
                       project={project}
                       sections={sections}
                       tasks={filteredProjectTasks}
+                      searchQuery={projectTaskSearch}
                       onCreateTask={openCreateProjectTask}
                       onEditTask={openEditProjectTask}
                       onDeleteTask={deleteProjectTask}
