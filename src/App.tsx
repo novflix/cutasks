@@ -99,11 +99,7 @@ export default function App() {
   const [pomoRunning, setPomoRunning] = useState(false);
   const [pomoSessions, setPomoSessions] = useState(0);
   const [pomoCelebrate, setPomoCelebrate] = useState(false);
-  const [pomoShowSettings, setPomoShowSettings] = useState(false);
-  const [pomoSettingsClosing, setPomoSettingsClosing] = useState(false);
-  const [pomoTempConfig, setPomoTempConfig] = useState<PomoConfig>(pomoConfig);
   const pomoIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const pomoSettingsTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const activePage: Page = location.pathname.startsWith('/projects/') ? 'project-detail' : location.pathname.startsWith('/projects') ? 'projects' : location.pathname.startsWith('/settings') ? 'settings' : location.pathname.startsWith('/habits') || location.pathname.startsWith('/pomodoro') || location.pathname.startsWith('/home') ? 'home' : 'tasks';
   const activeProjectId = activePage === 'project-detail' ? location.pathname.split('/')[2] : null;
@@ -673,7 +669,6 @@ export default function App() {
   }, []);
 
   useEffect(() => () => { if (pomoIntervalRef.current) clearInterval(pomoIntervalRef.current); }, []);
-  useEffect(() => () => { if (pomoSettingsTimer.current) clearTimeout(pomoSettingsTimer.current); }, []);
 
   const pomoSwitchMode = useCallback((newMode: PomoMode) => {
     if (pomoIntervalRef.current) clearInterval(pomoIntervalRef.current);
@@ -681,6 +676,14 @@ export default function App() {
     setPomoMode(newMode);
     setPomoSeconds(pomoConfig[newMode] * 60);
   }, [pomoConfig]);
+
+  useEffect(() => {
+    function onPomoConfigChange(e: Event) {
+      setPomoConfig((e as CustomEvent).detail);
+    }
+    window.addEventListener('pomo-config-changed', onPomoConfigChange);
+    return () => window.removeEventListener('pomo-config-changed', onPomoConfigChange);
+  }, []);
 
   const pomoSkipSession = useCallback(() => {
     if (pomoMode === 'work') {
@@ -738,26 +741,6 @@ export default function App() {
     setPomoRunning(false);
     setPomoSeconds(pomoConfig[pomoMode] * 60);
   }
-  function pomoOpenSettings() {
-    setPomoTempConfig(pomoConfig);
-    setPomoSettingsClosing(false);
-    setPomoShowSettings(true);
-  }
-  function pomoCloseSettings() {
-    setPomoSettingsClosing(true);
-    pomoSettingsTimer.current = setTimeout(() => { setPomoShowSettings(false); setPomoSettingsClosing(false); }, 200);
-  }
-  function pomoSaveSettings() {
-    const c = {
-      work: Math.max(1, Math.min(120, pomoTempConfig.work)),
-      short: Math.max(1, Math.min(60, pomoTempConfig.short)),
-      long: Math.max(1, Math.min(60, pomoTempConfig.long)),
-    };
-    setPomoConfig(c);
-    localStorage.setItem(POMO_STORAGE, JSON.stringify(c));
-    if (!pomoRunning) setPomoSeconds(c[pomoMode] * 60);
-    pomoCloseSettings();
-  }
 
   const handleCreate = location.pathname.startsWith('/habits')
     ? () => habitFormOpenerRef.current?.()
@@ -805,17 +788,10 @@ export default function App() {
                       completedSessions={pomoSessions}
                       config={pomoConfig}
                       celebrate={pomoCelebrate}
-                      showSettings={pomoShowSettings}
-                      settingsClosing={pomoSettingsClosing}
-                      tempConfig={pomoTempConfig}
                       onToggleRunning={pomoToggleRunning}
                       onReset={pomoReset}
                       onSwitchMode={pomoSwitchMode}
                       onSkipSession={pomoSkipSession}
-                      onOpenSettings={pomoOpenSettings}
-                      onCloseSettings={pomoCloseSettings}
-                      onSaveSettings={pomoSaveSettings}
-                      onTempConfigChange={setPomoTempConfig}
                     />
                   </main>
                 </ProtectedRoute>

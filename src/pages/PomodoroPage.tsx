@@ -1,9 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  ArrowLeft, Play, Pause, Restart, SkipNext,
-  SettingsMinimalistic, CloseCircle,
-} from '@solar-icons/react';
+import { ArrowLeft, Play, Pause, Restart, SkipNext } from '@solar-icons/react';
 
 export type PomoMode = 'work' | 'short' | 'long';
 
@@ -37,24 +34,15 @@ interface PomodoroPageProps {
   completedSessions: number;
   config: PomoConfig;
   celebrate: boolean;
-  showSettings: boolean;
-  settingsClosing: boolean;
-  tempConfig: PomoConfig;
   onToggleRunning: () => void;
   onReset: () => void;
   onSwitchMode: (m: PomoMode) => void;
   onSkipSession: () => void;
-  onOpenSettings: () => void;
-  onCloseSettings: () => void;
-  onSaveSettings: () => void;
-  onTempConfigChange: (c: PomoConfig) => void;
 }
 
 export default function PomodoroPage({
   mode, secondsLeft, running, completedSessions, config, celebrate,
-  showSettings, settingsClosing, tempConfig,
   onToggleRunning, onReset, onSwitchMode, onSkipSession,
-  onOpenSettings, onCloseSettings, onSaveSettings, onTempConfigChange,
 }: PomodoroPageProps) {
   const navigate = useNavigate();
   const [quote] = useState(() => MOTIVATIONAL[Math.floor(Math.random() * MOTIVATIONAL.length)]);
@@ -76,9 +64,6 @@ export default function PomodoroPage({
           <ArrowLeft size={22} />
         </button>
         <h1 className="page-hero-title">Pomodoro</h1>
-        <button className="btn-icon pomo-settings-btn" onClick={onOpenSettings} aria-label="Settings">
-          <SettingsMinimalistic size={20} />
-        </button>
       </div>
 
       <div className={`pomo-container${celebrate ? ' pomo-celebrate' : ''}`} style={{ background: meta.bgGrad }}>
@@ -176,52 +161,6 @@ export default function PomodoroPage({
           </span>
         </div>
       </div>
-
-      {(showSettings || settingsClosing) && (
-        <div className={`modal-overlay${settingsClosing ? ' closing' : ''}`} onClick={onCloseSettings}>
-          <div className={`modal pomo-settings-modal${settingsClosing ? ' closing' : ''}`} onClick={(e) => e.stopPropagation()}>
-            <div className="fm-header">
-              <h2 className="fm-title">Timer Settings</h2>
-              <button className="btn-icon fm-close" onClick={onCloseSettings}>
-                <CloseCircle size={20} />
-              </button>
-            </div>
-            <div className="fm-body">
-              {([
-                { key: 'work' as const, label: 'Focus duration', color: '#ed9b6d' },
-                { key: 'short' as const, label: 'Short break', color: '#66bb6a' },
-                { key: 'long' as const, label: 'Long break', color: '#64b5f6' },
-              ]).map((item) => (
-                <div key={item.key} className="pomo-setting-row">
-                  <div className="pomo-setting-info">
-                    <span className="pomo-setting-dot" style={{ background: item.color }} />
-                    <span className="pomo-setting-label">{item.label}</span>
-                  </div>
-                  <div className="pomo-setting-controls">
-                    <button
-                      className="pomo-setting-adj"
-                      onClick={() => onTempConfigChange({ ...tempConfig, [item.key]: Math.max(1, tempConfig[item.key] - 1) })}
-                    >
-                      −
-                    </button>
-                    <span className="pomo-setting-value" style={{ color: item.color }}>{tempConfig[item.key]}m</span>
-                    <button
-                      className="pomo-setting-adj"
-                      onClick={() => onTempConfigChange({ ...tempConfig, [item.key]: Math.min(item.key === 'work' ? 120 : 60, tempConfig[item.key] + 1) })}
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="fm-footer">
-              <button className="btn btn-secondary" onClick={onCloseSettings}>Cancel</button>
-              <button className="btn btn-primary" onClick={onSaveSettings}>Save</button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

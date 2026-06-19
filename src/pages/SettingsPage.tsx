@@ -3,9 +3,13 @@ import { Logout } from '@solar-icons/react';
 import { logout } from '../services/auth';
 import { saveSettings } from '../services/firestore';
 import { useAuth } from '../contexts/AuthContext';
+import type { PomoConfig } from './PomodoroPage';
 
 type DeleteMode = 'instant' | '3days' | '7days';
 type WeekStartDay = 'monday' | 'saturday';
+
+const POMO_STORAGE = 'cutasks_pomodoro';
+const DEFAULT_POMO: PomoConfig = { work: 25, short: 5, long: 15 };
 
 const DELETE_OPTIONS: { value: DeleteMode; label: string; desc: string }[] = [
   { value: 'instant', label: 'Immediately', desc: 'Delete right after completion' },
@@ -60,6 +64,9 @@ export default function SettingsPage() {
   const [weekStartDay, setWeekStartDay] = useState<WeekStartDay>(() => {
     return (localStorage.getItem('cutasks_week_start') as WeekStartDay) || 'monday';
   });
+  const [pomoConfig, setPomoConfig] = useState<PomoConfig>(() => {
+    try { const r = localStorage.getItem(POMO_STORAGE); return r ? { ...DEFAULT_POMO, ...JSON.parse(r) } : DEFAULT_POMO; } catch { return DEFAULT_POMO; }
+  });
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', activeTheme);
@@ -73,6 +80,11 @@ export default function SettingsPage() {
     window.dispatchEvent(new CustomEvent('week-start-changed', { detail: weekStartDay }));
     if (user) saveSettings(user.uid, { theme: activeTheme, deleteMode, weekStart: weekStartDay }).catch(() => {});
   }, [deleteMode, weekStartDay, activeTheme, user]);
+
+  useEffect(() => {
+    localStorage.setItem(POMO_STORAGE, JSON.stringify(pomoConfig));
+    window.dispatchEvent(new CustomEvent('pomo-config-changed', { detail: pomoConfig }));
+  }, [pomoConfig]);
 
   const initials = user ? getInitials(user.displayName, user.email) : '?';
   const avatarColor = user ? hashColor(user.email || user.displayName || '') : '#ed9b6d';
@@ -173,6 +185,37 @@ export default function SettingsPage() {
             </button>
           ))}
         </div>
+      </div>
+
+      <div className="settings-section">
+        <span className="settings-section-label">Pomodoro timer</span>
+        {([
+          { key: 'work' as const, label: 'Focus duration', color: '#ed9b6d' },
+          { key: 'short' as const, label: 'Short break', color: '#66bb6a' },
+          { key: 'long' as const, label: 'Long break', color: '#64b5f6' },
+        ]).map((item) => (
+          <div key={item.key} className="pomo-setting-row">
+            <div className="pomo-setting-info">
+              <span className="pomo-setting-dot" style={{ background: item.color }} />
+              <span className="pomo-setting-label">{item.label}</span>
+            </div>
+            <div className="pomo-setting-controls">
+              <button
+                className="pomo-setting-adj"
+                onClick={() => setPomoConfig((c) => ({ ...c, [item.key]: Math.max(1, c[item.key] - 1) }))}
+              >
+                −
+              </button>
+              <span className="pomo-setting-value" style={{ color: item.color }}>{pomoConfig[item.key]}m</span>
+              <button
+                className="pomo-setting-adj"
+                onClick={() => setPomoConfig((c) => ({ ...c, [item.key]: Math.min(item.key === 'work' ? 120 : 60, c[item.key] + 1) }))}
+              >
+                +
+              </button>
+            </div>
+          </div>
+        ))}
       </div>
 
       <div className="settings-section">
