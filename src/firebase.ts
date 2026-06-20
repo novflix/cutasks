@@ -11,6 +11,10 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
+if (!firebaseConfig.apiKey || !firebaseConfig.projectId) {
+  console.error('Firebase config is missing. Check your .env file for VITE_FIREBASE_* variables.');
+}
+
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
