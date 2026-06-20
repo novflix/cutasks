@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { Logout, Key, CheckCircle, CloseCircle, TrashBinMinimalistic } from '@solar-icons/react';
-import { logout, changePassword, deleteAccount } from '../services/auth';
+import { Logout, Key, CheckCircle, CloseCircle, TrashBinMinimalistic, Pen } from '@solar-icons/react';
+import { logout, changePassword, deleteAccount, updateDisplayName } from '../services/auth';
 import { saveSettings } from '../services/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import type { PomoConfig } from './PomodoroPage';
@@ -82,6 +82,13 @@ export default function SettingsPage() {
   const [deletePassword, setDeletePassword] = useState('');
   const [deleteError, setDeleteError] = useState('');
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [showNameModal, setShowNameModal] = useState(false);
+  const [nameModalClosing, setNameModalClosing] = useState(false);
+  const nameModalTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [newDisplayName, setNewDisplayName] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [nameSuccess, setNameSuccess] = useState(false);
+  const [nameLoading, setNameLoading] = useState(false);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', activeTheme);
@@ -199,6 +206,48 @@ export default function SettingsPage() {
     }
   }
 
+  function openNameModal() {
+    setNameModalClosing(false);
+    setShowNameModal(true);
+    setNewDisplayName(user?.displayName || '');
+    setNameError('');
+    setNameSuccess(false);
+  }
+
+  function closeNameModal() {
+    setNameModalClosing(true);
+    nameModalTimer.current = setTimeout(() => {
+      setShowNameModal(false);
+      setNameModalClosing(false);
+      setNameError('');
+      setNameSuccess(false);
+    }, 200);
+  }
+
+  async function handleUpdateName() {
+    setNameError('');
+    setNameSuccess(false);
+    const trimmed = newDisplayName.trim();
+    if (!trimmed) {
+      setNameError('Name cannot be empty');
+      return;
+    }
+    if (trimmed === (user?.displayName || '')) {
+      closeNameModal();
+      return;
+    }
+    setNameLoading(true);
+    try {
+      await updateDisplayName(trimmed);
+      setNameSuccess(true);
+      setTimeout(() => closeNameModal(), 1500);
+    } catch {
+      setNameError('Failed to update name');
+    } finally {
+      setNameLoading(false);
+    }
+  }
+
   return (
     <div className="settings-page">
       <div className="page-hero">
@@ -213,7 +262,12 @@ export default function SettingsPage() {
               <span className="account-avatar-text">{initials}</span>
             </div>
             <div className="account-info">
-              <span className="account-name">{user.displayName || 'User'}</span>
+              <div className="account-name-row">
+                <span className="account-name">{user.displayName || 'User'}</span>
+                <button className="account-name-edit" onClick={openNameModal} title="Change name">
+                  <Pen size={14} />
+                </button>
+              </div>
               <span className="account-email">{user.email}</span>
             </div>
             <button className="account-logout" onClick={logout} title="Sign out">
@@ -455,6 +509,55 @@ export default function SettingsPage() {
                   <>
                     <TrashBinMinimalistic size={16} />
                     Delete my account
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {(showNameModal || nameModalClosing) && (
+        <div className={`modal-overlay${nameModalClosing ? ' closing' : ''}`} onClick={closeNameModal}>
+          <div className={`modal${nameModalClosing ? ' closing' : ''}`} onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Change name</h2>
+              <button className="btn-icon" onClick={closeNameModal}>
+                <CloseCircle size={22} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="password-field">
+                <label className="password-label">Display name</label>
+                <input
+                  type="text"
+                  className="password-input"
+                  value={newDisplayName}
+                  onChange={(e) => setNewDisplayName(e.target.value)}
+                  placeholder="Enter your name"
+                  maxLength={30}
+                />
+              </div>
+              {nameError && (
+                <span className="password-error">{nameError}</span>
+              )}
+              {nameSuccess && (
+                <span className="password-success">
+                  <CheckCircle size={16} />
+                  Name updated successfully
+                </span>
+              )}
+              <button
+                className="password-submit"
+                onClick={handleUpdateName}
+                disabled={nameLoading}
+              >
+                {nameLoading ? (
+                  <span className="password-spinner" />
+                ) : (
+                  <>
+                    <CheckCircle size={16} />
+                    Save
                   </>
                 )}
               </button>

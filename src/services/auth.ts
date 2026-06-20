@@ -41,3 +41,9 @@ export async function deleteAccount(password: string): Promise<void> {
   await reauthenticateWithCredential(user, credential);
   await deleteUser(user);
 }
+
+export async function updateDisplayName(name: string): Promise<void> {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Not authenticated');
+  await updateProfile(user, { displayName: name });
+}
