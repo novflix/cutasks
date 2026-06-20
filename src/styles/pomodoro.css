@@ -58,7 +58,7 @@
   height: 140px;
   top: -30px;
   right: -20px;
-  animation: pomoDecoFloat 8s ease-in-out infinite alternate;
+  animation: pomoDecoFloat 8s ease-in-out infinite alternate, pomoDecoPulse 6s ease-in-out infinite;
 }
 
 .pomo-deco-2 {
@@ -66,7 +66,7 @@
   height: 90px;
   bottom: -10px;
   left: -15px;
-  animation: pomoDecoFloat 6s ease-in-out infinite alternate-reverse;
+  animation: pomoDecoFloat 6s ease-in-out infinite alternate-reverse, pomoDecoPulse 7s ease-in-out infinite;
 }
 
 .pomo-deco-3 {
@@ -74,8 +74,8 @@
   height: 50px;
   top: 40%;
   right: 10%;
-  animation: pomoDecoFloat 7s ease-in-out infinite alternate;
-  animation-delay: -2s;
+  animation: pomoDecoFloat 7s ease-in-out infinite alternate, pomoDecoPulse 5s ease-in-out infinite;
+  animation-delay: -2s, -1s;
 }
 
 .pomo-deco-4 {
@@ -83,8 +83,8 @@
   height: 35px;
   top: 20%;
   left: 8%;
-  animation: pomoDecoFloat 9s ease-in-out infinite alternate-reverse;
-  animation-delay: -3s;
+  animation: pomoDecoFloat 9s ease-in-out infinite alternate-reverse, pomoDecoPulse 8s ease-in-out infinite;
+  animation-delay: -3s, -2s;
 }
 
 .pomo-deco-5 {
@@ -92,8 +92,8 @@
   height: 65px;
   bottom: 15%;
   right: 20%;
-  animation: pomoDecoFloat 7.5s ease-in-out infinite alternate;
-  animation-delay: -1s;
+  animation: pomoDecoFloat 7.5s ease-in-out infinite alternate, pomoDecoPulse 6.5s ease-in-out infinite;
+  animation-delay: -1s, -3s;
 }
 
 .pomo-deco-6 {
@@ -101,8 +101,8 @@
   height: 25px;
   top: 65%;
   left: 20%;
-  animation: pomoDecoFloat 6.5s ease-in-out infinite alternate-reverse;
-  animation-delay: -4s;
+  animation: pomoDecoFloat 6.5s ease-in-out infinite alternate-reverse, pomoDecoPulse 5.5s ease-in-out infinite;
+  animation-delay: -4s, -1.5s;
 }
 
 .pomo-deco-7 {
@@ -110,13 +110,18 @@
   height: 45px;
   top: 10%;
   left: 45%;
-  animation: pomoDecoFloat 8.5s ease-in-out infinite alternate;
-  animation-delay: -5s;
+  animation: pomoDecoFloat 8.5s ease-in-out infinite alternate, pomoDecoPulse 7.5s ease-in-out infinite;
+  animation-delay: -5s, -4s;
 }
 
 @keyframes pomoDecoFloat {
   0% { transform: translate(0, 0); }
   100% { transform: translate(4px, -5px); }
+}
+
+@keyframes pomoDecoPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
 }
 
 /* ── Mode tabs ── */
