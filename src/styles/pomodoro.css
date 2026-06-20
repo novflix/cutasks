@@ -78,6 +78,42 @@
   animation-delay: -2s;
 }
 
+.pomo-deco-4 {
+  width: 35px;
+  height: 35px;
+  top: 20%;
+  left: 8%;
+  animation: pomoDecoFloat 9s ease-in-out infinite alternate-reverse;
+  animation-delay: -3s;
+}
+
+.pomo-deco-5 {
+  width: 65px;
+  height: 65px;
+  bottom: 15%;
+  right: 20%;
+  animation: pomoDecoFloat 7.5s ease-in-out infinite alternate;
+  animation-delay: -1s;
+}
+
+.pomo-deco-6 {
+  width: 25px;
+  height: 25px;
+  top: 65%;
+  left: 20%;
+  animation: pomoDecoFloat 6.5s ease-in-out infinite alternate-reverse;
+  animation-delay: -4s;
+}
+
+.pomo-deco-7 {
+  width: 45px;
+  height: 45px;
+  top: 10%;
+  left: 45%;
+  animation: pomoDecoFloat 8.5s ease-in-out infinite alternate;
+  animation-delay: -5s;
+}
+
 @keyframes pomoDecoFloat {
   0% { transform: translate(0, 0); }
   100% { transform: translate(4px, -5px); }

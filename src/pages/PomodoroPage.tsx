@@ -64,6 +64,10 @@ export default function PomodoroPage({
           <span className="pomo-deco-circle pomo-deco-1" />
           <span className="pomo-deco-circle pomo-deco-2" />
           <span className="pomo-deco-circle pomo-deco-3" />
+          <span className="pomo-deco-circle pomo-deco-4" />
+          <span className="pomo-deco-circle pomo-deco-5" />
+          <span className="pomo-deco-circle pomo-deco-6" />
+          <span className="pomo-deco-circle pomo-deco-7" />
         </div>
 
         <div className="pomo-mode-tabs">
