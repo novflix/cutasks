@@ -132,7 +132,7 @@ export default function App() {
   const activeProject = useMemo(() => activeProjectId ? projects.find((p) => p.id === activeProjectId) ?? null : null, [projects, activeProjectId]);
 
   const tasksRef = useRef(tasks);
-  useEffect(() => { tasksRef.current = tasks; });
+  useEffect(() => { tasksRef.current = tasks; }, [tasks]);
   const historyRef = useRef<Task[][]>([]);
   const formTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const detailTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
