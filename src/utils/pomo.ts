@@ -1,15 +1,15 @@
 import type { PomoMode, PomoConfig } from '../pages/PomodoroPage';
+import { DEFAULT_POMO_CONFIG } from '../constants/pomo';
 
 const POMO_STORAGE = 'cutasks_pomodoro';
 const POMO_STATE = 'cutasks_pomodoro_state';
-const defaultPomoConfig: PomoConfig = { work: 25, short: 5, long: 15 };
 
 export function loadPomoConfig(): PomoConfig {
   try {
     const r = localStorage.getItem(POMO_STORAGE);
-    return r ? { ...defaultPomoConfig, ...JSON.parse(r) } : defaultPomoConfig;
+    return r ? { ...DEFAULT_POMO_CONFIG, ...JSON.parse(r) } : DEFAULT_POMO_CONFIG;
   } catch {
-    return defaultPomoConfig;
+    return DEFAULT_POMO_CONFIG;
   }
 }
 

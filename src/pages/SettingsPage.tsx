@@ -4,12 +4,12 @@ import { logout, changePassword, deleteAccount, updateDisplayName } from '../ser
 import { saveSettings } from '../services/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import type { PomoConfig } from './PomodoroPage';
+import { DEFAULT_POMO_CONFIG } from '../constants/pomo';
 
 type DeleteMode = 'instant' | '3days' | '7days';
 type WeekStartDay = 'monday' | 'saturday';
 
 const POMO_STORAGE = 'cutasks_pomodoro';
-const DEFAULT_POMO: PomoConfig = { work: 25, short: 5, long: 15 };
 
 const DELETE_OPTIONS: { value: DeleteMode; label: string; desc: string }[] = [
   { value: 'instant', label: 'Immediately', desc: 'Delete right after completion' },
@@ -65,7 +65,7 @@ export default function SettingsPage() {
     return (localStorage.getItem('cutasks_week_start') as WeekStartDay) || 'monday';
   });
   const [pomoConfig, setPomoConfig] = useState<PomoConfig>(() => {
-    try { const r = localStorage.getItem(POMO_STORAGE); return r ? { ...DEFAULT_POMO, ...JSON.parse(r) } : DEFAULT_POMO; } catch { return DEFAULT_POMO; }
+    try { const r = localStorage.getItem(POMO_STORAGE); return r ? { ...DEFAULT_POMO_CONFIG, ...JSON.parse(r) } : DEFAULT_POMO_CONFIG; } catch { return DEFAULT_POMO_CONFIG; }
   });
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
