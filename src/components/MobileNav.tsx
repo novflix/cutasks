@@ -58,7 +58,7 @@ export default function MobileNav({ activePage, onNavigate, onCreate, miniTimer 
               <ClipboardCheck size={24} strokeWidth={1.8} />
             </button>
             <button
-              className={`mobile-nav-btn${activePage === 'projects' ? ' active' : ''}`}
+              className={`mobile-nav-btn${activePage === 'projects' || activePage === 'project-detail' ? ' active' : ''}`}
               onClick={() => onNavigate('projects')}
               aria-label="Projects"
             >
@@ -72,7 +72,7 @@ export default function MobileNav({ activePage, onNavigate, onCreate, miniTimer 
               <SettingsMinimalistic size={24} strokeWidth={1.8} />
             </button>
           </nav>
-          <button className="mobile-fab" onClick={onCreate} aria-label={activePage === 'projects' ? 'Add project' : 'Add task'}>
+          <button className="mobile-fab" onClick={onCreate} aria-label={activePage === 'projects' || activePage === 'project-detail' ? 'Add project' : 'Add task'}>
             <AddCircle size={30} strokeWidth={1.8} />
           </button>
         </div>

@@ -101,7 +101,7 @@ export default function Sidebar({ width, onResize, activePage, onNavigate }: Sid
       <nav className="sidebar-nav" ref={navRef}>
         <div className="sidebar-indicator" ref={indicatorRef} />
         {navItems.map((item) => {
-          const isActive = item.page === activePage;
+          const isActive = item.page === activePage || (item.page === 'projects' && activePage === 'project-detail');
           return (
             <button
               key={item.label}
