@@ -21,6 +21,7 @@ import SettingsPage from './pages/SettingsPage';
 import HomePage from './pages/HomePage';
 import HabitsPage from './pages/HabitsPage';
 import PomodoroPage from './pages/PomodoroPage';
+import CalendarPage from './pages/CalendarPage';
 import PomoMiniTimer from './components/PomoMiniTimer';
 import TasksPage from './pages/TasksPage';
 import MobileNav from './components/MobileNav';
@@ -124,7 +125,7 @@ export default function App() {
   }, [pomoRunning, pomoMiniVisible]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  const activePage: Page = location.pathname.startsWith('/projects/') ? 'project-detail' : location.pathname.startsWith('/projects') ? 'projects' : location.pathname.startsWith('/settings') ? 'settings' : location.pathname.startsWith('/habits') || location.pathname.startsWith('/pomodoro') || location.pathname.startsWith('/home') ? 'home' : 'tasks';
+  const activePage: Page = location.pathname.startsWith('/projects/') ? 'project-detail' : location.pathname.startsWith('/projects') ? 'projects' : location.pathname.startsWith('/settings') ? 'settings' : location.pathname.startsWith('/habits') || location.pathname.startsWith('/pomodoro') || location.pathname.startsWith('/calendar') || location.pathname.startsWith('/home') ? 'home' : 'tasks';
   const activeProjectId = activePage === 'project-detail' ? location.pathname.split('/')[2] : null;
   const activeProject = useMemo(() => activeProjectId ? projects.find((p) => p.id === activeProjectId) ?? null : null, [projects, activeProjectId]);
 
@@ -822,6 +823,13 @@ export default function App() {
                       onSwitchMode={pomoSwitchMode}
                       onSkipSession={pomoSkipSession}
                     />
+                  </main>
+                </ProtectedRoute>
+              } />
+              <Route path="/calendar" element={
+                <ProtectedRoute>
+                  <main className="main">
+                    <CalendarPage />
                   </main>
                 </ProtectedRoute>
               } />

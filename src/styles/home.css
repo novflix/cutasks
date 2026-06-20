@@ -92,6 +92,15 @@
   box-shadow: 0 12px 40px rgba(100, 181, 246, 0.2);
 }
 
+/* ── Calendar theme ── */
+.banner-calendar {
+  background: linear-gradient(135deg, #3d1408 0%, #6b2010 40%, #8a2a14 100%);
+}
+
+.banner-calendar:hover {
+  box-shadow: 0 12px 40px rgba(255, 60, 0, 0.2);
+}
+
 /* ── Visual panel (left side with icon + deco) ── */
 .banner-visual {
   position: relative;
@@ -150,6 +159,45 @@
 
 /* Pomodoro bubbles — cool tint */
 .banner-pomodoro .bubble { background: rgba(100, 181, 246, 0.08); }
+
+/* Calendar bubbles — red-orange tint */
+.banner-calendar .bubble { background: rgba(255, 60, 0, 0.08); }
+
+/* ── Calendar: floating dot particles ── */
+.banner-bubbles-calendar {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.cal-dot {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 60, 0, 0.25);
+  animation: calDotFloat linear infinite alternate, calDotPulse ease-in-out infinite;
+}
+
+.cal-dot-1 { width: 4px; height: 4px; top: 15%; left: 20%; animation-duration: 5s, 3s; animation-delay: 0s, -0.5s; }
+.cal-dot-2 { width: 6px; height: 6px; top: 60%; left: 75%; animation-duration: 6s, 4s; animation-delay: -1s, -1.5s; }
+.cal-dot-3 { width: 3px; height: 3px; top: 30%; left: 55%; animation-duration: 4.5s, 3.5s; animation-delay: -2s, -0.8s; }
+.cal-dot-4 { width: 5px; height: 5px; top: 75%; left: 30%; animation-duration: 5.5s, 2.5s; animation-delay: -0.5s, -2s; }
+.cal-dot-5 { width: 3px; height: 3px; top: 10%; left: 80%; animation-duration: 6.5s, 4.5s; animation-delay: -3s, -1s; }
+.cal-dot-6 { width: 4px; height: 4px; top: 50%; left: 10%; animation-duration: 4s, 3s; animation-delay: -1.5s, -2.5s; }
+.cal-dot-7 { width: 5px; height: 5px; top: 85%; left: 60%; animation-duration: 5.5s, 3.5s; animation-delay: -2.5s, -0.3s; }
+
+@keyframes calDotFloat {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(3px, -4px); }
+  50% { transform: translate(-2px, 2px); }
+  75% { transform: translate(4px, 1px); }
+  100% { transform: translate(-1px, -3px); }
+}
+
+@keyframes calDotPulse {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.4); }
+}
 
 .bubble-1 { width: 6px; height: 6px; left: 15%; animation-duration: 4.5s; animation-delay: 0s; }
 .bubble-2 { width: 4px; height: 4px; left: 40%; animation-duration: 5.5s; animation-delay: -1.2s; }
@@ -234,6 +282,29 @@
 /* ── Pomodoro container: cool pulse ── */
 .banner-pomodoro .banner-icon-big {
   animation: coolPulse 3s ease-in-out infinite;
+}
+
+/* ── Calendar icon: gentle sway ── */
+.banner-calendar .banner-icon-big img {
+  animation: calendarSway 3s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+@keyframes calendarSway {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(3deg) scale(1.02); }
+  50% { transform: rotate(-2deg) scale(1.04); }
+  75% { transform: rotate(1.5deg) scale(1.01); }
+}
+
+/* ── Calendar container: green glow pulse ── */
+.banner-calendar .banner-icon-big {
+  animation: greenGlow 3s ease-in-out infinite;
+}
+
+@keyframes greenGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 60, 0, 0); }
+  50% { box-shadow: 0 0 16px 3px rgba(255, 60, 0, 0.1); }
 }
 
 @keyframes coolPulse {

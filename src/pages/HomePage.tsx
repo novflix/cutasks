@@ -72,6 +72,40 @@ export default function HomePage() {
             </div>
           </div>
         </button>
+
+        <button className="banner-card banner-calendar" onClick={() => navigate('/calendar')}>
+          <div className="banner-visual banner-visual-calendar">
+            <svg className="banner-deco" width="100%" height="100%" viewBox="0 0 200 120" fill="none" preserveAspectRatio="none">
+              <circle cx="150" cy="25" r="38" fill="rgba(255,255,255,0.05)" />
+              <circle cx="30" cy="80" r="28" fill="rgba(255,255,255,0.04)" />
+              <circle cx="100" cy="105" r="22" fill="rgba(255,255,255,0.06)" />
+              <rect x="60" y="15" width="5" height="5" rx="1" fill="rgba(255,255,255,0.08)" />
+              <rect x="170" y="70" width="4" height="4" rx="1" fill="rgba(255,255,255,0.07)" />
+              <rect x="10" y="40" width="3" height="3" rx="0.75" fill="rgba(255,255,255,0.09)" />
+            </svg>
+            <div className="banner-bubbles banner-bubbles-calendar">
+              <span className="cal-dot cal-dot-1" />
+              <span className="cal-dot cal-dot-2" />
+              <span className="cal-dot cal-dot-3" />
+              <span className="cal-dot cal-dot-4" />
+              <span className="cal-dot cal-dot-5" />
+              <span className="cal-dot cal-dot-6" />
+              <span className="cal-dot cal-dot-7" />
+            </div>
+            <div className="banner-icon-big">
+              <img src="/icons/calendar.svg" alt="" width="44" height="44" />
+            </div>
+          </div>
+          <div className="banner-content">
+            <h2 className="banner-title">Calendar</h2>
+            <p className="banner-desc">View your schedule and plan ahead at a glance</p>
+            <div className="banner-arrow">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+          </div>
+        </button>
       </div>
     </>
   );
