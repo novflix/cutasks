@@ -221,27 +221,42 @@ export default function App() {
 
   useEffect(() => {
     localSaveTasks(tasks);
-    if (user && fsLoadedRef.current) fsSaveTasks(user.uid, tasks).catch(() => {});
+    if (user && fsLoadedRef.current) {
+      const timer = setTimeout(() => fsSaveTasks(user.uid, tasks).catch(() => {}), 500);
+      return () => clearTimeout(timer);
+    }
   }, [tasks, user]);
 
   useEffect(() => {
     localSaveProjects(projects);
-    if (user && fsLoadedRef.current) fsSaveProjects(user.uid, projects).catch(() => {});
+    if (user && fsLoadedRef.current) {
+      const timer = setTimeout(() => fsSaveProjects(user.uid, projects).catch(() => {}), 500);
+      return () => clearTimeout(timer);
+    }
   }, [projects, user]);
 
   useEffect(() => {
     localSaveProjectTasks(projectTasks);
-    if (user && fsLoadedRef.current) fsSaveProjectTasks(user.uid, projectTasks).catch(() => {});
+    if (user && fsLoadedRef.current) {
+      const timer = setTimeout(() => fsSaveProjectTasks(user.uid, projectTasks).catch(() => {}), 500);
+      return () => clearTimeout(timer);
+    }
   }, [projectTasks, user]);
 
   useEffect(() => {
     localSaveSections(sections);
-    if (user && fsLoadedRef.current) fsSaveSections(user.uid, sections).catch(() => {});
+    if (user && fsLoadedRef.current) {
+      const timer = setTimeout(() => fsSaveSections(user.uid, sections).catch(() => {}), 500);
+      return () => clearTimeout(timer);
+    }
   }, [sections, user]);
 
   useEffect(() => {
     localSaveHabits(habits);
-    if (user && fsLoadedRef.current) fsSaveHabits(user.uid, habits).catch(() => {});
+    if (user && fsLoadedRef.current) {
+      const timer = setTimeout(() => fsSaveHabits(user.uid, habits).catch(() => {}), 500);
+      return () => clearTimeout(timer);
+    }
   }, [habits, user]);
 
   const filteredTasks = useMemo(() => {
