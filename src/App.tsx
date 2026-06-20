@@ -422,10 +422,11 @@ export default function App() {
   function toggleComplete(id: string) {
     pushHistory();
     const mode = (localStorage.getItem('cutasks_delete_mode') || 'instant') as 'instant' | '3days' | '7days';
+    const now = Date.now();
 
     setTasks((prev) =>
       prev.map((t) =>
-        t.id === id ? { ...t, completed: !t.completed, completedAt: !t.completed ? Date.now() : null, updatedAt: Date.now() } : t
+        t.id === id ? { ...t, completed: !t.completed, completedAt: !t.completed ? now : null, updatedAt: now } : t
       )
     );
 
@@ -657,9 +658,10 @@ export default function App() {
   function toggleProjectTask(id: string) {
     pushProjectTaskHistory();
     const mode = (localStorage.getItem('cutasks_delete_mode') || 'instant') as 'instant' | '3days' | '7days';
+    const now = Date.now();
 
     setProjectTasks((prev) =>
-      prev.map((t) => t.id === id ? { ...t, completed: !t.completed, completedAt: !t.completed ? Date.now() : null, updatedAt: Date.now() } : t)
+      prev.map((t) => t.id === id ? { ...t, completed: !t.completed, completedAt: !t.completed ? now : null, updatedAt: now } : t)
     );
 
     if (mode === 'instant') {
