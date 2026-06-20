@@ -339,6 +339,7 @@ export default function App() {
   }, [tasks]);
 
   function openCreateForm() {
+    if (formTimer.current) clearTimeout(formTimer.current);
     setEditingTask(null);
     setTitle('');
     setDescription('');
@@ -351,6 +352,7 @@ export default function App() {
   }
 
   function openEditForm(task: Task) {
+    if (formTimer.current) clearTimeout(formTimer.current);
     setEditingTask(task);
     setTitle(task.title);
     setDescription(task.description);
@@ -414,6 +416,7 @@ export default function App() {
   }
 
   function closeDetail() {
+    if (detailTimer.current) clearTimeout(detailTimer.current);
     setDetailClosing(true);
     detailTimer.current = setTimeout(() => {
       setViewingTask(null);
@@ -466,6 +469,7 @@ export default function App() {
   }
 
   function openCreateProject() {
+    if (formTimer.current) clearTimeout(formTimer.current);
     setEditingProject(null);
     setProjectName('');
     setProjectDesc('');
@@ -477,6 +481,7 @@ export default function App() {
   }
 
   function openEditProject(project: Project) {
+    if (formTimer.current) clearTimeout(formTimer.current);
     setEditingProject(project);
     setProjectName(project.name);
     setProjectDesc(project.description);
@@ -587,6 +592,7 @@ export default function App() {
   }, [projectTasks]);
 
   function openCreateProjectTask(sectionId: string | null) {
+    if (formTimer.current) clearTimeout(formTimer.current);
     setEditingProjectTask(null);
     setPtTitle('');
     setPtDescription('');
@@ -600,6 +606,7 @@ export default function App() {
   }
 
   function openEditProjectTask(task: ProjectTask) {
+    if (formTimer.current) clearTimeout(formTimer.current);
     setEditingProjectTask(task);
     setPtTitle(task.title);
     setPtDescription(task.description);
