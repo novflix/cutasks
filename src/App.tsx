@@ -98,6 +98,8 @@ export default function App() {
   const [pomoSeconds, setPomoSeconds] = useState(savedPomo?.secondsLeft ?? pomoConfig.work * 60);
   const [pomoRunning, setPomoRunning] = useState(loadPomoRunning);
   const [pomoSessions, setPomoSessions] = useState(savedPomo?.completedSessions ?? 0);
+  const pomoSessionsRef = useRef(pomoSessions);
+  useEffect(() => { pomoSessionsRef.current = pomoSessions; });
   const [pomoCelebrate, setPomoCelebrate] = useState(false);
   const [pomoMiniVisible, setPomoMiniVisible] = useState(false);
   const [pomoMiniClosing, setPomoMiniClosing] = useState(false);
@@ -734,13 +736,13 @@ export default function App() {
 
   const pomoSkipSession = useCallback(() => {
     if (pomoMode === 'work') {
-      const next = (pomoSessions + 1) % LONG_BREAK_INTERVAL === 0 ? 'long' : 'short';
+      const next = (pomoSessionsRef.current + 1) % LONG_BREAK_INTERVAL === 0 ? 'long' : 'short';
       setPomoSessions((s: number) => s + 1);
       pomoSwitchMode(next);
     } else {
       pomoSwitchMode('work');
     }
-  }, [pomoMode, pomoSessions, pomoSwitchMode]);
+  }, [pomoMode, pomoSwitchMode]);
 
   useEffect(() => {
     if (!pomoRunning) {
@@ -758,7 +760,7 @@ export default function App() {
 
           if (pomoMode === 'work') {
             setPomoSessions((s: number) => s + 1);
-            const next = (pomoSessions + 1) % LONG_BREAK_INTERVAL === 0 ? 'long' : 'short';
+            const next = (pomoSessionsRef.current + 1) % LONG_BREAK_INTERVAL === 0 ? 'long' : 'short';
             setTimeout(() => pomoSwitchMode(next), 600);
           } else {
             setTimeout(() => pomoSwitchMode('work'), 600);
@@ -769,7 +771,7 @@ export default function App() {
       });
     }, 1000);
     return () => { if (pomoIntervalRef.current) clearInterval(pomoIntervalRef.current); };
-  }, [pomoRunning, pomoMode, pomoSessions, pomoSwitchMode]);
+  }, [pomoRunning, pomoMode, pomoSwitchMode]);
 
   useEffect(() => {
     if (pomoRunning) {
