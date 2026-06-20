@@ -424,6 +424,10 @@
   .banner-desc {
     font-size: 0.75rem;
   }
+
+  .banner-arrow {
+    display: none;
+  }
 }
 
 /* ── Desktop: wider ── */
