@@ -4,6 +4,7 @@ const STORAGE_KEY = 'cutasks_tasks';
 const PROJECTS_KEY = 'cutasks_projects';
 const SECTIONS_KEY = 'cutasks_sections';
 const PROJECT_TASKS_KEY = 'cutasks_project_tasks';
+const HABITS_KEY = 'cutasks_habits';
 
 export function loadTasks(): Task[] {
   try {
@@ -92,8 +93,6 @@ export function loadProjectTasks(): ProjectTask[] {
 export function saveProjectTasks(tasks: ProjectTask[]) {
   localStorage.setItem(PROJECT_TASKS_KEY, JSON.stringify(tasks));
 }
-
-const HABITS_KEY = 'cutasks_habits';
 
 export function loadHabits(): Habit[] {
   try {
