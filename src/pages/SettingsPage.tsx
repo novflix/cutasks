@@ -404,9 +404,11 @@ export default function SettingsPage() {
           <span className="settings-footer-label">Version</span>
           <span className="settings-footer-value">0.1.0</span>
         </div>
-        <button className="settings-landing-btn" onClick={() => navigate('/?preview=1')}>
-          <Earth size={16} />
-          <span>View landing page</span>
+        <button className="settings-footer settings-footer-link" onClick={() => navigate('/?preview=1')}>
+          <span className="settings-footer-label">Landing page</span>
+          <span className="settings-footer-value">
+            <Earth size={14} />
+          </span>
         </button>
       </div>
 
