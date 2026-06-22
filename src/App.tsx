@@ -27,6 +27,7 @@ import TasksPage from './pages/TasksPage';
 import MobileNav from './components/MobileNav';
 import AuthPage from './pages/AuthPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import LandingPage from './pages/LandingPage';
 import { getDeadlineStatus } from './utils';
 import { MinimalisticMagnifier, ArrowLeft } from '@solar-icons/react';
 import { PROJECT_ICONS } from './constants';
@@ -813,6 +814,17 @@ export default function App() {
     return <AuthPage />;
   }
 
+  const isLanding = location.pathname === '/';
+
+  if (isLanding) {
+    return (
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    );
+  }
+
   return (
     <div className="app" style={{ '--sidebar-w': `${sidebarWidth}px` } as React.CSSProperties}>
       <Sidebar width={sidebarWidth} onResize={setSidebarWidth} activePage={activePage} onNavigate={sidebarNavigate} />
@@ -820,6 +832,7 @@ export default function App() {
         <AnimatedRoutes
           routes={
             <Routes>
+              <Route path="/" element={<LandingPage />} />
               <Route path="/home" element={
                 <ProtectedRoute>
                   <main className="main">
@@ -992,7 +1005,7 @@ export default function App() {
             </main>
             </ProtectedRoute>
           } />
-          <Route path="*" element={<Navigate to="/home" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           }
         />

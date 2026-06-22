@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { Logout, Key, CheckCircle, CloseCircle, TrashBinMinimalistic, Pen } from '@solar-icons/react';
+import { useNavigate } from 'react-router-dom';
+import { Logout, Key, CheckCircle, CloseCircle, TrashBinMinimalistic, Pen, Earth } from '@solar-icons/react';
 import { logout, changePassword, deleteAccount, updateDisplayName } from '../services/auth';
 import { saveSettings } from '../services/firestore';
 import { useAuth } from '../contexts/AuthContext';
@@ -54,6 +55,7 @@ function hashColor(s: string): string {
 }
 
 export default function SettingsPage() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [activeTheme, setActiveTheme] = useState<string>(() => {
     return localStorage.getItem('cutasks_theme') || 'dark';
@@ -402,6 +404,10 @@ export default function SettingsPage() {
           <span className="settings-footer-label">Version</span>
           <span className="settings-footer-value">0.1.0</span>
         </div>
+        <button className="settings-landing-btn" onClick={() => navigate('/?preview=1')}>
+          <Earth size={16} />
+          <span>View landing page</span>
+        </button>
       </div>
 
       {(showPasswordModal || passwordModalClosing) && (
