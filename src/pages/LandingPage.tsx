@@ -32,6 +32,7 @@ export default function LandingPage() {
   const ctaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     const params = new URLSearchParams(window.location.search);
     if (user && !params.get('preview')) {
       navigate('/home', { replace: true });
