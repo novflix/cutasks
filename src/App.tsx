@@ -222,6 +222,79 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [undo]);
 
+  /* ── Easter egg: console greeting ── */
+  useEffect(() => {
+    console.log(
+      '%c🚀 CuTasks %cv0.1.0',
+      'color: #ed9b6d; font-size: 16px; font-weight: bold;',
+      'color: #777; font-size: 12px;'
+    );
+    console.log(
+      '%cHey there, curious dev! 👋',
+      'color: #999; font-size: 11px; font-style: italic;'
+    );
+  }, []);
+
+  /* ── Easter egg: shake for motivational quote ── */
+  useEffect(() => {
+    const QUOTES = [
+      "You've got this. One task at a time.",
+      "Progress, not perfection.",
+      "Small steps lead to big results.",
+      "You're doing better than you think.",
+      "Stay focused. Stay hungry.",
+      "The only way is through.",
+      "Done is better than perfect.",
+      "Keep going. Your future self will thank you.",
+      "One more task. You're almost there.",
+      "Discipline is choosing what you want most.",
+    ];
+    let lastShake = 0;
+    let shakeCount = 0;
+    let lastAccel = { x: 0, y: 0, z: 0 };
+    const SHAKE_THRESHOLD = 15;
+
+    function handleMotion(e: DeviceMotionEvent) {
+      const acc = e.accelerationIncludingGravity;
+      if (!acc || acc.x === null || acc.y === null || acc.z === null) return;
+
+      const dx = Math.abs(acc.x - lastAccel.x);
+      const dy = Math.abs(acc.y - lastAccel.y);
+      const dz = Math.abs(acc.z - lastAccel.z);
+      lastAccel = { x: acc.x, y: acc.y, z: acc.z };
+
+      if (dx + dy + dz > SHAKE_THRESHOLD) {
+        const now = Date.now();
+        if (now - lastShake > 300) {
+          shakeCount++;
+          lastShake = now;
+          if (shakeCount >= 2) {
+            shakeCount = 0;
+            showShakeQuote(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
+          }
+        }
+      }
+    }
+
+    function showShakeQuote(text: string) {
+      const existing = document.querySelector('.lp-shake-toast');
+      if (existing) existing.remove();
+
+      const toast = document.createElement('div');
+      toast.className = 'lp-shake-toast';
+      toast.textContent = text;
+      document.body.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.add('show'));
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 400);
+      }, 3000);
+    }
+
+    window.addEventListener('devicemotion', handleMotion);
+    return () => window.removeEventListener('devicemotion', handleMotion);
+  }, []);
+
   useEffect(() => {
     localSaveTasks(tasks);
     if (user && fsLoadedRef.current) {

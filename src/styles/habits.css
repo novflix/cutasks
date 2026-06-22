@@ -521,6 +521,7 @@
   border-radius: var(--radius-full);
   background: rgba(255, 120, 50, 0.08);
   flex-shrink: 0;
+  transition: box-shadow 0.3s ease;
 }
 
 .habits-streak-icon {
@@ -533,6 +534,44 @@
   font-size: 0.8rem;
   font-weight: 700;
   color: #ff8c42;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Streak fire tiers ── */
+.habits-item-streak.streak-7 {
+  background: rgba(255, 120, 50, 0.12);
+  box-shadow: 0 0 8px rgba(255, 120, 50, 0.15);
+}
+
+.habits-item-streak.streak-30 {
+  background: rgba(255, 100, 30, 0.15);
+  box-shadow: 0 0 12px rgba(255, 100, 30, 0.25);
+  animation: streakPulse 2s ease-in-out infinite;
+}
+
+.habits-item-streak.streak-100 {
+  background: rgba(255, 80, 0, 0.18);
+  box-shadow: 0 0 16px rgba(255, 80, 0, 0.35);
+  animation: streakGlow 1.5s ease-in-out infinite;
+}
+
+.habits-item-streak.streak-100 .habits-streak-icon {
+  animation: fireFlare 1s ease-in-out infinite;
+}
+
+@keyframes streakPulse {
+  0%, 100% { box-shadow: 0 0 8px rgba(255, 120, 50, 0.15); }
+  50% { box-shadow: 0 0 14px rgba(255, 120, 50, 0.3); }
+}
+
+@keyframes streakGlow {
+  0%, 100% { box-shadow: 0 0 12px rgba(255, 80, 0, 0.25), 0 0 24px rgba(255, 80, 0, 0.1); }
+  50% { box-shadow: 0 0 20px rgba(255, 80, 0, 0.4), 0 0 40px rgba(255, 80, 0, 0.15); }
+}
+
+@keyframes fireFlare {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50% { transform: scale(1.2); filter: brightness(1.3); }
 }
 
 /* ── Delete button ── */

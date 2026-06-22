@@ -505,7 +505,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
                   </span>
                   <span className="habits-item-name">{habit.name}</span>
                 </div>
-                <div className="habits-item-streak">
+                <div className={`habits-item-streak${habit.streak >= 100 ? ' streak-100' : habit.streak >= 30 ? ' streak-30' : habit.streak >= 7 ? ' streak-7' : ''}`}>
                   <img src="/icons/streak.svg" alt="" className="habits-streak-icon" width="16" height="16" />
                   <span className="habits-streak-num">{habit.streak}</span>
                 </div>
