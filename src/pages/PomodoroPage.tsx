@@ -50,6 +50,8 @@ export default function PomodoroPage({
   const circumference = 2 * Math.PI * r;
   const dashOffset = circumference * (1 - progress);
 
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+
   return (
     <>
       <div className="pomo-hero">
@@ -59,7 +61,7 @@ export default function PomodoroPage({
         <h1 className="page-hero-title">Pomodoro</h1>
       </div>
 
-      <div className={`pomo-container${celebrate ? ' pomo-celebrate' : ''}`} style={{ background: meta.bgGrad }}>
+      <div className={`pomo-container${celebrate ? ' pomo-celebrate' : ''}${isLight ? ` pomo-light pomo-light-${mode}` : ''}`} style={isLight ? undefined : { background: meta.bgGrad }}>
         <div className="pomo-deco">
           <span className="pomo-deco-circle pomo-deco-1" />
           <span className="pomo-deco-circle pomo-deco-2" />
