@@ -69,7 +69,7 @@ export default function LandingPage() {
       {/* ── Navigation ── */}
       <nav className={`lp-nav${scrolled ? ' scrolled' : ''}`}>
         <div className="lp-nav-inner">
-          <div className="lp-nav-brand">
+          <div className="lp-nav-brand" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} style={{ cursor: 'pointer' }}>
             <img src="/logo.svg" alt="CuTasks" className="lp-nav-logo" />
           </div>
           <div className="lp-nav-actions">
