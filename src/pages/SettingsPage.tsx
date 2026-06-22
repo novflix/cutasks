@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Logout, Key, CheckCircle, CloseCircle, TrashBinMinimalistic, Pen, Earth } from '@solar-icons/react';
+import { Logout, Key, CheckCircle, CloseCircle, TrashBinMinimalistic, Pen, AltArrowRight } from '@solar-icons/react';
 import { logout, changePassword, deleteAccount, updateDisplayName } from '../services/auth';
 import { saveSettings } from '../services/firestore';
 import { useAuth } from '../contexts/AuthContext';
@@ -407,7 +407,7 @@ export default function SettingsPage() {
         <button className="settings-footer settings-footer-link" onClick={() => navigate('/?preview=1')}>
           <span className="settings-footer-label">Landing page</span>
           <span className="settings-footer-value">
-            <Earth size={14} />
+            <AltArrowRight size={14} />
           </span>
         </button>
       </div>
