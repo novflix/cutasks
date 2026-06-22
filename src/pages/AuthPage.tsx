@@ -117,7 +117,7 @@ export default function AuthPage() {
         <div className="auth-logo">
           <svg width="48" height="48" viewBox="0 0 150 150" fill="none">
             <path d="M125 75V95C125 111.569 111.569 125 95 125H55C38.4315 125 25 111.569 25 95V55C25 38.4315 38.4315 25 55 25H75" stroke="#ED9B6D" strokeWidth="15" strokeLinecap="round" fill="none" />
-            <path d="M50 62.4208L73.8187 89.6808C75.8761 92.0354 79.5693 91.9405 81.5091 89.4881C97.5694 69.1838 107.644 56.4469 124.679 34.9106" stroke="#ffffff" strokeWidth="12" strokeLinecap="round" fill="none" />
+            <path d="M50 62.4208L73.8187 89.6808C75.8761 92.0354 79.5693 91.9405 81.5091 89.4881C97.5694 69.1838 107.644 56.4469 124.679 34.9106" stroke="currentColor" strokeWidth="12" strokeLinecap="round" fill="none" />
           </svg>
         </div>
 
