@@ -9,8 +9,6 @@ import { useTranslation } from 'react-i18next';
 import type { Habit } from '../types';
 import { formatDate } from '../utils';
 
-const DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
 const HABIT_ICONS: { name: string; icon: ComponentType<{ size?: number; strokeWidth?: number }> }[] = [
   { name: 'Book', icon: Book },
   { name: 'Running', icon: Running },
@@ -53,7 +51,8 @@ function getWeekdayLabel(weekdays: number[], t: (key: string) => string): string
   if (weekdays.length === 0) return t('habits.never');
   if (weekdays.length === 5 && [0, 1, 2, 3, 4].every((d) => weekdays.includes(d))) return t('habits.weekdays');
   if (weekdays.length === 2 && [5, 6].every((d) => weekdays.includes(d))) return t('habits.weekends');
-  return weekdays.map((d) => DAY_NAMES[d]).join(', ');
+  const dayKeys = ['common.mon', 'common.tue', 'common.wed', 'common.thu', 'common.fri', 'common.sat', 'common.sun'];
+  return weekdays.map((d) => t(dayKeys[d])).join(', ');
 }
 
 interface HabitDetailModalProps {
@@ -171,7 +170,7 @@ export default function HabitDetailModal({ habit, onClose, onUpdate, onDelete, i
             <div className="fm-field">
               <label className="fm-label">{t('habits.repeatOn')}</label>
               <div className="habits-weekday-picker">
-                {DAY_NAMES.map((dayName, i) => (
+                {['common.mon', 'common.tue', 'common.wed', 'common.thu', 'common.fri', 'common.sat', 'common.sun'].map((dayKey, i) => (
                   <button
                     key={i}
                     type="button"
@@ -182,7 +181,7 @@ export default function HabitDetailModal({ habit, onClose, onUpdate, onDelete, i
                       );
                     }}
                   >
-                    <span className="habits-weekday-letter">{dayName.charAt(0)}</span>
+                    <span className="habits-weekday-letter">{t(dayKey).charAt(0)}</span>
                   </button>
                 ))}
               </div>

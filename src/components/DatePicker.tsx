@@ -10,10 +10,10 @@ interface DatePickerProps {
   id?: string;
 }
 
-const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-const MONTHS = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
+const WEEKDAY_KEYS = ['common.sunday', 'common.monday', 'common.tuesday', 'common.wednesday', 'common.thursday', 'common.friday', 'common.saturday'];
+const MONTH_KEYS = [
+  'common.january', 'common.february', 'common.march', 'common.april', 'common.may', 'common.june',
+  'common.july', 'common.august', 'common.september', 'common.october', 'common.november', 'common.december',
 ];
 
 function getDaysInMonth(year: number, month: number) {
@@ -24,11 +24,11 @@ function getFirstDayOfMonth(year: number, month: number) {
   return new Date(year, month, 1).getDay();
 }
 
-function formatDateDisplay(dateStr: string) {
+function formatDateDisplay(dateStr: string, locale: string) {
   if (!dateStr) return '';
   const [y, m, d] = dateStr.split('-').map(Number);
   const date = new Date(y, m - 1, d);
-  return date.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+  return date.toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 function toDateString(year: number, month: number, day: number) {
@@ -45,7 +45,7 @@ function parseDate(value: string) {
 }
 
 export default function DatePicker({ value, onChange, min, label, id }: DatePickerProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const today = new Date();
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
@@ -148,7 +148,7 @@ export default function DatePicker({ value, onChange, min, label, id }: DatePick
         onClick={toggleOpen}
       >
         <span className={value ? 'dp-trigger-value' : 'dp-trigger-placeholder'}>
-          {value ? formatDateDisplay(value) : t('components.datePicker.selectDate')}
+          {value ? formatDateDisplay(value, i18n.language === 'fr' ? 'fr-FR' : 'en-US') : t('components.datePicker.selectDate')}
         </span>
         {value ? (
           <span className="dp-trigger-clear" onClick={clearDate}>&times;</span>
@@ -167,14 +167,14 @@ export default function DatePicker({ value, onChange, min, label, id }: DatePick
             <button type="button" className="dp-nav" onClick={prevMonth}>
               <ArrowLeft size={16} />
             </button>
-            <span className="dp-title">{MONTHS[viewMonth]} {viewYear}</span>
+            <span className="dp-title">{t(MONTH_KEYS[viewMonth])} {viewYear}</span>
             <button type="button" className="dp-nav" onClick={nextMonth}>
               <ArrowRight size={16} />
             </button>
           </div>
           <div className="dp-weekdays">
-            {WEEKDAYS.map((d) => (
-              <span key={d} className="dp-weekday">{d}</span>
+            {WEEKDAY_KEYS.map((key) => (
+              <span key={key} className="dp-weekday">{t(key).charAt(0)}</span>
             ))}
           </div>
           <div className="dp-grid">

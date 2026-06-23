@@ -8,12 +8,12 @@ import '../styles/calendar.css';
 
 type CalMode = 'week' | 'month';
 
-const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
+const MONTH_KEYS = [
+  'common.january', 'common.february', 'common.march', 'common.april', 'common.may', 'common.june',
+  'common.july', 'common.august', 'common.september', 'common.october', 'common.november', 'common.december',
 ];
-const DAY_NAMES_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-const DAY_NAMES_FULL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const DAY_KEYS_SHORT = ['common.mon', 'common.tue', 'common.wed', 'common.thu', 'common.fri', 'common.sat', 'common.sun'];
+const DAY_KEYS_FULL = ['common.monday', 'common.tuesday', 'common.wednesday', 'common.thursday', 'common.friday', 'common.saturday', 'common.sunday'];
 
 function isSameDay(a: Date, b: Date): boolean {
   return a.getFullYear() === b.getFullYear() &&
@@ -48,17 +48,17 @@ function getMonthEnd(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth() + 1, 0);
 }
 
-function formatFullDate(d: Date): string {
-  return `${DAY_NAMES_FULL[(d.getDay() + 6) % 7]}, ${MONTH_NAMES[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+function formatFullDate(d: Date, t: (key: string) => string): string {
+  return `${t(DAY_KEYS_FULL[(d.getDay() + 6) % 7])}, ${t(MONTH_KEYS[d.getMonth()])} ${d.getDate()}, ${d.getFullYear()}`;
 }
 
-function formatDateRange(start: Date): string {
+function formatDateRange(start: Date, t: (key: string) => string): string {
   const end = addDays(start, 6);
   const sameMonth = start.getMonth() === end.getMonth();
   if (sameMonth) {
-    return `${MONTH_NAMES[start.getMonth()]} ${start.getDate()} – ${end.getDate()}`;
+    return `${t(MONTH_KEYS[start.getMonth()])} ${start.getDate()} – ${end.getDate()}`;
   }
-  return `${MONTH_NAMES[start.getMonth()].slice(0, 3)} ${start.getDate()} – ${MONTH_NAMES[end.getMonth()].slice(0, 3)} ${end.getDate()}`;
+  return `${t(MONTH_KEYS[start.getMonth()]).slice(0, 3)} ${start.getDate()} – ${t(MONTH_KEYS[end.getMonth()]).slice(0, 3)} ${end.getDate()}`;
 }
 
 interface CalendarPageProps {
@@ -188,8 +188,8 @@ export default function CalendarPage({ tasks, projectTasks, onViewTask }: Calend
           </button>
           <div className="cal-nav-label">
             {mode === 'week'
-              ? <span className="cal-nav-text">{formatDateRange(weekStart)}</span>
-              : <span className="cal-nav-text">{MONTH_NAMES[monthDate.getMonth()]} {monthDate.getFullYear()}</span>
+              ? <span className="cal-nav-text">{formatDateRange(weekStart, t)}</span>
+              : <span className="cal-nav-text">{t(MONTH_KEYS[monthDate.getMonth()])} {monthDate.getFullYear()}</span>
             }
             {showTodayBadge && (
               <button className="cal-today-badge" onClick={handleToday}>{t('common.today')}</button>
@@ -218,7 +218,7 @@ export default function CalendarPage({ tasks, projectTasks, onViewTask }: Calend
                 className={`cal-week-day${isToday ? ' cal-week-day--today' : ''}${isSelected && !isToday ? ' cal-week-day--selected' : ''}${isPast ? ' cal-week-day--past' : ''}`}
                 onClick={() => handleDayClick(day)}
               >
-                <span className="cal-week-day-name">{DAY_NAMES_SHORT[i]}</span>
+                <span className="cal-week-day-name">{t(DAY_KEYS_SHORT[i])}</span>
                 <div className="cal-week-day-pill">
                   <span className="cal-week-day-num">{day.getDate()}</span>
                   {taskCount > 0 && (
@@ -232,8 +232,8 @@ export default function CalendarPage({ tasks, projectTasks, onViewTask }: Calend
       ) : (
         <div className="cal-month">
           <div className="cal-month-header">
-            {DAY_NAMES_SHORT.map(d => (
-              <span key={d} className="cal-month-header-day">{d}</span>
+            {DAY_KEYS_SHORT.map(d => (
+              <span key={d} className="cal-month-header-day">{t(d)}</span>
             ))}
           </div>
           <div className="cal-month-grid">
@@ -268,7 +268,7 @@ export default function CalendarPage({ tasks, projectTasks, onViewTask }: Calend
       )}
 
       <div className="cal-day-label">
-        <span className="cal-day-label-text">{formatFullDate(selectedDay)}</span>
+        <span className="cal-day-label-text">{formatFullDate(selectedDay, t)}</span>
         {selectedTaskCount > 0 && (
           <span className="cal-day-label-count">
             {completedCount}/{selectedTaskCount}
@@ -310,7 +310,7 @@ export default function CalendarPage({ tasks, projectTasks, onViewTask }: Calend
                   )}
                   <div className="cal-task-tags">
                     <span className={`priority-badge priority-${task.priority}`}>
-                      {task.priority}
+                      {t(`common.${task.priority}`)}
                     </span>
                     {task.deadline && (
                       <span className={`deadline-badge deadline-${dlStatus}`}>

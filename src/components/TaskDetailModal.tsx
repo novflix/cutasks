@@ -12,10 +12,6 @@ interface TaskDetailModalProps {
   isClosing?: boolean;
 }
 
-function capitalize(s: string) {
-  return s.charAt(0).toUpperCase() + s.slice(1);
-}
-
 export default function TaskDetailModal({ task, tasks, onClose, onEdit, onToggle, isClosing }: TaskDetailModalProps) {
   const { t } = useTranslation();
   const dlStatus = getDeadlineStatus(task.deadline, task.completed);
@@ -72,7 +68,7 @@ export default function TaskDetailModal({ task, tasks, onClose, onEdit, onToggle
               {t('common.priority')}
             </span>
             <span className={`priority-badge priority-${task.priority}`}>
-              {capitalize(task.priority)}
+              {t(`common.${task.priority}`)}
             </span>
           </div>
 
@@ -82,7 +78,7 @@ export default function TaskDetailModal({ task, tasks, onClose, onEdit, onToggle
                 <circle cx="12" cy="12" r="10" />
                 <polyline points="12 6 12 12 16 14" />
               </svg>
-              Status
+              {t('common.status')}
             </span>
             <span className={`status-badge ${task.completed ? 'status-done' : 'status-active'}`}>
               {task.completed ? t('modals.taskDetail.completed') : t('modals.taskDetail.active')}
@@ -99,7 +95,7 @@ export default function TaskDetailModal({ task, tasks, onClose, onEdit, onToggle
                 {formatDeadline(task.deadline)}
                 {dlStatus === 'overdue' && ` (${t('common.overdue')})`}
                 {dlStatus === 'today' && ` (${t('common.today')})`}
-                {dlStatus === 'soon' && ' (soon)'}
+                {dlStatus === 'soon' && ` (${t('common.soon')})`}
               </span>
             </div>
           )}

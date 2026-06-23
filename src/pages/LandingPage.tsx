@@ -117,7 +117,7 @@ export default function LandingPage() {
               <div className="lp-hero-avatar" style={{ background: '#64b5f6' }}>K</div>
               <div className="lp-hero-avatar" style={{ background: '#ba68c8' }}>R</div>
             </div>
-            <span className="lp-hero-proof-text">Built for people who care about their time</span>
+            <span className="lp-hero-proof-text">{t('landing.proofText')}</span>
           </div>
         </div>
         <div className="lp-hero-mockup">
@@ -130,10 +130,10 @@ export default function LandingPage() {
               <div className="lp-mockup-sidebar-divider" />
               <div className="lp-mockup-sidebar-nav">
                 {[
-                  { icon: <HomeSmile size={20} strokeWidth={1.8} />, label: 'Home', active: false },
-                  { icon: <ClipboardCheck size={20} strokeWidth={1.8} />, label: 'Tasks', active: true },
-                  { icon: <Folder size={20} strokeWidth={1.8} />, label: 'Projects', active: false },
-                  { icon: <SettingsMinimalistic size={20} strokeWidth={1.8} />, label: 'Settings', active: false },
+                  { icon: <HomeSmile size={20} strokeWidth={1.8} />, label: t('landing.mockup.home'), active: false },
+                  { icon: <ClipboardCheck size={20} strokeWidth={1.8} />, label: t('landing.mockup.tasks'), active: true },
+                  { icon: <Folder size={20} strokeWidth={1.8} />, label: t('landing.mockup.projects'), active: false },
+                  { icon: <SettingsMinimalistic size={20} strokeWidth={1.8} />, label: t('landing.mockup.settings'), active: false },
                 ].map((item) => (
                   <div key={item.label} className={`lp-mockup-sidebar-btn${item.active ? ' active' : ''}`}>
                     {item.icon}
@@ -154,16 +154,16 @@ export default function LandingPage() {
               <div className="lp-mockup-header">
                 <div className="lp-mockup-stats">
                   <span className="lp-mockup-stat">
-                    <span className="lp-mockup-stat-dot" style={{ background: '#777' }} /> <strong>12</strong> total
+                    <span className="lp-mockup-stat-dot" style={{ background: '#777' }} /> <strong>12</strong> {t('landing.mockup.total')}
                   </span>
                   <span className="lp-mockup-stat lp-mockup-stat-active">
-                    <span className="lp-mockup-stat-dot" style={{ background: '#ed9b6d', color: '#ed9b6d' }} /> <strong>8</strong> active
+                    <span className="lp-mockup-stat-dot" style={{ background: '#ed9b6d', color: '#ed9b6d' }} /> <strong>8</strong> {t('landing.mockup.active')}
                   </span>
                   <span className="lp-mockup-stat lp-mockup-stat-done">
-                    <span className="lp-mockup-stat-dot" style={{ background: '#66bb6a', color: '#66bb6a' }} /> <strong>4</strong> done
+                    <span className="lp-mockup-stat-dot" style={{ background: '#66bb6a', color: '#66bb6a' }} /> <strong>4</strong> {t('landing.mockup.done')}
                   </span>
                 </div>
-                <button className="lp-mockup-btn-add">+ New Task</button>
+                <button className="lp-mockup-btn-add">+ {t('landing.mockup.newTask')}</button>
               </div>
 
               {/* Search + filters */}
@@ -173,10 +173,10 @@ export default function LandingPage() {
                     <circle cx="11" cy="11" r="8" />
                     <path d="m21 21-4.35-4.35" />
                   </svg>
-                  <span className="lp-mockup-search-placeholder">Search tasks...</span>
+                  <span className="lp-mockup-search-placeholder">{t('landing.mockup.searchPlaceholder')}</span>
                 </div>
                 <div className="lp-mockup-filters">
-                  <span className="lp-mockup-filter active">All</span>
+                  <span className="lp-mockup-filter active">{t('landing.mockup.all')}</span>
                    <span className="lp-mockup-filter">{t('common.active')}</span>
                    <span className="lp-mockup-filter">{t('common.done')}</span>
                 </div>
@@ -185,10 +185,10 @@ export default function LandingPage() {
               {/* Task list */}
               <div className="lp-mockup-task-list">
                 {[
-                  { title: 'Design new landing page', priority: 'high', desc: 'Create mockups and final design', tags: ['design', 'ui'], deadline: 'Jun 25' },
-                  { title: 'Write API documentation', priority: 'medium', desc: 'Document all endpoints', tags: ['docs'], deadline: '' },
-                  { title: 'Fix navigation bug', priority: 'low', desc: '', tags: ['bugfix'], deadline: 'Jun 22' },
-                  { title: 'Review pull requests', priority: 'medium', desc: 'Check 3 open PRs', tags: [], deadline: '' },
+                  { title: t('landing.mockup.task1Title'), priority: 'high', desc: t('landing.mockup.task1Desc'), tags: ['design', 'ui'], deadline: 'Jun 25' },
+                  { title: t('landing.mockup.task2Title'), priority: 'medium', desc: t('landing.mockup.task2Desc'), tags: ['docs'], deadline: '' },
+                  { title: t('landing.mockup.task3Title'), priority: 'low', desc: '', tags: ['bugfix'], deadline: 'Jun 22' },
+                  { title: t('landing.mockup.task4Title'), priority: 'medium', desc: t('landing.mockup.task4Desc'), tags: [], deadline: '' },
                 ].map((task, i) => (
                   <div key={i} className={`lp-mockup-task task-stripe-${task.priority}`} style={{ animationDelay: `${i * 0.1}s` }}>
                     <div className="lp-mockup-task-check" />
@@ -232,12 +232,12 @@ export default function LandingPage() {
           </h2>
           <div className="lp-features-grid">
             {[
-              { icon: <ListCheck size={24} />, title: 'Smart tasks', desc: 'Subtasks, priorities, deadlines, tags. Filter and search in an instant.' },
-              { icon: <FolderOpen size={24} />, title: 'Projects', desc: 'Group tasks into projects with sections and progress tracking.' },
-              { icon: <BookBookmark size={24} />, title: 'Habits', desc: 'Build streaks, track daily routines, and become better every day.' },
-              { icon: <ClockSquare size={24} />, title: 'Pomodoro', desc: 'Stay focused with timed work sessions and configurable breaks.' },
-              { icon: <CalendarSearch size={24} />, title: 'Calendar', desc: 'View your schedule and plan ahead at a glance.' },
-              { icon: <Shield size={24} />, title: 'Cloud sync', desc: 'Your data is synced across devices. Works offline too.' },
+              { icon: <ListCheck size={24} />, title: t('landing.feature1Title'), desc: t('landing.feature1Desc') },
+              { icon: <FolderOpen size={24} />, title: t('landing.feature2Title'), desc: t('landing.feature2Desc') },
+              { icon: <BookBookmark size={24} />, title: t('landing.feature3Title'), desc: t('landing.feature3Desc') },
+              { icon: <ClockSquare size={24} />, title: t('landing.feature4Title'), desc: t('landing.feature4Desc') },
+              { icon: <CalendarSearch size={24} />, title: t('landing.feature5Title'), desc: t('landing.feature5Desc') },
+              { icon: <Shield size={24} />, title: t('landing.feature6Title'), desc: t('landing.feature6Desc') },
             ].map((f, i) => (
               <div key={i} className="lp-feature-card l-reveal" style={{ transitionDelay: `${i * 0.06}s` }}>
                 <div className="lp-feature-icon">{f.icon}</div>
@@ -255,9 +255,9 @@ export default function LandingPage() {
         <div className="lp-deep-section">
           <div className="lp-deep-content l-reveal">
             <span className="lp-section-label">{t('landing.tasksSection')}</span>
-            <h2 className="lp-deep-title">Tasks that work<br />the way you do</h2>
+            <h2 className="lp-deep-title">{t('landing.tasksTitle')}</h2>
             <ul className="lp-deep-points">
-              {['Subtasks up to 3 levels deep', 'Smart priority sorting', 'Deadline tracking with overdue alerts', 'Tag system with color coding', 'Quick search across all tasks', 'Undo any action with Ctrl+Z'].map((p, j) => (
+              {(t('landing.tasksPoints', { returnObjects: true }) as string[]).map((p, j) => (
                 <li key={j} className="lp-deep-point l-reveal" style={{ transitionDelay: `${j * 0.05}s` }}>
                   <CheckCircle size={17} style={{ color: '#ed9b6d', flexShrink: 0 }} />
                   <span>{p}</span>
@@ -283,7 +283,7 @@ export default function LandingPage() {
               <div className="lp-demo-task">
                 <div className="lp-demo-check" />
                 <div className="lp-demo-task-body">
-                  <span className="lp-demo-task-title">Design new landing page</span>
+                  <span className="lp-demo-task-title">{t('landing.mockup.task1Title')}</span>
                   <div className="lp-demo-task-meta">
                     <span className="lp-demo-prio high">high</span>
                     <span className="lp-demo-dl">
@@ -298,7 +298,7 @@ export default function LandingPage() {
               <div className="lp-demo-task">
                 <div className="lp-demo-check" />
                 <div className="lp-demo-task-body">
-                  <span className="lp-demo-task-title">Write API documentation</span>
+                  <span className="lp-demo-task-title">{t('landing.mockup.task2Title')}</span>
                   <div className="lp-demo-task-meta">
                     <span className="lp-demo-prio medium">medium</span>
                     <span className="lp-demo-utag">#docs</span>
@@ -310,7 +310,7 @@ export default function LandingPage() {
                   <svg viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" width="11" height="11"><polyline points="5 12 10 17 19 7" /></svg>
                 </div>
                 <div className="lp-demo-task-body">
-                  <span className="lp-demo-task-title">Fix navigation bug</span>
+                  <span className="lp-demo-task-title">{t('landing.mockup.task3Title')}</span>
                   <div className="lp-demo-task-meta">
                     <span className="lp-demo-prio low">low</span>
                     <span className="lp-demo-utag">#bugfix</span>
@@ -325,9 +325,9 @@ export default function LandingPage() {
         <div className="lp-deep-section">
           <div className="lp-deep-content l-reveal">
             <span className="lp-section-label">{t('landing.projectsSection')}</span>
-            <h2 className="lp-deep-title">Organize work<br />into projects</h2>
+            <h2 className="lp-deep-title">{t('landing.projectsTitle')}</h2>
             <ul className="lp-deep-points">
-              {['Sections for grouping tasks', 'Active, paused, and completed status', 'Per-project task filtering', 'Color-coded with custom icons', 'Dedicated project views'].map((p, j) => (
+              {(t('landing.projectsPoints', { returnObjects: true }) as string[]).map((p, j) => (
                 <li key={j} className="lp-deep-point l-reveal" style={{ transitionDelay: `${j * 0.05}s` }}>
                   <CheckCircle size={17} style={{ color: '#64b5f6', flexShrink: 0 }} />
                   <span>{p}</span>
@@ -342,33 +342,33 @@ export default function LandingPage() {
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z" /></svg>
                 </div>
                 <div className="lp-demo-proj-info">
-                  <span className="lp-demo-proj-name">Website Redesign</span>
+                  <span className="lp-demo-proj-name">{t('landing.mockup.project1Name')}</span>
                   <div className="lp-demo-proj-bar"><div className="lp-demo-proj-fill" style={{ width: '65%', background: '#ed9b6d' }} /></div>
-                  <span className="lp-demo-proj-stat">8 / 12 tasks</span>
+                  <span className="lp-demo-proj-stat">{t('landing.mockup.project1Tasks')}</span>
                 </div>
-                <span className="lp-demo-proj-status active">active</span>
+                <span className="lp-demo-proj-status active">{t('landing.mockup.project1Status')}</span>
               </div>
               <div className="lp-demo-project-card">
                 <div className="lp-demo-proj-icon" style={{ background: 'rgba(102,187,106,0.12)', color: '#66bb6a' }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z" /></svg>
                 </div>
                 <div className="lp-demo-proj-info">
-                  <span className="lp-demo-proj-name">Mobile App</span>
+                  <span className="lp-demo-proj-name">{t('landing.mockup.project2Name')}</span>
                   <div className="lp-demo-proj-bar"><div className="lp-demo-proj-fill" style={{ width: '100%', background: '#66bb6a' }} /></div>
-                  <span className="lp-demo-proj-stat">5 / 5 tasks</span>
+                  <span className="lp-demo-proj-stat">{t('landing.mockup.project2Tasks')}</span>
                 </div>
-                <span className="lp-demo-proj-status done">done</span>
+                <span className="lp-demo-proj-status done">{t('landing.mockup.project2Status')}</span>
               </div>
               <div className="lp-demo-project-card">
                 <div className="lp-demo-proj-icon" style={{ background: 'rgba(100,181,246,0.12)', color: '#64b5f6' }}>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z" /></svg>
                 </div>
                 <div className="lp-demo-proj-info">
-                  <span className="lp-demo-proj-name">API Integration</span>
+                  <span className="lp-demo-proj-name">{t('landing.mockup.project3Name')}</span>
                   <div className="lp-demo-proj-bar"><div className="lp-demo-proj-fill" style={{ width: '30%', background: '#64b5f6' }} /></div>
-                  <span className="lp-demo-proj-stat">3 / 10 tasks</span>
+                  <span className="lp-demo-proj-stat">{t('landing.mockup.project3Tasks')}</span>
                 </div>
-                <span className="lp-demo-proj-status paused">paused</span>
+                <span className="lp-demo-proj-status paused">{t('landing.mockup.project3Status')}</span>
               </div>
             </div>
           </div>
@@ -378,9 +378,9 @@ export default function LandingPage() {
         <div className="lp-deep-section">
           <div className="lp-deep-content l-reveal">
             <span className="lp-section-label">{t('landing.habitsSection')}</span>
-            <h2 className="lp-deep-title">Build habits<br />that stick</h2>
+            <h2 className="lp-deep-title">{t('landing.habitsTitle')}</h2>
             <ul className="lp-deep-points">
-              {['Daily streak tracking', 'Flexible weekday scheduling', 'Completion history calendar', 'Drag-and-drop reordering', 'Custom icons and colors'].map((p, j) => (
+              {(t('landing.habitsPoints', { returnObjects: true }) as string[]).map((p, j) => (
                 <li key={j} className="lp-deep-point l-reveal" style={{ transitionDelay: `${j * 0.05}s` }}>
                   <CheckCircle size={17} style={{ color: '#66bb6a', flexShrink: 0 }} />
                   <span>{p}</span>
@@ -417,7 +417,7 @@ export default function LandingPage() {
                 <div className="lp-demo-habit-icon" style={{ background: 'rgba(237,155,109,0.12)', color: '#ed9b6d' }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" /></svg>
                 </div>
-                <span className="lp-demo-habit-name">Morning workout</span>
+                <span className="lp-demo-habit-name">{t('landing.mockup.habit1Name')}</span>
                 <div className="lp-demo-habit-streak">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="#ff8c42" stroke="none"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" /></svg>
                   <span>12</span>
@@ -430,7 +430,7 @@ export default function LandingPage() {
                 <div className="lp-demo-habit-icon" style={{ background: 'rgba(102,187,106,0.12)', color: '#66bb6a' }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></svg>
                 </div>
-                <span className="lp-demo-habit-name">Read 30 min</span>
+                <span className="lp-demo-habit-name">{t('landing.mockup.habit2Name')}</span>
                 <div className="lp-demo-habit-streak">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="#ff8c42" stroke="none"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" /></svg>
                   <span>5</span>
@@ -443,7 +443,7 @@ export default function LandingPage() {
                 <div className="lp-demo-habit-icon" style={{ background: 'rgba(100,181,246,0.12)', color: '#64b5f6' }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg>
                 </div>
-                <span className="lp-demo-habit-name">Call parents</span>
+                <span className="lp-demo-habit-name">{t('landing.mockup.habit3Name')}</span>
                 <div className="lp-demo-habit-streak">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="#ff8c42" stroke="none"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" /></svg>
                   <span>3</span>
@@ -456,7 +456,7 @@ export default function LandingPage() {
                 <div className="lp-demo-habit-icon" style={{ background: 'rgba(186,104,200,0.12)', color: '#ba68c8' }}>
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" /><path d="m9 12 2 2 4-4" /></svg>
                 </div>
-                <span className="lp-demo-habit-name">Meditate 10 min</span>
+                <span className="lp-demo-habit-name">{t('landing.mockup.habit4Name')}</span>
                 <div className="lp-demo-habit-streak">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="#ff8c42" stroke="none"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" /></svg>
                   <span>8</span>
@@ -470,9 +470,9 @@ export default function LandingPage() {
         <div className="lp-deep-section">
           <div className="lp-deep-content l-reveal">
             <span className="lp-section-label">{t('landing.pomodoroSection')}</span>
-            <h2 className="lp-deep-title">Deep focus,<br />timed perfectly</h2>
+            <h2 className="lp-deep-title">{t('landing.pomodoroTitle')}</h2>
             <ul className="lp-deep-points">
-              {['Configurable work/break durations', 'Long break every 4 sessions', 'Mini timer on every page', 'Session counter and celebration', 'State preserved across refreshes'].map((p, j) => (
+              {(t('landing.pomodoroPoints', { returnObjects: true }) as string[]).map((p, j) => (
                 <li key={j} className="lp-deep-point l-reveal" style={{ transitionDelay: `${j * 0.05}s` }}>
                   <CheckCircle size={17} style={{ color: '#ba68c8', flexShrink: 0 }} />
                   <span>{p}</span>
@@ -485,8 +485,8 @@ export default function LandingPage() {
               {/* mode tabs */}
               <div className="lp-demo-pomo-tabs">
                 <span className="lp-demo-pomo-tab active">{t('pomodoro.focus')}</span>
-                <span className="lp-demo-pomo-tab">Short Break</span>
-                <span className="lp-demo-pomo-tab">Long Break</span>
+                <span className="lp-demo-pomo-tab">{t('landing.pomodoroShortBreak')}</span>
+                <span className="lp-demo-pomo-tab">{t('landing.pomodoroLongBreak')}</span>
               </div>
               {/* ring */}
               <div className="lp-demo-pomo-ring-wrap">
@@ -531,10 +531,10 @@ export default function LandingPage() {
           <h2 className="lp-section-title l-reveal">{t('landing.whySubtitle')}</h2>
           <div className="lp-why-grid">
             {[
-              { icon: <WindowFrame size={22} />, title: 'Clean by default', desc: 'No clutter, no bloat. A minimal interface that stays out of your way.' },
-              { icon: <Palette size={22} />, title: '3 themes', desc: 'Dark, Light, and Midnight. Switch instantly from settings.' },
-              { icon: <ClockCircle size={22} />, title: 'Syncs automatically', desc: 'Data syncs across all your devices. Works offline too.' },
-              { icon: <Shield size={22} />, title: 'No tracking', desc: 'No ads, no analytics, no third-party trackers. Just your tool.' },
+              { icon: <WindowFrame size={22} />, title: t('landing.why1Title'), desc: t('landing.why1Desc') },
+              { icon: <Palette size={22} />, title: t('landing.why2Title'), desc: t('landing.why2Desc') },
+              { icon: <ClockCircle size={22} />, title: t('landing.why3Title'), desc: t('landing.why3Desc') },
+              { icon: <Shield size={22} />, title: t('landing.why4Title'), desc: t('landing.why4Desc') },
             ].map((item, i) => (
               <div key={i} className="lp-why-card l-reveal" style={{ transitionDelay: `${i * 0.08}s` }}>
                 <div className="lp-why-icon">{item.icon}</div>
@@ -549,12 +549,12 @@ export default function LandingPage() {
       {/* ── Stats ── */}
       <section className="lp-stats" ref={statsRef}>
         <div className="lp-stats-inner">
-          {[
-            { value: '6', label: 'Core features' },
-            { value: '3', label: 'Themes' },
-            { value: '100%', label: 'Free forever' },
-            { value: '0', label: 'Ads or trackers' },
-          ].map((s, i) => (
+            {[
+              { value: '6', label: t('landing.stat1Label') },
+              { value: '3', label: t('landing.stat2Label') },
+              { value: '100%', label: t('landing.stat3Label') },
+              { value: '0', label: t('landing.stat4Label') },
+            ].map((s, i) => (
             <div key={i} className="lp-stat l-reveal" style={{ transitionDelay: `${i * 0.08}s` }}>
               <span className="lp-stat-value">{s.value}</span>
               <span className="lp-stat-label">{s.label}</span>

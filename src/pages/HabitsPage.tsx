@@ -10,10 +10,10 @@ import {
 import type { Habit } from '../types';
 import HabitDetailModal from '../components/HabitDetailModal';
 
-const ALL_DAY_NAMES = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December',
+const ALL_DAY_KEYS = ['common.mon', 'common.tue', 'common.wed', 'common.thu', 'common.fri', 'common.sat', 'common.sun'];
+const MONTH_KEYS = [
+  'common.january', 'common.february', 'common.march', 'common.april', 'common.may', 'common.june',
+  'common.july', 'common.august', 'common.september', 'common.october', 'common.november', 'common.december',
 ];
 
 const HABIT_ICONS: { name: string; icon: ComponentType<{ size?: number; strokeWidth?: number }> }[] = [
@@ -77,18 +77,18 @@ function dateKey(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-function formatDateRange(start: Date): string {
+function formatDateRange(start: Date, t: (key: string) => string): string {
   const end = new Date(start);
   end.setDate(end.getDate() + 6);
   const sameMonth = start.getMonth() === end.getMonth();
   if (sameMonth) {
-    return `${MONTH_NAMES[start.getMonth()]} ${start.getDate()} – ${end.getDate()}`;
+    return `${t(MONTH_KEYS[start.getMonth()])} ${start.getDate()} – ${end.getDate()}`;
   }
-  return `${MONTH_NAMES[start.getMonth()].slice(0, 3)} ${start.getDate()} – ${MONTH_NAMES[end.getMonth()].slice(0, 3)} ${end.getDate()}`;
+  return `${t(MONTH_KEYS[start.getMonth()]).slice(0, 3)} ${start.getDate()} – ${t(MONTH_KEYS[end.getMonth()]).slice(0, 3)} ${end.getDate()}`;
 }
 
-function formatFullDate(d: Date): string {
-  return `${MONTH_NAMES[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+function formatFullDate(d: Date, t: (key: string) => string): string {
+  return `${t(MONTH_KEYS[d.getMonth()])} ${d.getDate()}, ${d.getFullYear()}`;
 }
 
 function getDayOfWeek(d: Date): number {
@@ -174,9 +174,9 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
 
   const dayNames = useMemo(() => {
     if (weekStartDay === 'saturday') {
-      return ['Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+      return ['common.sat', 'common.sun', 'common.mon', 'common.tue', 'common.wed', 'common.thu', 'common.fri'];
     }
-    return ALL_DAY_NAMES;
+    return ALL_DAY_KEYS;
   }, [weekStartDay]);
 
   const isCurrentWeek = useMemo(() => {
@@ -413,7 +413,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
             <AltArrowLeft size={18} />
           </button>
           <div className="habits-week-label">
-            <span className="habits-week-text">{formatDateRange(weekStart)}</span>
+            <span className="habits-week-text">{formatDateRange(weekStart, t)}</span>
             {isCurrentWeek && <span className="habits-week-badge">{t('habits.thisWeek')}</span>}
           </div>
           <button
@@ -443,7 +443,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
               className={`habits-day ${isToday ? 'habits-day--today' : ''} ${isSelected && !isToday ? 'habits-day--selected' : ''} ${isPast ? 'habits-day--past' : ''}`}
               onClick={() => setSelectedDay(day)}
             >
-              <span className="habits-day-name">{dayNames[i]}</span>
+              <span className="habits-day-name">{t(dayNames[i])}</span>
               <div className="habits-day-pill">
                 <span className="habits-day-num">{dayNum}</span>
               </div>
@@ -455,7 +455,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
       <div className="habits-day-label">
         {isSameDay(selectedDay, today)
           ? t('common.today')
-          : formatFullDate(selectedDay)}
+          : formatFullDate(selectedDay, t)}
       </div>
 
       <div className="habits-list">
@@ -492,7 +492,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
                   className={`habits-check ${isDone ? 'habits-check--checked' : ''} ${isFuture ? 'habits-check--disabled' : ''}`}
                   onClick={() => { if (!isFuture) toggleHabit(habit.id); }}
                   disabled={isFuture}
-                  aria-label={isDone ? `Undo ${habit.name}` : `Complete ${habit.name}`}
+                  aria-label={isDone ? `${t('components.taskCard.undo')} ${habit.name}` : `${t('components.taskCard.complete')} ${habit.name}`}
                 >
                   <span className="habits-check-particles">
                     <i /><i /><i /><i /><i /><i />
@@ -593,9 +593,9 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
                           prev.includes(i) ? prev.filter((d) => d !== i) : [...prev, i].sort()
                         );
                       }}
-                      aria-label={name}
+                      aria-label={t(name)}
                     >
-                      <span className="habits-weekday-letter">{name.charAt(0)}</span>
+                      <span className="habits-weekday-letter">{t(name).charAt(0)}</span>
                     </button>
                   ))}
                 </div>

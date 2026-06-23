@@ -147,15 +147,15 @@ export default function SettingsPage() {
     setPasswordError('');
     setPasswordSuccess(false);
     if (!currentPassword || !newPassword) {
-      setPasswordError('Fill in all fields');
+      setPasswordError(t('settings.fillAllFields'));
       return;
     }
     if (newPassword.length < 6) {
-      setPasswordError('New password must be at least 6 characters');
+      setPasswordError(t('settings.passwordMin6'));
       return;
     }
     if (newPassword !== confirmPassword) {
-      setPasswordError('Passwords do not match');
+      setPasswordError(t('settings.passwordMismatch'));
       return;
     }
     setPasswordLoading(true);
@@ -167,13 +167,13 @@ export default function SettingsPage() {
       setConfirmPassword('');
       setTimeout(() => closePasswordModal(), 1500);
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Failed to change password';
+      const msg = e instanceof Error ? e.message : t('settings.passwordFailed');
       if (msg.includes('wrong-password') || msg.includes('invalid-credential')) {
-        setPasswordError('Current password is incorrect');
+        setPasswordError(t('settings.passwordIncorrect'));
       } else if (msg.includes('weak-password')) {
-        setPasswordError('New password is too weak');
+        setPasswordError(t('settings.passwordWeak'));
       } else {
-        setPasswordError('Failed to change password');
+        setPasswordError(t('settings.passwordFailed'));
       }
     } finally {
       setPasswordLoading(false);
@@ -200,18 +200,18 @@ export default function SettingsPage() {
   async function handleDeleteAccount() {
     setDeleteError('');
     if (!deletePassword) {
-      setDeleteError('Enter your password to confirm');
+      setDeleteError(t('settings.deleteAccountConfirm'));
       return;
     }
     setDeleteLoading(true);
     try {
       await deleteAccount(deletePassword);
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : 'Failed to delete account';
+      const msg = e instanceof Error ? e.message : t('settings.deleteAccountFailed');
       if (msg.includes('wrong-password') || msg.includes('invalid-credential')) {
-        setDeleteError('Incorrect password');
+        setDeleteError(t('settings.deleteAccountIncorrect'));
       } else {
-        setDeleteError('Failed to delete account');
+        setDeleteError(t('settings.deleteAccountFailed'));
       }
     } finally {
       setDeleteLoading(false);
@@ -254,7 +254,7 @@ export default function SettingsPage() {
       setNameSuccess(true);
       setTimeout(() => closeNameModal(), 1500);
     } catch {
-      setNameError('Failed to update name');
+      setNameError(t('settings.nameFailed'));
     } finally {
       setNameLoading(false);
     }
@@ -520,7 +520,7 @@ export default function SettingsPage() {
                 ) : (
                   <>
                     <Key size={16} />
-                    Change password
+                    {t('settings.changePassword')}
                   </>
                 )}
               </button>
@@ -540,7 +540,7 @@ export default function SettingsPage() {
             </div>
             <div className="modal-body">
               <p className="delete-warning-text">
-                This action is <strong>irreversible</strong>. All your data including tasks, projects, habits, and settings will be permanently deleted.
+                {t('settings.deleteAccountDesc')}
               </p>
               <div className="password-field">
                 <label className="password-label">{t('settings.deleteAccountConfirm')}</label>

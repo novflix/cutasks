@@ -116,7 +116,7 @@ export default function ParentTaskSelect({ parentId, currentTaskId, allTasks, on
               onClick={() => selectTask(task)}
             >
               <span className={`priority-badge priority-${task.priority}`}>
-                {task.priority}
+                {t(`common.${task.priority}`)}
               </span>
               <span className="parent-dropdown-title">{task.title}</span>
             </button>

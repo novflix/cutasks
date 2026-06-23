@@ -369,11 +369,11 @@ export default function App() {
   }), [tasks]);
 
   const projectStats = useMemo(() => [
-    { label: 'total', value: projects.length },
-    { label: 'active', value: projects.filter((p) => p.status === 'active').length, color: '#66bb6a' },
-    { label: 'paused', value: projects.filter((p) => p.status === 'paused').length, color: '#ffb74d' },
-    { label: 'done', value: projects.filter((p) => p.status === 'completed').length, color: '#64b5f6' },
-  ], [projects]);
+    { label: t('common.total'), value: projects.length },
+    { label: t('common.active'), value: projects.filter((p) => p.status === 'active').length, color: '#66bb6a' },
+    { label: t('common.paused'), value: projects.filter((p) => p.status === 'paused').length, color: '#ffb74d' },
+    { label: t('common.done'), value: projects.filter((p) => p.status === 'completed').length, color: '#64b5f6' },
+  ], [projects, t]);
 
   const filteredProjects = useMemo(() => {
     let result = projects;
@@ -395,11 +395,11 @@ export default function App() {
   }, [projects, projectSearch, projectTasks]);
 
   const taskStatsFormatted = useMemo(() => [
-    { label: 'total', value: stats.total },
-    { label: 'active', value: stats.active, color: '#ed9b6d' },
-    { label: 'done', value: stats.completed, color: '#66bb6a' },
-    ...(stats.overdue > 0 ? [{ label: 'overdue', value: stats.overdue, color: '#ef5350' }] : []),
-  ], [stats]);
+    { label: t('common.total'), value: stats.total },
+    { label: t('common.active'), value: stats.active, color: '#ed9b6d' },
+    { label: t('common.done'), value: stats.completed, color: '#66bb6a' },
+    ...(stats.overdue > 0 ? [{ label: t('common.overdue'), value: stats.overdue, color: '#ef5350' }] : []),
+  ], [stats, t]);
 
   const allTags = useMemo(() => getAllTags(tasks), [tasks]);
 
@@ -646,12 +646,12 @@ export default function App() {
     const done = activeProjectTasks.filter((t) => t.completed).length;
     const overdue = activeProjectTasks.filter((t) => !t.completed && getDeadlineStatus(t.deadline, t.completed) === 'overdue').length;
     return [
-      { label: 'total', value: total },
-      { label: 'active', value: active, color: activeProject.color },
-      { label: 'done', value: done, color: '#66bb6a' },
-      ...(overdue > 0 ? [{ label: 'overdue', value: overdue, color: '#ef5350' }] : []),
+      { label: t('common.total'), value: total },
+      { label: t('common.active'), value: active, color: activeProject.color },
+      { label: t('common.done'), value: done, color: '#66bb6a' },
+      ...(overdue > 0 ? [{ label: t('common.overdue'), value: overdue, color: '#ef5350' }] : []),
     ];
-  }, [activeProjectTasks, activeProject]);
+  }, [activeProjectTasks, activeProject, t]);
 
   const allProjectTags = useMemo(() => getAllTags(projectTasks), [projectTasks]);
 
@@ -860,7 +860,7 @@ export default function App() {
     if (pomoRunning) {
       const m = Math.floor(pomoSeconds / 60);
       const s = pomoSeconds % 60;
-      const label = pomoMode === 'work' ? 'Focus' : pomoMode === 'short' ? 'Short Break' : 'Long Break';
+      const label = pomoMode === 'work' ? t('pomodoro.focus') : pomoMode === 'short' ? t('pomodoro.shortBreak') : t('pomodoro.longBreak');
       document.title = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')} — ${label} | CuTasks`;
     } else if (location.pathname !== '/app/pomodoro') {
       document.title = 'CuTasks';
@@ -980,7 +980,7 @@ export default function App() {
               <div className="page-hero">
                 <h1 className="page-hero-title">{t('projects.title')}</h1>
               </div>
-              <Header stats={projectStats} onCreate={openCreateProject} createLabel="New Project" />
+              <Header stats={projectStats} onCreate={openCreateProject} createLabel={t('projects.newProject')} />
               <div className="toolbar">
                 <div className="search-box">
                   <MinimalisticMagnifier size={18} className="search-icon" />
@@ -1013,8 +1013,8 @@ export default function App() {
               fallback={
                 <main className="main">
                   <div className="empty">
-                    <p className="empty-title">Project not found</p>
-                    <button className="btn btn-primary" onClick={() => navigate('/app/projects')}>Back to Projects</button>
+                    <p className="empty-title">{t('projects.projectNotFound')}</p>
+                    <button className="btn btn-primary" onClick={() => navigate('/app/projects')}>{t('projects.backToProjects')}</button>
                   </div>
                 </main>
               }
@@ -1038,7 +1038,7 @@ export default function App() {
                       )}
                     </div>
                   </div>
-                  <Header stats={projectTaskStats} onCreate={() => openCreateProjectTask(null)} createLabel="New Task" />
+                  <Header stats={projectTaskStats} onCreate={() => openCreateProjectTask(null)} createLabel={t('tasks.newTask')} />
                   <div className="toolbar">
                     <div className="search-box">
                       <MinimalisticMagnifier size={18} className="search-icon" />
@@ -1057,7 +1057,7 @@ export default function App() {
                           className={`filter-btn ${projectTaskFilter === f ? 'active' : ''}`}
                           onClick={() => setProjectTaskFilter(f)}
                         >
-                          {f === 'all' ? 'All' : f === 'active' ? 'Active' : 'Done'}
+                          {f === 'all' ? t('common.all') : f === 'active' ? t('common.active') : t('common.done')}
                         </button>
                       ))}
                     </div>

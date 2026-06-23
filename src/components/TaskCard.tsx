@@ -73,7 +73,7 @@ export default function TaskCard({
         )}
         <div className="task-tags">
           <span className={`priority-badge priority-${task.priority}`}>
-            {task.priority}
+            {t(`common.${task.priority}`)}
           </span>
           {task.deadline && (
             <span className={`deadline-badge deadline-${dlStatus}`}>
@@ -92,7 +92,7 @@ export default function TaskCard({
           {subtaskCount > 0 && (
             <span className="subtask-badge">
               <ArrowDown size={11} />
-              {subtaskCount} subtask{subtaskCount !== 1 ? 's' : ''}
+              {t('tasks.subtasks', { count: subtaskCount })}
             </span>
           )}
         </div>

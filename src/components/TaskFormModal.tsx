@@ -98,7 +98,7 @@ export default function TaskFormModal({
             <div className="fm-col">
               <DatePicker
                 id="task-deadline"
-                label="Deadline"
+                label={t('modals.taskForm.deadline')}
                 value={deadline}
                 onChange={onDeadlineChange}
                 min={new Date().toISOString().split('T')[0]}
@@ -108,7 +108,7 @@ export default function TaskFormModal({
 
           <div className="fm-field">
             <TagInput
-              label="Tags"
+              label={t('modals.taskForm.tags')}
               tags={tags}
               allTags={allTags}
               onChange={onTagsChange}
