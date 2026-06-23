@@ -4,6 +4,8 @@ import { Logout, Key, CheckCircle, CloseCircle, TrashBinMinimalistic, Pen, AltAr
 import { logout, changePassword, deleteAccount, updateDisplayName } from '../services/auth';
 import { saveSettings } from '../services/firestore';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
+import { LANGUAGES, setLanguage, type LanguageCode } from '../i18n';
 import type { PomoConfig } from './PomodoroPage';
 import { DEFAULT_POMO_CONFIG } from '../constants/pomo';
 
@@ -57,6 +59,7 @@ function hashColor(s: string): string {
 export default function SettingsPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { i18n } = useTranslation();
   const [activeTheme, setActiveTheme] = useState<string>(() => {
     return localStorage.getItem('cutasks_theme') || 'dark';
   });
@@ -69,6 +72,7 @@ export default function SettingsPage() {
   const [pomoConfig, setPomoConfig] = useState<PomoConfig>(() => {
     try { const r = localStorage.getItem(POMO_STORAGE); return r ? { ...DEFAULT_POMO_CONFIG, ...JSON.parse(r) } : DEFAULT_POMO_CONFIG; } catch { return DEFAULT_POMO_CONFIG; }
   });
+  const [langOpen, setLangOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -323,6 +327,45 @@ export default function SettingsPage() {
               </div>
             </button>
           ))}
+        </div>
+      </div>
+
+      <div className="settings-section">
+        <span className="settings-section-label">Language</span>
+        <div className={`lang-picker${langOpen ? ' lang-picker--open' : ''}`}>
+          {(() => {
+            const current = LANGUAGES.find(l => l.code === i18n.language) || LANGUAGES[0];
+            return (
+              <button className="lang-picker__current" onClick={() => setLangOpen(v => !v)}>
+                <span className={`fi fi-${current.countryCode} lang-picker__flag`} />
+                <span className="lang-picker__label">{current.label}</span>
+                <svg className={`lang-picker__chevron${langOpen ? ' open' : ''}`} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+            );
+          })()}
+          <div
+            className="lang-picker__list"
+            style={{ maxHeight: langOpen ? `${LANGUAGES.length * 48}px` : '0px' }}
+          >
+            {LANGUAGES.map((lang) => {
+              const active = i18n.language === lang.code;
+              return (
+                <button
+                  key={lang.code}
+                  className={`lang-picker__item${active ? ' active' : ''}`}
+                  onClick={() => { setLanguage(lang.code as LanguageCode); setLangOpen(false); }}
+                >
+                  <span className={`fi fi-${lang.countryCode} lang-picker__flag`} />
+                  <span className="lang-picker__label">{lang.label}</span>
+                  <div className={`lang-picker__radio${active ? ' active' : ''}`}>
+                    <div className="lang-picker__dot" />
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 

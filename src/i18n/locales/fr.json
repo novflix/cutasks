@@ -1,0 +1,185 @@
+{
+  "common": {
+    "home": "Accueil",
+    "tasks": "Tâches",
+    "projects": "Projets",
+    "settings": "Paramètres",
+    "calendar": "Calendrier",
+    "habits": "Habitudes",
+    "pomodoro": "Pomodoro",
+    "back": "Retour",
+    "create": "Créer",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "search": "Rechercher",
+    "all": "Tout",
+    "active": "Actif",
+    "done": "Terminé",
+    "overdue": "En retard",
+    "today": "Aujourd'hui",
+    "new": "Nouveau",
+    "yes": "Oui",
+    "no": "Non",
+    "confirm": "Confirmer",
+    "loading": "Chargement...",
+    "noResults": "Aucun résultat trouvé",
+    "version": "Version"
+  },
+  "nav": {
+    "home": "Accueil",
+    "tasks": "Tâches",
+    "projects": "Projets",
+    "settings": "Paramètres"
+  },
+  "home": {
+    "greeting": {
+      "morning": "Bonjour",
+      "afternoon": "Bon après-midi",
+      "evening": "Bonsoir"
+    },
+    "motivation": {
+      "overdue": "{{count}} tâche nécessite votre attention",
+      "overdue_plural": "{{count}} tâches nécessitent votre attention",
+      "dueToday": "{{count}} tâche prévue pour aujourd'hui — vous pouvez le faire !",
+      "dueToday_plural": "{{count}} tâches prévues pour aujourd'hui — vous pouvez le faire !",
+      "highCompletion": "Vous êtes en plein succès ! Continuez",
+      "active": "{{count}} tâche vous attend",
+      "active_plural": "{{count}} tâches vous attendent",
+      "allDone": "Toutes les tâches terminées — excellent travail !",
+      "empty": "Commencez à ajouter des tâches et projets"
+    },
+    "stats": {
+      "tasks": "Tâches",
+      "done": "terminées",
+      "active": "Actives",
+      "completed": "Terminées",
+      "overdue": "En retard",
+      "dueToday": "Aujourd'hui",
+      "habitsToday": "habitudes",
+      "streak": "série",
+      "activeProjects": "Projets actifs"
+    },
+    "banners": {
+      "habits": {
+        "title": "Habitudes",
+        "desc": "Créez des séries, suivez vos routines quotidiennes et devenez meilleur chaque jour"
+      },
+      "pomodoro": {
+        "title": "Minuteur Pomodoro",
+        "desc": "Restez concentré avec des sessions de travail chronométrées et des pauses courtes"
+      },
+      "calendar": {
+        "title": "Calendrier",
+        "desc": "Consultez votre planning et planifiez en un coup d'œil"
+      }
+    }
+  },
+  "tasks": {
+    "title": "Tâches",
+    "newTask": "Nouvelle tâche",
+    "searchTasks": "Rechercher des tâches...",
+    "noTasks": "Pas encore de tâches",
+    "noTasksSub": "Cliquez sur \"Nouvelle tâche\" pour commencer",
+    "noResults": "Rien trouvé",
+    "noResultsSub": "Essayez une autre recherche",
+    "subtasks": "{{count}} sous-tâche",
+    "subtasks_plural": "{{count}} sous-tâches"
+  },
+  "projects": {
+    "title": "Projets",
+    "newProject": "Nouveau projet",
+    "searchProjects": "Rechercher des projets...",
+    "noProjects": "Pas encore de projets",
+    "noProjectsSub": "Cliquez sur \"Nouveau projet\" pour commencer",
+    "backToProjects": "Retour aux projets",
+    "projectNotFound": "Projet introuvable"
+  },
+  "habits": {
+    "title": "Habitudes",
+    "newHabit": "Nouvelle habitude",
+    "noHabits": "Aucune habitude pour ce jour",
+    "noHabitsSub": "Appuyez sur \"Nouveau\" pour créer votre première habitude",
+    "noHabitsScheduled": "Aucune habitude prévue",
+    "thisWeek": "Cette semaine"
+  },
+  "calendar": {
+    "title": "Calendrier",
+    "week": "Semaine",
+    "month": "Mois",
+    "noTasks": "Aucune tâche pour ce jour",
+    "noTasksSub": "Les tâches avec une échéance à cette date apparaîtront ici"
+  },
+  "pomodoro": {
+    "title": "Pomodoro",
+    "focus": "Concentration",
+    "shortBreak": "Pause courte",
+    "longBreak": "Pause longue",
+    "sessions": "{{count}} session aujourd'hui",
+    "sessions_plural": "{{count}} sessions aujourd'hui"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "account": "Compte",
+    "displayName": "Nom d'affichage",
+    "email": "E-mail",
+    "changePassword": "Changer le mot de passe",
+    "deleteAccount": "Supprimer le compte",
+    "appearance": "Apparence",
+    "theme": "Thème",
+    "dark": "Sombre",
+    "light": "Clair",
+    "midnight": "Minuit",
+    "data": "Données",
+    "deleteMode": "Supprimer les tâches terminées",
+    "instant": "Immédiatement",
+    "after3days": "Après 3 jours",
+    "after7days": "Après 7 jours",
+    "weekStart": "La semaine commence le",
+    "monday": "Lundi",
+    "saturday": "Samedi",
+    "language": "Langue",
+    "info": "Info",
+    "landingPage": "Page d'accueil"
+  },
+  "auth": {
+    "welcomeBack": "Bon retour",
+    "createAccount": "Créer un compte",
+    "signInSubtitle": "Connectez-vous pour continuer sur CuTasks",
+    "signUpSubtitle": "Commencez à organiser vos tâches",
+    "name": "Nom",
+    "email": "E-mail",
+    "password": "Mot de passe",
+    "signIn": "Se connecter",
+    "signUp": "S'inscrire",
+    "noAccount": "Vous n'avez pas de compte ?",
+    "hasAccount": "Vous avez déjà un compte ?",
+    "syncing": "Synchronisation de vos données..."
+  },
+  "modals": {
+    "taskForm": {
+      "create": "Nouvelle tâche",
+      "edit": "Modifier la tâche",
+      "title": "Titre",
+      "description": "Description",
+      "priority": "Priorité",
+      "deadline": "Échéance",
+      "tags": "Étiquettes",
+      "parent": "Tâche parente"
+    },
+    "projectForm": {
+      "create": "Nouveau projet",
+      "edit": "Modifier le projet",
+      "name": "Nom",
+      "description": "Description",
+      "icon": "Icône",
+      "color": "Couleur",
+      "status": "Statut"
+    },
+    "taskDetail": {
+      "subtasks": "Sous-tâches",
+      "noSubtasks": "Pas de sous-tâches"
+    }
+  }
+}

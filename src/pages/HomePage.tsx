@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 import {
   ClipboardCheck, Fire, Folder, DangerTriangle,
   CheckCircle, Lock, Target, AltArrowRight,
@@ -19,16 +20,10 @@ function dateKey(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-function getGreeting(): string {
-  const h = new Date().getHours();
-  if (h < 12) return 'Good morning';
-  if (h < 18) return 'Good afternoon';
-  return 'Good evening';
-}
-
 export default function HomePage({ tasks, projects, habits, projectTasks }: HomePageProps) {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const today = useMemo(() => { const d = new Date(); d.setHours(0, 0, 0, 0); return d; }, []);
   const todayKey = dateKey(today);
 
@@ -67,18 +62,25 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
   const ringCirc = 2 * Math.PI * ringR;
   const ringOffset = ringCirc * (1 - taskStats.pct / 100);
 
+  const greetingText = useMemo(() => {
+    const h = new Date().getHours();
+    if (h < 12) return t('home.greeting.morning');
+    if (h < 18) return t('home.greeting.afternoon');
+    return t('home.greeting.evening');
+  }, [t]);
+
   const motivationalText = useMemo(() => {
-    if (taskStats.overdue > 0) return `${taskStats.overdue} task${taskStats.overdue !== 1 ? 's' : ''} need your attention`;
-    if (taskStats.dueToday > 0) return `${taskStats.dueToday} task${taskStats.dueToday !== 1 ? 's' : ''} due today — you got this!`;
-    if (taskStats.pct >= 80) return "You're crushing it! Keep going";
-    if (taskStats.active > 0) return `${taskStats.active} task${taskStats.active !== 1 ? 's' : ''} waiting for you`;
-    return 'All tasks done — great work!';
-  }, [taskStats]);
+    if (taskStats.overdue > 0) return t('home.motivation.overdue', { count: taskStats.overdue });
+    if (taskStats.dueToday > 0) return t('home.motivation.dueToday', { count: taskStats.dueToday });
+    if (taskStats.pct >= 80) return t('home.motivation.highCompletion');
+    if (taskStats.active > 0) return t('home.motivation.active', { count: taskStats.active });
+    return t('home.motivation.allDone');
+  }, [taskStats, t]);
 
   return (
     <>
       <div className="page-hero">
-        <h1 className="page-hero-title">Home</h1>
+        <h1 className="page-hero-title">{t('common.home')}</h1>
       </div>
 
       {/* ── Dashboard Card ── */}
@@ -97,7 +99,7 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
         {/* Header */}
         <div className="dash-header">
           <div className="dash-header-text">
-            <h2 className="dash-title">{getGreeting()}, {firstName}</h2>
+            <h2 className="dash-title">{greetingText}, {firstName}</h2>
             <p className="dash-sub">{motivationalText}</p>
           </div>
           <div className="dash-ring-wrap">
@@ -126,7 +128,7 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
             </div>
             <div className="dash-stat-info">
               <span className="dash-stat-num">{taskStats.active}</span>
-              <span className="dash-stat-label">Active</span>
+              <span className="dash-stat-label">{t('home.stats.active')}</span>
             </div>
           </div>
 
@@ -136,7 +138,7 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
             </div>
             <div className="dash-stat-info">
               <span className="dash-stat-num">{taskStats.completed}</span>
-              <span className="dash-stat-label">Done</span>
+              <span className="dash-stat-label">{t('home.stats.completed')}</span>
             </div>
           </div>
 
@@ -146,7 +148,7 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
             </div>
             <div className="dash-stat-info">
               <span className="dash-stat-num">{taskStats.overdue}</span>
-              <span className="dash-stat-label">Overdue</span>
+              <span className="dash-stat-label">{t('home.stats.overdue')}</span>
             </div>
           </div>
 
@@ -156,7 +158,7 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
             </div>
             <div className="dash-stat-info">
               <span className="dash-stat-num">{taskStats.dueToday}</span>
-              <span className="dash-stat-label">Today</span>
+              <span className="dash-stat-label">{t('common.today')}</span>
             </div>
           </div>
         </div>
@@ -167,10 +169,10 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
             <button className="dash-bottom-item" onClick={() => navigate('/app/habits')}>
               <Fire size={16} strokeWidth={2.2} className="dash-bottom-icon dash-bottom-icon--fire" />
               <span className="dash-bottom-text">
-                {habitStats.todayDone}/{habitStats.todayTotal} habits
+                {habitStats.todayDone}/{habitStats.todayTotal} {t('home.stats.habitsToday')}
               </span>
               {habitStats.bestStreak > 0 && (
-                <span className="dash-bottom-streak">{habitStats.bestStreak}d streak</span>
+                <span className="dash-bottom-streak">{habitStats.bestStreak}d {t('home.stats.streak')}</span>
               )}
             </button>
           )}
@@ -178,17 +180,17 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
             <button className="dash-bottom-item" onClick={() => navigate('/app/projects')}>
               <Folder size={16} strokeWidth={2.2} className="dash-bottom-icon dash-bottom-icon--blue" />
               <span className="dash-bottom-text">
-                {projectStats.active} project{projectStats.active !== 1 ? 's' : ''}
+                {projectStats.active} {t('home.stats.activeProjects')}
               </span>
               {projectStats.totalPt > 0 && (
-                <span className="dash-bottom-streak">{projectStats.donePt}/{projectStats.totalPt} tasks</span>
+                <span className="dash-bottom-streak">{projectStats.donePt}/{projectStats.totalPt} {t('common.tasks')}</span>
               )}
             </button>
           )}
           {habitStats.total === 0 && projectStats.donePt === 0 && projectStats.active === 0 && (
             <button className="dash-bottom-item dash-bottom-item--center" onClick={() => navigate('/app/tasks')}>
               <Target size={16} strokeWidth={2.2} className="dash-bottom-icon" />
-              <span className="dash-bottom-text">Start adding tasks and projects</span>
+              <span className="dash-bottom-text">{t('home.motivation.empty')}</span>
               <AltArrowRight size={14} strokeWidth={2.2} className="dash-bottom-icon" />
             </button>
           )}
@@ -219,8 +221,8 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
             </div>
           </div>
           <div className="banner-content">
-            <h2 className="banner-title">Habits</h2>
-            <p className="banner-desc">Build streaks, track daily routines, and become better every day</p>
+            <h2 className="banner-title">{t('home.banners.habits.title')}</h2>
+            <p className="banner-desc">{t('home.banners.habits.desc')}</p>
             <div className="banner-arrow">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -251,8 +253,8 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
             </div>
           </div>
           <div className="banner-content">
-            <h2 className="banner-title">Pomodoro Timer</h2>
-            <p className="banner-desc">Stay focused with timed work sessions and short breaks</p>
+            <h2 className="banner-title">{t('home.banners.pomodoro.title')}</h2>
+            <p className="banner-desc">{t('home.banners.pomodoro.desc')}</p>
             <div className="banner-arrow">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -285,8 +287,8 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
             </div>
           </div>
           <div className="banner-content">
-            <h2 className="banner-title">Calendar</h2>
-            <p className="banner-desc">View your schedule and plan ahead at a glance</p>
+            <h2 className="banner-title">{t('home.banners.calendar.title')}</h2>
+            <p className="banner-desc">{t('home.banners.calendar.desc')}</p>
             <div className="banner-arrow">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
