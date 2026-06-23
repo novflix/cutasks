@@ -941,7 +941,7 @@ export default function App() {
               <Route path="/app/calendar" element={
                 <ProtectedRoute>
                   <main className="main">
-                    <CalendarPage />
+                    <CalendarPage tasks={tasks} projectTasks={projectTasks} />
                   </main>
                 </ProtectedRoute>
               } />

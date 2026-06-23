@@ -1,8 +1,154 @@
+import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from '@solar-icons/react';
+import { ArrowLeft, AltArrowLeft, AltArrowRight, CalendarMinimalistic } from '@solar-icons/react';
+import type { Task, ProjectTask } from '../types';
+import { formatDeadline, getDeadlineStatus, getTagColor, priorityOrder } from '../utils';
+import '../styles/calendar.css';
 
-export default function CalendarPage() {
+type CalMode = 'week' | 'month';
+
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+const DAY_NAMES_SHORT = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const DAY_NAMES_FULL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+function isSameDay(a: Date, b: Date): boolean {
+  return a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate();
+}
+
+function dateKey(d: Date): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function getWeekStart(date: Date): Date {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  const day = d.getDay();
+  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+  d.setDate(diff);
+  return d;
+}
+
+function addDays(date: Date, days: number): Date {
+  const d = new Date(date);
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
+function getMonthStart(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
+function getMonthEnd(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0);
+}
+
+function formatFullDate(d: Date): string {
+  return `${DAY_NAMES_FULL[(d.getDay() + 6) % 7]}, ${MONTH_NAMES[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+}
+
+function formatDateRange(start: Date): string {
+  const end = addDays(start, 6);
+  const sameMonth = start.getMonth() === end.getMonth();
+  if (sameMonth) {
+    return `${MONTH_NAMES[start.getMonth()]} ${start.getDate()} – ${end.getDate()}`;
+  }
+  return `${MONTH_NAMES[start.getMonth()].slice(0, 3)} ${start.getDate()} – ${MONTH_NAMES[end.getMonth()].slice(0, 3)} ${end.getDate()}`;
+}
+
+interface CalendarPageProps {
+  tasks: Task[];
+  projectTasks: ProjectTask[];
+}
+
+export default function CalendarPage({ tasks, projectTasks }: CalendarPageProps) {
   const navigate = useNavigate();
+  const today = useMemo(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }, []);
+
+  const [mode, setMode] = useState<CalMode>('week');
+  const [selectedDay, setSelectedDay] = useState<Date>(today);
+  const [weekStart, setWeekStart] = useState(() => getWeekStart(today));
+  const [monthDate, setMonthDate] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
+
+  const isCurrentWeek = useMemo(() => isSameDay(weekStart, getWeekStart(today)), [weekStart, today]);
+  const isCurrentMonth = useMemo(
+    () => today.getMonth() === monthDate.getMonth() && today.getFullYear() === monthDate.getFullYear(),
+    [monthDate, today]
+  );
+
+  const weekDays = useMemo(() =>
+    Array.from({ length: 7 }, (_, i) => addDays(weekStart, i)),
+    [weekStart]
+  );
+
+  const monthGrid = useMemo(() => {
+    const first = getMonthStart(monthDate);
+    const last = getMonthEnd(monthDate);
+    const startDow = (first.getDay() + 6) % 7;
+    const cells: { date: Date; currentMonth: boolean }[] = [];
+    for (let i = startDow - 1; i >= 0; i--) {
+      cells.push({ date: addDays(first, -(i + 1)), currentMonth: false });
+    }
+    for (let d = 1; d <= last.getDate(); d++) {
+      cells.push({ date: new Date(monthDate.getFullYear(), monthDate.getMonth(), d), currentMonth: true });
+    }
+    const remaining = 42 - cells.length;
+    for (let i = 1; i <= remaining; i++) {
+      cells.push({ date: addDays(last, i), currentMonth: false });
+    }
+    return cells;
+  }, [monthDate]);
+
+  const allTasks = useMemo(() => [...tasks, ...projectTasks], [tasks, projectTasks]);
+
+  const tasksByDate = useMemo(() => {
+    const map = new Map<string, Task[]>();
+    for (const t of allTasks) {
+      if (!t.deadline) continue;
+      const key = t.deadline;
+      if (!map.has(key)) map.set(key, []);
+      map.get(key)!.push(t);
+    }
+    return map;
+  }, [allTasks]);
+
+  const selectedKey = dateKey(selectedDay);
+  const selectedTasks = useMemo(() => {
+    const list = tasksByDate.get(selectedKey) ?? [];
+    return [...list].sort((a, b) => {
+      if (a.completed !== b.completed) return a.completed ? 1 : -1;
+      return priorityOrder[a.priority] - priorityOrder[b.priority];
+    });
+  }, [tasksByDate, selectedKey]);
+
+  const selectedTaskCount = selectedTasks.length;
+  const completedCount = selectedTasks.filter(t => t.completed).length;
+
+  const handlePrevWeek = useCallback(() => setWeekStart(w => addDays(w, -7)), []);
+  const handleNextWeek = useCallback(() => setWeekStart(w => addDays(w, 7)), []);
+  const handlePrevMonth = useCallback(() => setMonthDate(d => new Date(d.getFullYear(), d.getMonth() - 1, 1)), []);
+  const handleNextMonth = useCallback(() => setMonthDate(d => new Date(d.getFullYear(), d.getMonth() + 1, 1)), []);
+  const handleToday = useCallback(() => {
+    setSelectedDay(today);
+    setWeekStart(getWeekStart(today));
+    setMonthDate(new Date(today.getFullYear(), today.getMonth(), 1));
+  }, [today]);
+
+  const handleDayClick = useCallback((d: Date) => {
+    setSelectedDay(d);
+    setWeekStart(getWeekStart(d));
+    setMonthDate(new Date(d.getFullYear(), d.getMonth(), 1));
+  }, []);
+
+  const showTodayBadge = (mode === 'week' && !isCurrentWeek) || (mode === 'month' && !isCurrentMonth);
 
   return (
     <>
@@ -12,12 +158,177 @@ export default function CalendarPage() {
         </button>
         <h1 className="page-hero-title">Calendar</h1>
       </div>
-      <main className="main">
-        <div className="empty">
-          <p className="empty-title">Coming soon</p>
-          <p className="empty-sub">Calendar view is under development</p>
+
+      <div className="cal-controls">
+        <div className="cal-mode-toggle">
+          <button
+            className={`cal-mode-btn${mode === 'week' ? ' active' : ''}`}
+            onClick={() => setMode('week')}
+          >
+            Week
+          </button>
+          <button
+            className={`cal-mode-btn${mode === 'month' ? ' active' : ''}`}
+            onClick={() => setMode('month')}
+          >
+            Month
+          </button>
         </div>
-      </main>
+
+        <div className="cal-nav">
+          <button
+            className="cal-nav-arrow"
+            onClick={mode === 'week' ? handlePrevWeek : handlePrevMonth}
+            aria-label={mode === 'week' ? 'Previous week' : 'Previous month'}
+          >
+            <AltArrowLeft size={18} />
+          </button>
+          <div className="cal-nav-label">
+            {mode === 'week'
+              ? <span className="cal-nav-text">{formatDateRange(weekStart)}</span>
+              : <span className="cal-nav-text">{MONTH_NAMES[monthDate.getMonth()]} {monthDate.getFullYear()}</span>
+            }
+            {showTodayBadge && (
+              <button className="cal-today-badge" onClick={handleToday}>Today</button>
+            )}
+          </div>
+          <button
+            className="cal-nav-arrow"
+            onClick={mode === 'week' ? handleNextWeek : handleNextMonth}
+            aria-label={mode === 'week' ? 'Next week' : 'Next month'}
+          >
+            <AltArrowRight size={18} />
+          </button>
+        </div>
+      </div>
+
+      {mode === 'week' ? (
+        <div className="cal-week">
+          {weekDays.map((day, i) => {
+            const isToday = isSameDay(day, today);
+            const isSelected = isSameDay(day, selectedDay);
+            const isPast = day < today && !isToday;
+            const taskCount = (tasksByDate.get(dateKey(day)) ?? []).length;
+            return (
+              <button
+                key={i}
+                className={`cal-week-day${isToday ? ' cal-week-day--today' : ''}${isSelected && !isToday ? ' cal-week-day--selected' : ''}${isPast ? ' cal-week-day--past' : ''}`}
+                onClick={() => handleDayClick(day)}
+              >
+                <span className="cal-week-day-name">{DAY_NAMES_SHORT[i]}</span>
+                <div className="cal-week-day-pill">
+                  <span className="cal-week-day-num">{day.getDate()}</span>
+                  {taskCount > 0 && (
+                    <span className="cal-week-day-dot" />
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="cal-month">
+          <div className="cal-month-header">
+            {DAY_NAMES_SHORT.map(d => (
+              <span key={d} className="cal-month-header-day">{d}</span>
+            ))}
+          </div>
+          <div className="cal-month-grid">
+            {monthGrid.map((cell, i) => {
+              const isToday = isSameDay(cell.date, today);
+              const isSelected = isSameDay(cell.date, selectedDay);
+              const isPast = cell.date < today && !isToday;
+              const taskCount = (tasksByDate.get(dateKey(cell.date)) ?? []).length;
+              return (
+                <button
+                  key={i}
+                  className={`cal-month-cell${cell.currentMonth ? '' : ' cal-month-cell--other'}${isToday ? ' cal-month-cell--today' : ''}${isSelected && !isToday ? ' cal-month-cell--selected' : ''}${isPast ? ' cal-month-cell--past' : ''}`}
+                  onClick={() => handleDayClick(cell.date)}
+                >
+                  <span className="cal-month-cell-num">{cell.date.getDate()}</span>
+                  {taskCount > 0 && cell.currentMonth && (
+                    <div className="cal-month-cell-dots">
+                      {taskCount <= 3 ? (
+                        Array.from({ length: taskCount }).map((_, j) => (
+                          <span key={j} className="cal-month-cell-dot" />
+                        ))
+                      ) : (
+                        <span className="cal-month-cell-count">{taskCount}</span>
+                      )}
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      <div className="cal-day-label">
+        <span className="cal-day-label-text">{formatFullDate(selectedDay)}</span>
+        {selectedTaskCount > 0 && (
+          <span className="cal-day-label-count">
+            {completedCount}/{selectedTaskCount}
+          </span>
+        )}
+      </div>
+
+      <div className="cal-tasks">
+        {selectedTasks.length === 0 ? (
+          <div className="cal-empty">
+            <div className="cal-empty-icon">
+              <CalendarMinimalistic size={28} />
+            </div>
+            <p className="cal-empty-title">No tasks for this day</p>
+            <p className="cal-empty-sub">Tasks with a deadline on this date will appear here</p>
+          </div>
+        ) : (
+          selectedTasks.map((task, i) => {
+            const dlStatus = getDeadlineStatus(task.deadline, task.completed);
+            return (
+              <div
+                key={task.id}
+                className={`cal-task task-stripe-${task.priority}${task.completed ? ' completed' : ''}${dlStatus === 'overdue' ? ' task-overdue' : ''}`}
+                style={{ animationDelay: `${i * 0.04}s` }}
+              >
+                <button
+                  className={`task-check${task.completed ? ' checked' : ''}`}
+                  disabled
+                  aria-hidden
+                >
+                  <svg viewBox="0 0 24 24" fill="none" className="check-icon">
+                    <polyline points="5 12 10 17 19 7" className="check-path" />
+                  </svg>
+                </button>
+                <div className="cal-task-body">
+                  <h3 className="cal-task-title">{task.title}</h3>
+                  {task.description && (
+                    <p className="cal-task-desc">{task.description}</p>
+                  )}
+                  <div className="cal-task-tags">
+                    <span className={`priority-badge priority-${task.priority}`}>
+                      {task.priority}
+                    </span>
+                    {task.deadline && (
+                      <span className={`deadline-badge deadline-${dlStatus}`}>
+                        {formatDeadline(task.deadline)}
+                      </span>
+                    )}
+                    {task.tags.map((tag) => {
+                      const c = getTagColor(tag);
+                      return (
+                        <span key={tag} className="user-tag" style={{ background: c.bg, color: c.text }}>
+                          #{tag}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
     </>
   );
 }
