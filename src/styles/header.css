@@ -58,6 +58,7 @@
   animation: countUp 0.3s ease backwards;
   display: inline-flex;
   align-items: center;
+  vertical-align: middle;
 }
 
 .stat-dot {
@@ -67,6 +68,8 @@
   flex-shrink: 0;
   box-shadow: 0 0 4px currentColor;
   display: inline-block;
+  vertical-align: middle;
+  margin-top: -1px;
 }
 
 .stat-total .stat-dot {
@@ -156,5 +159,8 @@
     width: 18px;
     height: 18px;
     flex-shrink: 0;
+    display: block;
+    vertical-align: middle;
+    margin-top: -1px;
   }
 }
