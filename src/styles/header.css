@@ -34,6 +34,7 @@
   color: var(--text-muted);
   font-weight: 500;
   line-height: 1;
+  white-space: nowrap;
   transition:
     background 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
@@ -55,6 +56,8 @@
   font-size: 0.9rem;
   line-height: 1;
   animation: countUp 0.3s ease backwards;
+  display: inline-flex;
+  align-items: center;
 }
 
 .stat-dot {
@@ -63,6 +66,7 @@
   border-radius: 50%;
   flex-shrink: 0;
   box-shadow: 0 0 4px currentColor;
+  display: inline-block;
 }
 
 .stat-total .stat-dot {
@@ -131,6 +135,10 @@
       background 0.2s ease,
       transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
       box-shadow 0.2s ease;
+  }
+
+  .btn-add span {
+    line-height: 1;
   }
 
   .btn-add:hover {

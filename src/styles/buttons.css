@@ -1,6 +1,7 @@
 .btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   padding: 10px 20px;
   border: none;
@@ -15,6 +16,7 @@
   white-space: nowrap;
   position: relative;
   overflow: hidden;
+  line-height: 1;
 }
 
 .btn::after {
@@ -59,6 +61,7 @@
   background: var(--bg-elevated);
   color: var(--text-muted);
   border: 1.5px solid var(--border-subtle);
+  line-height: 1;
 }
 
 .btn-secondary:hover {
