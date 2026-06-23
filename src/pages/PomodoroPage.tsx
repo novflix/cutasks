@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Play, Pause, Restart, SkipNext } from '@solar-icons/react';
@@ -31,7 +31,11 @@ export default function PomodoroPage({
 }: PomodoroPageProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [quote] = useState(() => t(`pomodoro.quotes.${Math.floor(Math.random() * 6)}`));
+  const [quote, setQuote] = useState(() => t(`pomodoro.quotes.${Math.floor(Math.random() * 6)}`));
+
+  useEffect(() => {
+    setQuote(t(`pomodoro.quotes.${Math.floor(Math.random() * 6)}`));
+  }, [t]);
 
   const totalSeconds = config[mode] * 60;
   const progress = 1 - secondsLeft / totalSeconds;
