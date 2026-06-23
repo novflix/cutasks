@@ -95,6 +95,7 @@ export const MAX_PROJECTS_COUNT = 100;
 export const MAX_HABITS_COUNT = 50;
 
 export function sanitizeInput(s: string): string {
+  // eslint-disable-next-line no-control-regex
   return s.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim();
 }
 
