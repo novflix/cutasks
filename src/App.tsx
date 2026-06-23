@@ -446,6 +446,7 @@ export default function App() {
   }
 
   function closeForm() {
+    if (formTimer.current) clearTimeout(formTimer.current);
     setFormClosing(true);
     formTimer.current = setTimeout(() => {
       setShowForm(false);
@@ -582,6 +583,7 @@ export default function App() {
   }
 
   function closeProjectForm() {
+    if (formTimer.current) clearTimeout(formTimer.current);
     setProjectFormClosing(true);
     formTimer.current = setTimeout(() => {
       setShowProjectForm(false);
@@ -717,6 +719,7 @@ export default function App() {
   }
 
   function closeProjectTaskForm() {
+    if (formTimer.current) clearTimeout(formTimer.current);
     setProjectTaskFormClosing(true);
     formTimer.current = setTimeout(() => {
       setShowProjectTaskForm(false);
