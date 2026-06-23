@@ -395,7 +395,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
   return (
     <>
       <div className="page-hero">
-        <button className="btn-icon" onClick={() => navigate('/home')}>
+        <button className="btn-icon" onClick={() => navigate('/app/home')}>
           <ArrowLeft size={22} />
         </button>
         <h1 className="page-hero-title">Habits</h1>

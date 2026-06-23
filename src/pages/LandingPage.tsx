@@ -35,7 +35,7 @@ export default function LandingPage() {
     window.scrollTo(0, 0);
     const params = new URLSearchParams(window.location.search);
     if (user && !params.get('preview')) {
-      navigate('/home', { replace: true });
+      navigate('/app/home', { replace: true });
     }
   }, [user, navigate]);
 

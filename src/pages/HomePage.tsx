@@ -9,7 +9,7 @@ export default function HomePage() {
         <h1 className="page-hero-title">Home</h1>
       </div>
       <div className="home-banners">
-        <button className="banner-card banner-habits" onClick={() => navigate('/habits')}>
+        <button className="banner-card banner-habits" onClick={() => navigate('/app/habits')}>
           <div className="banner-visual banner-visual-habits">
             <svg className="banner-deco" width="100%" height="100%" viewBox="0 0 200 120" fill="none" preserveAspectRatio="none">
               <circle cx="170" cy="20" r="40" fill="rgba(255,255,255,0.06)" />
@@ -41,7 +41,7 @@ export default function HomePage() {
           </div>
         </button>
 
-        <button className="banner-card banner-pomodoro" onClick={() => navigate('/pomodoro')}>
+        <button className="banner-card banner-pomodoro" onClick={() => navigate('/app/pomodoro')}>
           <div className="banner-visual banner-visual-pomodoro">
             <svg className="banner-deco" width="100%" height="100%" viewBox="0 0 200 120" fill="none" preserveAspectRatio="none">
               <circle cx="160" cy="30" r="35" fill="rgba(255,255,255,0.05)" />
@@ -73,7 +73,7 @@ export default function HomePage() {
           </div>
         </button>
 
-        <button className="banner-card banner-calendar" onClick={() => navigate('/calendar')}>
+        <button className="banner-card banner-calendar" onClick={() => navigate('/app/calendar')}>
           <div className="banner-visual banner-visual-calendar">
             <svg className="banner-deco" width="100%" height="100%" viewBox="0 0 200 120" fill="none" preserveAspectRatio="none">
               <circle cx="150" cy="25" r="38" fill="rgba(255,255,255,0.05)" />

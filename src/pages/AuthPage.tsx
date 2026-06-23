@@ -29,7 +29,7 @@ export default function AuthPage() {
   }, [mode]);
 
   useEffect(() => {
-    if (user && migrated) navigate('/home', { replace: true });
+    if (user && migrated) navigate('/app/home', { replace: true });
   }, [user, migrated, navigate]);
 
   useEffect(() => {

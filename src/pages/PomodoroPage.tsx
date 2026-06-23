@@ -55,7 +55,7 @@ export default function PomodoroPage({
   return (
     <>
       <div className="pomo-hero">
-        <button className="btn-icon" onClick={() => navigate('/home')}>
+        <button className="btn-icon" onClick={() => navigate('/app/home')}>
           <ArrowLeft size={22} />
         </button>
         <h1 className="page-hero-title">Pomodoro</h1>

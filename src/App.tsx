@@ -128,8 +128,8 @@ export default function App() {
   }, [pomoRunning, pomoMiniVisible]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  const activePage: Page = location.pathname.startsWith('/projects/') ? 'project-detail' : location.pathname.startsWith('/projects') ? 'projects' : location.pathname.startsWith('/settings') ? 'settings' : location.pathname.startsWith('/habits') || location.pathname.startsWith('/pomodoro') || location.pathname.startsWith('/calendar') || location.pathname.startsWith('/home') ? 'home' : 'tasks';
-  const activeProjectId = activePage === 'project-detail' ? location.pathname.split('/')[2] : null;
+  const activePage: Page = location.pathname.startsWith('/app/projects/') ? 'project-detail' : location.pathname.startsWith('/app/projects') ? 'projects' : location.pathname.startsWith('/app/settings') ? 'settings' : location.pathname.startsWith('/app/habits') || location.pathname.startsWith('/app/pomodoro') || location.pathname.startsWith('/app/calendar') || location.pathname.startsWith('/app/home') ? 'home' : 'tasks';
+  const activeProjectId = activePage === 'project-detail' ? location.pathname.split('/')[3] : null;
   const activeProject = useMemo(() => activeProjectId ? projects.find((p) => p.id === activeProjectId) ?? null : null, [projects, activeProjectId]);
 
   const tasksRef = useRef(tasks);
@@ -609,11 +609,11 @@ export default function App() {
     setProjects((prev) => prev.filter((p) => p.id !== id));
     setProjectTasks((prev) => prev.filter((t) => t.projectId !== id));
     setSections((prev) => prev.filter((s) => s.projectId !== id));
-    if (activeProject?.id === id) navigate('/projects');
+    if (activeProject?.id === id) navigate('/app/projects');
   }
 
   function openProject(project: Project) {
-    navigate(`/projects/${project.id}`);
+    navigate(`/app/projects/${project.id}`);
   }
 
   const activeProjectTasks = useMemo(
@@ -860,7 +860,7 @@ export default function App() {
       const s = pomoSeconds % 60;
       const label = pomoMode === 'work' ? 'Focus' : pomoMode === 'short' ? 'Short Break' : 'Long Break';
       document.title = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')} — ${label} | CuTasks`;
-    } else if (location.pathname !== '/pomodoro') {
+    } else if (location.pathname !== '/app/pomodoro') {
       document.title = 'CuTasks';
     }
   }, [pomoRunning, pomoSeconds, pomoMode, location.pathname]);
@@ -872,15 +872,15 @@ export default function App() {
     setPomoSeconds(pomoConfig[pomoMode] * 60);
   }
 
-  const handleCreate = location.pathname.startsWith('/habits')
+  const handleCreate = location.pathname.startsWith('/app/habits')
     ? () => habitFormOpenerRef.current?.()
     : activePage === 'project-detail' ? () => openCreateProjectTask(null) : activePage === 'projects' ? openCreateProject : openCreateForm;
 
   const sidebarNavigate = useCallback((p: Page) => {
-    if (p === 'home') navigate('/home');
-    else if (p === 'tasks') navigate('/tasks');
-    else if (p === 'projects') navigate('/projects');
-    else if (p === 'settings') navigate('/settings');
+    if (p === 'home') navigate('/app/home');
+    else if (p === 'tasks') navigate('/app/tasks');
+    else if (p === 'projects') navigate('/app/projects');
+    else if (p === 'settings') navigate('/app/settings');
   }, [navigate]);
 
   if (location.pathname === '/auth') {
@@ -906,21 +906,21 @@ export default function App() {
           routes={
             <Routes>
               <Route path="/" element={<LandingPage />} />
-              <Route path="/home" element={
+              <Route path="/app/home" element={
                 <ProtectedRoute>
                   <main className="main">
                     <HomePage />
                   </main>
                 </ProtectedRoute>
               } />
-              <Route path="/habits" element={
+              <Route path="/app/habits" element={
                 <ProtectedRoute>
                   <main className="main">
                     <HabitsPage habits={habits} onHabitsChange={setHabits} weekStartDay={weekStart} formOpenerRef={habitFormOpenerRef} />
                   </main>
                 </ProtectedRoute>
               } />
-              <Route path="/pomodoro" element={
+              <Route path="/app/pomodoro" element={
                 <ProtectedRoute>
                   <main className="main">
                     <PomodoroPage
@@ -938,14 +938,14 @@ export default function App() {
                   </main>
                 </ProtectedRoute>
               } />
-              <Route path="/calendar" element={
+              <Route path="/app/calendar" element={
                 <ProtectedRoute>
                   <main className="main">
                     <CalendarPage />
                   </main>
                 </ProtectedRoute>
               } />
-          <Route path="/tasks" element={
+          <Route path="/app/tasks" element={
             <ProtectedRoute>
             <TasksPage
               stats={taskStatsFormatted}
@@ -964,7 +964,7 @@ export default function App() {
             />
             </ProtectedRoute>
           } />
-          <Route path="/projects" element={
+          <Route path="/app/projects" element={
             <ProtectedRoute>
             <>
               <div className="page-hero">
@@ -996,7 +996,7 @@ export default function App() {
             </>
             </ProtectedRoute>
           } />
-          <Route path="/projects/:projectId" element={
+          <Route path="/app/projects/:projectId" element={
             <ProtectedRoute>
             <ProjectRoute
               projects={projects}
@@ -1004,7 +1004,7 @@ export default function App() {
                 <main className="main">
                   <div className="empty">
                     <p className="empty-title">Project not found</p>
-                    <button className="btn btn-primary" onClick={() => navigate('/projects')}>Back to Projects</button>
+                    <button className="btn btn-primary" onClick={() => navigate('/app/projects')}>Back to Projects</button>
                   </div>
                 </main>
               }
@@ -1012,7 +1012,7 @@ export default function App() {
               {(project) => (
                 <>
                   <div className="project-detail-header">
-                    <button className="btn-icon project-back-btn" onClick={() => navigate('/projects')}>
+                    <button className="btn-icon project-back-btn" onClick={() => navigate('/app/projects')}>
                       <ArrowLeft size={22} />
                     </button>
                     <div className="project-detail-icon" style={{ background: `${project.color}15`, color: project.color }}>
@@ -1071,14 +1071,14 @@ export default function App() {
             </ProjectRoute>
             </ProtectedRoute>
           } />
-          <Route path="/settings" element={
+          <Route path="/app/settings" element={
             <ProtectedRoute>
             <main className="main">
               <SettingsPage />
             </main>
             </ProtectedRoute>
           } />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/app/home" replace />} />
             </Routes>
           }
         />
@@ -1175,7 +1175,7 @@ export default function App() {
         activePage={activePage}
         onNavigate={sidebarNavigate}
         onCreate={handleCreate}
-        miniTimer={(pomoMiniVisible || pomoMiniClosing) && location.pathname !== '/pomodoro' ? (
+        miniTimer={(pomoMiniVisible || pomoMiniClosing) && location.pathname !== '/app/pomodoro' ? (
           <div className={pomoMiniClosing ? 'pomo-mini-exit' : ''}>
             <PomoMiniTimer
               mode={pomoMode}
@@ -1187,7 +1187,7 @@ export default function App() {
         ) : undefined}
       />
 
-      {(pomoMiniVisible || pomoMiniClosing) && location.pathname !== '/pomodoro' && (
+      {(pomoMiniVisible || pomoMiniClosing) && location.pathname !== '/app/pomodoro' && (
         <div className={`pomo-mini-desktop-only${pomoMiniClosing ? ' pomo-mini-exit' : ''}`}>
           <PomoMiniTimer
             mode={pomoMode}

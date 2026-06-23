@@ -19,7 +19,7 @@ export default function PomoMiniTimer({ mode, secondsLeft, running, onToggleRunn
   return (
     <div
       className="pomo-mini"
-      onClick={() => navigate('/pomodoro')}
+      onClick={() => navigate('/app/pomodoro')}
       style={{ borderColor: meta.color }}
     >
       <div className="pomo-mini-left">
