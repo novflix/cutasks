@@ -232,7 +232,7 @@ export default function App() {
   /* ── Easter egg: console greeting ── */
   useEffect(() => {
     console.log(
-      '%c🚀 CuTasks %cv0.1.0',
+      '%c🚀 CuTasks %cv1.0.2',
       'color: #ed9b6d; font-size: 16px; font-weight: bold;',
       'color: #777; font-size: 12px;'
     );

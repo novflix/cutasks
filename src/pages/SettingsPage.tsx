@@ -451,7 +451,7 @@ export default function SettingsPage() {
           <span className="settings-section-label">{t('settings.info')}</span>
         <div className="settings-footer">
           <span className="settings-footer-label">{t('settings.version')}</span>
-          <span className="settings-footer-value">0.1.0</span>
+          <span className="settings-footer-value">1.0.2</span>
         </div>
         <button className="settings-footer settings-footer-link" onClick={() => navigate('/?preview=1')}>
           <span className="settings-footer-label">{t('settings.landingPage')}</span>
