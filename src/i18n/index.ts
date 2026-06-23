@@ -8,6 +8,7 @@ import it from './locales/it.json';
 import pt from './locales/pt.json';
 import ru from './locales/ru.json';
 import tr from './locales/tr.json';
+import zh from './locales/zh.json';
 
 export const LANGUAGES = [
   { code: 'en', label: 'English', countryCode: 'gb' },
@@ -18,6 +19,7 @@ export const LANGUAGES = [
   { code: 'pt', label: 'Português', countryCode: 'pt' },
   { code: 'ru', label: 'Русский', countryCode: 'ru' },
   { code: 'tr', label: 'Türkçe', countryCode: 'tr' },
+  { code: 'zh', label: '中文', countryCode: 'cn' },
 ] as const;
 
 export type LanguageCode = (typeof LANGUAGES)[number]['code'];
@@ -34,6 +36,7 @@ i18n.use(initReactI18next).init({
     pt: { translation: pt },
     ru: { translation: ru },
     tr: { translation: tr },
+    zh: { translation: zh },
   },
   lng: savedLang,
   fallbackLng: 'en',
