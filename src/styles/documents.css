@@ -11,6 +11,9 @@
   z-index: 100;
   padding: 20px 0 12px;
   background: linear-gradient(to bottom, var(--bg) 70%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .doc-content {

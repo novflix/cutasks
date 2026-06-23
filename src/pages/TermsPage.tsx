@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from '@solar-icons/react';
+import LanguagePicker from '../components/LanguagePicker';
 import '../styles/documents.css';
 
 export default function TermsPage() {
@@ -16,6 +17,7 @@ export default function TermsPage() {
         <button className="btn-icon" onClick={() => navigate(-1)}>
           <ArrowLeft size={22} />
         </button>
+        <LanguagePicker compact />
       </div>
       <div className="doc-content">
         <h1 className="doc-title">{t('legal.terms.title')}</h1>

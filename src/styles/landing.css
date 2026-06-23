@@ -1692,3 +1692,135 @@
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+/* ── Compact Language Picker (Landing & Documents) ── */
+.lp-lang-picker {
+  position: relative;
+}
+
+.lp-lang-picker__current {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.lp-lang-picker__current:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.lp-lang-picker__flag {
+  width: 20px;
+  height: 14px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.lp-lang-picker__chevron {
+  color: #888;
+  transition: transform 0.25s ease;
+}
+
+.lp-lang-picker__chevron.open {
+  transform: rotate(180deg);
+}
+
+.lp-lang-picker__list {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  z-index: 200;
+  transition: max-height 0.3s ease, opacity 0.25s ease;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  min-width: 180px;
+}
+
+.lp-lang-picker--open .lp-lang-picker__list {
+  max-height: 600px;
+  opacity: 1;
+}
+
+.lp-lang-picker__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  width: 100%;
+  transition: background 0.15s ease;
+}
+
+.lp-lang-picker__item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.lp-lang-picker__item.active {
+  background: rgba(237, 155, 109, 0.1);
+}
+
+.lp-lang-picker__label {
+  flex: 1;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #ccc;
+}
+
+.lp-lang-picker__item.active .lp-lang-picker__label {
+  color: #ed9b6d;
+  font-weight: 700;
+}
+
+.lp-lang-picker__radio {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1.5px solid #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.lp-lang-picker__item.active .lp-lang-picker__radio {
+  border-color: #ed9b6d;
+}
+
+.lp-lang-picker__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.lp-lang-picker__item.active .lp-lang-picker__dot {
+  background: #ed9b6d;
+}
+
+/* ── Document page lang picker ── */
+.doc-page .lp-lang-picker {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+}
+
+.doc-page .lp-lang-picker__list {
+  right: 0;
+}

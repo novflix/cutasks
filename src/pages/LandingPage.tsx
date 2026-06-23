@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
+import LanguagePicker from '../components/LanguagePicker';
 import {
   ClipboardCheck,
   Folder,
@@ -75,6 +76,7 @@ export default function LandingPage() {
             <img src="/logo.svg" alt="CuTasks" className="lp-nav-logo" />
           </div>
           <div className="lp-nav-actions">
+            <LanguagePicker compact />
             <button className="lp-nav-link" onClick={() => navigate('/auth')}>{t('landing.signIn')}</button>
             <button className="lp-nav-btn" onClick={() => navigate('/auth')}>{t('landing.getStarted')}</button>
           </div>
