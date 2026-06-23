@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Logout, Key, CheckCircle, CloseCircle, TrashBinMinimalistic, Pen, AltArrowRight } from '@solar-icons/react';
 import { logout, changePassword, deleteAccount, updateDisplayName } from '../services/auth';
@@ -14,17 +14,6 @@ type WeekStartDay = 'monday' | 'saturday';
 
 const POMO_STORAGE = 'cutasks_pomodoro';
 
-const DELETE_OPTIONS: { value: DeleteMode; label: string; desc: string }[] = [
-  { value: 'instant', label: 'Immediately', desc: 'Delete right after completion' },
-  { value: '3days', label: 'After 3 days', desc: 'Keep for 3 days, then remove' },
-  { value: '7days', label: 'After 7 days', desc: 'Keep for a week, then remove' },
-];
-
-const WEEK_START_OPTIONS: { value: WeekStartDay; label: string; desc: string }[] = [
-  { value: 'monday', label: 'Monday', desc: 'Week starts on Monday' },
-  { value: 'saturday', label: 'Saturday', desc: 'Week starts on Saturday' },
-];
-
 interface ThemeOption {
   id: string;
   name: string;
@@ -36,10 +25,10 @@ interface ThemeOption {
   accent: string;
 }
 
-const themes: ThemeOption[] = [
-  { id: 'dark', name: 'Dark', bg: '#121212', card: '#1e1e1e', elevated: '#252525', text: '#f0f0f0', textMuted: '#555555', accent: '#ed9b6d' },
-  { id: 'light', name: 'Light', bg: '#f5f5f5', card: '#ffffff', elevated: '#fafafa', text: '#1a1a1a', textMuted: '#aaaaaa', accent: '#ed9b6d' },
-  { id: 'midnight', name: 'Midnight', bg: '#0d1117', card: '#161b22', elevated: '#1c2128', text: '#e6edf3', textMuted: '#484f58', accent: '#ed9b6d' },
+const THEME_DATA: { id: string; bg: string; card: string; elevated: string; text: string; textMuted: string; accent: string }[] = [
+  { id: 'dark', bg: '#121212', card: '#1e1e1e', elevated: '#252525', text: '#f0f0f0', textMuted: '#555555', accent: '#ed9b6d' },
+  { id: 'light', bg: '#f5f5f5', card: '#ffffff', elevated: '#fafafa', text: '#1a1a1a', textMuted: '#aaaaaa', accent: '#ed9b6d' },
+  { id: 'midnight', bg: '#0d1117', card: '#161b22', elevated: '#1c2128', text: '#e6edf3', textMuted: '#484f58', accent: '#ed9b6d' },
 ];
 
 function getInitials(name: string | null | undefined, email: string | null | undefined): string {
@@ -59,7 +48,7 @@ function hashColor(s: string): string {
 export default function SettingsPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [activeTheme, setActiveTheme] = useState<string>(() => {
     return localStorage.getItem('cutasks_theme') || 'dark';
   });
@@ -95,6 +84,23 @@ export default function SettingsPage() {
   const [nameError, setNameError] = useState('');
   const [nameSuccess, setNameSuccess] = useState(false);
   const [nameLoading, setNameLoading] = useState(false);
+
+  const DELETE_OPTIONS: { value: DeleteMode; label: string; desc: string }[] = [
+    { value: 'instant', label: t('settings.instant'), desc: t('settings.instantDesc') },
+    { value: '3days', label: t('settings.after3days'), desc: t('settings.after3daysDesc') },
+    { value: '7days', label: t('settings.after7days'), desc: t('settings.after7daysDesc') },
+  ];
+
+  const WEEK_START_OPTIONS: { value: WeekStartDay; label: string; desc: string }[] = [
+    { value: 'monday', label: t('settings.monday'), desc: t('settings.mondayDesc') },
+    { value: 'saturday', label: t('settings.saturday'), desc: t('settings.saturdayDesc') },
+  ];
+
+  const themes: ThemeOption[] = useMemo(() => [
+    { id: 'dark', name: t('settings.dark'), bg: THEME_DATA[0].bg, card: THEME_DATA[0].card, elevated: THEME_DATA[0].elevated, text: THEME_DATA[0].text, textMuted: THEME_DATA[0].textMuted, accent: THEME_DATA[0].accent },
+    { id: 'light', name: t('settings.light'), bg: THEME_DATA[1].bg, card: THEME_DATA[1].card, elevated: THEME_DATA[1].elevated, text: THEME_DATA[1].text, textMuted: THEME_DATA[1].textMuted, accent: THEME_DATA[1].accent },
+    { id: 'midnight', name: t('settings.midnight'), bg: THEME_DATA[2].bg, card: THEME_DATA[2].card, elevated: THEME_DATA[2].elevated, text: THEME_DATA[2].text, textMuted: THEME_DATA[2].textMuted, accent: THEME_DATA[2].accent },
+  ], [t]);
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', activeTheme);
@@ -235,7 +241,7 @@ export default function SettingsPage() {
     setNameSuccess(false);
     const trimmed = newDisplayName.trim();
     if (!trimmed) {
-      setNameError('Name cannot be empty');
+      setNameError(t('settings.nameEmpty'));
       return;
     }
     if (trimmed === (user?.displayName || '')) {
@@ -257,26 +263,26 @@ export default function SettingsPage() {
   return (
     <div className="settings-page">
       <div className="page-hero">
-        <h1 className="page-hero-title">Settings</h1>
+        <h1 className="page-hero-title">{t('settings.title')}</h1>
       </div>
 
       {user && (
         <div className="settings-section">
-          <span className="settings-section-label">Account</span>
+          <span className="settings-section-label">{t('settings.account')}</span>
           <div className="account-card">
             <div className="account-avatar" style={{ background: `${avatarColor}20`, color: avatarColor }}>
               <span className="account-avatar-text">{initials}</span>
             </div>
             <div className="account-info">
               <div className="account-name-row">
-                <span className="account-name">{user.displayName || 'User'}</span>
-                <button className="account-name-edit" onClick={openNameModal} title="Change name">
+                <span className="account-name">{user.displayName || t('settings.displayName')}</span>
+                <button className="account-name-edit" onClick={openNameModal} title={t('settings.changeName')}>
                   <Pen size={14} />
                 </button>
               </div>
               <span className="account-email">{user.email}</span>
             </div>
-            <button className="account-logout" onClick={logout} title="Sign out">
+            <button className="account-logout" onClick={logout} title={t('settings.signOut')}>
               <Logout size={18} />
             </button>
           </div>
@@ -285,20 +291,20 @@ export default function SettingsPage() {
               <div className="account-action-icon">
                 <Key size={18} />
               </div>
-              <span className="account-action-text">Change password</span>
+              <span className="account-action-text">{t('settings.changePassword')}</span>
             </button>
             <button className="account-action-btn account-action-danger" onClick={openDeleteModal}>
               <div className="account-action-icon account-action-icon-danger">
                 <TrashBinMinimalistic size={18} />
               </div>
-              <span className="account-action-text">Delete account</span>
+              <span className="account-action-text">{t('settings.deleteAccount')}</span>
             </button>
           </div>
         </div>
       )}
 
       <div className="settings-section">
-        <span className="settings-section-label">Theme</span>
+          <span className="settings-section-label">{t('settings.theme')}</span>
 
         <div className="theme-cards">
           {themes.map((theme) => (
@@ -331,7 +337,7 @@ export default function SettingsPage() {
       </div>
 
       <div className="settings-section">
-        <span className="settings-section-label">Language</span>
+          <span className="settings-section-label">{t('settings.language')}</span>
         <div className={`lang-picker${langOpen ? ' lang-picker--open' : ''}`}>
           {(() => {
             const current = LANGUAGES.find(l => l.code === i18n.language) || LANGUAGES[0];
@@ -370,7 +376,7 @@ export default function SettingsPage() {
       </div>
 
       <div className="settings-section">
-        <span className="settings-section-label">Completed tasks</span>
+          <span className="settings-section-label">{t('settings.deleteMode')}</span>
         <div className="delete-options">
           {DELETE_OPTIONS.map((opt) => (
             <button
@@ -391,7 +397,7 @@ export default function SettingsPage() {
       </div>
 
       <div className="settings-section">
-        <span className="settings-section-label">Week starts on</span>
+          <span className="settings-section-label">{t('settings.weekStart')}</span>
         <div className="delete-options">
           {WEEK_START_OPTIONS.map((opt) => (
             <button
@@ -412,11 +418,11 @@ export default function SettingsPage() {
       </div>
 
       <div className="settings-section">
-        <span className="settings-section-label">Pomodoro timer</span>
+          <span className="settings-section-label">{t('pomodoro.title')}</span>
         {([
-          { key: 'work' as const, label: 'Focus duration', color: '#ed9b6d' },
-          { key: 'short' as const, label: 'Short break', color: '#66bb6a' },
-          { key: 'long' as const, label: 'Long break', color: '#64b5f6' },
+            { key: 'work' as const, label: t('pomodoro.focus'), color: '#ed9b6d' },
+            { key: 'short' as const, label: t('pomodoro.shortBreak'), color: '#66bb6a' },
+            { key: 'long' as const, label: t('pomodoro.longBreak'), color: '#64b5f6' },
         ]).map((item) => (
           <div key={item.key} className="pomo-setting-row">
             <div className="pomo-setting-info">
@@ -442,13 +448,13 @@ export default function SettingsPage() {
       </div>
 
       <div className="settings-section">
-        <span className="settings-section-label">Info</span>
+          <span className="settings-section-label">{t('settings.info')}</span>
         <div className="settings-footer">
-          <span className="settings-footer-label">Version</span>
+          <span className="settings-footer-label">{t('settings.version')}</span>
           <span className="settings-footer-value">0.1.0</span>
         </div>
         <button className="settings-footer settings-footer-link" onClick={() => navigate('/?preview=1')}>
-          <span className="settings-footer-label">Landing page</span>
+          <span className="settings-footer-label">{t('settings.landingPage')}</span>
           <span className="settings-footer-value">
             <AltArrowRight size={14} />
           </span>
@@ -459,40 +465,40 @@ export default function SettingsPage() {
         <div className={`modal-overlay${passwordModalClosing ? ' closing' : ''}`} onClick={closePasswordModal}>
           <div className={`modal${passwordModalClosing ? ' closing' : ''}`} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Change password</h2>
+              <h2>{t('settings.changePassword')}</h2>
               <button className="btn-icon" onClick={closePasswordModal}>
                 <CloseCircle size={22} />
               </button>
             </div>
             <div className="modal-body">
               <div className="password-field">
-                <label className="password-label">Current password</label>
+                <label className="password-label">{t('settings.currentPassword')}</label>
                 <input
                   type="password"
                   className="password-input"
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
-                  placeholder="Enter current password"
+                  placeholder={t('settings.enterCurrentPassword')}
                 />
               </div>
               <div className="password-field">
-                <label className="password-label">New password</label>
+                <label className="password-label">{t('settings.newPassword')}</label>
                 <input
                   type="password"
                   className="password-input"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Enter new password"
+                  placeholder={t('settings.enterNewPassword')}
                 />
               </div>
               <div className="password-field">
-                <label className="password-label">Confirm new password</label>
+                <label className="password-label">{t('settings.confirmNewPassword')}</label>
                 <input
                   type="password"
                   className="password-input"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Confirm new password"
+                  placeholder={t('settings.confirmPasswordPlaceholder')}
                 />
               </div>
               {passwordError && (
@@ -501,7 +507,7 @@ export default function SettingsPage() {
               {passwordSuccess && (
                 <span className="password-success">
                   <CheckCircle size={16} />
-                  Password changed successfully
+                  {t('settings.passwordChanged')}
                 </span>
               )}
               <button
@@ -527,7 +533,7 @@ export default function SettingsPage() {
         <div className={`modal-overlay${deleteModalClosing ? ' closing' : ''}`} onClick={closeDeleteModal}>
           <div className={`modal${deleteModalClosing ? ' closing' : ''}`} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Delete account</h2>
+              <h2>{t('settings.deleteAccountTitle')}</h2>
               <button className="btn-icon" onClick={closeDeleteModal}>
                 <CloseCircle size={22} />
               </button>
@@ -537,13 +543,13 @@ export default function SettingsPage() {
                 This action is <strong>irreversible</strong>. All your data including tasks, projects, habits, and settings will be permanently deleted.
               </p>
               <div className="password-field">
-                <label className="password-label">Enter your password to confirm</label>
+                <label className="password-label">{t('settings.deleteAccountConfirm')}</label>
                 <input
                   type="password"
                   className="password-input"
                   value={deletePassword}
                   onChange={(e) => setDeletePassword(e.target.value)}
-                  placeholder="Your password"
+                  placeholder={t('settings.deleteAccountPlaceholder')}
                 />
               </div>
               {deleteError && (
@@ -559,7 +565,7 @@ export default function SettingsPage() {
                 ) : (
                   <>
                     <TrashBinMinimalistic size={16} />
-                    Delete my account
+                    {t('settings.deleteAccountBtn')}
                   </>
                 )}
               </button>
@@ -572,20 +578,20 @@ export default function SettingsPage() {
         <div className={`modal-overlay${nameModalClosing ? ' closing' : ''}`} onClick={closeNameModal}>
           <div className={`modal${nameModalClosing ? ' closing' : ''}`} onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Change name</h2>
+              <h2>{t('settings.changeName')}</h2>
               <button className="btn-icon" onClick={closeNameModal}>
                 <CloseCircle size={22} />
               </button>
             </div>
             <div className="modal-body">
               <div className="password-field">
-                <label className="password-label">Display name</label>
+                <label className="password-label">{t('settings.displayName')}</label>
                 <input
                   type="text"
                   className="password-input"
                   value={newDisplayName}
                   onChange={(e) => setNewDisplayName(e.target.value)}
-                  placeholder="Enter your name"
+                  placeholder={t('settings.enterName')}
                   maxLength={30}
                 />
               </div>
@@ -595,7 +601,7 @@ export default function SettingsPage() {
               {nameSuccess && (
                 <span className="password-success">
                   <CheckCircle size={16} />
-                  Name updated successfully
+                  {t('settings.nameUpdated')}
                 </span>
               )}
               <button
@@ -608,7 +614,7 @@ export default function SettingsPage() {
                 ) : (
                   <>
                     <CheckCircle size={16} />
-                    Save
+                    {t('common.save')}
                   </>
                 )}
               </button>
