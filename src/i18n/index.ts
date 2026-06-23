@@ -4,12 +4,14 @@ import en from './locales/en.json';
 import fr from './locales/fr.json';
 import de from './locales/de.json';
 import es from './locales/es.json';
+import it from './locales/it.json';
 
 export const LANGUAGES = [
   { code: 'en', label: 'English', countryCode: 'gb' },
   { code: 'fr', label: 'Français', countryCode: 'fr' },
   { code: 'de', label: 'Deutsch', countryCode: 'de' },
   { code: 'es', label: 'Español', countryCode: 'es' },
+  { code: 'it', label: 'Italiano', countryCode: 'it' },
 ] as const;
 
 export type LanguageCode = (typeof LANGUAGES)[number]['code'];
@@ -22,6 +24,7 @@ i18n.use(initReactI18next).init({
     fr: { translation: fr },
     de: { translation: de },
     es: { translation: es },
+    it: { translation: it },
   },
   lng: savedLang,
   fallbackLng: 'en',
