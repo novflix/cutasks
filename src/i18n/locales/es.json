@@ -479,5 +479,11 @@
       "habit3Name": "Llamar a los padres",
       "habit4Name": "Meditar 10 min"
     }
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "description": "Parece que esta página fue marcada como completada y desapareció. Volvamos al camino correcto.",
+    "goBack": "Volver al inicio",
+    "previousPage": "Volver"
   }
 }

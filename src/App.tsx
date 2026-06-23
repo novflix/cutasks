@@ -29,6 +29,7 @@ import MobileNav from './components/MobileNav';
 import AuthPage from './pages/AuthPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import LandingPage from './pages/LandingPage';
+import NotFoundPage from './pages/NotFoundPage';
 import { getDeadlineStatus } from './utils';
 import { MinimalisticMagnifier, ArrowLeft } from '@solar-icons/react';
 import { PROJECT_ICONS } from './constants';
@@ -1088,7 +1089,8 @@ export default function App() {
             </main>
             </ProtectedRoute>
           } />
-          <Route path="*" element={<Navigate to="/app/home" replace />} />
+          <Route path="/app/not-found" element={<NotFoundPage />} />
+          <Route path="*" element={<NotFoundPage />} />
             </Routes>
           }
         />

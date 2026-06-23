@@ -479,5 +479,11 @@
       "habit3Name": "Call parents",
       "habit4Name": "Meditate 10 min"
     }
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "Looks like this page got marked as completed and disappeared. Let's get you back on track.",
+    "goBack": "Back to home",
+    "previousPage": "Go back"
   }
 }

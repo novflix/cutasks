@@ -479,5 +479,11 @@
       "habit3Name": "Appeler les parents",
       "habit4Name": "Méditer 10 min"
     }
+  },
+  "notFound": {
+    "title": "Page introuvable",
+    "description": "On dirait que cette page a été marquée comme terminée et a disparu. Revenons sur la bonne voie.",
+    "goBack": "Retour à l'accueil",
+    "previousPage": "Revenir en arrière"
   }
 }

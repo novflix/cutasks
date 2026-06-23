@@ -1,0 +1,325 @@
+/* ── 404 Page ── */
+.nf {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  overflow: hidden;
+  padding: 40px 20px;
+}
+
+.nf-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 480px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.nf--visible .nf-content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Orbs ── */
+.nf-orbs {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.nf-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+}
+
+.nf-orb-1 {
+  width: 300px;
+  height: 300px;
+  background: var(--primary);
+  top: -80px;
+  right: -60px;
+  animation: nfOrbFloat1 12s ease-in-out infinite;
+}
+
+.nf-orb-2 {
+  width: 200px;
+  height: 200px;
+  background: #64b5f6;
+  bottom: 10%;
+  left: -40px;
+  animation: nfOrbFloat2 15s ease-in-out infinite;
+}
+
+.nf-orb-3 {
+  width: 160px;
+  height: 160px;
+  background: #66bb6a;
+  top: 40%;
+  right: 10%;
+  animation: nfOrbFloat3 10s ease-in-out infinite;
+}
+
+@keyframes nfOrbFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-30px, 40px) scale(1.1); }
+}
+
+@keyframes nfOrbFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, -30px) scale(1.15); }
+}
+
+@keyframes nfOrbFloat3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-20px, -20px) scale(0.9); }
+}
+
+/* ── Floating icons ── */
+.nf-float-icons {
+  position: absolute;
+  inset: -60px;
+  pointer-events: none;
+}
+
+.nf-icon {
+  position: absolute;
+  color: var(--text-dim);
+  opacity: 0.2;
+}
+
+.nf-icon-1 { top: 0; left: 5%; animation: nfIconFloat 6s ease-in-out infinite; }
+.nf-icon-2 { top: 10%; right: 0; animation: nfIconFloat 7s ease-in-out infinite 0.5s; }
+.nf-icon-3 { bottom: 20%; left: 0; animation: nfIconFloat 5s ease-in-out infinite 1s; }
+.nf-icon-4 { bottom: 10%; right: 10%; animation: nfIconFloat 8s ease-in-out infinite 1.5s; }
+.nf-icon-5 { top: 40%; left: -5%; animation: nfIconFloat 6.5s ease-in-out infinite 2s; }
+
+@keyframes nfIconFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-12px) rotate(8deg); }
+}
+
+/* ── 404 number ── */
+.nf-number {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 32px;
+}
+
+.nf-digit {
+  font-size: 7rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  background: linear-gradient(135deg, var(--text) 0%, var(--text-muted) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Lost task card between digits ── */
+.nf-lost-task {
+  animation: nfTaskWobble 3s ease-in-out infinite;
+}
+
+.nf-task-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 16px;
+  box-shadow: var(--shadow);
+  width: 120px;
+  transition: border-color 0.3s ease;
+}
+
+.nf-task-card:hover {
+  border-color: var(--primary);
+}
+
+.nf-task-check {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--text-muted);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.nf-task-check::after {
+  content: '?';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.nf-task-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.nf-task-line {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border-subtle);
+}
+
+.nf-task-line-1 { width: 100%; }
+.nf-task-line-2 { width: 60%; }
+
+@keyframes nfTaskWobble {
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  25% { transform: translateY(-6px) rotate(1deg); }
+  50% { transform: translateY(-2px) rotate(-1deg); }
+  75% { transform: translateY(-8px) rotate(2deg); }
+}
+
+/* ── Title & description ── */
+.nf-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  margin-bottom: 10px;
+}
+
+.nf-desc {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 360px;
+  margin-bottom: 32px;
+}
+
+/* ── Actions ── */
+.nf-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.nf-btn {
+  padding: 11px 24px;
+  font-size: 0.85rem;
+}
+
+.nf-btn-secondary {
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  padding: 11px 24px;
+  font-size: 0.85rem;
+  border-radius: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition:
+    background 0.25s ease,
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.3s ease;
+}
+
+.nf-btn-secondary:hover {
+  background: var(--bg-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.nf-btn-secondary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* ── Ground ghost tasks ── */
+.nf-ground-tasks {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.nf-ghost-task {
+  position: absolute;
+  bottom: -20px;
+  width: 80px;
+  height: 12px;
+  border-radius: 6px;
+  background: var(--border-subtle);
+  opacity: 0.15;
+  animation: nfGhostDrift 20s linear infinite;
+}
+
+@keyframes nfGhostDrift {
+  0% { transform: translateX(-100px); opacity: 0; }
+  10% { opacity: 0.15; }
+  90% { opacity: 0.15; }
+  100% { transform: translateX(calc(100vw + 100px)); opacity: 0; }
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .nf-digit {
+    font-size: 5rem;
+  }
+
+  .nf-task-card {
+    width: 90px;
+    padding: 10px 12px;
+  }
+
+  .nf-task-check {
+    width: 14px;
+    height: 14px;
+  }
+
+  .nf-task-line {
+    height: 5px;
+  }
+
+  .nf-title {
+    font-size: 1.3rem;
+  }
+
+  .nf-desc {
+    font-size: 0.85rem;
+  }
+
+  .nf-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .nf-btn, .nf-btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (min-width: 768px) {
+  .nf-digit {
+    font-size: 9rem;
+  }
+}

@@ -479,5 +479,11 @@
       "habit3Name": "Eltern anrufen",
       "habit4Name": "10 Min meditieren"
     }
+  },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "description": "Diese Seite scheint als erledigt markiert worden zu sein und ist verschwunden. Lassen Sie uns wieder auf Kurs kommen.",
+    "goBack": "Zurück zur Startseite",
+    "previousPage": "Zurück"
   }
 }
