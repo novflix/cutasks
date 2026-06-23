@@ -9,7 +9,8 @@ import {
   EmailAuthProvider,
   type User,
 } from 'firebase/auth';
-import { auth } from '../firebase';
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { auth, db } from '../firebase';
 
 export async function register(email: string, password: string, displayName: string): Promise<User> {
   const credential = await createUserWithEmailAndPassword(auth, email, password);
@@ -39,6 +40,15 @@ export async function deleteAccount(password: string): Promise<void> {
   if (!user || !user.email) throw new Error('Not authenticated');
   const credential = EmailAuthProvider.credential(user.email, password);
   await reauthenticateWithCredential(user, credential);
+
+  const collections = ['tasks', 'projects', 'sections', 'projectTasks', 'habits', 'settings'];
+  for (const col of collections) {
+    const snap = await getDocs(collection(db, 'users', user.uid, col));
+    for (const d of snap.docs) {
+      await deleteDoc(doc(db, 'users', user.uid, col, d.id));
+    }
+  }
+
   await deleteUser(user);
 }
 
