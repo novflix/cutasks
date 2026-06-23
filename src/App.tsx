@@ -106,6 +106,8 @@ export default function App() {
   const [pomoSessions, setPomoSessions] = useState(savedPomo?.completedSessions ?? 0);
   const pomoSessionsRef = useRef(pomoSessions);
   useEffect(() => { pomoSessionsRef.current = pomoSessions; });
+  const pomoModeRef = useRef(pomoMode);
+  useEffect(() => { pomoModeRef.current = pomoMode; });
   const [pomoCelebrate, setPomoCelebrate] = useState(false);
   const [pomoMiniVisible, setPomoMiniVisible] = useState(false);
   const [pomoMiniClosing, setPomoMiniClosing] = useState(false);
@@ -867,9 +869,10 @@ export default function App() {
           setPomoCelebrate(true);
           setTimeout(() => setPomoCelebrate(false), 2000);
 
-          if (pomoMode === 'work') {
-            setPomoSessions((s: number) => s + 1);
-            const next = (pomoSessionsRef.current + 1) % LONG_BREAK_INTERVAL === 0 ? 'long' : 'short';
+          if (pomoModeRef.current === 'work') {
+            const newSessions = pomoSessionsRef.current + 1;
+            setPomoSessions(newSessions);
+            const next = newSessions % LONG_BREAK_INTERVAL === 0 ? 'long' : 'short';
             setTimeout(() => pomoSwitchMode(next), 600);
           } else {
             setTimeout(() => pomoSwitchMode('work'), 600);
@@ -880,7 +883,7 @@ export default function App() {
       });
     }, 1000);
     return () => { if (pomoIntervalRef.current) clearInterval(pomoIntervalRef.current); };
-  }, [pomoRunning, pomoMode, pomoSwitchMode]);
+  }, [pomoRunning, pomoSwitchMode]);
 
   useEffect(() => {
     if (pomoRunning) {
