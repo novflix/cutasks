@@ -63,9 +63,10 @@ function formatDateRange(start: Date): string {
 interface CalendarPageProps {
   tasks: Task[];
   projectTasks: ProjectTask[];
+  onViewTask: (task: Task) => void;
 }
 
-export default function CalendarPage({ tasks, projectTasks }: CalendarPageProps) {
+export default function CalendarPage({ tasks, projectTasks, onViewTask }: CalendarPageProps) {
   const navigate = useNavigate();
   const today = useMemo(() => {
     const d = new Date();
@@ -300,7 +301,7 @@ export default function CalendarPage({ tasks, projectTasks }: CalendarPageProps)
                     <polyline points="5 12 10 17 19 7" className="check-path" />
                   </svg>
                 </button>
-                <div className="cal-task-body">
+                <div className="cal-task-body" onClick={() => onViewTask(task)} style={{ cursor: 'pointer' }}>
                   <h3 className="cal-task-title">{task.title}</h3>
                   {task.description && (
                     <p className="cal-task-desc">{task.description}</p>

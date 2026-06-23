@@ -941,7 +941,10 @@ export default function App() {
               <Route path="/app/calendar" element={
                 <ProtectedRoute>
                   <main className="main">
-                    <CalendarPage tasks={tasks} projectTasks={projectTasks} />
+                    <CalendarPage tasks={tasks} projectTasks={projectTasks} onViewTask={(t) => {
+                      if ('projectId' in t) setViewingProjectTask(t as ProjectTask);
+                      else setViewingTask(t);
+                    }} />
                   </main>
                 </ProtectedRoute>
               } />
