@@ -1,4 +1,5 @@
 import { CloseCircle, CalendarMinimalistic, PenNewRound, Flag2, Tag, ArrowDown, ArrowUp } from '@solar-icons/react';
+import { useTranslation } from 'react-i18next';
 import type { Task } from '../types';
 import { formatDate, formatDeadline, getDeadlineStatus, getTagColor } from '../utils';
 
@@ -16,6 +17,7 @@ function capitalize(s: string) {
 }
 
 export default function TaskDetailModal({ task, tasks, onClose, onEdit, onToggle, isClosing }: TaskDetailModalProps) {
+  const { t } = useTranslation();
   const dlStatus = getDeadlineStatus(task.deadline, task.completed);
   const subtasks = tasks.filter((t) => t.parentId === task.id);
   const parentTask = task.parentId ? tasks.find((t) => t.id === task.parentId) ?? null : null;
@@ -31,7 +33,7 @@ export default function TaskDetailModal({ task, tasks, onClose, onEdit, onToggle
             <button
               className={`task-check ${task.completed ? 'checked' : ''} detail-check`}
               onClick={() => onToggle(task.id)}
-              title={task.completed ? 'Completed' : 'Active'}
+              title={task.completed ? t('modals.taskDetail.completed') : t('modals.taskDetail.active')}
             >
               <svg viewBox="0 0 24 24" fill="none" className="check-icon">
                 <polyline points="5 12 10 17 19 7" className="check-path" />
@@ -56,7 +58,7 @@ export default function TaskDetailModal({ task, tasks, onClose, onEdit, onToggle
             <div className="detail-meta-row">
               <span className="detail-meta-label">
                 <ArrowUp size={14} />
-                Parent
+                {t('common.parent')}
               </span>
               <span className="detail-meta-value detail-parent-link" onClick={() => { onClose(); onEdit(parentTask); }}>
                 {parentTask.title}
@@ -67,7 +69,7 @@ export default function TaskDetailModal({ task, tasks, onClose, onEdit, onToggle
           <div className="detail-meta-row">
             <span className="detail-meta-label">
               <Flag2 size={14} />
-              Priority
+              {t('common.priority')}
             </span>
             <span className={`priority-badge priority-${task.priority}`}>
               {capitalize(task.priority)}
@@ -83,7 +85,7 @@ export default function TaskDetailModal({ task, tasks, onClose, onEdit, onToggle
               Status
             </span>
             <span className={`status-badge ${task.completed ? 'status-done' : 'status-active'}`}>
-              {task.completed ? 'Completed' : 'Active'}
+              {task.completed ? t('modals.taskDetail.completed') : t('modals.taskDetail.active')}
             </span>
           </div>
 
@@ -91,12 +93,12 @@ export default function TaskDetailModal({ task, tasks, onClose, onEdit, onToggle
             <div className="detail-meta-row">
               <span className="detail-meta-label">
                 <CalendarMinimalistic size={14} />
-                Deadline
+                {t('common.deadline')}
               </span>
               <span className={`deadline-text deadline-text-${dlStatus}`}>
                 {formatDeadline(task.deadline)}
-                {dlStatus === 'overdue' && ' (overdue)'}
-                {dlStatus === 'today' && ' (today)'}
+                {dlStatus === 'overdue' && ` (${t('common.overdue')})`}
+                {dlStatus === 'today' && ` (${t('common.today')})`}
                 {dlStatus === 'soon' && ' (soon)'}
               </span>
             </div>
@@ -105,7 +107,7 @@ export default function TaskDetailModal({ task, tasks, onClose, onEdit, onToggle
           <div className="detail-meta-row">
             <span className="detail-meta-label">
               <CalendarMinimalistic size={14} />
-              Created
+              {t('common.created')}
             </span>
             <span className="detail-meta-value">{formatDate(task.createdAt)}</span>
           </div>
@@ -114,7 +116,7 @@ export default function TaskDetailModal({ task, tasks, onClose, onEdit, onToggle
             <div className="detail-meta-row">
               <span className="detail-meta-label">
                 <PenNewRound size={14} />
-                Updated
+                {t('common.updated')}
               </span>
               <span className="detail-meta-value">{formatDate(task.updatedAt)}</span>
             </div>
@@ -127,7 +129,7 @@ export default function TaskDetailModal({ task, tasks, onClose, onEdit, onToggle
             <div className="detail-section">
               <span className="detail-section-title">
                 <Tag size={14} />
-                Tags
+                {t('common.tags')}
               </span>
               <div className="detail-tags">
                 {task.tags.map((tag) => {
@@ -149,7 +151,7 @@ export default function TaskDetailModal({ task, tasks, onClose, onEdit, onToggle
             <div className="detail-section">
               <span className="detail-section-title">
                 <ArrowDown size={14} />
-                Subtasks ({subtasks.length})
+                {t('modals.taskDetail.subtasks')} ({subtasks.length})
               </span>
               <div className="detail-subtasks">
                 {subtasks.map((sub) => (
@@ -176,10 +178,10 @@ export default function TaskDetailModal({ task, tasks, onClose, onEdit, onToggle
 
         <div className="detail-actions">
           <button className="btn btn-secondary" onClick={onClose}>
-            Close
+            {t('common.close')}
           </button>
           <button className="btn btn-primary" onClick={() => { onClose(); onEdit(task); }}>
-            Edit Task
+            {t('tasks.editTask')}
           </button>
         </div>
       </div>

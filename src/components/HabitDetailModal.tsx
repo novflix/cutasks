@@ -5,6 +5,7 @@ import {
   CupHot, Target, MedalStar, Shield, Leaf, Star, Bolt, Alarm,
   SmileCircle, Football, CodeSquare, Palette, MusicNote, Notes,
 } from '@solar-icons/react';
+import { useTranslation } from 'react-i18next';
 import type { Habit } from '../types';
 import { formatDate } from '../utils';
 
@@ -47,11 +48,11 @@ function countCompletions(completions: Record<string, boolean>): number {
   return Object.values(completions).filter(Boolean).length;
 }
 
-function getWeekdayLabel(weekdays: number[]): string {
-  if (weekdays.length === 7) return 'Every day';
-  if (weekdays.length === 0) return 'Never';
-  if (weekdays.length === 5 && [0, 1, 2, 3, 4].every((d) => weekdays.includes(d))) return 'Weekdays';
-  if (weekdays.length === 2 && [5, 6].every((d) => weekdays.includes(d))) return 'Weekends';
+function getWeekdayLabel(weekdays: number[], t: (key: string) => string): string {
+  if (weekdays.length === 7) return t('habits.everyDay');
+  if (weekdays.length === 0) return t('habits.never');
+  if (weekdays.length === 5 && [0, 1, 2, 3, 4].every((d) => weekdays.includes(d))) return t('habits.weekdays');
+  if (weekdays.length === 2 && [5, 6].every((d) => weekdays.includes(d))) return t('habits.weekends');
   return weekdays.map((d) => DAY_NAMES[d]).join(', ');
 }
 
@@ -64,6 +65,7 @@ interface HabitDetailModalProps {
 }
 
 export default function HabitDetailModal({ habit, onClose, onUpdate, onDelete, isClosing }: HabitDetailModalProps) {
+  const { t } = useTranslation();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(habit.name);
   const [icon, setIcon] = useState(habit.icon);
@@ -132,7 +134,7 @@ export default function HabitDetailModal({ habit, onClose, onUpdate, onDelete, i
         {editing ? (
           <div className="habits-detail-edit">
             <div className="fm-field">
-              <label className="fm-label">Icon</label>
+              <label className="fm-label">{t('common.icon')}</label>
               <div className="habits-icon-picker">
                 {HABIT_ICONS.map((item) => {
                   const Ic = item.icon;
@@ -152,7 +154,7 @@ export default function HabitDetailModal({ habit, onClose, onUpdate, onDelete, i
             </div>
 
             <div className="fm-field">
-              <label className="fm-label">Color</label>
+              <label className="fm-label">{t('common.color')}</label>
               <div className="habits-color-picker">
                 {HABIT_COLORS.map((c) => (
                   <button
@@ -167,7 +169,7 @@ export default function HabitDetailModal({ habit, onClose, onUpdate, onDelete, i
             </div>
 
             <div className="fm-field">
-              <label className="fm-label">Repeat on</label>
+              <label className="fm-label">{t('habits.repeatOn')}</label>
               <div className="habits-weekday-picker">
                 {DAY_NAMES.map((dayName, i) => (
                   <button
@@ -191,15 +193,15 @@ export default function HabitDetailModal({ habit, onClose, onUpdate, onDelete, i
             <div className="detail-meta-row">
               <span className="detail-meta-label">
                 <img src="/icons/streak.svg" alt="" width="14" height="14" />
-                Streak
+                {t('habits.streak')}
               </span>
-              <span className="detail-meta-value habits-detail-streak">{habit.streak} days</span>
+              <span className="detail-meta-value habits-detail-streak">{habit.streak} {t('habits.days')}</span>
             </div>
 
             <div className="detail-meta-row">
               <span className="detail-meta-label">
                 <Fire size={14} />
-                Total completions
+                {t('habits.totalCompletions')}
               </span>
               <span className="detail-meta-value">{totalCompletions}</span>
             </div>
@@ -207,15 +209,15 @@ export default function HabitDetailModal({ habit, onClose, onUpdate, onDelete, i
             <div className="detail-meta-row">
               <span className="detail-meta-label">
                 <CalendarMinimalistic size={14} />
-                Repeat
+                {t('habits.repeat')}
               </span>
-              <span className="detail-meta-value">{getWeekdayLabel(habit.weekdays)}</span>
+              <span className="detail-meta-value">{getWeekdayLabel(habit.weekdays, t)}</span>
             </div>
 
             <div className="detail-meta-row">
               <span className="detail-meta-label">
                 <CalendarMinimalistic size={14} />
-                Created
+                {t('common.created')}
               </span>
               <span className="detail-meta-value">{formatDate(habit.createdAt)}</span>
             </div>
@@ -224,7 +226,7 @@ export default function HabitDetailModal({ habit, onClose, onUpdate, onDelete, i
               <div className="detail-meta-row">
                 <span className="detail-meta-label">
                   <PenNewRound size={14} />
-                  Updated
+                  {t('common.updated')}
                 </span>
                 <span className="detail-meta-value">{formatDate(habit.updatedAt)}</span>
               </div>
@@ -236,20 +238,20 @@ export default function HabitDetailModal({ habit, onClose, onUpdate, onDelete, i
           {editing ? (
             <>
               <button className="btn btn-secondary" onClick={cancelEdit}>
-                Cancel
+                {t('common.cancel')}
               </button>
               <button className="btn btn-primary" onClick={saveEdit} disabled={!name.trim()}>
-                Save Changes
+                {t('habits.saveChanges')}
               </button>
             </>
           ) : (
             <>
               <button className="btn btn-secondary btn-danger-outline" onClick={() => { onDelete(habit.id); onClose(); }}>
-                Delete
+                {t('common.delete')}
               </button>
               <button className="btn btn-primary" onClick={startEdit}>
                 <PenNewRound size={16} />
-                Edit
+                {t('common.edit')}
               </button>
             </>
           )}

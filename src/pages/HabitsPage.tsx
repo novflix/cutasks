@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect, type ComponentType } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft, AltArrowLeft, AltArrowRight, AddSquare, CloseCircle,
   Book, Running, Meditation, Waterdrop, Heart, MoonStars,
@@ -127,6 +128,7 @@ interface HabitsPageProps {
 
 export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formOpenerRef }: HabitsPageProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const today = useMemo(() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
@@ -398,7 +400,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
         <button className="btn-icon" onClick={() => navigate('/app/home')}>
           <ArrowLeft size={22} />
         </button>
-        <h1 className="page-hero-title">Habits</h1>
+        <h1 className="page-hero-title">{t('habits.title')}</h1>
       </div>
 
       <div className="habits-week-nav">
@@ -406,26 +408,26 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
           <button
             className="habits-week-arrow"
             onClick={() => setWeekStart((w) => addWeeks(w, -1))}
-            aria-label="Previous week"
+            aria-label={t('calendar.prevWeek')}
           >
             <AltArrowLeft size={18} />
           </button>
           <div className="habits-week-label">
             <span className="habits-week-text">{formatDateRange(weekStart)}</span>
-            {isCurrentWeek && <span className="habits-week-badge">This week</span>}
+            {isCurrentWeek && <span className="habits-week-badge">{t('habits.thisWeek')}</span>}
           </div>
           <button
             className="habits-week-arrow"
             onClick={() => setWeekStart((w) => addWeeks(w, 1))}
-            aria-label="Next week"
+            aria-label={t('calendar.nextWeek')}
             disabled={days[6] >= today}
           >
             <AltArrowRight size={18} />
           </button>
         </div>
-        <button className="habits-add-btn" onClick={openForm} aria-label="New habit">
+        <button className="habits-add-btn" onClick={openForm} aria-label={t('habits.newHabit')}>
           <AddSquare size={18} />
-          <span className="habits-add-label">New</span>
+          <span className="habits-add-label">{t('common.new')}</span>
         </button>
       </div>
 
@@ -452,15 +454,15 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
 
       <div className="habits-day-label">
         {isSameDay(selectedDay, today)
-          ? 'Today'
+          ? t('common.today')
           : formatFullDate(selectedDay)}
       </div>
 
       <div className="habits-list">
         {visibleHabits.length === 0 ? (
           <div className="habits-empty">
-            <p className="habits-empty-title">No habits for this day</p>
-            <p className="habits-empty-sub">{habits.length === 0 ? 'Tap "New" to create your first habit' : 'No habits scheduled'}</p>
+            <p className="habits-empty-title">{t('habits.noHabits')}</p>
+            <p className="habits-empty-sub">{habits.length === 0 ? t('habits.noHabitsSub') : t('habits.noHabitsScheduled')}</p>
           </div>
         ) : (
           visibleHabits.map((habit, i) => {
@@ -474,7 +476,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
                   className="habits-drag-handle"
                   onMouseDown={(e) => handleMouseDown(habit.id, e)}
                   onTouchStart={(e) => handleTouchStart(habit.id, e)}
-                  title="Drag to reorder"
+                  title={t('habits.dragToReorder')}
                 >
                   <svg width="12" height="16" viewBox="0 0 12 16" fill="currentColor">
                     <circle cx="3" cy="2.5" r="1.5" /><circle cx="9" cy="2.5" r="1.5" />
@@ -520,7 +522,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
         <div className={`modal-overlay${formClosing ? ' closing' : ''}`} onClick={closeForm}>
           <div className={`modal habits-form-modal${formClosing ? ' closing' : ''}`} onClick={(e) => e.stopPropagation()}>
             <div className="fm-header">
-              <h2 className="fm-title">New Habit</h2>
+              <h2 className="fm-title">{t('habits.newHabit')}</h2>
               <button className="btn-icon fm-close" onClick={closeForm}>
                 <CloseCircle size={20} />
               </button>
@@ -528,11 +530,11 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
 
             <form onSubmit={handleFormSubmit} className="fm-body">
               <div className="fm-field">
-                <label className="fm-label">Name</label>
+                <label className="fm-label">{t('common.name')}</label>
                 <input
                   ref={nameRef}
                   type="text"
-                  placeholder="What habit do you want to build?"
+                  placeholder={t('habits.habitName')}
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   className="fm-input"
@@ -542,7 +544,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
               </div>
 
               <div className="fm-field">
-                <label className="fm-label">Icon</label>
+                <label className="fm-label">{t('common.icon')}</label>
                 <div className="habits-icon-picker">
                   {HABIT_ICONS.map((item) => {
                     const Ic = item.icon;
@@ -563,7 +565,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
               </div>
 
               <div className="fm-field">
-                <label className="fm-label">Color</label>
+                <label className="fm-label">{t('common.color')}</label>
                 <div className="habits-color-picker">
                   {HABIT_COLORS.map((c) => (
                     <button
@@ -579,7 +581,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
               </div>
 
               <div className="fm-field">
-                <label className="fm-label">Repeat on</label>
+                <label className="fm-label">{t('habits.repeatOn')}</label>
                 <div className="habits-weekday-picker">
                   {dayNames.map((name, i) => (
                     <button
@@ -602,7 +604,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
 
             <div className="fm-footer">
               <button type="button" className="btn btn-secondary" onClick={closeForm}>
-                Cancel
+                {t('common.cancel')}
               </button>
               <button
                 type="button"
@@ -610,7 +612,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
                 disabled={!newName.trim()}
                 onClick={handleFormSubmit}
               >
-                Create Habit
+                {t('habits.createHabit')}
               </button>
             </div>
           </div>

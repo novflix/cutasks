@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { CloseCircle, ArrowUp } from '@solar-icons/react';
+import { useTranslation } from 'react-i18next';
 import type { Task } from '../types';
 
 interface ParentTaskSelectProps {
@@ -10,6 +11,7 @@ interface ParentTaskSelectProps {
 }
 
 export default function ParentTaskSelect({ parentId, currentTaskId, allTasks, onChange }: ParentTaskSelectProps) {
+  const { t } = useTranslation();
   const [input, setInput] = useState('');
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
@@ -83,7 +85,7 @@ export default function ParentTaskSelect({ parentId, currentTaskId, allTasks, on
     <div className="parent-select" ref={ref}>
       <label className="parent-select-label">
         <ArrowUp size={13} />
-        Parent Task
+        {t('components.parentSelect.label')}
       </label>
       {parentTask ? (
         <div className="parent-selected">
@@ -97,7 +99,7 @@ export default function ParentTaskSelect({ parentId, currentTaskId, allTasks, on
           <input
             type="text"
             className="parent-input"
-            placeholder="Search tasks to set as parent..."
+            placeholder={t('components.parentSelect.placeholder')}
             value={input}
             onChange={(e) => { setInput(e.target.value); handleOpen(); }}
             onFocus={handleOpen}
@@ -123,7 +125,7 @@ export default function ParentTaskSelect({ parentId, currentTaskId, allTasks, on
       )}
       {(open || closing) && input.trim() && suggestions.length === 0 && (
         <div className={`${dropdownClass} parent-dropdown-empty`}>
-          <span className="parent-dropdown-empty-text">No tasks found</span>
+          <span className="parent-dropdown-empty-text">{t('components.parentSelect.noResults')}</span>
         </div>
       )}
     </div>

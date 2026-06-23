@@ -1,13 +1,8 @@
 import { useRef, useEffect } from 'react';
 import { CloseCircle } from '@solar-icons/react';
+import { useTranslation } from 'react-i18next';
 import type { Project, ProjectStatus } from '../types';
 import { PROJECT_ICONS, PROJECT_COLORS } from '../constants';
-
-const STATUS_OPTIONS: { value: ProjectStatus; label: string }[] = [
-  { value: 'active', label: 'Active' },
-  { value: 'paused', label: 'Paused' },
-  { value: 'completed', label: 'Completed' },
-];
 
 interface ProjectFormModalProps {
   editingProject: Project | null;
@@ -31,6 +26,7 @@ export default function ProjectFormModal({
   onNameChange, onDescChange, onIconChange, onColorChange, onStatusChange,
   onSubmit, onClose, isClosing,
 }: ProjectFormModalProps) {
+  const { t } = useTranslation();
   const nameRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -46,7 +42,7 @@ export default function ProjectFormModal({
     <div className={overlayClass} onClick={onClose}>
       <div className={modalClass} onClick={(e) => e.stopPropagation()}>
         <div className="fm-header">
-          <h2 className="fm-title">{editingProject ? 'Edit Project' : 'New Project'}</h2>
+          <h2 className="fm-title">{editingProject ? t('modals.projectForm.edit') : t('modals.projectForm.create')}</h2>
           <button className="btn-icon fm-close" onClick={onClose}>
             <CloseCircle size={20} />
           </button>
@@ -54,11 +50,11 @@ export default function ProjectFormModal({
 
         <form id="project-form" onSubmit={onSubmit} className="fm-body">
           <div className="fm-field">
-            <label className="fm-label">Name</label>
+            <label className="fm-label">{t('modals.projectForm.name')}</label>
             <input
               ref={nameRef}
               type="text"
-              placeholder="Project name"
+              placeholder={t('projects.projectName')}
               value={name}
               onChange={(e) => onNameChange(e.target.value)}
               className="fm-input"
@@ -68,9 +64,9 @@ export default function ProjectFormModal({
           </div>
 
           <div className="fm-field">
-            <label className="fm-label">Description</label>
+            <label className="fm-label">{t('modals.projectForm.description')}</label>
             <textarea
-              placeholder="Optional description"
+              placeholder={t('projects.optionalDesc')}
               value={description}
               onChange={(e) => onDescChange(e.target.value)}
               className="fm-textarea"
@@ -81,16 +77,16 @@ export default function ProjectFormModal({
 
           <div className="fm-row">
             <div className="fm-col">
-              <label className="fm-label">Status</label>
+              <label className="fm-label">{t('modals.projectForm.status')}</label>
               <div className="status-selector">
-                {STATUS_OPTIONS.map((opt) => (
+                {(['active', 'paused', 'completed'] as ProjectStatus[]).map((value) => (
                   <button
-                    key={opt.value}
+                    key={value}
                     type="button"
-                    className={`status-option status-option-${opt.value}${status === opt.value ? ' selected' : ''}`}
-                    onClick={() => onStatusChange(opt.value)}
+                    className={`status-option ${status === value ? 'selected' : ''}`}
+                    onClick={() => onStatusChange(value)}
                   >
-                    {opt.label}
+                    {t(`modals.projectForm.${value}`)}
                   </button>
                 ))}
               </div>
@@ -98,7 +94,7 @@ export default function ProjectFormModal({
           </div>
 
           <div className="fm-field">
-            <label className="fm-label">Icon</label>
+            <label className="fm-label">{t('modals.projectForm.icon')}</label>
             <div className="icon-picker">
               {PROJECT_ICONS.map((item) => {
                 const Ic = item.icon;
@@ -118,7 +114,7 @@ export default function ProjectFormModal({
           </div>
 
           <div className="fm-field">
-            <label className="fm-label">Color</label>
+            <label className="fm-label">{t('modals.projectForm.color')}</label>
             <div className="color-picker">
               {PROJECT_COLORS.map((c) => (
                 <button
@@ -133,13 +129,13 @@ export default function ProjectFormModal({
           </div>
 
           <div className="project-preview" style={{ '--preview-color': color } as React.CSSProperties}>
-            <span className="project-preview-label">Preview</span>
+            <span className="project-preview-label">{t('common.preview')}</span>
             <div className="project-preview-card">
               <div className="project-preview-icon" style={{ background: `${color}15`, color }}>
                 <PreviewIcon size={26} strokeWidth={1.8} />
               </div>
               <div className="project-preview-info">
-                <span className="project-preview-name" style={{ color }}>{name || 'Project name'}</span>
+                <span className="project-preview-name" style={{ color }}>{name || t('projects.projectName')}</span>
                 {description && <span className="project-preview-desc">{description}</span>}
                 <span className={`project-preview-status preview-status-${status}`}>{status}</span>
               </div>
@@ -149,10 +145,10 @@ export default function ProjectFormModal({
 
         <div className="fm-footer">
           <button type="button" className="btn btn-secondary" onClick={onClose}>
-            Cancel
+            {t('common.cancel')}
           </button>
           <button type="submit" className="btn btn-primary" disabled={!name.trim()} form="project-form">
-            {editingProject ? 'Save Changes' : 'Create Project'}
+            {editingProject ? t('common.save') : t('common.create')}
           </button>
         </div>
       </div>

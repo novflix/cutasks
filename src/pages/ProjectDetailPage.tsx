@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
 import { AddSquare, Pen, TrashBinMinimalistic, NotesMinimalistic } from '@solar-icons/react';
+import { useTranslation } from 'react-i18next';
 import type { Project, Section as SectionType, ProjectTask } from '../types';
 import { generateId, canAddSubtask, getTaskDepth, MAX_SUBTASK_DEPTH, priorityOrder } from '../utils';
 import TaskCard from '../components/TaskCard';
@@ -22,6 +23,7 @@ export default function ProjectDetailPage({
   project, sections, tasks, searchQuery,
   onCreateTask, onEditTask, onDeleteTask, onToggleTask, onViewTask, onUpdateTask,
 }: ProjectDetailPageProps) {
+  const { t } = useTranslation();
   const [showSectionForm, setShowSectionForm] = useState(false);
   const [sectionFormClosing, setSectionFormClosing] = useState(false);
   const [sectionName, setSectionName] = useState('');
@@ -353,13 +355,13 @@ export default function ProjectDetailPage({
                 <div className="project-section-header">
                   <h3 className="project-section-name">{section.name}</h3>
                   <div className="project-section-actions">
-                    <button className="btn-icon" onClick={() => startEditSection(section)} title="Edit name">
+                    <button className="btn-icon" onClick={() => startEditSection(section)} title={t('projects.editName')}>
                       <Pen size={16} />
                     </button>
-                    <button className="btn-icon" onClick={() => onCreateTask(section.id)} title="Add task">
+                    <button className="btn-icon" onClick={() => onCreateTask(section.id)} title={t('projects.addTask')}>
                       <AddSquare size={18} />
                     </button>
-                    <button className="btn-icon btn-icon-danger" onClick={() => deleteSection(section.id)} title="Delete section">
+                    <button className="btn-icon btn-icon-danger" onClick={() => deleteSection(section.id)} title={t('projects.deleteSection')}>
                       <TrashBinMinimalistic size={18} />
                     </button>
                   </div>
@@ -371,7 +373,7 @@ export default function ProjectDetailPage({
                 ) : (
                   <button className="project-section-add" onClick={() => onCreateTask(section.id)}>
                     <AddSquare size={16} />
-                    Add task
+                    {t('projects.addTask')}
                   </button>
                 )}
               </div>
@@ -392,26 +394,26 @@ export default function ProjectDetailPage({
               className={`project-unsectioned project-unsectioned-empty${dragOverUnsectioned ? ' drag-over' : ''}`}
               data-unsectioned
             >
-              <span className="project-unsectioned-hint">Drop here to move out of section</span>
+              <span className="project-unsectioned-hint">{t('projects.dropHere')}</span>
             </div>
           ) : null}
 
           {maxDepthNotice && (
             <div className="max-depth-notice">
-              Maximum nesting depth reached (3 levels)
+              {t('tasks.maxDepth')}
             </div>
           )}
 
           <button className="project-add-section" onClick={() => setShowSectionForm(true)}>
             <AddSquare size={18} />
-            Add section
+            {t('projects.addSection')}
           </button>
 
           {projectSections.length === 0 && unsectionedTasks.length === 0 && (
             <div className="empty">
               <NotesMinimalistic size={56} className="empty-icon" />
-              <p className="empty-title">No tasks yet</p>
-              <p className="empty-sub">Create a section or add tasks directly</p>
+              <p className="empty-title">{t('projects.noTasks')}</p>
+              <p className="empty-sub">{t('projects.noTasksSub')}</p>
             </div>
           )}
         </div>

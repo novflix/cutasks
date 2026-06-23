@@ -1,13 +1,8 @@
 import { Pen, TrashBinMinimalistic } from '@solar-icons/react';
+import { useTranslation } from 'react-i18next';
 import type { Project, ProjectTask } from '../types';
 import { PROJECT_ICONS } from '../constants';
 import { formatDate, highlightMatch } from '../utils';
-
-const STATUS_LABELS = {
-  active: 'Active',
-  paused: 'Paused',
-  completed: 'Completed',
-};
 
 interface ProjectCardProps {
   project: Project;
@@ -19,6 +14,7 @@ interface ProjectCardProps {
 }
 
 export default function ProjectCard({ project, searchQuery, projectTasks, onEdit, onDelete, onOpen }: ProjectCardProps) {
+  const { t } = useTranslation();
   const iconDef = PROJECT_ICONS.find((i) => i.name === project.icon) ?? PROJECT_ICONS[0];
   const Icon = iconDef.icon;
 
@@ -52,10 +48,10 @@ export default function ProjectCard({ project, searchQuery, projectTasks, onEdit
               : project.name}
           </h3>
           <div className="project-card-actions">
-            <button className="btn-icon" onClick={(e) => { e.stopPropagation(); onEdit(project); }} title="Edit">
+            <button className="btn-icon" onClick={(e) => { e.stopPropagation(); onEdit(project); }} title={t('common.edit')}>
               <Pen size={18} />
             </button>
-            <button className="btn-icon btn-icon-danger" onClick={(e) => { e.stopPropagation(); onDelete(project.id); }} title="Delete">
+            <button className="btn-icon btn-icon-danger" onClick={(e) => { e.stopPropagation(); onDelete(project.id); }} title={t('common.delete')}>
               <TrashBinMinimalistic size={18} />
             </button>
           </div>
@@ -77,13 +73,13 @@ export default function ProjectCard({ project, searchQuery, projectTasks, onEdit
             );
           })}
           {matchingTasks.length > 3 && (
-            <span className="project-card-task-more">+{matchingTasks.length - 3} more</span>
+            <span className="project-card-task-more">+{matchingTasks.length - 3} {t('common.more')}</span>
           )}
         </div>
       )}
       <div className="project-card-footer">
         <span className={`project-status-badge project-status-${project.status}`}>
-          {STATUS_LABELS[project.status]}
+          {t(`modals.projectForm.${project.status}`)}
         </span>
         <span className="project-card-date">{formatDate(project.createdAt)}</span>
       </div>

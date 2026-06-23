@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Play, Pause, Restart, SkipNext } from '@solar-icons/react';
 import { LONG_BREAK_INTERVAL, MODE_META } from '../constants/pomo';
 
@@ -10,15 +11,6 @@ export interface PomoConfig {
   short: number;
   long: number;
 }
-
-const MOTIVATIONAL = [
-  'Stay focused, you got this!',
-  'Deep work starts now.',
-  'One pomodoro at a time.',
-  'Your future self will thank you.',
-  'Small steps, big results.',
-  'Breathe. Focus. Create.',
-];
 
 interface PomodoroPageProps {
   mode: PomoMode;
@@ -38,7 +30,8 @@ export default function PomodoroPage({
   onToggleRunning, onReset, onSwitchMode, onSkipSession,
 }: PomodoroPageProps) {
   const navigate = useNavigate();
-  const [quote] = useState(() => MOTIVATIONAL[Math.floor(Math.random() * MOTIVATIONAL.length)]);
+  const { t } = useTranslation();
+  const [quote] = useState(() => t(`pomodoro.quotes.${Math.floor(Math.random() * 6)}`));
 
   const totalSeconds = config[mode] * 60;
   const progress = 1 - secondsLeft / totalSeconds;
@@ -58,7 +51,7 @@ export default function PomodoroPage({
         <button className="btn-icon" onClick={() => navigate('/app/home')}>
           <ArrowLeft size={22} />
         </button>
-        <h1 className="page-hero-title">Pomodoro</h1>
+        <h1 className="page-hero-title">{t('pomodoro.title')}</h1>
       </div>
 
       <div className={`pomo-container${celebrate ? ' pomo-celebrate' : ''}${isLight ? ` pomo-light pomo-light-${mode}` : ''}`} style={isLight ? undefined : { background: meta.bgGrad }}>
@@ -129,18 +122,18 @@ export default function PomodoroPage({
         </div>
 
         <div className="pomo-controls">
-          <button className="pomo-btn pomo-btn-secondary" onClick={onReset} aria-label="Reset">
+          <button className="pomo-btn pomo-btn-secondary" onClick={onReset} aria-label={t('pomodoro.reset')}>
             <Restart size={22} strokeWidth={2} />
           </button>
           <button
             className={`pomo-btn pomo-btn-main${running ? ' running' : ''}`}
             onClick={onToggleRunning}
-            aria-label={running ? 'Pause' : 'Start'}
+            aria-label={running ? t('pomodoro.pause') : t('pomodoro.start')}
             style={{ background: meta.color }}
           >
             {running ? <Pause size={32} strokeWidth={2.2} /> : <Play size={32} strokeWidth={2.2} className="pomo-play-icon" />}
           </button>
-          <button className="pomo-btn pomo-btn-secondary" onClick={onSkipSession} aria-label="Skip">
+          <button className="pomo-btn pomo-btn-secondary" onClick={onSkipSession} aria-label={t('pomodoro.skip')}>
             <SkipNext size={22} strokeWidth={2} />
           </button>
         </div>
@@ -156,7 +149,7 @@ export default function PomodoroPage({
             />
           ))}
           <span className="pomo-sessions-label">
-            {completedSessions} session{completedSessions !== 1 ? 's' : ''} today
+            {completedSessions === 1 ? t('pomodoro.sessions', { count: completedSessions }) : t('pomodoro.sessions_plural', { count: completedSessions })}
           </span>
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import {
   ClipboardCheck,
@@ -24,6 +25,7 @@ import {
 export default function LandingPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
   const featuresRef = useRef<HTMLDivElement>(null);
@@ -73,8 +75,8 @@ export default function LandingPage() {
             <img src="/logo.svg" alt="CuTasks" className="lp-nav-logo" />
           </div>
           <div className="lp-nav-actions">
-            <button className="lp-nav-link" onClick={() => navigate('/auth')}>Sign in</button>
-            <button className="lp-nav-btn" onClick={() => navigate('/auth')}>Get started</button>
+            <button className="lp-nav-link" onClick={() => navigate('/auth')}>{t('landing.signIn')}</button>
+            <button className="lp-nav-btn" onClick={() => navigate('/auth')}>{t('landing.getStarted')}</button>
           </div>
         </div>
       </nav>
@@ -89,24 +91,22 @@ export default function LandingPage() {
         <div className="lp-hero-content">
           <div className="lp-hero-badge">
             <Lightning size={13} />
-            <span>Free forever</span>
+            <span>{t('landing.freeForever')}</span>
           </div>
           <h1 className="lp-hero-title">
-            <span className="lp-hero-gradient">CuTasks</span><br />
-            Your tasks. Your rhythm.
+            <span className="lp-hero-gradient">{t('landing.heroTitle')}</span><br />
+            {t('landing.heroSubtitle')}
           </h1>
           <p className="lp-hero-desc">
-            The task manager that adapts to how you work &mdash; not the other way
-            around. Projects, habits, focus timer, calendar &mdash; everything in
-            one beautiful place.
+            {t('landing.heroDesc')}
           </p>
           <div className="lp-hero-actions">
             <button className="lp-btn lp-btn-primary" onClick={() => navigate('/auth')}>
-              <span>Start for free</span>
+              <span>{t('landing.startForFree')}</span>
               <ArrowRight size={16} />
             </button>
             <button className="lp-btn lp-btn-ghost" onClick={() => scrollTo(featuresRef.current)}>
-              See features
+              {t('landing.seeFeatures')}
               <ArrowDown size={14} />
             </button>
           </div>
@@ -225,10 +225,10 @@ export default function LandingPage() {
       {/* ── Feature highlights ── */}
       <section className="lp-features" ref={featuresRef}>
         <div className="lp-features-inner">
-          <span className="lp-section-label l-reveal">Features</span>
+          <span className="lp-section-label l-reveal">{t('landing.featuresTitle')}</span>
           <h2 className="lp-section-title l-reveal">
-            Everything CuTasks offers.<br />
-            Nothing you don&rsquo;t need.
+            {t('landing.featuresSubtitle1')}<br />
+            {t('landing.featuresSubtitle2')}
           </h2>
           <div className="lp-features-grid">
             {[
@@ -527,8 +527,8 @@ export default function LandingPage() {
       {/* ── Why CuTasks ── */}
       <section className="lp-why">
         <div className="lp-why-inner">
-          <span className="lp-section-label l-reveal">Why CuTasks</span>
-          <h2 className="lp-section-title l-reveal">Why teams choose CuTasks</h2>
+          <span className="lp-section-label l-reveal">{t('landing.whyTitle')}</span>
+          <h2 className="lp-section-title l-reveal">{t('landing.whySubtitle')}</h2>
           <div className="lp-why-grid">
             {[
               { icon: <WindowFrame size={22} />, title: 'Clean by default', desc: 'No clutter, no bloat. A minimal interface that stays out of your way.' },
@@ -566,12 +566,12 @@ export default function LandingPage() {
       {/* ── CTA ── */}
       <section className="lp-cta" ref={ctaRef}>
         <div className="lp-cta-inner l-reveal">
-          <h2 className="lp-cta-title">Start managing your time<br />with CuTasks</h2>
+          <h2 className="lp-cta-title">{t('landing.ctaTitle')}</h2>
           <p className="lp-cta-desc">
-            Free forever. No credit card. No ads. Just a tool that works.
+            {t('landing.ctaDesc')}
           </p>
           <button className="lp-btn lp-btn-primary lp-btn-lg" onClick={() => navigate('/auth')}>
-            <span>Create your account</span>
+            <span>{t('landing.ctaButton')}</span>
             <ArrowRight size={18} />
           </button>
         </div>
@@ -583,7 +583,7 @@ export default function LandingPage() {
           <div className="lp-footer-brand">
             <img src="/logo.svg" alt="CuTasks" className="lp-footer-logo" />
           </div>
-          <p className="lp-footer-copy">&copy; {new Date().getFullYear()} CuTasks. Built with care.</p>
+          <p className="lp-footer-copy">&copy; {new Date().getFullYear()} {t('landing.footer')}</p>
         </div>
       </footer>
     </div>

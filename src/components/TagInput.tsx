@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { CloseCircle } from '@solar-icons/react';
+import { useTranslation } from 'react-i18next';
 import { getTagColor } from '../utils';
 
 interface TagInputProps {
@@ -10,6 +11,7 @@ interface TagInputProps {
 }
 
 export default function TagInput({ tags, allTags, onChange, label }: TagInputProps) {
+  const { t } = useTranslation();
   const [input, setInput] = useState('');
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
@@ -103,7 +105,7 @@ export default function TagInput({ tags, allTags, onChange, label }: TagInputPro
         <input
           type="text"
           className="tag-input-field"
-          placeholder={tags.length ? 'Add tag...' : 'Type to add tags...'}
+          placeholder={tags.length ? t('components.tagInput.addTag') : t('components.tagInput.typeTag')}
           value={input}
           onChange={(e) => { setInput(e.target.value); handleOpen(); }}
           onFocus={handleOpen}

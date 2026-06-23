@@ -1,4 +1,5 @@
 import { Pen, TrashBinMinimalistic, CalendarMinimalistic, ArrowDown } from '@solar-icons/react';
+import { useTranslation } from 'react-i18next';
 import type { Task } from '../types';
 import { formatDeadline, getDeadlineStatus, getTagColor, highlightMatch } from '../utils';
 
@@ -21,6 +22,7 @@ export default function TaskCard({
   onToggle, onView, onEdit, onDelete,
   onDragOver, onDragLeave, onDrop,
 }: TaskCardProps) {
+  const { t } = useTranslation();
   const dlStatus = getDeadlineStatus(task.deadline, task.completed);
   const titleParts = highlightMatch(task.title, searchQuery);
 
@@ -51,7 +53,7 @@ export default function TaskCard({
       <button
         className={`task-check ${task.completed ? 'checked' : ''}`}
         onClick={() => onToggle(task.id)}
-        title={task.completed ? 'Undo' : 'Complete'}
+        title={task.completed ? t('components.taskCard.undo') : t('components.taskCard.complete')}
       >
         <span className="particles">
           <i /><i /><i /><i /><i /><i />
@@ -96,10 +98,10 @@ export default function TaskCard({
         </div>
       </div>
       <div className="task-actions">
-        <button className="btn-icon" onClick={() => onEdit(task)} title="Edit">
+        <button className="btn-icon" onClick={() => onEdit(task)} title={t('components.taskCard.edit')}>
           <Pen size={20} />
         </button>
-        <button className="btn-icon btn-icon-danger" onClick={() => onDelete(task.id)} title="Delete">
+        <button className="btn-icon btn-icon-danger" onClick={() => onDelete(task.id)} title={t('components.taskCard.delete')}>
           <TrashBinMinimalistic size={20} />
         </button>
       </div>
@@ -121,6 +123,7 @@ function GripDots() {
 }
 
 export function DragHandle({ taskId, onMouseDown, onTouchDragStart, child = false }: { taskId: string; onMouseDown: (id: string, e: React.MouseEvent) => void; onTouchDragStart?: (id: string, e: React.TouchEvent) => void; child?: boolean }) {
+  const { t } = useTranslation();
   function handleMouseDown(e: React.MouseEvent) {
     e.stopPropagation();
     onMouseDown(taskId, e);
@@ -137,7 +140,7 @@ export function DragHandle({ taskId, onMouseDown, onTouchDragStart, child = fals
       className={`task-drag-handle ${child ? 'task-drag-handle-child' : ''}`}
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
-      title="Drag to reparent"
+      title={t('components.taskCard.dragReparent')}
     >
       <GripDots />
     </div>

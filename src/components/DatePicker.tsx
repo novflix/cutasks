@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { ArrowLeft, ArrowRight } from '@solar-icons/react';
+import { useTranslation } from 'react-i18next';
 
 interface DatePickerProps {
   value: string;
@@ -44,6 +45,7 @@ function parseDate(value: string) {
 }
 
 export default function DatePicker({ value, onChange, min, label, id }: DatePickerProps) {
+  const { t } = useTranslation();
   const today = new Date();
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
@@ -146,7 +148,7 @@ export default function DatePicker({ value, onChange, min, label, id }: DatePick
         onClick={toggleOpen}
       >
         <span className={value ? 'dp-trigger-value' : 'dp-trigger-placeholder'}>
-          {value ? formatDateDisplay(value) : 'Select date'}
+          {value ? formatDateDisplay(value) : t('components.datePicker.selectDate')}
         </span>
         {value ? (
           <span className="dp-trigger-clear" onClick={clearDate}>&times;</span>
@@ -200,7 +202,7 @@ export default function DatePicker({ value, onChange, min, label, id }: DatePick
           </div>
           {value && (
             <div className="dp-footer">
-              <button type="button" className="dp-clear" onClick={clearDate}>Clear</button>
+              <button type="button" className="dp-clear" onClick={clearDate}>{t('components.datePicker.clear')}</button>
             </div>
           )}
         </div>

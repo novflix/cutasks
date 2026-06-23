@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, AltArrowLeft, AltArrowRight, CalendarMinimalistic } from '@solar-icons/react';
 import type { Task, ProjectTask } from '../types';
 import { formatDeadline, getDeadlineStatus, getTagColor, priorityOrder } from '../utils';
@@ -68,6 +69,7 @@ interface CalendarPageProps {
 
 export default function CalendarPage({ tasks, projectTasks, onViewTask }: CalendarPageProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const today = useMemo(() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
@@ -157,7 +159,7 @@ export default function CalendarPage({ tasks, projectTasks, onViewTask }: Calend
         <button className="btn-icon" onClick={() => navigate('/app/home')}>
           <ArrowLeft size={22} />
         </button>
-        <h1 className="page-hero-title">Calendar</h1>
+        <h1 className="page-hero-title">{t('calendar.title')}</h1>
       </div>
 
       <div className="cal-controls">
@@ -166,13 +168,13 @@ export default function CalendarPage({ tasks, projectTasks, onViewTask }: Calend
             className={`cal-mode-btn${mode === 'week' ? ' active' : ''}`}
             onClick={() => setMode('week')}
           >
-            Week
+            {t('calendar.week')}
           </button>
           <button
             className={`cal-mode-btn${mode === 'month' ? ' active' : ''}`}
             onClick={() => setMode('month')}
           >
-            Month
+            {t('calendar.month')}
           </button>
         </div>
 
@@ -180,7 +182,7 @@ export default function CalendarPage({ tasks, projectTasks, onViewTask }: Calend
           <button
             className="cal-nav-arrow"
             onClick={mode === 'week' ? handlePrevWeek : handlePrevMonth}
-            aria-label={mode === 'week' ? 'Previous week' : 'Previous month'}
+            aria-label={mode === 'week' ? t('calendar.prevWeek') : t('calendar.prevMonth')}
           >
             <AltArrowLeft size={18} />
           </button>
@@ -190,13 +192,13 @@ export default function CalendarPage({ tasks, projectTasks, onViewTask }: Calend
               : <span className="cal-nav-text">{MONTH_NAMES[monthDate.getMonth()]} {monthDate.getFullYear()}</span>
             }
             {showTodayBadge && (
-              <button className="cal-today-badge" onClick={handleToday}>Today</button>
+              <button className="cal-today-badge" onClick={handleToday}>{t('common.today')}</button>
             )}
           </div>
           <button
             className="cal-nav-arrow"
             onClick={mode === 'week' ? handleNextWeek : handleNextMonth}
-            aria-label={mode === 'week' ? 'Next week' : 'Next month'}
+            aria-label={mode === 'week' ? t('calendar.nextWeek') : t('calendar.nextMonth')}
           >
             <AltArrowRight size={18} />
           </button>
@@ -280,8 +282,8 @@ export default function CalendarPage({ tasks, projectTasks, onViewTask }: Calend
             <div className="cal-empty-icon">
               <CalendarMinimalistic size={28} />
             </div>
-            <p className="cal-empty-title">No tasks for this day</p>
-            <p className="cal-empty-sub">Tasks with a deadline on this date will appear here</p>
+            <p className="cal-empty-title">{t('calendar.noTasks')}</p>
+            <p className="cal-empty-sub">{t('calendar.noTasksSub')}</p>
           </div>
         ) : (
           selectedTasks.map((task, i) => {

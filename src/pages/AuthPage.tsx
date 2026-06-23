@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { login, register } from '../services/auth';
 import { saveAllData } from '../services/firestore';
 import { loadTasks, loadProjects, loadSections, loadProjectTasks } from '../storage';
@@ -11,6 +12,7 @@ type Mode = 'login' | 'register';
 export default function AuthPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [mode, setMode] = useState<Mode>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -76,14 +78,14 @@ export default function AuthPage() {
       }
     } catch (err: unknown) {
       const code = (err as { code?: string }).code;
-      if (code === 'auth/email-already-in-use') setError('An account with this email already exists');
-      else if (code === 'auth/invalid-email') setError('Invalid email address');
-      else if (code === 'auth/weak-password') setError('Password must be at least 6 characters');
-      else if (code === 'auth/invalid-credential') setError('Invalid email or password');
-      else if (code === 'auth/user-not-found') setError('No account found with this email');
-      else if (code === 'auth/wrong-password') setError('Incorrect password');
-      else if (code === 'auth/too-many-requests') setError('Too many attempts. Try again later');
-      else setError('Something went wrong. Please try again');
+      if (code === 'auth/email-already-in-use') setError(t('auth.emailInUse'));
+      else if (code === 'auth/invalid-email') setError(t('auth.invalidEmail'));
+      else if (code === 'auth/weak-password') setError(t('auth.weakPassword'));
+      else if (code === 'auth/invalid-credential') setError(t('auth.invalidCredential'));
+      else if (code === 'auth/user-not-found') setError(t('auth.userNotFound'));
+      else if (code === 'auth/wrong-password') setError(t('auth.wrongPassword'));
+      else if (code === 'auth/too-many-requests') setError(t('auth.tooManyRequests'));
+      else setError(t('auth.genericError'));
     } finally {
       setLoading(false);
     }
@@ -104,7 +106,7 @@ export default function AuthPage() {
         <div className={`auth-card${closing ? ' closing' : ''}`}>
           <div className="auth-loading">
             <div className="auth-spinner" />
-            <p className="auth-loading-text">Syncing your data...</p>
+            <p className="auth-loading-text">{t('auth.syncing')}</p>
           </div>
         </div>
       </div>
@@ -121,18 +123,18 @@ export default function AuthPage() {
           </svg>
         </div>
 
-        <h1 className="auth-title">{mode === 'login' ? 'Welcome back' : 'Create account'}</h1>
-        <p className="auth-subtitle">{mode === 'login' ? 'Sign in to continue to Cutasks' : 'Start organizing your tasks'}</p>
+        <h1 className="auth-title">{mode === 'login' ? t('auth.welcomeBack') : t('auth.createAccount')}</h1>
+        <p className="auth-subtitle">{mode === 'login' ? t('auth.signInSubtitle') : t('auth.signUpSubtitle')}</p>
 
         <form ref={formRef} onSubmit={handleSubmit} className="auth-form">
           {mode === 'register' && (
             <div className="auth-field">
-              <label className="auth-label" htmlFor="auth-name">Name</label>
+              <label className="auth-label" htmlFor="auth-name">{t('auth.name')}</label>
               <input
                 id="auth-name"
                 type="text"
                 className="auth-input"
-                placeholder="Your name"
+                placeholder={t('auth.yourName')}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -142,13 +144,13 @@ export default function AuthPage() {
           )}
 
           <div className="auth-field">
-            <label className="auth-label" htmlFor="auth-email">Email</label>
+            <label className="auth-label" htmlFor="auth-email">{t('auth.email')}</label>
             <input
               ref={emailRef}
               id="auth-email"
               type="email"
               className="auth-input"
-              placeholder="you@example.com"
+              placeholder={t('auth.emailPlaceholder')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -157,7 +159,7 @@ export default function AuthPage() {
           </div>
 
           <div className="auth-field">
-            <label className="auth-label" htmlFor="auth-password">Password</label>
+            <label className="auth-label" htmlFor="auth-password">{t('auth.password')}</label>
             <div className="auth-password-wrap">
               <input
                 id="auth-password"
@@ -194,14 +196,14 @@ export default function AuthPage() {
           {error && <p className="auth-error">{error}</p>}
 
           <button type="submit" className="auth-submit" disabled={loading}>
-            {loading ? <div className="auth-btn-spinner" /> : mode === 'login' ? 'Sign In' : 'Create Account'}
+            {loading ? <div className="auth-btn-spinner" /> : mode === 'login' ? t('auth.signIn') : t('auth.signUp')}
           </button>
         </form>
 
         <p className="auth-switch">
-          {mode === 'login' ? "Don't have an account?" : 'Already have an account?'}{' '}
+          {mode === 'login' ? t('auth.noAccount') : t('auth.hasAccount')}{' '}
           <button type="button" className="auth-switch-btn" onClick={switchMode}>
-            {mode === 'login' ? 'Sign Up' : 'Sign In'}
+            {mode === 'login' ? t('auth.signUp') : t('auth.signIn')}
           </button>
         </p>
       </div>

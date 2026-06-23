@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react';
 import { CloseCircle } from '@solar-icons/react';
+import { useTranslation } from 'react-i18next';
 import type { Task, Priority } from '../types';
 import DatePicker from './DatePicker';
 import TagInput from './TagInput';
@@ -31,6 +32,7 @@ export default function TaskFormModal({
   onTitleChange, onDescChange, onPriorityChange, onDeadlineChange, onTagsChange, onParentChange,
   onSubmit, onClose, isClosing,
 }: TaskFormModalProps) {
+  const { t } = useTranslation();
   const titleRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -44,7 +46,7 @@ export default function TaskFormModal({
     <div className={overlayClass} onClick={onClose}>
       <div className={modalClass} onClick={(e) => e.stopPropagation()}>
         <div className="fm-header">
-          <h2 className="fm-title">{editingTask ? 'Edit Task' : 'New Task'}</h2>
+          <h2 className="fm-title">{editingTask ? t('modals.taskForm.edit') : t('modals.taskForm.create')}</h2>
           <button className="btn-icon fm-close" onClick={onClose}>
             <CloseCircle size={20} />
           </button>
@@ -52,11 +54,11 @@ export default function TaskFormModal({
 
         <form id="fm-hidden" onSubmit={onSubmit} className="fm-body">
           <div className="fm-field">
-            <label className="fm-label">Title</label>
+            <label className="fm-label">{t('modals.taskForm.title')}</label>
             <input
               ref={titleRef}
               type="text"
-              placeholder="What needs to be done?"
+              placeholder={t('tasks.titlePlaceholder')}
               value={title}
               onChange={(e) => onTitleChange(e.target.value)}
               className="fm-input"
@@ -66,9 +68,9 @@ export default function TaskFormModal({
           </div>
 
           <div className="fm-field">
-            <label className="fm-label">Description</label>
+            <label className="fm-label">{t('modals.taskForm.description')}</label>
             <textarea
-              placeholder="Add details..."
+              placeholder={t('tasks.descPlaceholder')}
               value={description}
               onChange={(e) => onDescChange(e.target.value)}
               className="fm-textarea"
@@ -79,7 +81,7 @@ export default function TaskFormModal({
 
           <div className="fm-row">
             <div className="fm-col">
-              <label className="fm-label">Priority</label>
+              <label className="fm-label">{t('modals.taskForm.priority')}</label>
               <div className="priority-selector">
                 {(['low', 'medium', 'high'] as Priority[]).map((p) => (
                   <button
@@ -88,7 +90,7 @@ export default function TaskFormModal({
                     className={`priority-option priority-option-${p} ${priority === p ? 'selected' : ''}`}
                     onClick={() => onPriorityChange(p)}
                   >
-                    {p}
+                    {t(`common.${p}`)}
                   </button>
                 ))}
               </div>
@@ -125,10 +127,10 @@ export default function TaskFormModal({
 
         <div className="fm-footer">
           <button type="button" className="btn btn-secondary" onClick={onClose}>
-            Cancel
+            {t('common.cancel')}
           </button>
           <button type="submit" className="btn btn-primary" disabled={!title.trim()} form="fm-hidden">
-            {editingTask ? 'Save Changes' : 'Create Task'}
+            {editingTask ? t('common.save') : t('common.create')}
           </button>
         </div>
       </div>

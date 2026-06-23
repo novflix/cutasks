@@ -1,5 +1,6 @@
 import { useState, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
 import { NotesMinimalistic } from '@solar-icons/react';
+import { useTranslation } from 'react-i18next';
 import type { Task } from '../types';
 import type { FilterType } from '../types';
 import { canAddSubtask, getTaskDepth, MAX_SUBTASK_DEPTH } from '../utils';
@@ -18,6 +19,7 @@ interface TaskListProps {
 }
 
 export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle, onView, onEdit, onDelete, onSetSubtask }: TaskListProps) {
+  const { t } = useTranslation();
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [dragOverRoot, setDragOverRoot] = useState(false);
@@ -299,17 +301,17 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
         <NotesMinimalistic size={64} className="empty-icon" />
         <p className="empty-title">
           {searchQuery
-            ? 'Nothing found'
+            ? t('tasks.noResults')
             : filter === 'completed'
-            ? 'No completed tasks'
+            ? t('tasks.noCompleted')
             : filter === 'active'
-            ? 'All tasks are done!'
-            : 'No tasks yet'}
+            ? t('tasks.allDone')
+            : t('tasks.noTasks')}
         </p>
         <p className="empty-sub">
           {searchQuery
-            ? 'Try a different search'
-            : 'Click "New Task" to get started'}
+            ? t('tasks.noResultsSub')
+            : t('tasks.noTasksSub')}
         </p>
       </div>
     );
@@ -323,11 +325,11 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
           onMouseOver={() => { if (draggingId) setDragOverRoot(true); }}
           onMouseLeave={() => setDragOverRoot(false)}
         >
-          <span className="task-make-root-text">Drop here to make a top-level task</span>
+          <span className="task-make-root-text">{t('tasks.makeRoot')}</span>
         </div>
       )}
       <div ref={maxDepthRef} className="max-depth-notice" style={{ display: 'none' }}>
-        Maximum nesting depth reached (3 levels)
+        {t('tasks.maxDepth')}
       </div>
       {topLevelTasks.map((task) => renderTask(task))}
     </div>
