@@ -2,6 +2,12 @@ import type { Priority } from './types';
 
 export const priorityOrder: Record<Priority, number> = { high: 0, medium: 1, low: 2 };
 
+const VALID_PRIORITIES: Priority[] = ['low', 'medium', 'high'];
+
+export function sanitizePriority(p: string): Priority {
+  return VALID_PRIORITIES.includes(p as Priority) ? (p as Priority) : 'medium';
+}
+
 export function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 }
