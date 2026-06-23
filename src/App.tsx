@@ -915,6 +915,15 @@ export default function App() {
     return <AuthPage />;
   }
 
+  if (location.pathname === '/terms' || location.pathname === '/privacy') {
+    return (
+      <Routes>
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+      </Routes>
+    );
+  }
+
   const isLanding = location.pathname === '/';
 
   if (isLanding) {
