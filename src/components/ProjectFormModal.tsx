@@ -58,7 +58,7 @@ export default function ProjectFormModal({
               value={name}
               onChange={(e) => onNameChange(e.target.value)}
               className="fm-input"
-              maxLength={50}
+              maxLength={200}
               required
             />
           </div>
@@ -70,7 +70,7 @@ export default function ProjectFormModal({
               value={description}
               onChange={(e) => onDescChange(e.target.value)}
               className="fm-textarea"
-              maxLength={200}
+              maxLength={2000}
               rows={2}
             />
           </div>

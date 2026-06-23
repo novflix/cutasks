@@ -62,7 +62,7 @@ export default function TaskFormModal({
               value={title}
               onChange={(e) => onTitleChange(e.target.value)}
               className="fm-input"
-              maxLength={100}
+              maxLength={200}
               required
             />
           </div>
@@ -74,7 +74,7 @@ export default function TaskFormModal({
               value={description}
               onChange={(e) => onDescChange(e.target.value)}
               className="fm-textarea"
-              maxLength={500}
+              maxLength={2000}
               rows={3}
             />
           </div>

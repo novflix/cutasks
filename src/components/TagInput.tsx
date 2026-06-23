@@ -110,6 +110,7 @@ export default function TagInput({ tags, allTags, onChange, label }: TagInputPro
           onChange={(e) => { setInput(e.target.value); handleOpen(); }}
           onFocus={handleOpen}
           onKeyDown={handleKeyDown}
+          maxLength={50}
         />
       </div>
       {(open || closing) && suggestions.length > 0 && (
