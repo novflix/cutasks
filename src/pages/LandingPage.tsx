@@ -147,7 +147,7 @@ export default function LandingPage() {
             <div className="lp-mockup-main">
               {/* Page hero */}
               <div className="lp-mockup-page-hero">
-                <h1>Tasks</h1>
+                <h1>{t('tasks.title')}</h1>
               </div>
 
               {/* Stats header */}
@@ -177,8 +177,8 @@ export default function LandingPage() {
                 </div>
                 <div className="lp-mockup-filters">
                   <span className="lp-mockup-filter active">All</span>
-                  <span className="lp-mockup-filter">Active</span>
-                  <span className="lp-mockup-filter">Done</span>
+                   <span className="lp-mockup-filter">{t('common.active')}</span>
+                   <span className="lp-mockup-filter">{t('common.done')}</span>
                 </div>
               </div>
 
@@ -254,7 +254,7 @@ export default function LandingPage() {
         {/* ── Tasks ── */}
         <div className="lp-deep-section">
           <div className="lp-deep-content l-reveal">
-            <span className="lp-section-label">Tasks</span>
+            <span className="lp-section-label">{t('landing.tasksSection')}</span>
             <h2 className="lp-deep-title">Tasks that work<br />the way you do</h2>
             <ul className="lp-deep-points">
               {['Subtasks up to 3 levels deep', 'Smart priority sorting', 'Deadline tracking with overdue alerts', 'Tag system with color coding', 'Quick search across all tasks', 'Undo any action with Ctrl+Z'].map((p, j) => (
@@ -275,8 +275,8 @@ export default function LandingPage() {
                 </div>
                 <div className="lp-demo-filter-row">
                   <span className="lp-demo-pill active">All</span>
-                  <span className="lp-demo-pill">Active</span>
-                  <span className="lp-demo-pill">Done</span>
+                   <span className="lp-demo-pill">{t('common.active')}</span>
+                   <span className="lp-demo-pill">{t('common.done')}</span>
                 </div>
               </div>
               {/* task items */}
@@ -324,7 +324,7 @@ export default function LandingPage() {
         {/* ── Projects ── */}
         <div className="lp-deep-section">
           <div className="lp-deep-content l-reveal">
-            <span className="lp-section-label">Projects</span>
+            <span className="lp-section-label">{t('landing.projectsSection')}</span>
             <h2 className="lp-deep-title">Organize work<br />into projects</h2>
             <ul className="lp-deep-points">
               {['Sections for grouping tasks', 'Active, paused, and completed status', 'Per-project task filtering', 'Color-coded with custom icons', 'Dedicated project views'].map((p, j) => (
@@ -377,7 +377,7 @@ export default function LandingPage() {
         {/* ── Habits ── */}
         <div className="lp-deep-section">
           <div className="lp-deep-content l-reveal">
-            <span className="lp-section-label">Habits</span>
+            <span className="lp-section-label">{t('landing.habitsSection')}</span>
             <h2 className="lp-deep-title">Build habits<br />that stick</h2>
             <ul className="lp-deep-points">
               {['Daily streak tracking', 'Flexible weekday scheduling', 'Completion history calendar', 'Drag-and-drop reordering', 'Custom icons and colors'].map((p, j) => (
@@ -469,7 +469,7 @@ export default function LandingPage() {
         {/* ── Pomodoro ── */}
         <div className="lp-deep-section">
           <div className="lp-deep-content l-reveal">
-            <span className="lp-section-label">Pomodoro</span>
+            <span className="lp-section-label">{t('landing.pomodoroSection')}</span>
             <h2 className="lp-deep-title">Deep focus,<br />timed perfectly</h2>
             <ul className="lp-deep-points">
               {['Configurable work/break durations', 'Long break every 4 sessions', 'Mini timer on every page', 'Session counter and celebration', 'State preserved across refreshes'].map((p, j) => (
@@ -484,7 +484,7 @@ export default function LandingPage() {
             <div className="lp-demo-pomo-container">
               {/* mode tabs */}
               <div className="lp-demo-pomo-tabs">
-                <span className="lp-demo-pomo-tab active">Focus</span>
+                <span className="lp-demo-pomo-tab active">{t('pomodoro.focus')}</span>
                 <span className="lp-demo-pomo-tab">Short Break</span>
                 <span className="lp-demo-pomo-tab">Long Break</span>
               </div>
@@ -496,7 +496,7 @@ export default function LandingPage() {
                 </svg>
                 <div className="lp-demo-pomo-display">
                   <span className="lp-demo-pomo-time">18:42</span>
-                  <span className="lp-demo-pomo-label">Focus</span>
+                  <span className="lp-demo-pomo-label">{t('pomodoro.focus')}</span>
                 </div>
               </div>
               {/* session dots */}

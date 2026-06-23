@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import './App.css';
 import type { Task, Priority, Page, FilterType, Project, ProjectStatus, Section, ProjectTask, Habit } from './types';
 import type { PomoMode, PomoConfig } from './pages/PomodoroPage';
@@ -45,6 +46,7 @@ export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const [tasks, setTasks] = useState<Task[]>(loadTasks);
   const [showForm, setShowForm] = useState(false);
@@ -976,7 +978,7 @@ export default function App() {
             <ProtectedRoute>
             <>
               <div className="page-hero">
-                <h1 className="page-hero-title">Projects</h1>
+                <h1 className="page-hero-title">{t('projects.title')}</h1>
               </div>
               <Header stats={projectStats} onCreate={openCreateProject} createLabel="New Project" />
               <div className="toolbar">
@@ -984,7 +986,7 @@ export default function App() {
                   <MinimalisticMagnifier size={18} className="search-icon" />
                   <input
                     type="text"
-                    placeholder="Search projects..."
+                    placeholder={t('projects.searchProjects')}
                     value={projectSearch}
                     onChange={(e) => setProjectSearch(e.target.value)}
                     className="search-input"
@@ -1042,7 +1044,7 @@ export default function App() {
                       <MinimalisticMagnifier size={18} className="search-icon" />
                       <input
                         type="text"
-                        placeholder="Search tasks..."
+                        placeholder={t('tasks.searchTasks')}
                         value={projectTaskSearch}
                         onChange={(e) => setProjectTaskSearch(e.target.value)}
                         className="search-input"
