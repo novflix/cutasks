@@ -934,3 +934,28 @@
     transition-duration: 0.01s !important;
   }
 }
+
+/* ── Legal links ── */
+.settings-legal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 20px 0;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.settings-legal a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.settings-legal a:hover {
+  color: var(--primary);
+}
+
+.settings-legal-dot {
+  color: var(--text-dim);
+}

@@ -282,3 +282,27 @@
     font-size: 1.4rem;
   }
 }
+
+.auth-legal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+}
+
+.auth-legal a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.auth-legal a:hover {
+  color: var(--primary);
+}
+
+.auth-legal-dot {
+  color: var(--text-dim);
+}

@@ -1436,6 +1436,23 @@
   font-size: 0.75rem;
   color: #555;
 }
+.lp-footer-legal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+}
+.lp-footer-legal a {
+  color: #555;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.lp-footer-legal a:hover {
+  color: var(--primary);
+}
+.lp-footer-legal-dot {
+  color: #444;
+}
 
 /* ═══════════════════════════════════════════════════
    Keyframe animations

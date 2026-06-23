@@ -1,0 +1,84 @@
+/* ── Document Pages (Terms / Privacy) ── */
+.doc-page {
+  min-height: 100vh;
+  background: var(--bg);
+  padding: 0 20px 60px;
+}
+
+.doc-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 20px 0 12px;
+  background: linear-gradient(to bottom, var(--bg) 70%, transparent);
+}
+
+.doc-content {
+  max-width: 680px;
+  margin: 0 auto;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  line-height: 1.75;
+}
+
+.doc-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+
+.doc-updated {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  margin-bottom: 28px;
+}
+
+.doc-content h2 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 28px 0 10px;
+  letter-spacing: -0.01em;
+}
+
+.doc-content h3 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  margin: 18px 0 8px;
+}
+
+.doc-content p {
+  margin-bottom: 12px;
+}
+
+.doc-content ul {
+  padding-left: 20px;
+  margin-bottom: 14px;
+}
+
+.doc-content li {
+  margin-bottom: 6px;
+}
+
+.doc-closing {
+  margin-top: 32px;
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+@media (max-width: 480px) {
+  .doc-page {
+    padding: 0 16px 40px;
+  }
+
+  .doc-title {
+    font-size: 1.35rem;
+  }
+
+  .doc-content {
+    font-size: 0.84rem;
+  }
+}
