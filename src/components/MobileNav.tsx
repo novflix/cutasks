@@ -1,5 +1,6 @@
 import { useRef, useCallback, useEffect, type ReactNode } from 'react';
 import { ClipboardCheck, Folder, SettingsMinimalistic, AddCircle, HomeSmile } from '@solar-icons/react';
+import { useTranslation } from 'react-i18next';
 import type { Page } from '../types';
 
 interface MobileNavProps {
@@ -10,6 +11,7 @@ interface MobileNavProps {
 }
 
 export default function MobileNav({ activePage, onNavigate, onCreate, miniTimer }: MobileNavProps) {
+  const { t } = useTranslation();
   const navRef = useRef<HTMLDivElement>(null);
   const indicatorRef = useRef<HTMLDivElement>(null);
 
@@ -46,33 +48,33 @@ export default function MobileNav({ activePage, onNavigate, onCreate, miniTimer 
             <button
               className={`mobile-nav-btn${activePage === 'home' ? ' active' : ''}`}
               onClick={() => onNavigate('home')}
-              aria-label="Home"
+              aria-label={t('nav.home')}
             >
               <HomeSmile size={24} strokeWidth={1.8} />
             </button>
             <button
               className={`mobile-nav-btn${activePage === 'tasks' ? ' active' : ''}`}
               onClick={() => onNavigate('tasks')}
-              aria-label="Tasks"
+              aria-label={t('nav.tasks')}
             >
               <ClipboardCheck size={24} strokeWidth={1.8} />
             </button>
             <button
               className={`mobile-nav-btn${activePage === 'projects' || activePage === 'project-detail' ? ' active' : ''}`}
               onClick={() => onNavigate('projects')}
-              aria-label="Projects"
+              aria-label={t('nav.projects')}
             >
               <Folder size={24} strokeWidth={1.8} />
             </button>
             <button
               className={`mobile-nav-btn${activePage === 'settings' ? ' active' : ''}`}
               onClick={() => onNavigate('settings')}
-              aria-label="Settings"
+              aria-label={t('nav.settings')}
             >
               <SettingsMinimalistic size={24} strokeWidth={1.8} />
             </button>
           </nav>
-          <button className="mobile-fab" onClick={onCreate} aria-label={activePage === 'projects' || activePage === 'project-detail' ? 'Add project' : 'Add task'}>
+          <button className="mobile-fab" onClick={onCreate} aria-label={activePage === 'projects' || activePage === 'project-detail' ? t('projects.newProject') : t('tasks.newTask')}>
             <AddCircle size={30} strokeWidth={1.8} />
           </button>
         </div>

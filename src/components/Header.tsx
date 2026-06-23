@@ -1,4 +1,5 @@
 import { AddSquare } from '@solar-icons/react';
+import { useTranslation } from 'react-i18next';
 
 interface StatItem {
   label: string;
@@ -12,7 +13,8 @@ interface HeaderProps {
   createLabel?: string;
 }
 
-export default function Header({ stats, onCreate, createLabel = 'New Task' }: HeaderProps) {
+export default function Header({ stats, onCreate, createLabel }: HeaderProps) {
+  const { t } = useTranslation();
   return (
     <header className="header">
       <div className="header-content">
@@ -25,7 +27,7 @@ export default function Header({ stats, onCreate, createLabel = 'New Task' }: He
           ))}
           <button className="btn-add" onClick={onCreate}>
             <AddSquare size={18} />
-            <span>{createLabel}</span>
+            <span>{createLabel || t('components.header.newTask')}</span>
           </button>
         </div>
       </div>

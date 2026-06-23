@@ -25,7 +25,24 @@
     "confirm": "Confirmer",
     "loading": "Chargement...",
     "noResults": "Aucun résultat trouvé",
-    "version": "Version"
+    "version": "Version",
+    "more": "de plus",
+    "close": "Fermer",
+    "name": "Nom",
+    "description": "Description",
+    "icon": "Icône",
+    "color": "Couleur",
+    "status": "Statut",
+    "preview": "Aperçu",
+    "priority": "Priorité",
+    "deadline": "Échéance",
+    "tags": "Étiquettes",
+    "parent": "Parent",
+    "created": "Créé",
+    "updated": "Modifié",
+    "low": "faible",
+    "medium": "moyen",
+    "high": "élevée"
   },
   "nav": {
     "home": "Accueil",
@@ -79,37 +96,71 @@
   "tasks": {
     "title": "Tâches",
     "newTask": "Nouvelle tâche",
+    "editTask": "Modifier la tâche",
     "searchTasks": "Rechercher des tâches...",
     "noTasks": "Pas encore de tâches",
-    "noTasksSub": "Cliquez sur \"Nouvelle tâche\" pour commencer",
+    "noTasksSub": "Cliquez sur « Nouvelle tâche » pour commencer",
     "noResults": "Rien trouvé",
     "noResultsSub": "Essayez une autre recherche",
+    "noCompleted": "Aucune tâche terminée",
+    "allDone": "Toutes les tâches sont terminées !",
     "subtasks": "{{count}} sous-tâche",
-    "subtasks_plural": "{{count}} sous-tâches"
+    "subtasks_plural": "{{count}} sous-tâches",
+    "makeRoot": "Déposez ici pour en faire une tâche principale",
+    "maxDepth": "Profondeur maximale atteinte (3 niveaux)",
+    "titlePlaceholder": "Que devez-vous faire ?",
+    "descPlaceholder": "Ajoutez des détails..."
   },
   "projects": {
     "title": "Projets",
     "newProject": "Nouveau projet",
+    "editProject": "Modifier le projet",
     "searchProjects": "Rechercher des projets...",
     "noProjects": "Pas encore de projets",
-    "noProjectsSub": "Cliquez sur \"Nouveau projet\" pour commencer",
+    "noProjectsSub": "Cliquez sur « Nouveau projet » pour commencer",
     "backToProjects": "Retour aux projets",
-    "projectNotFound": "Projet introuvable"
+    "projectNotFound": "Projet introuvable",
+    "projectName": "Nom du projet",
+    "optionalDesc": "Description optionnelle",
+    "addSection": "Ajouter une section",
+    "noTasks": "Pas encore de tâches",
+    "noTasksSub": "Créez une section ou ajoutez des tâches directement",
+    "addTask": "Ajouter une tâche",
+    "editName": "Modifier le nom",
+    "deleteSection": "Supprimer la section",
+    "dropHere": "Déposez ici pour sortir de la section"
   },
   "habits": {
     "title": "Habitudes",
     "newHabit": "Nouvelle habitude",
     "noHabits": "Aucune habitude pour ce jour",
-    "noHabitsSub": "Appuyez sur \"Nouveau\" pour créer votre première habitude",
+    "noHabitsSub": "Appuyez sur « Nouveau » pour créer votre première habitude",
     "noHabitsScheduled": "Aucune habitude prévue",
-    "thisWeek": "Cette semaine"
+    "thisWeek": "Cette semaine",
+    "habitName": "Quelle habitude voulez-vous développer ?",
+    "repeatOn": "Répéter le",
+    "createHabit": "Créer l'habitude",
+    "dragToReorder": "Glissez pour réorganiser",
+    "everyDay": "Tous les jours",
+    "weekdays": "Jours ouvrés",
+    "weekends": "Week-ends",
+    "never": "Jamais",
+    "streak": "Série",
+    "days": "jours",
+    "totalCompletions": "Total des complétions",
+    "repeat": "Répétition",
+    "saveChanges": "Enregistrer"
   },
   "calendar": {
     "title": "Calendrier",
     "week": "Semaine",
     "month": "Mois",
     "noTasks": "Aucune tâche pour ce jour",
-    "noTasksSub": "Les tâches avec une échéance à cette date apparaîtront ici"
+    "noTasksSub": "Les tâches avec une échéance à cette date apparaîtront ici",
+    "prevWeek": "Semaine précédente",
+    "prevMonth": "Mois précédent",
+    "nextWeek": "Semaine suivante",
+    "nextMonth": "Mois suivant"
   },
   "pomodoro": {
     "title": "Pomodoro",
@@ -117,7 +168,19 @@
     "shortBreak": "Pause courte",
     "longBreak": "Pause longue",
     "sessions": "{{count}} session aujourd'hui",
-    "sessions_plural": "{{count}} sessions aujourd'hui"
+    "sessions_plural": "{{count}} sessions aujourd'hui",
+    "reset": "Réinitialiser",
+    "start": "Démarrer",
+    "pause": "Pause",
+    "skip": "Passer",
+    "quotes": [
+      "Restez concentré, vous pouvez le faire !",
+      "Le travail profond commence maintenant.",
+      "Un pomodoro à la fois.",
+      "Votre futur vous-même vous remerciera.",
+      "Petites étapes, grands résultats.",
+      "Respirez. Concentrez-vous. Créez."
+    ]
   },
   "settings": {
     "title": "Paramètres",
@@ -132,16 +195,50 @@
     "light": "Clair",
     "midnight": "Minuit",
     "data": "Données",
-    "deleteMode": "Supprimer les tâches terminées",
+    "deleteMode": "Tâches terminées",
     "instant": "Immédiatement",
+    "instantDesc": "Supprimer après complétion",
     "after3days": "Après 3 jours",
+    "after3daysDesc": "Conserver 3 jours, puis supprimer",
     "after7days": "Après 7 jours",
+    "after7daysDesc": "Conserver une semaine, puis supprimer",
     "weekStart": "La semaine commence le",
     "monday": "Lundi",
+    "mondayDesc": "La semaine commence le lundi",
     "saturday": "Samedi",
+    "saturdayDesc": "La semaine commence le samedi",
     "language": "Langue",
     "info": "Info",
-    "landingPage": "Page d'accueil"
+    "landingPage": "Page d'accueil",
+    "focusDuration": "Durée de concentration",
+    "shortBreak": "Pause courte",
+    "longBreak": "Pause longue",
+    "changeName": "Changer le nom",
+    "signOut": "Se déconnecter",
+    "enterName": "Entrez votre nom",
+    "nameUpdated": "Nom mis à jour avec succès",
+    "nameEmpty": "Le nom ne peut pas être vide",
+    "nameFailed": "Échec de la mise à jour du nom",
+    "currentPassword": "Mot de passe actuel",
+    "newPassword": "Nouveau mot de passe",
+    "confirmNewPassword": "Confirmer le nouveau mot de passe",
+    "enterCurrentPassword": "Entrez le mot de passe actuel",
+    "enterNewPassword": "Entrez le nouveau mot de passe",
+    "confirmPasswordPlaceholder": "Confirmez le mot de passe",
+    "passwordChanged": "Mot de passe changé avec succès",
+    "fillAllFields": "Remplissez tous les champs",
+    "passwordMin6": "Le mot de doit contenir au moins 6 caractères",
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "passwordFailed": "Échec du changement de mot de passe",
+    "passwordIncorrect": "Le mot de passe actuel est incorrect",
+    "passwordWeak": "Le nouveau mot de passe est trop faible",
+    "deleteAccountTitle": "Supprimer le compte",
+    "deleteAccountDesc": "Cette action est irréversible. Toutes vos données y compris les tâches, projets, habitudes et paramètres seront définitivement supprimées.",
+    "deleteAccountConfirm": "Entrez votre mot de passe pour confirmer",
+    "deleteAccountPlaceholder": "Votre mot de passe",
+    "deleteAccountBtn": "Supprimer mon compte",
+    "deleteAccountFailed": "Échec de la suppression du compte",
+    "deleteAccountIncorrect": "Mot de passe incorrect"
   },
   "auth": {
     "welcomeBack": "Bon retour",
@@ -155,7 +252,17 @@
     "signUp": "S'inscrire",
     "noAccount": "Vous n'avez pas de compte ?",
     "hasAccount": "Vous avez déjà un compte ?",
-    "syncing": "Synchronisation de vos données..."
+    "syncing": "Synchronisation de vos données...",
+    "emailInUse": "Un compte avec cet e-mail existe déjà",
+    "invalidEmail": "Adresse e-mail invalide",
+    "weakPassword": "Le mot de passe doit contenir au moins 6 caractères",
+    "invalidCredential": "E-mail ou mot de passe invalide",
+    "userNotFound": "Aucun compte trouvé avec cet e-mail",
+    "wrongPassword": "Mot de passe incorrect",
+    "tooManyRequests": "Tentatives trop nombreuses. Réessayez plus tard",
+    "genericError": "Une erreur s'est produite. Veuillez réessayer",
+    "yourName": "Votre nom",
+    "emailPlaceholder": "vous@exemple.com"
   },
   "modals": {
     "taskForm": {
@@ -175,11 +282,84 @@
       "description": "Description",
       "icon": "Icône",
       "color": "Couleur",
-      "status": "Statut"
+      "status": "Statut",
+      "active": "Actif",
+      "paused": "En pause",
+      "completed": "Terminé"
+    },
+    "sectionForm": {
+      "create": "Nouvelle section",
+      "edit": "Renommer la section",
+      "name": "Nom de la section",
+      "placeholder": "ex. À faire, En cours, Terminé"
     },
     "taskDetail": {
       "subtasks": "Sous-tâches",
-      "noSubtasks": "Pas de sous-tâches"
+      "noSubtasks": "Pas de sous-tâches",
+      "completed": "Terminé",
+      "active": "Actif"
     }
+  },
+  "components": {
+    "toolbar": {
+      "search": "Rechercher des tâches...",
+      "all": "Tout",
+      "active": "Actif",
+      "done": "Terminé"
+    },
+    "taskCard": {
+      "undo": "Annuler",
+      "complete": "Terminer",
+      "edit": "Modifier",
+      "delete": "Supprimer",
+      "dragReparent": "Glissez pour relier"
+    },
+    "tagInput": {
+      "addTag": "Ajouter...",
+      "typeTag": "Tapez pour ajouter des étiquettes..."
+    },
+    "parentSelect": {
+      "label": "Tâche parente",
+      "placeholder": "Rechercher une tâche parente...",
+      "noResults": "Aucune tâche trouvée"
+    },
+    "datePicker": {
+      "selectDate": "Sélectionner une date",
+      "clear": "Effacer"
+    },
+    "header": {
+      "newTask": "Nouvelle tâche"
+    },
+    "miniTimer": {
+      "start": "Démarrer",
+      "pause": "Pause"
+    }
+  },
+  "landing": {
+    "signIn": "Se connecter",
+    "getStarted": "Commencer",
+    "freeForever": "Gratuit pour toujours",
+    "heroTitle": "CuTasks",
+    "heroSubtitle": "Vos tâches. Votre rythme.",
+    "heroDesc": "Le gestionnaire de tâches qui s'adapte à votre façon de travailler — pas l'inverse. Projets, habitudes, minuteur focus, calendrier — tout dans un bel endroit.",
+    "startForFree": "Commencer gratuitement",
+    "seeFeatures": "Voir les fonctionnalités",
+    "featuresTitle": "Fonctionnalités",
+    "featuresSubtitle1": "Tout ce que CuTasks offre.",
+    "featuresSubtitle2": "Rien de superflu.",
+    "tasksSection": "Tâches",
+    "tasksSubtitle": "Des tâches qui fonctionnent comme vous",
+    "projectsSection": "Projets",
+    "projectsSubtitle": "Organisez le travail en projets",
+    "habitsSection": "Habitudes",
+    "habitsSubtitle": "Créez des habitudes durables",
+    "pomodoroSection": "Pomodoro",
+    "pomodoroSubtitle": "Concentration profonde, parfaitement chronométrée",
+    "whyTitle": "Pourquoi CuTasks",
+    "whySubtitle": "Pourquoi les équipes choisissent CuTasks",
+    "ctaTitle": "Commencez à gérer votre temps avec CuTasks",
+    "ctaDesc": "Gratuit pour toujours. Sans carte bancaire. Sans pubs. Juste un outil qui fonctionne.",
+    "ctaButton": "Créez votre compte",
+    "footer": "CuTasks. Fait avec soin."
   }
 }

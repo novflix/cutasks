@@ -1,5 +1,6 @@
-import { useRef, useCallback, useEffect } from 'react';
+import { useRef, useCallback, useEffect, useMemo } from 'react';
 import { ClipboardCheck, Folder, SettingsMinimalistic, HomeSmile } from '@solar-icons/react';
+import { useTranslation } from 'react-i18next';
 import type { Page } from '../types';
 import Logo from './Logo';
 
@@ -10,15 +11,15 @@ const INDICATOR_HEIGHT = 16;
 
 interface NavItem {
   icon: typeof ClipboardCheck;
-  label: string;
+  labelKey: string;
   page: Page;
 }
 
-const navItems: NavItem[] = [
-  { icon: HomeSmile, label: 'Home', page: 'home' },
-  { icon: ClipboardCheck, label: 'Tasks', page: 'tasks' },
-  { icon: Folder, label: 'Projects', page: 'projects' },
-  { icon: SettingsMinimalistic, label: 'Settings', page: 'settings' },
+const NAV_ITEMS: NavItem[] = [
+  { icon: HomeSmile, labelKey: 'nav.home', page: 'home' },
+  { icon: ClipboardCheck, labelKey: 'nav.tasks', page: 'tasks' },
+  { icon: Folder, labelKey: 'nav.projects', page: 'projects' },
+  { icon: SettingsMinimalistic, labelKey: 'nav.settings', page: 'settings' },
 ];
 
 interface SidebarProps {
@@ -29,12 +30,18 @@ interface SidebarProps {
 }
 
 export default function Sidebar({ width, onResize, activePage, onNavigate }: SidebarProps) {
+  const { t } = useTranslation();
   const collapsed = width < COLLAPSE_THRESHOLD;
   const dragging = useRef(false);
   const startX = useRef(0);
   const startWidth = useRef(0);
   const navRef = useRef<HTMLDivElement>(null);
   const indicatorRef = useRef<HTMLDivElement>(null);
+
+  const navItems = useMemo(() =>
+    NAV_ITEMS.map(item => ({ ...item, label: t(item.labelKey) })),
+    [t]
+  );
 
   const updateIndicator = useCallback(() => {
     if (!navRef.current || !indicatorRef.current) return;
@@ -104,7 +111,7 @@ export default function Sidebar({ width, onResize, activePage, onNavigate }: Sid
           const isActive = item.page === activePage || (item.page === 'projects' && activePage === 'project-detail');
           return (
             <button
-              key={item.label}
+              key={item.page}
               className={`sidebar-nav-btn${isActive ? ' active' : ''}`}
               title={collapsed ? item.label : undefined}
               onClick={() => onNavigate(item.page)}

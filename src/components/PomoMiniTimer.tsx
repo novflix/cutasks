@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { PomoMode } from '../pages/PomodoroPage';
 import { MODE_META } from '../constants/pomo';
 
@@ -11,6 +12,7 @@ interface PomoMiniTimerProps {
 
 export default function PomoMiniTimer({ mode, secondsLeft, running, onToggleRunning }: PomoMiniTimerProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const meta = MODE_META[mode];
   const minutes = Math.floor(secondsLeft / 60);
   const seconds = secondsLeft % 60;
@@ -31,7 +33,7 @@ export default function PomoMiniTimer({ mode, secondsLeft, running, onToggleRunn
         <button
           className="pomo-mini-btn"
           onClick={(e) => { e.stopPropagation(); onToggleRunning(); }}
-          aria-label={running ? 'Pause' : 'Start'}
+          aria-label={running ? t('components.miniTimer.pause') : t('components.miniTimer.start')}
           style={{ background: meta.color }}
         >
           {running ? (

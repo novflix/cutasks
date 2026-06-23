@@ -1,4 +1,5 @@
 import { MinimalisticMagnifier } from '@solar-icons/react';
+import { useTranslation } from 'react-i18next';
 import type { FilterType } from '../types';
 
 interface ToolbarProps {
@@ -8,14 +9,21 @@ interface ToolbarProps {
   onFilter: (filter: FilterType) => void;
 }
 
+const FILTER_KEYS: Record<FilterType, string> = {
+  all: 'components.toolbar.all',
+  active: 'components.toolbar.active',
+  completed: 'components.toolbar.done',
+};
+
 export default function Toolbar({ searchQuery, onSearch, filter, onFilter }: ToolbarProps) {
+  const { t } = useTranslation();
   return (
     <div className="toolbar">
       <div className="search-box">
         <MinimalisticMagnifier size={18} className="search-icon" />
         <input
           type="text"
-          placeholder="Search tasks..."
+          placeholder={t('components.toolbar.search')}
           value={searchQuery}
           onChange={(e) => onSearch(e.target.value)}
           className="search-input"
@@ -28,7 +36,7 @@ export default function Toolbar({ searchQuery, onSearch, filter, onFilter }: Too
             className={`filter-btn ${filter === f ? 'active' : ''}`}
             onClick={() => onFilter(f)}
           >
-            {f === 'all' ? 'All' : f === 'active' ? 'Active' : 'Done'}
+            {t(FILTER_KEYS[f])}
           </button>
         ))}
       </div>

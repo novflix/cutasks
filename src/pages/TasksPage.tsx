@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import Header from '../components/Header';
 import Toolbar from '../components/Toolbar';
 import TaskList from '../components/TaskList';
@@ -24,10 +25,11 @@ export default function TasksPage({
   stats, tasks, taskMap, filter, searchQuery,
   onSearch, onFilter, onCreate, onToggle, onView, onEdit, onDelete, onSetSubtask,
 }: TasksPageProps) {
+  const { t } = useTranslation();
   return (
     <>
       <div className="page-hero">
-        <h1 className="page-hero-title">Tasks</h1>
+        <h1 className="page-hero-title">{t('tasks.title')}</h1>
       </div>
       <Header stats={stats} onCreate={onCreate} />
       <Toolbar
