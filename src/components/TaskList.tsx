@@ -268,6 +268,10 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
   const prevPositionsRef = useRef<Map<string, DOMRect>>(new Map());
   const tasksRef = useRef(tasks);
 
+  useEffect(() => {
+    return () => { prevPositionsRef.current.clear(); };
+  }, []);
+
   useLayoutEffect(() => {
     if (isDraggingRef.current) return;
     if (tasksRef.current === tasks) return;
