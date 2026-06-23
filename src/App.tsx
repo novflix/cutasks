@@ -5,7 +5,7 @@ import './App.css';
 import type { Task, Priority, Page, FilterType, Project, ProjectStatus, Section, ProjectTask, Habit } from './types';
 import type { PomoMode, PomoConfig } from './pages/PomodoroPage';
 import { LONG_BREAK_INTERVAL } from './constants/pomo';
-import { generateId, priorityOrder } from './utils';
+import { generateId, priorityOrder, validateTitle, validateDescription, sanitizeInput, MAX_TASKS_COUNT, MAX_PROJECTS_COUNT } from './utils';
 import { loadPomoConfig, loadPomoSavedState, savePomoState, loadPomoRunning } from './utils/pomo';
 import { loadTasks, saveTasks as localSaveTasks, getAllTags, loadProjects, saveProjects as localSaveProjects, loadSections, saveSections as localSaveSections, loadProjectTasks, saveProjectTasks as localSaveProjectTasks, loadHabits, saveHabits as localSaveHabits } from './storage';
 import { useAuth } from './contexts/AuthContext';
@@ -458,8 +458,15 @@ export default function App() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const trimmedTitle = title.trim();
-    if (!trimmedTitle) return;
+    const titleError = validateTitle(title);
+    if (titleError) return;
+    const descError = validateDescription(description);
+    if (descError) return;
+
+    const trimmedTitle = sanitizeInput(title);
+    const trimmedDesc = sanitizeInput(description);
+
+    if (!editingTask && tasks.length >= MAX_TASKS_COUNT) return;
 
     const now = Date.now();
 
@@ -468,7 +475,7 @@ export default function App() {
       setTasks((prev) =>
         prev.map((t) =>
           t.id === editingTask.id
-            ? { ...t, title: trimmedTitle, description: description.trim(), priority, deadline, tags, parentId, updatedAt: now }
+            ? { ...t, title: trimmedTitle, description: trimmedDesc, priority, deadline, tags, parentId, updatedAt: now }
             : t
         )
       );
@@ -477,7 +484,7 @@ export default function App() {
       const newTask: Task = {
         id: generateId(),
         title: trimmedTitle,
-        description: description.trim(),
+        description: trimmedDesc,
         priority,
         deadline,
         tags,
@@ -580,14 +587,22 @@ export default function App() {
 
   function handleProjectSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const trimmedName = projectName.trim();
-    if (!trimmedName) return;
+    const nameError = validateTitle(projectName);
+    if (nameError) return;
+    const descError = validateDescription(projectDesc);
+    if (descError) return;
+
+    const trimmedName = sanitizeInput(projectName);
+    const trimmedDesc = sanitizeInput(projectDesc);
+
+    if (!editingProject && projects.length >= MAX_PROJECTS_COUNT) return;
+
     const now = Date.now();
     if (editingProject) {
       setProjects((prev) =>
         prev.map((p) =>
           p.id === editingProject.id
-            ? { ...p, name: trimmedName, description: projectDesc.trim(), icon: projectIcon, color: projectColor, status: projectStatus, updatedAt: now }
+            ? { ...p, name: trimmedName, description: trimmedDesc, icon: projectIcon, color: projectColor, status: projectStatus, updatedAt: now }
             : p
         )
       );
@@ -595,7 +610,7 @@ export default function App() {
       const newProject: Project = {
         id: generateId(),
         name: trimmedName,
-        description: projectDesc.trim(),
+        description: trimmedDesc,
         icon: projectIcon,
         color: projectColor,
         status: projectStatus,

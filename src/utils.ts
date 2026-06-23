@@ -80,6 +80,38 @@ export function getDeadlineStatus(dateStr: string, completed: boolean): 'overdue
 
 export const MAX_SUBTASK_DEPTH = 3;
 
+export const MAX_TITLE_LENGTH = 200;
+export const MAX_DESC_LENGTH = 2000;
+export const MAX_TAG_LENGTH = 50;
+export const MAX_TAGS_COUNT = 20;
+export const MAX_TASKS_COUNT = 500;
+export const MAX_PROJECTS_COUNT = 100;
+export const MAX_HABITS_COUNT = 50;
+
+export function sanitizeInput(s: string): string {
+  return s.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '').trim();
+}
+
+export function validateTitle(title: string): string | null {
+  const t = sanitizeInput(title);
+  if (!t) return 'Title cannot be empty';
+  if (t.length > MAX_TITLE_LENGTH) return `Title must be under ${MAX_TITLE_LENGTH} characters`;
+  return null;
+}
+
+export function validateDescription(desc: string): string | null {
+  const d = sanitizeInput(desc);
+  if (d.length > MAX_DESC_LENGTH) return `Description must be under ${MAX_DESC_LENGTH} characters`;
+  return null;
+}
+
+export function validateTag(tag: string): string | null {
+  const t = sanitizeInput(tag);
+  if (!t) return 'Tag cannot be empty';
+  if (t.length > MAX_TAG_LENGTH) return `Tag must be under ${MAX_TAG_LENGTH} characters`;
+  return null;
+}
+
 export function getTaskDepth(taskId: string, taskMap: Map<string, { parentId: string | null }>): number {
   let depth = 0;
   let current = taskMap.get(taskId);
