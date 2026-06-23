@@ -909,7 +909,12 @@ export default function App() {
               <Route path="/app/home" element={
                 <ProtectedRoute>
                   <main className="main">
-                    <HomePage />
+                    <HomePage
+                      tasks={tasks}
+                      projects={projects}
+                      habits={habits}
+                      projectTasks={projectTasks}
+                    />
                   </main>
                 </ProtectedRoute>
               } />
