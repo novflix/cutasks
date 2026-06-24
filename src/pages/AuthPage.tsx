@@ -231,12 +231,6 @@ export default function AuthPage() {
             {mode === 'login' ? t('auth.signUp') : t('auth.signIn')}
           </button>
         </p>
-
-        <div className="auth-legal">
-          <a href="/terms" target="_blank" rel="noopener noreferrer">{t('legal.termsShort')}</a>
-          <span className="auth-legal-dot">·</span>
-          <a href="/privacy" target="_blank" rel="noopener noreferrer">{t('legal.privacyShort')}</a>
-        </div>
       </div>
     </div>
   );
