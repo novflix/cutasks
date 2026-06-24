@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback, Suspense, lazy } from 'react';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './App.css';
@@ -14,35 +14,42 @@ import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import TaskDetailModal from './components/TaskDetailModal';
 import TaskFormModal from './components/TaskFormModal';
-import ProjectsPage from './pages/ProjectsPage';
 import ProjectFormModal from './components/ProjectFormModal';
-import ProjectDetailPage from './pages/ProjectDetailPage';
 import ProjectRoute from './components/ProjectRoute';
-import SettingsPage from './pages/SettingsPage';
-import HomePage from './pages/HomePage';
-import HabitsPage from './pages/HabitsPage';
-import PomodoroPage from './pages/PomodoroPage';
-import CalendarPage from './pages/CalendarPage';
 import PomoMiniTimer from './components/PomoMiniTimer';
-import TasksPage from './pages/TasksPage';
 import MobileNav from './components/MobileNav';
-import AuthPage from './pages/AuthPage';
 import ProtectedRoute from './components/ProtectedRoute';
-import LandingPage from './pages/LandingPage';
-import NotFoundPage from './pages/NotFoundPage';
-import TermsPage from './pages/TermsPage';
-import PrivacyPage from './pages/PrivacyPage';
 import { getDeadlineStatus } from './utils';
 import { MinimalisticMagnifier, ArrowLeft } from '@solar-icons/react';
 import { PROJECT_ICONS } from './constants';
+
+const HomePage = lazy(() => import('./pages/HomePage'));
+const TasksPage = lazy(() => import('./pages/TasksPage'));
+const ProjectsPage = lazy(() => import('./pages/ProjectsPage'));
+const ProjectDetailPage = lazy(() => import('./pages/ProjectDetailPage'));
+const HabitsPage = lazy(() => import('./pages/HabitsPage'));
+const PomodoroPage = lazy(() => import('./pages/PomodoroPage'));
+const CalendarPage = lazy(() => import('./pages/CalendarPage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const AuthPage = lazy(() => import('./pages/AuthPage'));
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const TermsPage = lazy(() => import('./pages/TermsPage'));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage'));
 
 function AnimatedRoutes({ routes }: { routes: React.ReactNode }) {
   const location = useLocation();
   return (
     <div key={location.pathname} className="page-transition">
-      {routes}
+      <Suspense fallback={<div className="page-loader"><div className="auth-spinner" /></div>}>
+        {routes}
+      </Suspense>
     </div>
   );
+}
+
+function PageLoader() {
+  return <div className="page-loader"><div className="auth-spinner" /></div>;
 }
 
 export default function App() {
@@ -918,15 +925,17 @@ export default function App() {
   }, [navigate]);
 
   if (location.pathname === '/auth') {
-    return <AuthPage />;
+    return <Suspense fallback={<PageLoader />}><AuthPage /></Suspense>;
   }
 
   if (location.pathname === '/terms' || location.pathname === '/privacy') {
     return (
-      <Routes>
-        <Route path="/terms" element={<TermsPage />} />
-        <Route path="/privacy" element={<PrivacyPage />} />
-      </Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+        </Routes>
+      </Suspense>
     );
   }
 
@@ -937,12 +946,14 @@ export default function App() {
       return <Navigate to="/app/home" replace />;
     }
     return (
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/terms" element={<TermsPage />} />
-        <Route path="/privacy" element={<PrivacyPage />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
     );
   }
 

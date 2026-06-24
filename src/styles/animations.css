@@ -204,3 +204,10 @@
     transform: scale(1);
   }
 }
+
+.page-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+}
