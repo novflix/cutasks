@@ -298,6 +298,10 @@
     "popupClosed": "O popup de login foi fechado",
     "recentLoginRequired": "Faça login novamente para concluir esta ação",
     "agreeTo": "Concordo com os",
+    "pwdCheckLength": "Pelo menos 8 caracteres",
+    "pwdCheckUpper": "Uma letra maiúscula",
+    "pwdCheckLower": "Uma letra minúscula",
+    "pwdCheckNumber": "Um número",
     "yourName": "Seu nome",
     "emailPlaceholder": "voce@exemplo.com"
   },

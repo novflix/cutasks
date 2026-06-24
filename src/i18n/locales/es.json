@@ -298,6 +298,10 @@
     "popupClosed": "La ventana de inicio de sesión se cerró",
     "recentLoginRequired": "Inicia sesión de nuevo para completar esta acción",
     "agreeTo": "Acepto los",
+    "pwdCheckLength": "Al menos 8 caracteres",
+    "pwdCheckUpper": "Una letra mayúscula",
+    "pwdCheckLower": "Una letra minúscula",
+    "pwdCheckNumber": "Un número",
     "yourName": "Su nombre",
     "emailPlaceholder": "usted@ejemplo.com"
   },

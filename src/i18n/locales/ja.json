@@ -298,6 +298,10 @@
     "popupClosed": "サインインのポップアップが閉じられました",
     "recentLoginRequired": "この操作を完了するには再度サインインしてください",
     "agreeTo": "以下に同意する",
+    "pwdCheckLength": "8文字以上",
+    "pwdCheckUpper": "大文字1つ以上",
+    "pwdCheckLower": "小文字1つ以上",
+    "pwdCheckNumber": "数字1つ以上",
     "yourName": "お名前",
     "emailPlaceholder": "you@example.com"
   },

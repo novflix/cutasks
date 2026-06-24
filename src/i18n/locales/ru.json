@@ -298,6 +298,10 @@
     "popupClosed": "Окно входа было закрыто",
     "recentLoginRequired": "Пожалуйста, войдите снова для выполнения этого действия",
     "agreeTo": "Я соглашаюсь с",
+    "pwdCheckLength": "Минимум 8 символов",
+    "pwdCheckUpper": "Одна заглавная буква",
+    "pwdCheckLower": "Одна строчная буква",
+    "pwdCheckNumber": "Одна цифра",
     "yourName": "Ваше имя",
     "emailPlaceholder": "вы@пример.com"
   },

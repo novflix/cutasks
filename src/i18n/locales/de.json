@@ -298,6 +298,10 @@
     "popupClosed": "Anmelde-Popup wurde geschlossen",
     "recentLoginRequired": "Bitte melden Sie sich erneut an, um diese Aktion abzuschließen",
     "agreeTo": "Ich stimme den",
+    "pwdCheckLength": "Mindestens 8 Zeichen",
+    "pwdCheckUpper": "Ein Großbuchstabe",
+    "pwdCheckLower": "Ein Kleinbuchstabe",
+    "pwdCheckNumber": "Eine Ziffer",
     "yourName": "Ihr Name",
     "emailPlaceholder": "sie@beispiel.de"
   },

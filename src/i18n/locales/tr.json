@@ -298,6 +298,10 @@
     "popupClosed": "Oturum açma penceresi kapatıldı",
     "recentLoginRequired": "Bu işlemi tamamlamak için lütfen tekrar oturum açın",
     "agreeTo": "Şartları kabul ediyorum",
+    "pwdCheckLength": "En az 8 karakter",
+    "pwdCheckUpper": "Bir büyük harf",
+    "pwdCheckLower": "Bir küçük harf",
+    "pwdCheckNumber": "Bir rakam",
     "yourName": "Adınız",
     "emailPlaceholder": "siz@ornek.com"
   },

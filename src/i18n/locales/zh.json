@@ -298,6 +298,10 @@
     "popupClosed": "登录弹窗已关闭",
     "recentLoginRequired": "请重新登录以完成此操作",
     "agreeTo": "我同意",
+    "pwdCheckLength": "至少8个字符",
+    "pwdCheckUpper": "一个大写字母",
+    "pwdCheckLower": "一个小写字母",
+    "pwdCheckNumber": "一个数字",
     "yourName": "您的名称",
     "emailPlaceholder": "you@example.com"
   },

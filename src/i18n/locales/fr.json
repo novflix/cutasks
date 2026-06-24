@@ -298,6 +298,10 @@
     "popupClosed": "La fenêtre de connexion a été fermée",
     "recentLoginRequired": "Veuillez vous reconnecter pour effectuer cette action",
     "agreeTo": "J'accepte les",
+    "pwdCheckLength": "Au moins 8 caractères",
+    "pwdCheckUpper": "Une lettre majuscule",
+    "pwdCheckLower": "Une lettre minuscule",
+    "pwdCheckNumber": "Un chiffre",
     "yourName": "Votre nom",
     "emailPlaceholder": "vous@exemple.com"
   },

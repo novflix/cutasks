@@ -239,6 +239,10 @@
     "popupClosed": "Sign-in popup was closed",
     "recentLoginRequired": "Please sign in again to complete this action",
     "agreeTo": "I agree to the",
+    "pwdCheckLength": "At least 8 characters",
+    "pwdCheckUpper": "One uppercase letter",
+    "pwdCheckLower": "One lowercase letter",
+    "pwdCheckNumber": "One number",
     "yourName": "Your name",
     "emailPlaceholder": "you@example.com"
   },

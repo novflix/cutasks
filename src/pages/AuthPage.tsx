@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, type FormEvent } from 'react';
+import { useState, useRef, useEffect, useMemo, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { login, register } from '../services/auth';
@@ -28,6 +28,15 @@ export default function AuthPage() {
   const [migrated, setMigrated] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
+
+  const passwordChecks = useMemo(() => ({
+    length: password.length >= 8,
+    uppercase: /[A-Z]/.test(password),
+    lowercase: /[a-z]/.test(password),
+    number: /[0-9]/.test(password),
+  }), [password]);
+
+  const passwordValid = mode === 'login' || Object.values(passwordChecks).every(Boolean);
 
   useEffect(() => {
     setTimeout(() => emailRef.current?.focus(), 150);
@@ -189,6 +198,29 @@ export default function AuthPage() {
                 )}
               </button>
             </div>
+            {mode === 'register' && password.length > 0 && (
+              <div className="auth-password-checks">
+                {([
+                  { key: 'length', label: t('auth.pwdCheckLength') },
+                  { key: 'uppercase', label: t('auth.pwdCheckUpper') },
+                  { key: 'lowercase', label: t('auth.pwdCheckLower') },
+                  { key: 'number', label: t('auth.pwdCheckNumber') },
+                ] as const).map(({ key, label }) => (
+                  <div key={key} className={`auth-pwd-check ${passwordChecks[key] ? 'valid' : ''}`}>
+                    <span className="auth-pwd-check-icon">
+                      {passwordChecks[key] ? (
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="5 12 10 17 19 7" />
+                        </svg>
+                      ) : (
+                        <span className="auth-pwd-check-dot" />
+                      )}
+                    </span>
+                    <span className="auth-pwd-check-text">{label}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {mode === 'register' && (
@@ -230,7 +262,7 @@ export default function AuthPage() {
 
           {error && <p className="auth-error">{error}</p>}
 
-          <button type="submit" className="auth-submit" disabled={loading || (mode === 'register' && (!agreedToTerms || !agreedToPrivacy))}>
+          <button type="submit" className="auth-submit" disabled={loading || (mode === 'register' && (!agreedToTerms || !agreedToPrivacy || !passwordValid))}>
             {loading ? <div className="auth-btn-spinner" /> : mode === 'login' ? t('auth.signIn') : t('auth.signUp')}
           </button>
         </form>
