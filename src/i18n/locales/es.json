@@ -243,8 +243,6 @@
     "info": "Info",
     "version": "Versión",
     "landingPage": "Página de inicio",
-    "systemTheme": "Sistema",
-    "systemThemeDesc": "Seguir la configuración de tema de tu dispositivo",
     "focusDuration": "Duración del enfoque",
     "shortBreak": "Descanso corto",
     "longBreak": "Descanso largo",
@@ -505,6 +503,18 @@
   "skeleton": {
     "loading": "Cargando datos..."
   },
+  "shakeQuotes": [
+    "Tú puedes. Una tarea a la vez.",
+    "Progreso, no perfección.",
+    "Pequeños pasos llevan a grandes resultados.",
+    "Lo estás haciendo mejor de lo que crees.",
+    "Mantente enfocado. Mantente con hambre.",
+    "El único camino es hacia adelante.",
+    "Hecho es mejor que perfecto.",
+    "Sigue adelante. Tu futuro yo te lo agradecerá.",
+    "Una tarea más. Ya casi llegas.",
+    "La disciplina es elegir lo que más quieres."
+  ],
   "legal": {
     "lastUpdated": "Última actualización: 23 de junio de 2026",
     "termsShort": "Términos de uso",

@@ -243,8 +243,6 @@
     "info": "Info",
     "version": "Version",
     "landingPage": "Page d'accueil",
-    "systemTheme": "Système",
-    "systemThemeDesc": "Suivre le thème de votre appareil",
     "focusDuration": "Durée de concentration",
     "shortBreak": "Pause courte",
     "longBreak": "Pause longue",
@@ -505,6 +503,18 @@
   "skeleton": {
     "loading": "Chargement des données..."
   },
+  "shakeQuotes": [
+    "Tu vas y arriver. Une tâche à la fois.",
+    "Le progrès, pas la perfection.",
+    "Petits pas, grands résultats.",
+    "Tu fais mieux que tu ne le penses.",
+    "Reste concentré. Reste affamé.",
+    "La seule issue est d'avancer.",
+    "Fait vaut mieux que parfait.",
+    "Continue. Ton futur toi te remerciera.",
+    "Encore une tâche. Tu y es presque.",
+    "La discipline, c'est choisir ce que tu veux le plus."
+  ],
   "legal": {
     "lastUpdated": "Dernière mise à jour : 23 juin 2026",
     "termsShort": "Conditions d'utilisation",

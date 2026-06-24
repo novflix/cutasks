@@ -503,6 +503,18 @@
   "skeleton": {
     "loading": "Loading data..."
   },
+  "shakeQuotes": [
+    "You've got this. One task at a time.",
+    "Progress, not perfection.",
+    "Small steps lead to big results.",
+    "You're doing better than you think.",
+    "Stay focused. Stay hungry.",
+    "The only way is through.",
+    "Done is better than perfect.",
+    "Keep going. Your future self will thank you.",
+    "One more task. You're almost there.",
+    "Discipline is choosing what you want most."
+  ],
   "legal": {
     "lastUpdated": "Last updated: June 23, 2026",
     "termsShort": "Terms of Use",

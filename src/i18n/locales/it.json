@@ -243,8 +243,6 @@
     "info": "Info",
     "version": "Versione",
     "landingPage": "Pagina iniziale",
-    "systemTheme": "Sistema",
-    "systemThemeDesc": "Segui l'impostazione del tema del dispositivo",
     "focusDuration": "Durata della concentrazione",
     "shortBreak": "Pausa breve",
     "longBreak": "Pausa lunga",
@@ -505,6 +503,18 @@
   "skeleton": {
     "loading": "Caricamento dati..."
   },
+  "shakeQuotes": [
+    "Ce la puoi fare. Un compito alla volta.",
+    "Progresso, non perfezione.",
+    "Piccoli passi portano a grandi risultati.",
+    "Stai facendo meglio di quanto pensi.",
+    "Resta focalizzato. Resta affamato.",
+    "L'unica via è attraverso.",
+    "Fatto è meglio di perfetto.",
+    "Continua. Il tuo te futuro ti ringrazierà.",
+    "Un altro compito. Ci sei quasi.",
+    "La disciplina è scegliere ciò che vuoi di più."
+  ],
   "legal": {
     "lastUpdated": "Ultimo aggiornamento: 23 giugno 2026",
     "termsShort": "Termini di utilizzo",

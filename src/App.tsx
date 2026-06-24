@@ -258,18 +258,7 @@ export default function App() {
 
   /* ── Easter egg: shake for motivational quote ── */
   useEffect(() => {
-    const QUOTES = [
-      "You've got this. One task at a time.",
-      "Progress, not perfection.",
-      "Small steps lead to big results.",
-      "You're doing better than you think.",
-      "Stay focused. Stay hungry.",
-      "The only way is through.",
-      "Done is better than perfect.",
-      "Keep going. Your future self will thank you.",
-      "One more task. You're almost there.",
-      "Discipline is choosing what you want most.",
-    ];
+    const QUOTES = t('shakeQuotes', { returnObjects: true }) as string[];
     let lastShake = 0;
     let shakeCount = 0;
     let lastAccel = { x: 0, y: 0, z: 0 };

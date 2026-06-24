@@ -243,8 +243,6 @@
     "info": "Info",
     "version": "Version",
     "landingPage": "Startseite",
-    "systemTheme": "System",
-    "systemThemeDesc": "Geräte-Einstellung für das Thema verwenden",
     "focusDuration": "Fokusdauer",
     "shortBreak": "Kurze Pause",
     "longBreak": "Lange Pause",
@@ -505,6 +503,18 @@
   "skeleton": {
     "loading": "Daten werden geladen..."
   },
+  "shakeQuotes": [
+    "Du schaffst das. Eine Aufgabe nach der anderen.",
+    "Fortschritt, nicht Perfektion.",
+    "Kleine Schritte führen zu großen Ergebnissen.",
+    "Du machst es besser, als du denkst.",
+    "Bleib fokussiert. Bleib hungrig.",
+    "Der einzige Weg ist vorwärts.",
+    "Fertig ist besser als perfekt.",
+    "Mach weiter. Dein zukünftiges Ich wird es dir danken.",
+    "Noch eine Aufgabe. Du bist fast da.",
+    "Disziplin ist, das zu wählen, was du am meisten willst."
+  ],
   "legal": {
     "lastUpdated": "Zuletzt aktualisiert: 23. Juni 2026",
     "termsShort": "Nutzungsbedingungen",

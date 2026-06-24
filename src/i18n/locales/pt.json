@@ -243,8 +243,6 @@
     "info": "Info",
     "version": "Versão",
     "landingPage": "Página inicial",
-    "systemTheme": "Sistema",
-    "systemThemeDesc": "Seguir a configuração de tema do seu dispositivo",
     "focusDuration": "Duração do foco",
     "shortBreak": "Pausa curta",
     "longBreak": "Pausa longa",
@@ -505,6 +503,18 @@
   "skeleton": {
     "loading": "Carregando dados..."
   },
+  "shakeQuotes": [
+    "Você consegue. Uma tarefa de cada vez.",
+    "Progresso, não perfeição.",
+    "Pequenos passos levam a grandes resultados.",
+    "Você está indo melhor do que pensa.",
+    "Fique focado. Fique com fome.",
+    "O único caminho é em frente.",
+    "Feito é melhor que perfeito.",
+    "Continue. Seu eu futuro vai agradecer.",
+    "Mais uma tarefa. Você quase chegou.",
+    "Disciplina é escolher o que você mais quer."
+  ],
   "legal": {
     "lastUpdated": "Última atualização: 23 de junho de 2026",
     "termsShort": "Termos de uso",

@@ -243,8 +243,6 @@
     "info": "Bilgi",
     "version": "Sürüm",
     "landingPage": "Ana sayfa",
-    "systemTheme": "Sistem",
-    "systemThemeDesc": "Cihazınızın tema ayarını takip edin",
     "focusDuration": "Odak süresi",
     "shortBreak": "Kısa mola",
     "longBreak": "Uzun mola",
@@ -505,6 +503,18 @@
   "skeleton": {
     "loading": "Veriler yükleniyor..."
   },
+  "shakeQuotes": [
+    "Halledersin. Bir görev bir zamanda.",
+    "İlerleme, mükemmellik değil.",
+    "Küçük adımlar büyük sonuçlara götürür.",
+    "Düşündüğünden daha iyi gidiyorsun.",
+    "Odaklan. Aç kal.",
+    "Tek yol ileri.",
+    "Yapılmış olmak mükemmel olmaktan iyidir.",
+    "Devam et. Gelecekteki sen minnettar olacak.",
+    "Bir görev daha. Neredeyse geldin.",
+    "Disiplin, en çok istediğin şeyi seçmektir."
+  ],
   "legal": {
     "lastUpdated": "Son güncelleme: 23 Haziran 2026",
     "termsShort": "Kullanım Koşulları",

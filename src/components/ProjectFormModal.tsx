@@ -137,7 +137,7 @@ export default function ProjectFormModal({
               <div className="project-preview-info">
                 <span className="project-preview-name" style={{ color }}>{name || t('projects.projectName')}</span>
                 {description && <span className="project-preview-desc">{description}</span>}
-                <span className={`project-preview-status preview-status-${status}`}>{status}</span>
+                <span className={`project-preview-status preview-status-${status}`}>{t(`modals.projectForm.${status}`)}</span>
               </div>
             </div>
           </div>

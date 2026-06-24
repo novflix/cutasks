@@ -574,7 +574,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
                       className={`habits-color-btn${newColor === c ? ' selected' : ''}`}
                       style={{ background: c }}
                       onClick={() => setNewColor(c)}
-                      aria-label={`Color ${c}`}
+                      aria-label={`${t('common.color')} ${c}`}
                     />
                   ))}
                 </div>
