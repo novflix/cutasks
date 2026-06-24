@@ -158,7 +158,9 @@
     "addTask": "Aggiungi attività",
     "editName": "Modifica nome",
     "deleteSection": "Elimina sezione",
-    "dropHere": "Rilascia qui per uscire dalla sezione"
+    "dropHere": "Rilascia qui per uscire dalla sezione",
+    "noResults": "Nessun risultato",
+    "noResultsSub": "Prova con un'altra ricerca"
   },
   "habits": {
     "title": "Abitudini",
@@ -642,6 +644,11 @@
       "s3c2": "Cancella il tuo account: tutto viene cancellato entro 30 giorni",
       "s3c3": "Inattivo per 2+ anni: ti avviseremo, poi archivieremo se non rispondi",
       "s3c4": "I dati in LocalStorage restano finché non cancelli il tuo browser",
+      "s3dTitle": "Cookie e archiviazione locale",
+      "s3d1": "Utilizziamo cookie e archiviazione locale del browser per mantenere la sessione attiva e salvare le preferenze",
+      "s3d2": "Questi sono strettamente necessari al funzionamento dell'app — non vengono utilizzati cookie di tracciamento o pubblicitari",
+      "s3d3": "Puoi cancellare i dati del browser in qualsiasi momento per rimuovere cookie e archiviazione locale salvati",
+      "s3d4": "La cancellazione dei dati del browser potrebbe disconnetterti e rimuovere le informazioni memorizzate offline",
       "s4Title": "4. Condivisione e Divulgazione",
       "s4aTitle": "Non Vendiamo i Tuoi Dati",
       "s4a": "Non vendiamo, affittiamo o scambiamo mai le tue informazioni personali.",

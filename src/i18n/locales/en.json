@@ -158,7 +158,9 @@
     "addTask": "Add task",
     "editName": "Edit name",
     "deleteSection": "Delete section",
-    "dropHere": "Drop here to move out of section"
+    "dropHere": "Drop here to move out of section",
+    "noResults": "Nothing found",
+    "noResultsSub": "Try a different search"
   },
   "habits": {
     "title": "Habits",
@@ -640,6 +642,11 @@
       "s3c2": "Delete your account: everything's wiped within 30 days",
       "s3c3": "Inactive for 2+ years: we'll warn you, then archive if you don't respond",
       "s3c4": "Data in LocalStorage sticks around until you clear your browser",
+      "s3dTitle": "Cookies and Local Storage",
+      "s3d1": "We use cookies and browser LocalStorage to keep your session active and save preferences",
+      "s3d2": "These are strictly necessary for the app to function — no tracking or advertising cookies are used",
+      "s3d3": "You can clear your browser data at any time to remove stored cookies and LocalStorage",
+      "s3d4": "Clearing browser data may log you out and remove offline-cached information",
       "s4Title": "4. Sharing and Disclosure",
       "s4aTitle": "We Don't Sell Your Data",
       "s4a": "We never sell, rent, or trade your personal info.",

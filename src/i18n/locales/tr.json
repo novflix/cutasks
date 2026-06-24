@@ -158,7 +158,9 @@
     "addTask": "Görev ekle",
     "editName": "Adı düzenle",
     "deleteSection": "Bölümü sil",
-    "dropHere": "Bölümden çıkmak için buraya bırakın"
+    "dropHere": "Bölümden çıkmak için buraya bırakın",
+    "noResults": "Sonuç bulunamadı",
+    "noResultsSub": "Farklı bir arama deneyin"
   },
   "habits": {
     "title": "Alışkanlıklar",
@@ -642,6 +644,11 @@
       "s3c2": "Hesap silme: her şey 30 gün içinde silinir",
       "s3c3": "2+ yıl hareketsizlik: sizi uyarırız, yanıt almazsak arşivleriz",
       "s3c4": "LocalStorage'taki veriler tarayıcınızı temizleyene kadar kalır",
+      "s3dTitle": "Çerezler ve yerel depolama",
+      "s3d1": "Oturumunuzu aktif tutmak ve tercihlerinizi kaydetmek için çerezler ve tarayıcı yerel depolaması kullanıyoruz",
+      "s3d2": "Bunlar uygulamanın çalışması için kesinlikle gereklidir — takip veya reklam çerezi kullanılmaz",
+      "s3d3": "Kayıtlı çerezleri ve yerel depolamayı kaldırmak için tarayıcı verilerini istediğiniz zaman silebilirsiniz",
+      "s3d4": "Tarayıcı verilerini silmek oturumunuzu kapatabilir ve çevrimdışı depolanan bilgileri kaldırabilir",
       "s4Title": "4. Paylaşım ve İfşa",
       "s4aTitle": "Verilerinizi Satmıyoruz",
       "s4a": "Kişisel bilgilerinizi asla satmayız, kiralamayız veya takas etmeyiz.",

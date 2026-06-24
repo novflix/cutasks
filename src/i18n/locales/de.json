@@ -158,7 +158,9 @@
     "addTask": "Aufgabe hinzufügen",
     "editName": "Name bearbeiten",
     "deleteSection": "Abschnitt löschen",
-    "dropHere": "Hier ablegen, um den Abschnitt zu verlassen"
+    "dropHere": "Hier ablegen, um den Abschnitt zu verlassen",
+    "noResults": "Nichts gefunden",
+    "noResultsSub": "Versuchen Sie eine andere Suche"
   },
   "habits": {
     "title": "Gewohnheiten",
@@ -642,6 +644,11 @@
       "s3c2": "Kontolöschung: Alles wird innerhalb von 30 Tagen gelöscht",
       "s3c3": "Inaktiv für 2+ Jahre: Warnung, dann Archivierung bei Nicht-Antwort",
       "s3c4": "LocalStorage-Daten bleiben erhalten, bis Sie den Browser leeren",
+      "s3dTitle": "Cookies und lokaler Speicher",
+      "s3d1": "Wir verwenden Cookies und browser-lokalen Speicher, um Ihre Sitzung aktiv und Ihre Einstellungen zu speichern",
+      "s3d2": "Diese sind unbedingt erforderlich, damit die App funktioniert — es werden keine Tracking- oder Werbe-Cookies verwendet",
+      "s3d3": "Sie können Ihre Browserdaten jederzeit löschen, um gespeicherte Cookies und lokalen Speicher zu entfernen",
+      "s3d4": "Das Löschen von Browserdaten kann Sie abmelden und offline zwischengespeicherte Informationen entfernen",
       "s4Title": "4. Weitergabe und Offenlegung",
       "s4aTitle": "Wir verkaufen Ihre Daten nicht",
       "s4a": "Wir verkaufen, vermieten oder handeln nie mit Ihren persönlichen Daten.",

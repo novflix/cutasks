@@ -158,7 +158,9 @@
     "addTask": "Agregar tarea",
     "editName": "Editar nombre",
     "deleteSection": "Eliminar sección",
-    "dropHere": "Suelte aquí para salir de la sección"
+    "dropHere": "Suelte aquí para salir de la sección",
+    "noResults": "Nada encontrado",
+    "noResultsSub": "Intenta con otra búsqueda"
   },
   "habits": {
     "title": "Hábitos",
@@ -642,6 +644,11 @@
       "s3c2": "Elimine su cuenta: todo se borra dentro de 30 días",
       "s3c3": "Inactiva durante 2+ años: le advertiremos, luego archivamos si no responde",
       "s3c4": "Los datos en LocalStorage permanecen hasta que limpie su navegador",
+      "s3dTitle": "Cookies y almacenamiento local",
+      "s3d1": "Usamos cookies y el almacenamiento local del navegador para mantener tu sesión activa y guardar preferencias",
+      "s3d2": "Estos son estrictamente necesarios para el funcionamiento de la aplicación — no se usan cookies de rastreo o publicidad",
+      "s3d3": "Puedes borrar los datos de tu navegador en cualquier momento para eliminar cookies y almacenamiento local guardados",
+      "s3d4": "Borrar los datos del navegador puede cerrar tu sesión y eliminar información almacenada sin conexión",
       "s4Title": "4. Compartir y Divulgación",
       "s4aTitle": "No Vendemos Sus Datos",
       "s4a": "Nunca vendemos, alquilamos o intercambiamos su información personal.",
