@@ -199,7 +199,12 @@ export default function AuthPage() {
                   checked={agreedToTerms}
                   onChange={(e) => setAgreedToTerms(e.target.checked)}
                 />
-                <span className="auth-checkbox-custom" />
+                <span className="auth-checkbox-custom">
+                  <span className="auth-checkbox-ripple" />
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="5 12 10 17 19 7" />
+                  </svg>
+                </span>
                 <span className="auth-checkbox-text">
                   {t('auth.agreeTo')} <a href="/terms" target="_blank" rel="noopener noreferrer">{t('legal.termsShort')}</a>
                 </span>
@@ -210,7 +215,12 @@ export default function AuthPage() {
                   checked={agreedToPrivacy}
                   onChange={(e) => setAgreedToPrivacy(e.target.checked)}
                 />
-                <span className="auth-checkbox-custom" />
+                <span className="auth-checkbox-custom">
+                  <span className="auth-checkbox-ripple" />
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="5 12 10 17 19 7" />
+                  </svg>
+                </span>
                 <span className="auth-checkbox-text">
                   {t('auth.agreeTo')} <a href="/privacy" target="_blank" rel="noopener noreferrer">{t('legal.privacyShort')}</a>
                 </span>
