@@ -71,7 +71,8 @@
     "paused": "一時停止",
     "low": "低",
     "medium": "中",
-    "high": "高"
+    "high": "高",
+    "system": "システム"
   },
   "nav": {
     "home": "ホーム",
@@ -240,6 +241,8 @@
     "info": "情報",
     "version": "バージョン",
     "landingPage": "ホームページ",
+    "systemTheme": "システム",
+    "systemThemeDesc": "デバイスのテーマ設定に従う",
     "focusDuration": "集中時間",
     "shortBreak": "短い休憩",
     "longBreak": "長い休憩",
@@ -485,6 +488,17 @@
     "description": "このページは完了としてマークされて消えたようです。正しい道に戻りましょう。",
     "goBack": "ホームに戻る",
     "previousPage": "戻る"
+  },
+  "confirm": {
+    "deleteTask": "タスクを削除",
+    "deleteTaskMessage": "\"{{title}}\" を削除してもよろしいですか？この操作は元に戻せません。",
+    "deleteProject": "プロジェクトを削除",
+    "deleteProjectMessage": "\"{{title}}\" を削除してもよろしいですか？このプロジェクト内のすべてのタスクも削除されます。",
+    "deleteSection": "セクションを削除",
+    "deleteSectionMessage": "このセクションを削除してもよろしいですか？中のタスクはトップレベルのタスクになります。"
+  },
+  "skeleton": {
+    "loading": "データを読み込み中..."
   },
   "legal": {
     "lastUpdated": "最終更新日：2026年6月23日",

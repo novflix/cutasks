@@ -71,7 +71,8 @@
     "paused": "in pausa",
     "low": "bassa",
     "medium": "media",
-    "high": "alta"
+    "high": "alta",
+    "system": "Sistema"
   },
   "nav": {
     "home": "Home",
@@ -240,6 +241,8 @@
     "info": "Info",
     "version": "Versione",
     "landingPage": "Pagina iniziale",
+    "systemTheme": "Sistema",
+    "systemThemeDesc": "Segui l'impostazione del tema del dispositivo",
     "focusDuration": "Durata della concentrazione",
     "shortBreak": "Pausa breve",
     "longBreak": "Pausa lunga",
@@ -485,6 +488,17 @@
     "description": "Sembra che questa pagina sia stata segnata come completata e sia scomparsa. Torniamo sulla strada giusta.",
     "goBack": "Torna alla home",
     "previousPage": "Indietro"
+  },
+  "confirm": {
+    "deleteTask": "Elimina compito",
+    "deleteTaskMessage": "Sei sicuro di voler eliminare \"{{title}}\"? Questa azione non può essere annullata.",
+    "deleteProject": "Elimina progetto",
+    "deleteProjectMessage": "Sei sicuro di voler eliminare \"{{title}}\"? Tutti i compiti in questo progetto verranno eliminati.",
+    "deleteSection": "Elimina sezione",
+    "deleteSectionMessage": "Sei sicuro di voler eliminare questa sezione? I compiti diventeranno compiti di livello superiore."
+  },
+  "skeleton": {
+    "loading": "Caricamento dati..."
   },
   "legal": {
     "lastUpdated": "Ultimo aggiornamento: 23 giugno 2026",

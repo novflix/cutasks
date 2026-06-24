@@ -71,7 +71,8 @@
     "paused": "已暂停",
     "low": "低",
     "medium": "中",
-    "high": "高"
+    "high": "高",
+    "system": "系统"
   },
   "nav": {
     "home": "首页",
@@ -240,6 +241,8 @@
     "info": "信息",
     "version": "版本",
     "landingPage": "主页",
+    "systemTheme": "系统",
+    "systemThemeDesc": "跟随设备的主题设置",
     "focusDuration": "专注时长",
     "shortBreak": "短休息",
     "longBreak": "长休息",
@@ -485,6 +488,17 @@
     "description": "看起来这个页面已被标记为完成并消失了。让我们带您回到正轨。",
     "goBack": "返回首页",
     "previousPage": "返回"
+  },
+  "confirm": {
+    "deleteTask": "删除任务",
+    "deleteTaskMessage": "确定要删除 \"{{title}}\" 吗？此操作无法撤销。",
+    "deleteProject": "删除项目",
+    "deleteProjectMessage": "确定要删除 \"{{title}}\" 吗？此项目中的所有任务也将被删除。",
+    "deleteSection": "删除分组",
+    "deleteSectionMessage": "确定要删除此分组吗？其中的任务将变为顶级任务。"
+  },
+  "skeleton": {
+    "loading": "加载数据中..."
   },
   "legal": {
     "lastUpdated": "最后更新：2026年6月23日",

@@ -71,7 +71,8 @@
     "paused": "en pause",
     "low": "faible",
     "medium": "moyen",
-    "high": "élevée"
+    "high": "élevée",
+    "system": "Système"
   },
   "nav": {
     "home": "Accueil",
@@ -240,6 +241,8 @@
     "info": "Info",
     "version": "Version",
     "landingPage": "Page d'accueil",
+    "systemTheme": "Système",
+    "systemThemeDesc": "Suivre le thème de votre appareil",
     "focusDuration": "Durée de concentration",
     "shortBreak": "Pause courte",
     "longBreak": "Pause longue",
@@ -485,6 +488,17 @@
     "description": "On dirait que cette page a été marquée comme terminée et a disparu. Revenons sur la bonne voie.",
     "goBack": "Retour à l'accueil",
     "previousPage": "Revenir en arrière"
+  },
+  "confirm": {
+    "deleteTask": "Supprimer la tâche",
+    "deleteTaskMessage": "Êtes-vous sûr de vouloir supprimer \"{{title}}\" ? Cette action est irréversible.",
+    "deleteProject": "Supprimer le projet",
+    "deleteProjectMessage": "Êtes-vous sûr de vouloir supprimer \"{{title}}\" ? Toutes les tâches de ce projet seront également supprimées.",
+    "deleteSection": "Supprimer la section",
+    "deleteSectionMessage": "Êtes-vous sûr de vouloir supprimer cette section ? Les tâches qu'elle contient deviendront des tâches de niveau supérieur."
+  },
+  "skeleton": {
+    "loading": "Chargement des données..."
   },
   "legal": {
     "lastUpdated": "Dernière mise à jour : 23 juin 2026",

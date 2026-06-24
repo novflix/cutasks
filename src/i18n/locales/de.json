@@ -71,7 +71,8 @@
     "paused": "pausiert",
     "low": "niedrig",
     "medium": "mittel",
-    "high": "hoch"
+    "high": "hoch",
+    "system": "System"
   },
   "nav": {
     "home": "Startseite",
@@ -240,6 +241,8 @@
     "info": "Info",
     "version": "Version",
     "landingPage": "Startseite",
+    "systemTheme": "System",
+    "systemThemeDesc": "Geräte-Einstellung für das Thema verwenden",
     "focusDuration": "Fokusdauer",
     "shortBreak": "Kurze Pause",
     "longBreak": "Lange Pause",
@@ -485,6 +488,17 @@
     "description": "Diese Seite scheint als erledigt markiert worden zu sein und ist verschwunden. Lassen Sie uns wieder auf Kurs kommen.",
     "goBack": "Zurück zur Startseite",
     "previousPage": "Zurück"
+  },
+  "confirm": {
+    "deleteTask": "Aufgabe löschen",
+    "deleteTaskMessage": "Möchten Sie \"{{title}}\" wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleteProject": "Projekt löschen",
+    "deleteProjectMessage": "Möchten Sie \"{{title}}\" wirklich löschen? Alle Aufgaben in diesem Projekt werden ebenfalls gelöscht.",
+    "deleteSection": "Abschnitt löschen",
+    "deleteSectionMessage": "Möchten Sie diesen Abschnitt wirklich löschen? Aufgaben darin werden zu Aufgaben auf oberster Ebene."
+  },
+  "skeleton": {
+    "loading": "Daten werden geladen..."
   },
   "legal": {
     "lastUpdated": "Zuletzt aktualisiert: 23. Juni 2026",

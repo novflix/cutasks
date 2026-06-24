@@ -19,6 +19,7 @@ import ProjectRoute from './components/ProjectRoute';
 import PomoMiniTimer from './components/PomoMiniTimer';
 import MobileNav from './components/MobileNav';
 import ProtectedRoute from './components/ProtectedRoute';
+import ConfirmDialog from './components/ConfirmDialog';
 import { getDeadlineStatus } from './utils';
 import { MinimalisticMagnifier, ArrowLeft } from '@solar-icons/react';
 import { PROJECT_ICONS } from './constants';
@@ -104,6 +105,7 @@ export default function App() {
   const detailTimer2 = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fsLoadedRef = useRef(false);
   const habitFormOpenerRef = useRef<(() => void) | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState<{ type: 'task' | 'project'; id: string; title: string } | null>(null);
 
   const [pomoConfig, setPomoConfig] = useState<PomoConfig>(loadPomoConfig);
   const savedPomo = loadPomoSavedState();
@@ -546,6 +548,11 @@ export default function App() {
   }
 
   function deleteTask(id: string) {
+    const task = tasks.find((t) => t.id === id);
+    setConfirmDelete({ type: 'task', id, title: task?.title || '' });
+  }
+
+  function confirmDeleteTask(id: string) {
     pushHistory();
     setTasks((prev) => {
       const updated = prev.filter((t) => t.id !== id);
@@ -637,6 +644,11 @@ export default function App() {
   }
 
   function deleteProject(id: string) {
+    const project = projects.find((p) => p.id === id);
+    setConfirmDelete({ type: 'project', id, title: project?.name || '' });
+  }
+
+  function confirmDeleteProject(id: string) {
     pushHistory();
     setProjects((prev) => prev.filter((p) => p.id !== id));
     setProjectTasks((prev) => prev.filter((t) => t.projectId !== id));
@@ -801,6 +813,11 @@ export default function App() {
   }
 
   function deleteProjectTask(id: string) {
+    const task = projectTasks.find((t) => t.id === id);
+    setConfirmDelete({ type: 'task', id, title: task?.title || '' });
+  }
+
+  function confirmDeleteProjectTask(id: string) {
     pushProjectTaskHistory();
     setProjectTasks((prev) => {
       const updated = prev.filter((t) => t.id !== id);
@@ -1236,6 +1253,26 @@ export default function App() {
           onSubmit={handleProjectSubmit}
           onClose={closeProjectForm}
           isClosing={projectFormClosing}
+        />
+      )}
+
+      {confirmDelete && (
+        <ConfirmDialog
+          title={confirmDelete.type === 'task' ? t('confirm.deleteTask') : t('confirm.deleteProject')}
+          message={confirmDelete.type === 'task' ? t('confirm.deleteTaskMessage', { title: confirmDelete.title }) : t('confirm.deleteProjectMessage', { title: confirmDelete.title })}
+          onConfirm={() => {
+            if (confirmDelete.type === 'task') {
+              if (projectTasks.find((t) => t.id === confirmDelete.id)) {
+                confirmDeleteProjectTask(confirmDelete.id);
+              } else {
+                confirmDeleteTask(confirmDelete.id);
+              }
+            } else {
+              confirmDeleteProject(confirmDelete.id);
+            }
+            setConfirmDelete(null);
+          }}
+          onClose={() => setConfirmDelete(null)}
         />
       )}
 

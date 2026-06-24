@@ -71,7 +71,8 @@
     "paused": "duraklatıldı",
     "low": "düşük",
     "medium": "orta",
-    "high": "yüksek"
+    "high": "yüksek",
+    "system": "Sistem"
   },
   "nav": {
     "home": "Ana Sayfa",
@@ -240,6 +241,8 @@
     "info": "Bilgi",
     "version": "Sürüm",
     "landingPage": "Ana sayfa",
+    "systemTheme": "Sistem",
+    "systemThemeDesc": "Cihazınızın tema ayarını takip edin",
     "focusDuration": "Odak süresi",
     "shortBreak": "Kısa mola",
     "longBreak": "Uzun mola",
@@ -485,6 +488,17 @@
     "description": "Bu sayfa tamamlanmış olarak işaretlenmiş ve kaybolmuş gibi görünüyor. Sizi doğru yola geri getirelim.",
     "goBack": "Ana sayfaya dön",
     "previousPage": "Geri dön"
+  },
+  "confirm": {
+    "deleteTask": "Görevi sil",
+    "deleteTaskMessage": "\"{{title}}\" silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
+    "deleteProject": "Projeyi sil",
+    "deleteProjectMessage": "\"{{title}}\" silmek istediğinizden emin misiniz? Bu projedeki tüm görevler de silinecek.",
+    "deleteSection": "Bölümü sil",
+    "deleteSectionMessage": "Bu bölümü silmek istediğinizden emin misiniz? İçindeki görevler üst düzey görevlere dönüşecek."
+  },
+  "skeleton": {
+    "loading": "Veriler yükleniyor..."
   },
   "legal": {
     "lastUpdated": "Son güncelleme: 23 Haziran 2026",
