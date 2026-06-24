@@ -297,6 +297,7 @@
     "networkError": "Erreur réseau. Vérifiez votre connexion",
     "popupClosed": "La fenêtre de connexion a été fermée",
     "recentLoginRequired": "Veuillez vous reconnecter pour effectuer cette action",
+    "agreeTo": "J'accepte les",
     "yourName": "Votre nom",
     "emailPlaceholder": "vous@exemple.com"
   },

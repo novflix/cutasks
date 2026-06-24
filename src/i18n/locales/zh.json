@@ -297,6 +297,7 @@
     "networkError": "网络错误。请检查您的连接",
     "popupClosed": "登录弹窗已关闭",
     "recentLoginRequired": "请重新登录以完成此操作",
+    "agreeTo": "我同意",
     "yourName": "您的名称",
     "emailPlaceholder": "you@example.com"
   },

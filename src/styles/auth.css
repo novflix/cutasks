@@ -306,3 +306,76 @@
 .auth-legal-dot {
   color: var(--text-dim);
 }
+
+/* ======================== AUTH CHECKBOXES ======================== */
+
+.auth-checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.auth-checkbox input {
+  display: none;
+}
+
+.auth-checkbox-custom {
+  width: 18px;
+  height: 18px;
+  border: 1.5px solid var(--border);
+  border-radius: 5px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.auth-checkbox input:checked + .auth-checkbox-custom {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.auth-checkbox input:checked + .auth-checkbox-custom::after {
+  content: '';
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) translateY(-1px);
+}
+
+.auth-checkbox:hover .auth-checkbox-custom {
+  border-color: var(--accent);
+  transform: scale(1.05);
+}
+
+.auth-checkbox-text {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.auth-checkbox-text a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+  transition: opacity 0.2s ease;
+}
+
+.auth-checkbox-text a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}

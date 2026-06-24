@@ -238,6 +238,7 @@
     "networkError": "Network error. Check your connection",
     "popupClosed": "Sign-in popup was closed",
     "recentLoginRequired": "Please sign in again to complete this action",
+    "agreeTo": "I agree to the",
     "yourName": "Your name",
     "emailPlaceholder": "you@example.com"
   },

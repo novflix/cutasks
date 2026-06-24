@@ -297,6 +297,7 @@
     "networkError": "Ağ hatası. Bağlantınızı kontrol edin",
     "popupClosed": "Oturum açma penceresi kapatıldı",
     "recentLoginRequired": "Bu işlemi tamamlamak için lütfen tekrar oturum açın",
+    "agreeTo": "Şartları kabul ediyorum",
     "yourName": "Adınız",
     "emailPlaceholder": "siz@ornek.com"
   },

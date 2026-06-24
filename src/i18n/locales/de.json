@@ -297,6 +297,7 @@
     "networkError": "Netzwerkfehler. Überprüfen Sie Ihre Verbindung",
     "popupClosed": "Anmelde-Popup wurde geschlossen",
     "recentLoginRequired": "Bitte melden Sie sich erneut an, um diese Aktion abzuschließen",
+    "agreeTo": "Ich stimme den",
     "yourName": "Ihr Name",
     "emailPlaceholder": "sie@beispiel.de"
   },

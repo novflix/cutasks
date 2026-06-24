@@ -26,6 +26,8 @@ export default function AuthPage() {
   const emailRef = useRef<HTMLInputElement>(null);
   const [migrating, setMigrating] = useState(false);
   const [migrated, setMigrated] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
 
   useEffect(() => {
     setTimeout(() => emailRef.current?.focus(), 150);
@@ -91,6 +93,8 @@ export default function AuthPage() {
       setMode(mode === 'login' ? 'register' : 'login');
       setError('');
       setClosing(false);
+      setAgreedToTerms(false);
+      setAgreedToPrivacy(false);
     }, 180);
   }
 
@@ -187,9 +191,36 @@ export default function AuthPage() {
             </div>
           </div>
 
+          {mode === 'register' && (
+            <div className="auth-checkboxes">
+              <label className="auth-checkbox">
+                <input
+                  type="checkbox"
+                  checked={agreedToTerms}
+                  onChange={(e) => setAgreedToTerms(e.target.checked)}
+                />
+                <span className="auth-checkbox-custom" />
+                <span className="auth-checkbox-text">
+                  {t('auth.agreeTo')} <a href="/terms" target="_blank" rel="noopener noreferrer">{t('legal.termsShort')}</a>
+                </span>
+              </label>
+              <label className="auth-checkbox">
+                <input
+                  type="checkbox"
+                  checked={agreedToPrivacy}
+                  onChange={(e) => setAgreedToPrivacy(e.target.checked)}
+                />
+                <span className="auth-checkbox-custom" />
+                <span className="auth-checkbox-text">
+                  {t('auth.agreeTo')} <a href="/privacy" target="_blank" rel="noopener noreferrer">{t('legal.privacyShort')}</a>
+                </span>
+              </label>
+            </div>
+          )}
+
           {error && <p className="auth-error">{error}</p>}
 
-          <button type="submit" className="auth-submit" disabled={loading}>
+          <button type="submit" className="auth-submit" disabled={loading || (mode === 'register' && (!agreedToTerms || !agreedToPrivacy))}>
             {loading ? <div className="auth-btn-spinner" /> : mode === 'login' ? t('auth.signIn') : t('auth.signUp')}
           </button>
         </form>

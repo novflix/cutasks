@@ -297,6 +297,7 @@
     "networkError": "Erro de rede. Verifique sua conexão",
     "popupClosed": "O popup de login foi fechado",
     "recentLoginRequired": "Faça login novamente para concluir esta ação",
+    "agreeTo": "Concordo com os",
     "yourName": "Seu nome",
     "emailPlaceholder": "voce@exemplo.com"
   },

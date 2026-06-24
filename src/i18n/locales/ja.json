@@ -297,6 +297,7 @@
     "networkError": "ネットワークエラー。接続を確認してください",
     "popupClosed": "サインインのポップアップが閉じられました",
     "recentLoginRequired": "この操作を完了するには再度サインインしてください",
+    "agreeTo": "以下に同意する",
     "yourName": "お名前",
     "emailPlaceholder": "you@example.com"
   },
