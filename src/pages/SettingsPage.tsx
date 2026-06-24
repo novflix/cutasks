@@ -6,6 +6,7 @@ import { saveSettings } from '../services/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGES, setLanguage, type LanguageCode } from '../i18n';
+import { getFirebaseErrorMessage } from '../utils/firebaseErrors';
 import type { PomoConfig } from './PomodoroPage';
 import { DEFAULT_POMO_CONFIG } from '../constants/pomo';
 
@@ -167,14 +168,9 @@ export default function SettingsPage() {
       setConfirmPassword('');
       setTimeout(() => closePasswordModal(), 1500);
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : t('settings.passwordFailed');
-      if (msg.includes('wrong-password') || msg.includes('invalid-credential')) {
-        setPasswordError(t('settings.passwordIncorrect'));
-      } else if (msg.includes('weak-password')) {
-        setPasswordError(t('settings.passwordWeak'));
-      } else {
-        setPasswordError(t('settings.passwordFailed'));
-      }
+      const code = (e as { code?: string }).code || '';
+      const msg = getFirebaseErrorMessage(code);
+      setPasswordError(msg);
     } finally {
       setPasswordLoading(false);
     }
@@ -207,12 +203,8 @@ export default function SettingsPage() {
     try {
       await deleteAccount(deletePassword);
     } catch (e: unknown) {
-      const msg = e instanceof Error ? e.message : t('settings.deleteAccountFailed');
-      if (msg.includes('wrong-password') || msg.includes('invalid-credential')) {
-        setDeleteError(t('settings.deleteAccountIncorrect'));
-      } else {
-        setDeleteError(t('settings.deleteAccountFailed'));
-      }
+      const code = (e as { code?: string }).code || '';
+      setDeleteError(getFirebaseErrorMessage(code));
     } finally {
       setDeleteLoading(false);
     }

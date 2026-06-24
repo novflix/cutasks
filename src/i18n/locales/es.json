@@ -294,6 +294,9 @@
     "wrongPassword": "Contraseña incorrecta",
     "tooManyRequests": "Demasiados intentos. Inténtelo de nuevo más tarde",
     "genericError": "Algo salió mal. Por favor intente de nuevo",
+    "networkError": "Error de red. Verifica tu conexión",
+    "popupClosed": "La ventana de inicio de sesión se cerró",
+    "recentLoginRequired": "Inicia sesión de nuevo para completar esta acción",
     "yourName": "Su nombre",
     "emailPlaceholder": "usted@ejemplo.com"
   },

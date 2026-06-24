@@ -294,6 +294,9 @@
     "wrongPassword": "Senha incorreta",
     "tooManyRequests": "Muitas tentativas. Tente novamente mais tarde",
     "genericError": "Algo deu errado. Por favor, tente novamente",
+    "networkError": "Erro de rede. Verifique sua conexão",
+    "popupClosed": "O popup de login foi fechado",
+    "recentLoginRequired": "Faça login novamente para concluir esta ação",
     "yourName": "Seu nome",
     "emailPlaceholder": "voce@exemplo.com"
   },

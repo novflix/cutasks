@@ -294,6 +294,9 @@
     "wrongPassword": "Password errata",
     "tooManyRequests": "Troppi tentativi. Riprova più tardi",
     "genericError": "Qualcosa è andato storto. Riprova",
+    "networkError": "Errore di rete. Controlla la tua connessione",
+    "popupClosed": "Il popup di accesso è stato chiuso",
+    "recentLoginRequired": "Accedi di nuovo per completare questa azione",
     "yourName": "Il tuo nome",
     "emailPlaceholder": "tu@esempio.com"
   },

@@ -294,6 +294,9 @@
     "wrongPassword": "Falsches Passwort",
     "tooManyRequests": "Zu viele Versuche. Bitte versuchen Sie es später erneut",
     "genericError": "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut",
+    "networkError": "Netzwerkfehler. Überprüfen Sie Ihre Verbindung",
+    "popupClosed": "Anmelde-Popup wurde geschlossen",
+    "recentLoginRequired": "Bitte melden Sie sich erneut an, um diese Aktion abzuschließen",
     "yourName": "Ihr Name",
     "emailPlaceholder": "sie@beispiel.de"
   },

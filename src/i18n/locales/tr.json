@@ -294,6 +294,9 @@
     "wrongPassword": "Yanlış şifre",
     "tooManyRequests": "Çok fazla deneme. Lütfen daha sonra tekrar deneyin",
     "genericError": "Bir şeyler yanlış gitti. Lütfen tekrar deneyin",
+    "networkError": "Ağ hatası. Bağlantınızı kontrol edin",
+    "popupClosed": "Oturum açma penceresi kapatıldı",
+    "recentLoginRequired": "Bu işlemi tamamlamak için lütfen tekrar oturum açın",
     "yourName": "Adınız",
     "emailPlaceholder": "siz@ornek.com"
   },

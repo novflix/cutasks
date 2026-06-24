@@ -5,6 +5,7 @@ import { login, register } from '../services/auth';
 import { saveAllData } from '../services/firestore';
 import { loadTasks, loadProjects, loadSections, loadProjectTasks } from '../storage';
 import { useAuth } from '../contexts/AuthContext';
+import { getFirebaseErrorMessage } from '../utils/firebaseErrors';
 import '../styles/auth.css';
 
 type Mode = 'login' | 'register';
@@ -77,15 +78,8 @@ export default function AuthPage() {
         await login(email, password);
       }
     } catch (err: unknown) {
-      const code = (err as { code?: string }).code;
-      if (code === 'auth/email-already-in-use') setError(t('auth.emailInUse'));
-      else if (code === 'auth/invalid-email') setError(t('auth.invalidEmail'));
-      else if (code === 'auth/weak-password') setError(t('auth.weakPassword'));
-      else if (code === 'auth/invalid-credential') setError(t('auth.invalidCredential'));
-      else if (code === 'auth/user-not-found') setError(t('auth.userNotFound'));
-      else if (code === 'auth/wrong-password') setError(t('auth.wrongPassword'));
-      else if (code === 'auth/too-many-requests') setError(t('auth.tooManyRequests'));
-      else setError(t('auth.genericError'));
+      const code = (err as { code?: string }).code || '';
+      setError(getFirebaseErrorMessage(code));
     } finally {
       setLoading(false);
     }

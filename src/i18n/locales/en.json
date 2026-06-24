@@ -86,6 +86,9 @@
     "wrongPassword": "Incorrect password",
     "tooManyRequests": "Too many attempts. Try again later",
     "genericError": "Something went wrong. Please try again",
+    "networkError": "Network error. Check your connection",
+    "popupClosed": "Sign-in popup was closed",
+    "recentLoginRequired": "Please sign in again to complete this action",
     "yourName": "Your name",
     "emailPlaceholder": "you@example.com"
   },

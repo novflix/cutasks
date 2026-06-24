@@ -294,6 +294,9 @@
     "wrongPassword": "Mot de passe incorrect",
     "tooManyRequests": "Tentatives trop nombreuses. Réessayez plus tard",
     "genericError": "Une erreur s'est produite. Veuillez réessayer",
+    "networkError": "Erreur réseau. Vérifiez votre connexion",
+    "popupClosed": "La fenêtre de connexion a été fermée",
+    "recentLoginRequired": "Veuillez vous reconnecter pour effectuer cette action",
     "yourName": "Votre nom",
     "emailPlaceholder": "vous@exemple.com"
   },

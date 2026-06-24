@@ -294,6 +294,9 @@
     "wrongPassword": "パスワードが正しくありません",
     "tooManyRequests": "試行回数が多すぎます。しばらくしてから再試行してください",
     "genericError": "問題が発生しました。もう一度お試しください",
+    "networkError": "ネットワークエラー。接続を確認してください",
+    "popupClosed": "サインインのポップアップが閉じられました",
+    "recentLoginRequired": "この操作を完了するには再度サインインしてください",
     "yourName": "お名前",
     "emailPlaceholder": "you@example.com"
   },
