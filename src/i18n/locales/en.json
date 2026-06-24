@@ -74,6 +74,144 @@
     "high": "high",
     "system": "System"
   },
+  "nav": {
+    "home": "Home",
+    "tasks": "Tasks",
+    "projects": "Projects",
+    "settings": "Settings"
+  },
+  "home": {
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "motivation": {
+      "overdue": "{{count}} task needs your attention",
+      "overdue_plural": "{{count}} tasks need your attention",
+      "dueToday": "{{count}} task due today — you got this!",
+      "dueToday_plural": "{{count}} tasks due today — you got this!",
+      "highCompletion": "You're crushing it! Keep going",
+      "active": "{{count}} task waiting for you",
+      "active_plural": "{{count}} tasks waiting for you",
+      "allDone": "All tasks done — great work!",
+      "empty": "Start adding tasks and projects"
+    },
+    "stats": {
+      "tasks": "Tasks",
+      "done": "done",
+      "active": "Active",
+      "completed": "Done",
+      "overdue": "Overdue",
+      "dueToday": "Today",
+      "habitsToday": "habits",
+      "streak": "streak",
+      "activeProjects": "Active projects"
+    },
+    "banners": {
+      "habits": {
+        "title": "Habits",
+        "desc": "Build streaks, track daily routines, and become better every day"
+      },
+      "pomodoro": {
+        "title": "Pomodoro Timer",
+        "desc": "Stay focused with timed work sessions and short breaks"
+      },
+      "calendar": {
+        "title": "Calendar",
+        "desc": "View your schedule and plan ahead at a glance"
+      }
+    }
+  },
+  "tasks": {
+    "title": "Tasks",
+    "newTask": "New Task",
+    "editTask": "Edit Task",
+    "searchTasks": "Search tasks...",
+    "noTasks": "No tasks yet",
+    "noTasksSub": "Click \"New Task\" to get started",
+    "noResults": "Nothing found",
+    "noResultsSub": "Try a different search",
+    "noCompleted": "No completed tasks",
+    "allDone": "All tasks are done!",
+    "subtasks": "{{count}} subtask",
+    "subtasks_plural": "{{count}} subtasks",
+    "makeRoot": "Drop here to make a top-level task",
+    "maxDepth": "Maximum nesting depth reached (3 levels)",
+    "titlePlaceholder": "What needs to be done?",
+    "descPlaceholder": "Add details..."
+  },
+  "projects": {
+    "title": "Projects",
+    "newProject": "New Project",
+    "editProject": "Edit Project",
+    "searchProjects": "Search projects...",
+    "noProjects": "No projects yet",
+    "noProjectsSub": "Click \"New Project\" to get started",
+    "backToProjects": "Back to Projects",
+    "projectNotFound": "Project not found",
+    "projectName": "Project name",
+    "optionalDesc": "Optional description",
+    "addSection": "Add section",
+    "noTasks": "No tasks yet",
+    "noTasksSub": "Create a section or add tasks directly",
+    "addTask": "Add task",
+    "editName": "Edit name",
+    "deleteSection": "Delete section",
+    "dropHere": "Drop here to move out of section"
+  },
+  "habits": {
+    "title": "Habits",
+    "newHabit": "New Habit",
+    "noHabits": "No habits for this day",
+    "noHabitsSub": "Tap \"New\" to create your first habit",
+    "noHabitsScheduled": "No habits scheduled",
+    "thisWeek": "This week",
+    "habitName": "What habit do you want to build?",
+    "repeatOn": "Repeat on",
+    "createHabit": "Create Habit",
+    "dragToReorder": "Drag to reorder",
+    "everyDay": "Every day",
+    "weekdays": "Weekdays",
+    "weekends": "Weekends",
+    "never": "Never",
+    "streak": "Streak",
+    "days": "days",
+    "totalCompletions": "Total completions",
+    "repeat": "Repeat",
+    "saveChanges": "Save Changes"
+  },
+  "calendar": {
+    "title": "Calendar",
+    "week": "Week",
+    "month": "Month",
+    "noTasks": "No tasks for this day",
+    "noTasksSub": "Tasks with a deadline on this date will appear here",
+    "prevWeek": "Previous week",
+    "prevMonth": "Previous month",
+    "nextWeek": "Next week",
+    "nextMonth": "Next month"
+  },
+  "pomodoro": {
+    "title": "Pomodoro",
+    "focus": "Focus",
+    "shortBreak": "Short Break",
+    "longBreak": "Long Break",
+    "sessions": "{{count}} session today",
+    "sessions_plural": "{{count}} sessions today",
+    "reset": "Reset",
+    "start": "Start",
+    "pause": "Pause",
+    "skip": "Skip",
+    "quotes": [
+      "Stay focused, you got this!",
+      "Deep work starts now.",
+      "One pomodoro at a time.",
+      "Your future self will thank you.",
+      "Small steps, big results.",
+      "Breathe. Focus. Create."
+    ]
+  },
   "auth": {
     "welcomeBack": "Welcome back",
     "createAccount": "Create account",
