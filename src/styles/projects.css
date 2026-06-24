@@ -724,3 +724,15 @@
     flex-direction: column;
   }
 }
+
+/* ======================== PROJECT DRAG-AND-DROP ======================== */
+
+.project-drag-wrap {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.project-drag-wrap.drag-over .project-card {
+  border-color: var(--primary);
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 0 2px var(--primary-subtle);
+}

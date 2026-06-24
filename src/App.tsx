@@ -660,6 +660,15 @@ export default function App() {
     navigate(`/app/projects/${project.id}`);
   }
 
+  function reorderProjects(fromIndex: number, toIndex: number) {
+    setProjects((prev) => {
+      const updated = [...prev];
+      const [moved] = updated.splice(fromIndex, 1);
+      updated.splice(toIndex, 0, moved);
+      return updated;
+    });
+  }
+
   const activeProjectTasks = useMemo(
     () => activeProject ? projectTasks.filter((t) => t.projectId === activeProject.id) : [],
     [projectTasks, activeProject]
@@ -1075,6 +1084,7 @@ export default function App() {
                   onEdit={openEditProject}
                   onDelete={deleteProject}
                   onOpen={openProject}
+                  onReorder={reorderProjects}
                 />
               </main>
             </>
