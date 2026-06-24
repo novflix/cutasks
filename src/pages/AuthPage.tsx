@@ -38,6 +38,8 @@ export default function AuthPage() {
 
   const passwordValid = mode === 'login' || Object.values(passwordChecks).every(Boolean);
 
+  const emailValid = mode === 'login' || (email.length > 0 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email));
+
   useEffect(() => {
     setTimeout(() => emailRef.current?.focus(), 150);
   }, [mode]);
@@ -262,7 +264,7 @@ export default function AuthPage() {
 
           {error && <p className="auth-error">{error}</p>}
 
-          <button type="submit" className="auth-submit" disabled={loading || (mode === 'register' && (!agreedToTerms || !agreedToPrivacy || !passwordValid))}>
+          <button type="submit" className="auth-submit" disabled={loading || (mode === 'register' && (!agreedToTerms || !agreedToPrivacy || !passwordValid || !emailValid))}>
             {loading ? <div className="auth-btn-spinner" /> : mode === 'login' ? t('auth.signIn') : t('auth.signUp')}
           </button>
         </form>
