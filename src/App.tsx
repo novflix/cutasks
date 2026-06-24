@@ -20,6 +20,7 @@ import PomoMiniTimer from './components/PomoMiniTimer';
 import MobileNav from './components/MobileNav';
 import ProtectedRoute from './components/ProtectedRoute';
 import ConfirmDialog from './components/ConfirmDialog';
+import Skeleton from './components/Skeleton';
 import { getDeadlineStatus } from './utils';
 import { MinimalisticMagnifier, ArrowLeft } from '@solar-icons/react';
 import { PROJECT_ICONS } from './constants';
@@ -104,6 +105,7 @@ export default function App() {
   const [ptSectionId, setPtSectionId] = useState<string | null>(null);
   const detailTimer2 = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fsLoadedRef = useRef(false);
+  const [dataLoading, setDataLoading] = useState(true);
   const habitFormOpenerRef = useRef<(() => void) | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<{ type: 'task' | 'project'; id: string; title: string } | null>(null);
 
@@ -202,6 +204,7 @@ export default function App() {
         setProjectTasks(cleaned.projectTasks);
         setHabits(data.habits);
         fsLoadedRef.current = true;
+        setDataLoading(false);
       }).catch(() => {
         const cleaned = cleanupExpired(data.tasks, data.projectTasks);
         setTasks(cleaned.tasks);
@@ -210,9 +213,11 @@ export default function App() {
         setProjectTasks(cleaned.projectTasks);
         setHabits(data.habits);
         fsLoadedRef.current = true;
+        setDataLoading(false);
       });
     }).catch(() => {
       fsLoadedRef.current = true;
+      setDataLoading(false);
     });
   }, [user]);
 
@@ -987,6 +992,17 @@ export default function App() {
     <div className="app" style={{ '--sidebar-w': `${sidebarWidth}px` } as React.CSSProperties}>
       <Sidebar width={sidebarWidth} onResize={setSidebarWidth} activePage={activePage} onNavigate={sidebarNavigate} />
       <div className="app-content">
+        {dataLoading ? (
+          <main className="main">
+            <div className="page-hero">
+              <div className="skeleton-line skeleton-line-medium" style={{ width: 120, height: 24 }} />
+            </div>
+            <Skeleton type="stat" lines={4} />
+            <div style={{ marginTop: 20 }}>
+              <Skeleton type="task" lines={5} />
+            </div>
+          </main>
+        ) : (
         <AnimatedRoutes
           routes={
             <Routes>
@@ -1177,6 +1193,7 @@ export default function App() {
             </Routes>
           }
         />
+        )}
       </div>
 
       {(activeViewingTask || detailClosing) && (
