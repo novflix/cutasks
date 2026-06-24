@@ -933,6 +933,9 @@ export default function App() {
   const isLanding = location.pathname === '/';
 
   if (isLanding) {
+    if (user) {
+      return <Navigate to="/app/home" replace />;
+    }
     return (
       <Routes>
         <Route path="/" element={<LandingPage />} />

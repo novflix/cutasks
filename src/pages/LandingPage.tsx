@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../contexts/AuthContext';
 import LanguagePicker from '../components/LanguagePicker';
 import {
   ClipboardCheck,
@@ -25,7 +24,6 @@ import {
 
 export default function LandingPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const { t } = useTranslation();
   const [scrolled, setScrolled] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
@@ -36,11 +34,7 @@ export default function LandingPage() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    const params = new URLSearchParams(window.location.search);
-    if (user && !params.get('preview')) {
-      navigate('/app/home', { replace: true });
-    }
-  }, [user, navigate]);
+  }, []);
 
   const scrollTo = useCallback((el: HTMLElement | null) => {
     el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
