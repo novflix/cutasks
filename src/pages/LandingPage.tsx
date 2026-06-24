@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../contexts/AuthContext';
 import LanguagePicker from '../components/LanguagePicker';
 import {
   ClipboardCheck,
@@ -25,6 +26,7 @@ import {
 export default function LandingPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
   const featuresRef = useRef<HTMLDivElement>(null);
@@ -71,8 +73,14 @@ export default function LandingPage() {
           </div>
           <div className="lp-nav-actions">
             <LanguagePicker compact />
-            <button className="lp-nav-link" onClick={() => navigate('/auth')}>{t('landing.signIn')}</button>
-            <button className="lp-nav-btn" onClick={() => navigate('/auth')}>{t('landing.getStarted')}</button>
+            {user ? (
+              <button className="lp-nav-btn" onClick={() => navigate('/app/home')}>{t('landing.openApp')}</button>
+            ) : (
+              <>
+                <button className="lp-nav-link" onClick={() => navigate('/auth')}>{t('landing.signIn')}</button>
+                <button className="lp-nav-btn" onClick={() => navigate('/auth')}>{t('landing.getStarted')}</button>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -97,8 +105,8 @@ export default function LandingPage() {
             {t('landing.heroDesc')}
           </p>
           <div className="lp-hero-actions">
-            <button className="lp-btn lp-btn-primary" onClick={() => navigate('/auth')}>
-              <span>{t('landing.startForFree')}</span>
+            <button className="lp-btn lp-btn-primary" onClick={() => navigate(user ? '/app/home' : '/auth')}>
+              <span>{user ? t('landing.openApp') : t('landing.startForFree')}</span>
               <ArrowRight size={16} />
             </button>
             <button className="lp-btn lp-btn-ghost" onClick={() => scrollTo(featuresRef.current)}>
@@ -566,8 +574,8 @@ export default function LandingPage() {
           <p className="lp-cta-desc">
             {t('landing.ctaDesc')}
           </p>
-          <button className="lp-btn lp-btn-primary lp-btn-lg" onClick={() => navigate('/auth')}>
-            <span>{t('landing.ctaButton')}</span>
+          <button className="lp-btn lp-btn-primary lp-btn-lg" onClick={() => navigate(user ? '/app/home' : '/auth')}>
+            <span>{user ? t('landing.openApp') : t('landing.ctaButton')}</span>
             <ArrowRight size={18} />
           </button>
         </div>

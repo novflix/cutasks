@@ -948,23 +948,7 @@ export default function App() {
     return <Suspense fallback={<PageLoader />}><AuthPage /></Suspense>;
   }
 
-  if (location.pathname === '/terms' || location.pathname === '/privacy') {
-    return (
-      <Suspense fallback={<PageLoader />}>
-        <Routes>
-          <Route path="/terms" element={<TermsPage />} />
-          <Route path="/privacy" element={<PrivacyPage />} />
-        </Routes>
-      </Suspense>
-    );
-  }
-
-  const isLanding = location.pathname === '/';
-
-  if (isLanding) {
-    if (user) {
-      return <Navigate to="/app/home" replace />;
-    }
+  if (location.pathname === '/' || location.pathname === '/terms' || location.pathname === '/privacy') {
     return (
       <Suspense fallback={<PageLoader />}>
         <Routes>
@@ -995,7 +979,6 @@ export default function App() {
         <AnimatedRoutes
           routes={
             <Routes>
-              <Route path="/" element={<LandingPage />} />
               <Route path="/app/home" element={
                 <ProtectedRoute>
                   <main className="main">
