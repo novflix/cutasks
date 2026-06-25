@@ -315,19 +315,25 @@ export default function SettingsPage() {
       const result = await requestPermission();
       setNotifPermission(result);
       if (result === 'granted') {
-        await subscribeToPush();
-        setNotificationsEnabled(true);
-        setNotifEnabled(true);
+        const sub = await subscribeToPush();
+        if (sub) {
+          setNotificationsEnabled(true);
+          setNotifEnabled(true);
+        }
       }
     } else {
       const next = !notifEnabled;
       if (next) {
-        await subscribeToPush();
+        const sub = await subscribeToPush();
+        if (sub) {
+          setNotificationsEnabled(true);
+          setNotifEnabled(true);
+        }
       } else {
         await unsubscribeFromPush();
+        setNotificationsEnabled(false);
+        setNotifEnabled(false);
       }
-      setNotificationsEnabled(next);
-      setNotifEnabled(next);
     }
   }
 
