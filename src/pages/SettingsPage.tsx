@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Logout, Key, CheckCircle, CloseCircle, TrashBinMinimalistic, Pen, AltArrowRight, Heart, Copy } from '@solar-icons/react';
+import { Logout, Key, CheckCircle, CloseCircle, TrashBinMinimalistic, Pen, AltArrowRight, Heart, Copy, DownloadMinimalistic } from '@solar-icons/react';
+import { loadAllData } from '../services/firestore';
 import { SiTon, SiTether, SiSolana, SiLitecoin, SiCircle } from 'react-icons/si';
 import { logout, changePassword, deleteAccount, updateDisplayName } from '../services/auth';
 import { saveSettings } from '../services/firestore';
@@ -262,6 +263,21 @@ export default function SettingsPage() {
     setTimeout(() => setCopiedAddress(null), 1500);
   }
 
+  async function handleExportData() {
+    if (!user) return;
+    try {
+      const data = await loadAllData(user.uid);
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `cutasks-export-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+    }
+  }
+
   async function handleUpdateName() {
     setNameError('');
     setNameSuccess(false);
@@ -324,6 +340,12 @@ export default function SettingsPage() {
                 <TrashBinMinimalistic size={18} />
               </div>
               <span className="account-action-text">{t('settings.deleteAccount')}</span>
+            </button>
+            <button className="account-action-btn" onClick={handleExportData}>
+              <div className="account-action-icon">
+                <DownloadMinimalistic size={18} />
+              </div>
+              <span className="account-action-text">{t('settings.exportData')}</span>
             </button>
           </div>
         </div>
