@@ -152,7 +152,7 @@ export default function App() {
 
   const tasksRef = useRef(tasks);
   useEffect(() => { tasksRef.current = tasks; }, [tasks]);
-  const historyRef = useRef<Task[][]>([]);
+  const historyRef = useRef<{ tasks: Task[]; projects: Project[]; sections: Section[]; projectTasks: ProjectTask[]; habits: Habit[] }[]>([]);
   const formTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const detailTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -222,14 +222,24 @@ export default function App() {
   }, [user]);
 
   const pushHistory = useCallback(() => {
-    historyRef.current.push([...tasksRef.current]);
+    historyRef.current.push({
+      tasks: [...tasksRef.current],
+      projects: [...projects],
+      sections: [...sections],
+      projectTasks: [...projectTasks],
+      habits: [...habits],
+    });
     if (historyRef.current.length > 50) historyRef.current.shift();
-  }, []);
+  }, [projects, sections, projectTasks, habits]);
 
   const undo = useCallback(() => {
     if (historyRef.current.length === 0) return;
     const prev = historyRef.current.pop()!;
-    setTasks(prev);
+    setTasks(prev.tasks);
+    setProjects(prev.projects);
+    setSections(prev.sections);
+    setProjectTasks(prev.projectTasks);
+    setHabits(prev.habits);
   }, []);
 
   useEffect(() => {
@@ -705,12 +715,7 @@ export default function App() {
     [projectTasks, viewingProjectTask]
   );
 
-  const projectTaskHistoryRef = useRef<ProjectTask[][]>([]);
 
-  const pushProjectTaskHistory = useCallback(() => {
-    projectTaskHistoryRef.current.push([...projectTasks]);
-    if (projectTaskHistoryRef.current.length > 50) projectTaskHistoryRef.current.shift();
-  }, [projectTasks]);
 
   function openCreateProjectTask(sectionId: string | null) {
     if (formTimer.current) clearTimeout(formTimer.current);
@@ -763,7 +768,7 @@ export default function App() {
 
     const now = Date.now();
     if (editingProjectTask) {
-      pushProjectTaskHistory();
+      pushHistory();
       setProjectTasks((prev) =>
         prev.map((t) =>
           t.id === editingProjectTask.id
@@ -772,7 +777,7 @@ export default function App() {
         )
       );
     } else {
-      pushProjectTaskHistory();
+      pushHistory();
       const newTask: ProjectTask = {
         id: generateId(),
         projectId: activeProject.id,
@@ -794,7 +799,7 @@ export default function App() {
   }
 
   function toggleProjectTask(id: string) {
-    pushProjectTaskHistory();
+    pushHistory();
     const mode = (localStorage.getItem('cutasks_delete_mode') || 'instant') as 'instant' | '3days' | '7days';
     const now = Date.now();
 
@@ -821,7 +826,7 @@ export default function App() {
   }
 
   function confirmDeleteProjectTask(id: string) {
-    pushProjectTaskHistory();
+    pushHistory();
     setProjectTasks((prev) => {
       const updated = prev.filter((t) => t.id !== id);
       return updated.map((t) => t.parentId === id ? { ...t, parentId: null } : t);
@@ -837,7 +842,7 @@ export default function App() {
   }
 
   function updateProjectTask(id: string, changes: Partial<ProjectTask>) {
-    pushProjectTaskHistory();
+    pushHistory();
     setProjectTasks((prev) =>
       prev.map((t) => t.id === id ? { ...t, ...changes, updatedAt: Date.now() } : t)
     );
@@ -845,6 +850,7 @@ export default function App() {
 
   useEffect(() => {
     function handleSaveSections(e: Event) {
+      pushHistory();
       setSections((e as CustomEvent).detail);
     }
     function handleWeekStartChange(e: Event) {
@@ -994,7 +1000,7 @@ export default function App() {
               <Route path="/app/habits" element={
                 <ProtectedRoute>
                   <main className="main">
-                    <HabitsPage habits={habits} onHabitsChange={setHabits} weekStartDay={weekStart} formOpenerRef={habitFormOpenerRef} />
+                    <HabitsPage habits={habits} onHabitsChange={(updater) => { pushHistory(); setHabits(updater); }} weekStartDay={weekStart} formOpenerRef={habitFormOpenerRef} />
                   </main>
                 </ProtectedRoute>
               } />
