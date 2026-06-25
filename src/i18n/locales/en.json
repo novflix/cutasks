@@ -324,6 +324,7 @@
     "notificationsOn": "Notifications enabled",
     "notificationsOff": "Notifications disabled",
     "notificationsAllow": "Allow notifications",
+    "notificationsDesc": "Reminders about deadlines, habits, and daily summaries",
     "exportData": "Export data",
     "exportDataDesc": "Download all your data as a JSON file",
     "importData": "Import data",
