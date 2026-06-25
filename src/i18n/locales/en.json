@@ -317,7 +317,13 @@
     "copyAddress": "Copy address",
     "copied": "Copied!",
     "supportThankYou": "Every contribution helps keep CuTasks alive!",
-    "exportData": "Export my data",
+    "notifications": "Notifications",
+    "notificationsOn": "Notifications enabled",
+    "notificationsOff": "Notifications disabled",
+    "notificationsAllow": "Allow notifications",
+    "exportData": "Export data",
+    "importData": "Import data",
+    "data": "Data",
     "focusDuration": "Focus duration",
     "shortBreak": "Short break",
     "longBreak": "Long break",
@@ -744,5 +750,19 @@
       "s14c": "We follow all privacy laws where we operate.",
       "closing": "We take your privacy seriously and want you to feel confident using CuTasks. If you're ever unsure or have a question, reach out. We're here to help."
     }
+  },
+  "notifications": {
+    "allow": "Enable notifications",
+    "enable": "Turn on notifications",
+    "disable": "Turn off notifications",
+    "test": "Send test notification",
+    "deadlineTomorrow": { "title": "Deadline tomorrow" },
+    "overdue": { "title": "Task overdue" },
+    "habitReminder": { "title": "Habit reminder" },
+    "streakAtRisk": { "title": "Streak at risk" },
+    "streakCelebration": { "title": "Streak milestone!" },
+    "morningGreeting": { "title": "Good morning!" },
+    "eveningSummary": { "title": "Evening summary" },
+    "inactivity": { "title": "We miss you!" }
   }
 }

@@ -1,8 +1,13 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Logout, Key, CheckCircle, CloseCircle, TrashBinMinimalistic, Pen, AltArrowRight, Heart, Copy, DownloadMinimalistic } from '@solar-icons/react';
-import { loadAllData } from '../services/firestore';
+import { Logout, Key, CheckCircle, CloseCircle, TrashBinMinimalistic, Pen, AltArrowRight, Heart, Copy, DownloadMinimalistic, UploadMinimalistic, Bell } from '@solar-icons/react';
+import { loadAllData, saveAllData } from '../services/firestore';
 import { SiTon, SiTether, SiSolana, SiLitecoin, SiCircle } from 'react-icons/si';
+import {
+  isNotificationsSupported, getNotificationPermission,
+  requestPermission, isNotificationsEnabled, setNotificationsEnabled,
+  subscribeToPush, unsubscribeFromPush,
+} from '../services/notifications';
 import { logout, changePassword, deleteAccount, updateDisplayName } from '../services/auth';
 import { saveSettings } from '../services/firestore';
 import { useAuth } from '../contexts/AuthContext';
@@ -91,6 +96,9 @@ export default function SettingsPage() {
   const [donateModalClosing, setDonateModalClosing] = useState(false);
   const donateModalTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
+  const [notifSupported] = useState(() => isNotificationsSupported());
+  const [notifPermission, setNotifPermission] = useState(() => getNotificationPermission());
+  const [notifEnabled, setNotifEnabled] = useState(() => isNotificationsEnabled());
 
   const DELETE_OPTIONS: { value: DeleteMode; label: string; desc: string }[] = [
     { value: 'instant', label: t('settings.instant'), desc: t('settings.instantDesc') },
@@ -278,6 +286,53 @@ export default function SettingsPage() {
     }
   }
 
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  function handleImportClick() {
+    fileInputRef.current?.click();
+  }
+
+  async function handleImportData(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      if (data.tasks || data.projects || data.sections || data.projectTasks || data.habits) {
+        await saveAllData(user.uid, {
+          tasks: data.tasks || [],
+          projects: data.projects || [],
+          sections: data.sections || [],
+          projectTasks: data.projectTasks || [],
+        });
+        window.location.reload();
+      }
+    } catch {
+    }
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }
+
+  async function handleToggleNotifications() {
+    if (notifPermission !== 'granted') {
+      const result = await requestPermission();
+      setNotifPermission(result);
+      if (result === 'granted') {
+        await subscribeToPush();
+        setNotificationsEnabled(true);
+        setNotifEnabled(true);
+      }
+    } else {
+      const next = !notifEnabled;
+      if (next) {
+        await subscribeToPush();
+      } else {
+        await unsubscribeFromPush();
+      }
+      setNotificationsEnabled(next);
+      setNotifEnabled(next);
+    }
+  }
+
   async function handleUpdateName() {
     setNameError('');
     setNameSuccess(false);
@@ -340,12 +395,6 @@ export default function SettingsPage() {
                 <TrashBinMinimalistic size={18} />
               </div>
               <span className="account-action-text">{t('settings.deleteAccount')}</span>
-            </button>
-            <button className="account-action-btn" onClick={handleExportData}>
-              <div className="account-action-icon">
-                <DownloadMinimalistic size={18} />
-              </div>
-              <span className="account-action-text">{t('settings.exportData')}</span>
             </button>
           </div>
         </div>
@@ -493,6 +542,38 @@ export default function SettingsPage() {
             </div>
           </div>
         ))}
+      </div>
+
+      {notifSupported && (
+        <div className="settings-section">
+            <span className="settings-section-label">{t('settings.notifications')}</span>
+          <button className="settings-footer settings-footer-link" onClick={handleToggleNotifications}>
+            <span className="settings-footer-label">
+              <Bell size={14} style={{ marginRight: 8, verticalAlign: 'middle' }} />
+              {notifPermission === 'granted'
+                ? (notifEnabled ? t('settings.notificationsOn') : t('settings.notificationsOff'))
+                : t('settings.notificationsAllow')}
+            </span>
+            <span className={`settings-toggle ${notifEnabled ? 'active' : ''}`}>
+              <span className="settings-toggle-dot" />
+            </span>
+          </button>
+        </div>
+      )}
+
+      <div className="settings-section">
+          <span className="settings-section-label">{t('settings.data')}</span>
+        <div className="data-actions">
+          <button className="data-action-btn" onClick={handleExportData}>
+            <DownloadMinimalistic size={16} />
+            <span>{t('settings.exportData')}</span>
+          </button>
+          <button className="data-action-btn" onClick={handleImportClick}>
+            <UploadMinimalistic size={16} />
+            <span>{t('settings.importData')}</span>
+          </button>
+          <input ref={fileInputRef} type="file" accept=".json" style={{ display: 'none' }} onChange={handleImportData} />
+        </div>
       </div>
 
       <div className="settings-section">

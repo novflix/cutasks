@@ -10,6 +10,7 @@ import { loadPomoConfig, loadPomoSavedState, savePomoState, loadPomoRunning } fr
 import { loadTasks, saveTasks as localSaveTasks, getAllTags, loadProjects, saveProjects as localSaveProjects, loadSections, saveSections as localSaveSections, loadProjectTasks, saveProjectTasks as localSaveProjectTasks, loadHabits, saveHabits as localSaveHabits } from './storage';
 import { useAuth } from './contexts/AuthContext';
 import { saveTasks as fsSaveTasks, saveProjects as fsSaveProjects, saveSections as fsSaveSections, saveProjectTasks as fsSaveProjectTasks, saveHabits as fsSaveHabits, loadAllData, loadSettings } from './services/firestore';
+import { isNotificationsEnabled, sendNotification, getLocalizedMessage } from './services/notifications';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import TaskDetailModal from './components/TaskDetailModal';
@@ -58,7 +59,7 @@ export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [tasks, setTasks] = useState<Task[]>(loadTasks);
   const [showForm, setShowForm] = useState(false);
@@ -219,6 +220,97 @@ export default function App() {
       }
     }).catch(() => {});
   }, [user]);
+
+  function dateKey(d: Date): string {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  useEffect(() => {
+    if (!user || !syncReadyRef.current) return;
+
+    function checkNotifications() {
+      if (!isNotificationsEnabled()) return;
+      if (Notification.permission !== 'granted') return;
+
+      const now = new Date();
+      const todayStart = new Date(now);
+      todayStart.setHours(0, 0, 0, 0);
+      const tomorrowStart = new Date(todayStart);
+      tomorrowStart.setDate(tomorrowStart.getDate() + 1);
+      const dayAfterTomorrow = new Date(tomorrowStart);
+      dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1);
+
+      const allTasks = [...tasks, ...projectTasks];
+      const lang = i18n.language;
+
+      const overdueTasks = allTasks.filter((t) =>
+        !t.completed && t.deadline && new Date(t.deadline) < todayStart
+      );
+      if (overdueTasks.length > 0) {
+        const task = overdueTasks[0];
+        const title = t('notifications.overdue.title');
+        const body = getLocalizedMessage('overdue', lang, { title: task.title });
+        sendNotification({ title, body, type: 'overdue', tag: 'overdue-check' });
+        return;
+      }
+
+      const tomorrowTasks = allTasks.filter((t) =>
+        !t.completed && t.deadline &&
+        new Date(t.deadline) >= tomorrowStart &&
+        new Date(t.deadline) < dayAfterTomorrow
+      );
+      if (tomorrowTasks.length > 0) {
+        const task = tomorrowTasks[0];
+        const title = t('notifications.deadlineTomorrow.title');
+        const body = getLocalizedMessage('deadlineTomorrow', lang, { title: task.title });
+        sendNotification({ title, body, type: 'deadlineTomorrow', tag: 'deadline-tomorrow-check' });
+        return;
+      }
+
+      const hour = now.getHours();
+      if (hour === 8) {
+        const activeTasks = allTasks.filter((t) => !t.completed);
+        if (activeTasks.length > 0) {
+          const title = t('notifications.morningGreeting.title');
+          const body = getLocalizedMessage('morningGreeting', lang, { count: activeTasks.length });
+          sendNotification({ title, body, type: 'morningGreeting', tag: 'morning-greeting' });
+          return;
+        }
+      }
+
+      if (hour === 20) {
+        const completedToday = allTasks.filter((t) =>
+          t.completed && t.completedAt && t.completedAt >= todayStart.getTime()
+        ).length;
+        const totalToday = allTasks.filter((t) =>
+          t.createdAt >= todayStart.getTime() || !t.completed
+        ).length;
+        if (totalToday > 0) {
+          const title = t('notifications.eveningSummary.title');
+          const body = getLocalizedMessage('eveningSummary', lang, { done: completedToday, total: totalToday });
+          sendNotification({ title, body, type: 'eveningSummary', tag: 'evening-summary' });
+          return;
+        }
+      }
+
+      const todayHabits = habits.filter((h) => h.weekdays.includes(now.getDay()));
+      const uncompletedHabits = todayHabits.filter((h) => !h.completions[dateKey(now)]);
+      if (uncompletedHabits.length > 0 && hour >= 18) {
+        const habit = uncompletedHabits[0];
+        const title = t('notifications.streakAtRisk.title');
+        const body = getLocalizedMessage('streakAtRisk', lang, { habit: habit.name, streak: habit.streak });
+        sendNotification({ title, body, type: 'streakAtRisk', tag: `streak-risk-${habit.id}` });
+      }
+    }
+
+    const timer = setTimeout(checkNotifications, 3000);
+    const interval = setInterval(checkNotifications, 30 * 60 * 1000);
+
+    return () => {
+      clearTimeout(timer);
+      clearInterval(interval);
+    };
+  }, [user, tasks, projectTasks, habits, i18n.language, t]);
 
   const pushHistory = useCallback(() => {
     historyRef.current.push({

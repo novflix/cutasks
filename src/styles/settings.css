@@ -962,6 +962,80 @@
   color: var(--text-dim);
 }
 
+/* ── Data actions ── */
+
+.data-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.data-action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 12px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.data-action-btn:hover {
+  border-color: var(--border);
+  color: var(--text);
+  background: var(--bg-elevated);
+}
+
+.data-action-btn:active {
+  transform: scale(0.98);
+}
+
+.data-action-btn svg {
+  flex-shrink: 0;
+}
+
+/* ── Toggle switch ── */
+
+.settings-toggle {
+  width: 42px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--bg-input);
+  border: 1.5px solid var(--border-subtle);
+  position: relative;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  flex-shrink: 0;
+}
+
+.settings-toggle.active {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.settings-toggle-dot {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.settings-toggle.active .settings-toggle-dot {
+  transform: translateX(18px);
+}
+
 /* ── Donate modal ── */
 
 .donate-modal .modal-header {
