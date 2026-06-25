@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Logout, Key, CheckCircle, CloseCircle, TrashBinMinimalistic, Pen, AltArrowRight } from '@solar-icons/react';
+import { Logout, Key, CheckCircle, CloseCircle, TrashBinMinimalistic, Pen, AltArrowRight, Heart, Copy } from '@solar-icons/react';
+import { SiTon, SiTether, SiSolana, SiLitecoin, SiCircle } from 'react-icons/si';
 import { logout, changePassword, deleteAccount, updateDisplayName } from '../services/auth';
 import { saveSettings } from '../services/firestore';
 import { useAuth } from '../contexts/AuthContext';
@@ -85,6 +86,10 @@ export default function SettingsPage() {
   const [nameError, setNameError] = useState('');
   const [nameSuccess, setNameSuccess] = useState(false);
   const [nameLoading, setNameLoading] = useState(false);
+  const [showDonateModal, setShowDonateModal] = useState(false);
+  const [donateModalClosing, setDonateModalClosing] = useState(false);
+  const donateModalTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
 
   const DELETE_OPTIONS: { value: DeleteMode; label: string; desc: string }[] = [
     { value: 'instant', label: t('settings.instant'), desc: t('settings.instantDesc') },
@@ -226,6 +231,35 @@ export default function SettingsPage() {
       setNameError('');
       setNameSuccess(false);
     }, 200);
+  }
+
+  const WALLETS = [
+    { network: 'USDC (Polygon)', address: '0x9e9C10d3A526cb39B62b88DecC55f04F8f63fdE3' },
+    { network: 'USDT (TRC-20)', address: 'TVMMVRhbTJutmjkwFC6x5g4cm2S4P5nbqy' },
+    { network: 'TON (The Open Network)', address: 'UQAdiUvmlLJ088bQkbv6AGs_sp7rO0jHcmdzR6oWglq5Isk2' },
+    { network: 'SOL (Solana)', address: 'Wv29H2iUF4vQLfqgGjvbSiobThxJAfSpeFNBanoWvKw' },
+    { network: 'LTC (Litecoin)', address: 'ltc1qff5xug04kp4tm03zrx9n9tah6zhtf3kzk5cp30' },
+  ];
+
+  function openDonateModal() {
+    setDonateModalClosing(false);
+    setShowDonateModal(true);
+    setCopiedAddress(null);
+  }
+
+  function closeDonateModal() {
+    setDonateModalClosing(true);
+    donateModalTimer.current = setTimeout(() => {
+      setShowDonateModal(false);
+      setDonateModalClosing(false);
+      setCopiedAddress(null);
+    }, 200);
+  }
+
+  async function copyAddress(address: string) {
+    await navigator.clipboard.writeText(address);
+    setCopiedAddress(address);
+    setTimeout(() => setCopiedAddress(null), 1500);
   }
 
   async function handleUpdateName() {
@@ -451,6 +485,12 @@ export default function SettingsPage() {
             <AltArrowRight size={14} />
           </span>
         </button>
+        <button className="settings-footer settings-footer-link" onClick={openDonateModal}>
+          <span className="settings-footer-label">{t('settings.support')}</span>
+          <span className="settings-footer-value">
+            <Heart size={14} />
+          </span>
+        </button>
       </div>
 
       {(showPasswordModal || passwordModalClosing) && (
@@ -610,6 +650,58 @@ export default function SettingsPage() {
                   </>
                 )}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {(showDonateModal || donateModalClosing) && (
+        <div className={`modal-overlay${donateModalClosing ? ' closing' : ''}`} onClick={closeDonateModal}>
+          <div className={`modal donate-modal${donateModalClosing ? ' closing' : ''}`} onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>{t('settings.supportTitle')}</h2>
+              <button className="btn-icon" onClick={closeDonateModal}>
+                <CloseCircle size={22} />
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="donate-hero">
+                <div className="donate-hero-icon">
+                  <Heart size={28} />
+                </div>
+                <p>{t('settings.supportDesc')}</p>
+              </div>
+              <div className="donate-list">
+                {WALLETS.map((w) => {
+                  const cls = w.network.toLowerCase().includes('usdc') ? 'usdc'
+                    : w.network.toLowerCase().includes('usdt') ? 'usdt'
+                    : w.network.toLowerCase().includes('ton') ? 'ton'
+                    : w.network.toLowerCase().includes('solana') ? 'sol'
+                    : 'ltc';
+                  const CryptoIcon = cls === 'usdc' ? SiCircle
+                    : cls === 'usdt' ? SiTether
+                    : cls === 'ton' ? SiTon
+                    : cls === 'sol' ? SiSolana
+                    : SiLitecoin;
+                  return (
+                    <div key={w.network} className="donate-item">
+                      <div className={`donate-item-icon ${cls}`}>
+                        <CryptoIcon size={20} />
+                      </div>
+                      <div className="donate-item-info">
+                        <span className="donate-item-name">{w.network}</span>
+                        <span className="donate-item-addr" title={w.address}>{w.address}</span>
+                      </div>
+                      <button className={`donate-item-copy${copiedAddress === w.address ? ' copied' : ''}`} onClick={() => copyAddress(w.address)} title={t('settings.copyAddress')}>
+                        {copiedAddress === w.address ? <CheckCircle size={15} /> : <Copy size={15} />}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="donate-note">
+                <p>{t('settings.supportThankYou')}</p>
+              </div>
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
-import { AddSquare, Pen, TrashBinMinimalistic, NotesMinimalistic } from '@solar-icons/react';
+import { AddSquare, Pen, TrashBinMinimalistic } from '@solar-icons/react';
 import { useTranslation } from 'react-i18next';
 import type { Project, Section as SectionType, ProjectTask } from '../types';
 import { generateId, canAddSubtask, getTaskDepth, MAX_SUBTASK_DEPTH, priorityOrder } from '../utils';
@@ -411,7 +411,7 @@ export default function ProjectDetailPage({
 
           {projectSections.length === 0 && unsectionedTasks.length === 0 && (
             <div className="empty">
-              <NotesMinimalistic size={56} className="empty-icon" />
+              <img src="/illustrations/Tasks-Variant-1.svg" className="empty-illustration" alt="" />
               <p className="empty-title">{t('projects.noTasks')}</p>
               <p className="empty-sub">{t('projects.noTasksSub')}</p>
             </div>
