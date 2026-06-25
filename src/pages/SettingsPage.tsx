@@ -282,8 +282,7 @@ export default function SettingsPage() {
       a.download = `cutasks-export-${new Date().toISOString().slice(0, 10)}.json`;
       a.click();
       URL.revokeObjectURL(url);
-    } catch {
-    }
+    } catch { /* ignore export errors */ }
   }
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -307,8 +306,7 @@ export default function SettingsPage() {
         });
         window.location.reload();
       }
-    } catch {
-    }
+    } catch { /* ignore import errors */ }
     if (fileInputRef.current) fileInputRef.current.value = '';
   }
 
