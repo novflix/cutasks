@@ -392,6 +392,10 @@
     height: 48px;
   }
 
+  .empty-illustration {
+    width: 140px;
+  }
+
   .empty-title {
     font-size: 1rem;
   }

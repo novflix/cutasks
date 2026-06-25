@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { NotesMinimalistic } from '@solar-icons/react';
+
 import { useTranslation } from 'react-i18next';
 import type { Project, ProjectTask } from '../types';
 import ProjectCard from '../components/ProjectCard';
@@ -57,7 +57,7 @@ export default function ProjectsPage({ projects, projectTasks, searchQuery, onEd
   if (projects.length === 0) {
     return (
       <div className="empty">
-        <NotesMinimalistic size={64} className="empty-icon" />
+        <img src="/illustrations/Projects-Variant-1.svg" className="empty-illustration" alt="" />
         <p className="empty-title">
           {searchQuery ? t('projects.noResults') : t('projects.noProjects')}
         </p>

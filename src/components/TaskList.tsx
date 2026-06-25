@@ -1,5 +1,5 @@
 import { useState, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
-import { NotesMinimalistic } from '@solar-icons/react';
+
 import { useTranslation } from 'react-i18next';
 import type { Task } from '../types';
 import type { FilterType } from '../types';
@@ -302,7 +302,7 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
   if (topLevelTasks.length === 0) {
     return (
       <div className="empty">
-        <NotesMinimalistic size={64} className="empty-icon" />
+        <img src="/illustrations/Tasks-Variant-1.svg" className="empty-illustration" alt="" />
         <p className="empty-title">
           {searchQuery
             ? t('tasks.noResults')

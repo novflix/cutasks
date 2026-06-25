@@ -15,6 +15,13 @@
   animation: float 3s ease-in-out infinite;
 }
 
+.empty-illustration {
+  width: 180px;
+  height: auto;
+  margin-bottom: 24px;
+  animation: float 3s ease-in-out infinite;
+}
+
 .empty-title {
   font-size: 1.2rem;
   font-weight: 700;

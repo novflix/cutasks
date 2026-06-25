@@ -461,6 +461,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
       <div className="habits-list">
         {visibleHabits.length === 0 ? (
           <div className="habits-empty">
+            <img src="/illustrations/Habits-Variant-1.svg" className="habits-empty-illustration" alt="" />
             <p className="habits-empty-title">{t('habits.noHabits')}</p>
             <p className="habits-empty-sub">{habits.length === 0 ? t('habits.noHabitsSub') : t('habits.noHabitsScheduled')}</p>
           </div>

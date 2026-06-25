@@ -573,6 +573,13 @@
   color: var(--text-dim);
 }
 
+.cal-empty-illustration {
+  width: 160px;
+  height: auto;
+  margin-bottom: 8px;
+  animation: float 3s ease-in-out infinite;
+}
+
 .cal-empty-title {
   font-size: 0.95rem;
   font-weight: 700;

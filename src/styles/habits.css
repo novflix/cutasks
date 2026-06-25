@@ -619,6 +619,13 @@
   text-align: center;
 }
 
+.habits-empty-illustration {
+  width: 160px;
+  height: auto;
+  margin-bottom: 8px;
+  animation: float 3s ease-in-out infinite;
+}
+
 .habits-empty-title {
   font-size: 0.95rem;
   font-weight: 700;

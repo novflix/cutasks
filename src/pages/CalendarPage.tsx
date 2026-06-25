@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, AltArrowLeft, AltArrowRight, CalendarMinimalistic } from '@solar-icons/react';
+import { ArrowLeft, AltArrowLeft, AltArrowRight } from '@solar-icons/react';
 import type { Task, ProjectTask } from '../types';
 import { formatDeadline, getDeadlineStatus, getTagColor, priorityOrder } from '../utils';
 import '../styles/calendar.css';
@@ -279,9 +279,7 @@ export default function CalendarPage({ tasks, projectTasks, onViewTask }: Calend
       <div className="cal-tasks">
         {selectedTasks.length === 0 ? (
           <div className="cal-empty">
-            <div className="cal-empty-icon">
-              <CalendarMinimalistic size={28} />
-            </div>
+            <img src="/illustrations/Calendar-Variant-1.svg" className="cal-empty-illustration" alt="" />
             <p className="cal-empty-title">{t('calendar.noTasks')}</p>
             <p className="cal-empty-sub">{t('calendar.noTasksSub')}</p>
           </div>
