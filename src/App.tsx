@@ -105,7 +105,9 @@ export default function App() {
   const [ptSectionId, setPtSectionId] = useState<string | null>(null);
   const detailTimer2 = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fsLoadedRef = useRef(false);
-  const [dataLoading, setDataLoading] = useState(true);
+  const [dataLoading, setDataLoading] = useState(() => {
+    return !localStorage.getItem('cutasks_tasks') && !localStorage.getItem('cutasks_projects');
+  });
   const habitFormOpenerRef = useRef<(() => void) | null>(null);
   const [confirmDelete, setConfirmDelete] = useState<{ type: 'task' | 'project'; id: string; title: string } | null>(null);
 
@@ -190,35 +192,27 @@ export default function App() {
     }
 
     loadAllData(user.uid).then((data) => {
-      loadSettings(user.uid).then((settings) => {
-        if (settings) {
-          localStorage.setItem('cutasks_theme', settings.theme);
-          localStorage.setItem('cutasks_delete_mode', settings.deleteMode);
-          localStorage.setItem('cutasks_week_start', settings.weekStart);
-          document.documentElement.setAttribute('data-theme', settings.theme);
-        }
-        const cleaned = cleanupExpired(data.tasks, data.projectTasks);
-        setTasks(cleaned.tasks);
-        setProjects(data.projects);
-        setSections(data.sections);
-        setProjectTasks(cleaned.projectTasks);
-        setHabits(data.habits);
-        fsLoadedRef.current = true;
-        setDataLoading(false);
-      }).catch(() => {
-        const cleaned = cleanupExpired(data.tasks, data.projectTasks);
-        setTasks(cleaned.tasks);
-        setProjects(data.projects);
-        setSections(data.sections);
-        setProjectTasks(cleaned.projectTasks);
-        setHabits(data.habits);
-        fsLoadedRef.current = true;
-        setDataLoading(false);
-      });
+      const cleaned = cleanupExpired(data.tasks, data.projectTasks);
+      setTasks(cleaned.tasks);
+      setProjects(data.projects);
+      setSections(data.sections);
+      setProjectTasks(cleaned.projectTasks);
+      setHabits(data.habits);
+      fsLoadedRef.current = true;
+      setDataLoading(false);
     }).catch(() => {
       fsLoadedRef.current = true;
       setDataLoading(false);
     });
+
+    loadSettings(user.uid).then((settings) => {
+      if (settings) {
+        localStorage.setItem('cutasks_theme', settings.theme);
+        localStorage.setItem('cutasks_delete_mode', settings.deleteMode);
+        localStorage.setItem('cutasks_week_start', settings.weekStart);
+        document.documentElement.setAttribute('data-theme', settings.theme);
+      }
+    }).catch(() => {});
   }, [user]);
 
   const pushHistory = useCallback(() => {
