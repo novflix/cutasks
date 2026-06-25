@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useMemo, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { login, register } from '../services/auth';
-import { saveAllData } from '../services/firestore';
+import { saveAllData, loadAllData } from '../services/firestore';
 import { loadTasks, loadProjects, loadSections, loadProjectTasks } from '../storage';
 import { useAuth } from '../contexts/AuthContext';
 import { getFirebaseErrorMessage } from '../utils/firebaseErrors';
@@ -62,6 +62,12 @@ export default function AuthPage() {
       }
       setMigrating(true);
       try {
+        const fsData = await loadAllData(user!.uid);
+        const hasFirestore = fsData.tasks.length + fsData.projects.length + fsData.sections.length + fsData.projectTasks.length > 0;
+        if (hasFirestore) {
+          setMigrated(true);
+          return;
+        }
         await saveAllData(user!.uid, {
           tasks: localTasks,
           projects: localProjects,

@@ -104,7 +104,8 @@ export default function App() {
   const [ptParentId, setPtParentId] = useState<string | null>(null);
   const [ptSectionId, setPtSectionId] = useState<string | null>(null);
   const detailTimer2 = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const fsLoadedRef = useRef(false);
+  const syncReadyRef = useRef(false);
+  const justLoadedFromFsRef = useRef(false);
   const [dataLoading, setDataLoading] = useState(() => {
     return !localStorage.getItem('cutasks_tasks') && !localStorage.getItem('cutasks_projects');
   });
@@ -193,15 +194,19 @@ export default function App() {
 
     loadAllData(user.uid).then((data) => {
       const cleaned = cleanupExpired(data.tasks, data.projectTasks);
+      justLoadedFromFsRef.current = true;
       setTasks(cleaned.tasks);
       setProjects(data.projects);
       setSections(data.sections);
       setProjectTasks(cleaned.projectTasks);
       setHabits(data.habits);
-      fsLoadedRef.current = true;
+
+      syncReadyRef.current = true;
       setDataLoading(false);
+      setTimeout(() => { justLoadedFromFsRef.current = false; }, 100);
     }).catch(() => {
-      fsLoadedRef.current = true;
+
+      syncReadyRef.current = true;
       setDataLoading(false);
     });
 
@@ -311,7 +316,7 @@ export default function App() {
 
   useEffect(() => {
     localSaveTasks(tasks);
-    if (user && fsLoadedRef.current) {
+    if (user && syncReadyRef.current && !justLoadedFromFsRef.current) {
       const timer = setTimeout(() => fsSaveTasks(user.uid, tasks).catch(() => {}), 500);
       return () => clearTimeout(timer);
     }
@@ -319,7 +324,7 @@ export default function App() {
 
   useEffect(() => {
     localSaveProjects(projects);
-    if (user && fsLoadedRef.current) {
+    if (user && syncReadyRef.current && !justLoadedFromFsRef.current) {
       const timer = setTimeout(() => fsSaveProjects(user.uid, projects).catch(() => {}), 500);
       return () => clearTimeout(timer);
     }
@@ -327,7 +332,7 @@ export default function App() {
 
   useEffect(() => {
     localSaveProjectTasks(projectTasks);
-    if (user && fsLoadedRef.current) {
+    if (user && syncReadyRef.current && !justLoadedFromFsRef.current) {
       const timer = setTimeout(() => fsSaveProjectTasks(user.uid, projectTasks).catch(() => {}), 500);
       return () => clearTimeout(timer);
     }
@@ -335,7 +340,7 @@ export default function App() {
 
   useEffect(() => {
     localSaveSections(sections);
-    if (user && fsLoadedRef.current) {
+    if (user && syncReadyRef.current && !justLoadedFromFsRef.current) {
       const timer = setTimeout(() => fsSaveSections(user.uid, sections).catch(() => {}), 500);
       return () => clearTimeout(timer);
     }
@@ -343,7 +348,7 @@ export default function App() {
 
   useEffect(() => {
     localSaveHabits(habits);
-    if (user && fsLoadedRef.current) {
+    if (user && syncReadyRef.current && !justLoadedFromFsRef.current) {
       const timer = setTimeout(() => fsSaveHabits(user.uid, habits).catch(() => {}), 500);
       return () => clearTimeout(timer);
     }
