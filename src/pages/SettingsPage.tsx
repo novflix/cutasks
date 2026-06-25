@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Logout, Key, CheckCircle, CloseCircle, TrashBinMinimalistic, Pen, AltArrowRight, Heart, Copy, DownloadMinimalistic, UploadMinimalistic, Bell } from '@solar-icons/react';
+import { Logout, Key, CheckCircle, CloseCircle, TrashBinMinimalistic, Pen, AltArrowRight, Heart, Copy, DownloadMinimalistic, UploadMinimalistic } from '@solar-icons/react';
 import { loadAllData, saveAllData } from '../services/firestore';
 import { SiTon, SiTether, SiSolana, SiLitecoin, SiCircle } from 'react-icons/si';
 import {
@@ -512,16 +512,42 @@ export default function SettingsPage() {
         </div>
       </div>
 
+      {notifSupported && (
+        <div className="settings-section">
+            <span className="settings-section-label">{t('settings.notifications')}</span>
+          <div className="delete-options">
+            <button
+              className={`delete-option${notifEnabled ? ' active' : ''}`}
+              onClick={handleToggleNotifications}
+            >
+              <div className="delete-option-radio">
+                <div className="delete-option-dot" />
+              </div>
+              <div className="delete-option-info">
+                <span className="delete-option-label">
+                  {notifPermission === 'granted'
+                    ? (notifEnabled ? t('settings.notificationsOn') : t('settings.notificationsOff'))
+                    : t('settings.notificationsAllow')}
+                </span>
+                <span className="delete-option-desc">{t('settings.notificationsDesc')}</span>
+              </div>
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="settings-section">
           <span className="settings-section-label">{t('pomodoro.title')}</span>
+        <div className="delete-options">
         {([
-            { key: 'work' as const, label: t('pomodoro.focus'), color: '#ed9b6d' },
-            { key: 'short' as const, label: t('pomodoro.shortBreak'), color: '#66bb6a' },
-            { key: 'long' as const, label: t('pomodoro.longBreak'), color: '#64b5f6' },
+            { key: 'work' as const, label: t('pomodoro.focus'), desc: t('pomodoro.focusDesc') },
+            { key: 'short' as const, label: t('pomodoro.shortBreak'), desc: t('pomodoro.shortBreakDesc') },
+            { key: 'long' as const, label: t('pomodoro.longBreak'), desc: t('pomodoro.longBreakDesc') },
         ]).map((item) => (
-          <div key={item.key} className="pomo-setting-row">
-            <div className="pomo-setting-info">
-              <span className="pomo-setting-label">{item.label}</span>
+          <div key={item.key} className="delete-option">
+            <div className="delete-option-info">
+              <span className="delete-option-label">{item.label}</span>
+              <span className="delete-option-desc">{item.desc}</span>
             </div>
             <div className="pomo-setting-controls">
               <button
@@ -530,7 +556,7 @@ export default function SettingsPage() {
               >
                 −
               </button>
-              <span className="pomo-setting-value" style={{ color: item.color }}>{pomoConfig[item.key]}m</span>
+              <span className="pomo-setting-value">{pomoConfig[item.key]}m</span>
               <button
                 className="pomo-setting-adj"
                 onClick={() => setPomoConfig((c) => ({ ...c, [item.key]: Math.min(item.key === 'work' ? 120 : 60, c[item.key] + 1) }))}
@@ -540,35 +566,25 @@ export default function SettingsPage() {
             </div>
           </div>
         ))}
-      </div>
-
-      {notifSupported && (
-        <div className="settings-section">
-            <span className="settings-section-label">{t('settings.notifications')}</span>
-          <button className="settings-footer settings-footer-link" onClick={handleToggleNotifications}>
-            <span className="settings-footer-label">
-              <Bell size={14} style={{ marginRight: 8, verticalAlign: 'middle' }} />
-              {notifPermission === 'granted'
-                ? (notifEnabled ? t('settings.notificationsOn') : t('settings.notificationsOff'))
-                : t('settings.notificationsAllow')}
-            </span>
-            <span className={`settings-toggle ${notifEnabled ? 'active' : ''}`}>
-              <span className="settings-toggle-dot" />
-            </span>
-          </button>
         </div>
-      )}
+      </div>
 
       <div className="settings-section">
           <span className="settings-section-label">{t('settings.data')}</span>
-        <div className="data-actions">
-          <button className="data-action-btn" onClick={handleExportData}>
-            <DownloadMinimalistic size={16} />
-            <span>{t('settings.exportData')}</span>
+        <div className="delete-options">
+          <button className="delete-option" onClick={handleExportData}>
+            <DownloadMinimalistic size={18} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
+            <div className="delete-option-info">
+              <span className="delete-option-label">{t('settings.exportData')}</span>
+              <span className="delete-option-desc">{t('settings.exportDataDesc')}</span>
+            </div>
           </button>
-          <button className="data-action-btn" onClick={handleImportClick}>
-            <UploadMinimalistic size={16} />
-            <span>{t('settings.importData')}</span>
+          <button className="delete-option" onClick={handleImportClick}>
+            <UploadMinimalistic size={18} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
+            <div className="delete-option-info">
+              <span className="delete-option-label">{t('settings.importData')}</span>
+              <span className="delete-option-desc">{t('settings.importDataDesc')}</span>
+            </div>
           </button>
           <input ref={fileInputRef} type="file" accept=".json" style={{ display: 'none' }} onChange={handleImportData} />
         </div>
@@ -576,22 +592,26 @@ export default function SettingsPage() {
 
       <div className="settings-section">
           <span className="settings-section-label">{t('settings.info')}</span>
-        <div className="settings-footer">
-          <span className="settings-footer-label">{t('settings.version')}</span>
-          <span className="settings-footer-value">1.0.2</span>
+        <div className="delete-options">
+          <div className="delete-option">
+            <div className="delete-option-info">
+              <span className="delete-option-label">{t('settings.version')}</span>
+            </div>
+            <span className="settings-info-value">1.0.2</span>
+          </div>
+          <button className="delete-option" onClick={() => navigate('/?preview=1')}>
+            <div className="delete-option-info">
+              <span className="delete-option-label">{t('settings.landingPage')}</span>
+            </div>
+            <AltArrowRight size={16} style={{ color: 'var(--text-dim)', flexShrink: 0 }} />
+          </button>
+          <button className="delete-option" onClick={openDonateModal}>
+            <div className="delete-option-info">
+              <span className="delete-option-label">{t('settings.support')}</span>
+            </div>
+            <Heart size={16} style={{ color: 'var(--text-dim)', flexShrink: 0 }} />
+          </button>
         </div>
-        <button className="settings-footer settings-footer-link" onClick={() => navigate('/?preview=1')}>
-          <span className="settings-footer-label">{t('settings.landingPage')}</span>
-          <span className="settings-footer-value">
-            <AltArrowRight size={14} />
-          </span>
-        </button>
-        <button className="settings-footer settings-footer-link" onClick={openDonateModal}>
-          <span className="settings-footer-label">{t('settings.support')}</span>
-          <span className="settings-footer-value">
-            <Heart size={14} />
-          </span>
-        </button>
       </div>
 
       {(showPasswordModal || passwordModalClosing) && (

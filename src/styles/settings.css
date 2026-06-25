@@ -227,6 +227,7 @@
   flex-direction: column;
   gap: 2px;
   min-width: 0;
+  flex: 1;
 }
 
 .delete-option-label {
@@ -430,6 +431,12 @@
   font-family: monospace;
   display: flex;
   align-items: center;
+}
+
+.settings-info-value {
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  font-family: monospace;
 }
 
 .settings-footer-link {
