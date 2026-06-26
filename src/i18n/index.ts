@@ -12,6 +12,7 @@ import zh from './locales/zh.json';
 import ja from './locales/ja.json';
 import ko from './locales/ko.json';
 import hi from './locales/hi.json';
+import nl from './locales/nl.json';
 
 export const LANGUAGES = [
   { code: 'en', label: 'English', countryCode: 'gb' },
@@ -26,6 +27,7 @@ export const LANGUAGES = [
   { code: 'ja', label: '日本語', countryCode: 'jp' },
   { code: 'ko', label: '한국어', countryCode: 'kr' },
   { code: 'hi', label: 'हिन्दी', countryCode: 'in' },
+  { code: 'nl', label: 'Nederlands', countryCode: 'nl' },
 ] as const;
 
 export type LanguageCode = (typeof LANGUAGES)[number]['code'];
@@ -46,6 +48,7 @@ i18n.use(initReactI18next).init({
     ja: { translation: ja },
     ko: { translation: ko },
     hi: { translation: hi },
+    nl: { translation: nl },
   },
   lng: savedLang,
   fallbackLng: 'en',
