@@ -9,6 +9,7 @@ import {
 } from '@solar-icons/react';
 import type { Habit } from '../types';
 import HabitDetailModal from '../components/HabitDetailModal';
+import { MAX_HABITS_COUNT } from '../utils';
 
 const ALL_DAY_KEYS = ['common.mon', 'common.tue', 'common.wed', 'common.thu', 'common.fri', 'common.sat', 'common.sun'];
 const MONTH_KEYS = [
@@ -265,6 +266,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
     e.preventDefault();
     const trimmed = newName.trim();
     if (!trimmed) return;
+    if (habits.length >= MAX_HABITS_COUNT) return;
     const now = Date.now();
     const newHabit: Habit = {
       id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),

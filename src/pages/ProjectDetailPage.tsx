@@ -5,6 +5,7 @@ import type { Project, Section as SectionType, ProjectTask } from '../types';
 import { generateId, canAddSubtask, getTaskDepth, MAX_SUBTASK_DEPTH, priorityOrder } from '../utils';
 import TaskCard from '../components/TaskCard';
 import SectionFormModal from '../components/SectionFormModal';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 interface ProjectDetailPageProps {
   project: Project;
@@ -34,6 +35,7 @@ export default function ProjectDetailPage({
   const [maxDepthNotice, setMaxDepthNotice] = useState(false);
   const [editingSectionId, setEditingSectionId] = useState<string | null>(null);
   const [editingSectionName, setEditingSectionName] = useState('');
+  const [confirmDeleteSection, setConfirmDeleteSection] = useState<SectionType | null>(null);
   const draggingIdRef = useRef<string | null>(null);
   const ghostRef = useRef<HTMLElement | null>(null);
   const dragStateRef = useRef({ section: null as string | null, unsectioned: false, target: null as string | null });
@@ -239,8 +241,15 @@ export default function ProjectDetailPage({
   }
 
   function deleteSection(id: string) {
-    tasks.filter((t) => t.sectionId === id).forEach((t) => onUpdateTask(t.id, { sectionId: null }));
-    onSaveSectionsLocal(sections.filter((s) => s.id !== id));
+    const section = sections.find((s) => s.id === id);
+    if (section) setConfirmDeleteSection(section);
+  }
+
+  function confirmDeleteSectionFn() {
+    if (!confirmDeleteSection) return;
+    tasks.filter((t) => t.sectionId === confirmDeleteSection.id).forEach((t) => onUpdateTask(t.id, { sectionId: null }));
+    onSaveSectionsLocal(sections.filter((s) => s.id !== confirmDeleteSection.id));
+    setConfirmDeleteSection(null);
   }
 
   function onSaveSectionsLocal(newSections: SectionType[]) {
@@ -450,6 +459,15 @@ export default function ProjectDetailPage({
             }, 200);
           }}
           isClosing={sectionFormClosing}
+        />
+      )}
+
+      {confirmDeleteSection && (
+        <ConfirmDialog
+          title={t('confirm.deleteSection')}
+          message={t('confirm.deleteSectionMessage')}
+          onConfirm={confirmDeleteSectionFn}
+          onClose={() => setConfirmDeleteSection(null)}
         />
       )}
     </>

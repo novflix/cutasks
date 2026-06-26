@@ -262,9 +262,11 @@ export default function SettingsPage() {
   }
 
   async function copyAddress(address: string) {
-    await navigator.clipboard.writeText(address);
-    setCopiedAddress(address);
-    setTimeout(() => setCopiedAddress(null), 1500);
+    try {
+      await navigator.clipboard.writeText(address);
+      setCopiedAddress(address);
+      setTimeout(() => setCopiedAddress(null), 1500);
+    } catch { /* clipboard not available */ }
   }
 
   async function handleExportData() {

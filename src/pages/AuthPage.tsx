@@ -109,6 +109,9 @@ export default function AuthPage() {
     setTimeout(() => {
       setMode(mode === 'login' ? 'register' : 'login');
       setError('');
+      setEmail('');
+      setPassword('');
+      setName('');
       setClosing(false);
       setAgreedToTerms(false);
       setAgreedToPrivacy(false);
