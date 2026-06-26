@@ -599,7 +599,7 @@ export default function SettingsPage() {
             </div>
             <span className="settings-info-value">1.0.2</span>
           </div>
-          <button className="delete-option" onClick={() => navigate('/?preview=1')}>
+          <button className="delete-option" onClick={() => navigate('/landing')}>
             <div className="delete-option-info">
               <span className="delete-option-label">{t('settings.landingPage')}</span>
             </div>

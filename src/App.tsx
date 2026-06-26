@@ -58,7 +58,7 @@ function PageLoader() {
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { t, i18n } = useTranslation();
 
   const [tasks, setTasks] = useState<Task[]>(loadTasks);
@@ -1045,11 +1045,13 @@ export default function App() {
     return <Suspense fallback={<PageLoader />}><AuthPage /></Suspense>;
   }
 
-  if (location.pathname === '/' || location.pathname === '/terms' || location.pathname === '/privacy') {
+  if (location.pathname === '/' || location.pathname === '/landing' || location.pathname === '/terms' || location.pathname === '/privacy') {
+    if (authLoading) return <PageLoader />;
     return (
       <Suspense fallback={<PageLoader />}>
         <Routes>
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={user ? <Navigate to="/app/home" replace /> : <LandingPage />} />
+          <Route path="/landing" element={<LandingPage />} />
           <Route path="/terms" element={<TermsPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
