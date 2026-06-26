@@ -10,6 +10,7 @@ import ru from './locales/ru.json';
 import tr from './locales/tr.json';
 import zh from './locales/zh.json';
 import ja from './locales/ja.json';
+import ko from './locales/ko.json';
 
 export const LANGUAGES = [
   { code: 'en', label: 'English', countryCode: 'gb' },
@@ -22,6 +23,7 @@ export const LANGUAGES = [
   { code: 'tr', label: 'Türkçe', countryCode: 'tr' },
   { code: 'zh', label: '中文', countryCode: 'cn' },
   { code: 'ja', label: '日本語', countryCode: 'jp' },
+  { code: 'ko', label: '한국어', countryCode: 'kr' },
 ] as const;
 
 export type LanguageCode = (typeof LANGUAGES)[number]['code'];
@@ -40,6 +42,7 @@ i18n.use(initReactI18next).init({
     tr: { translation: tr },
     zh: { translation: zh },
     ja: { translation: ja },
+    ko: { translation: ko },
   },
   lng: savedLang,
   fallbackLng: 'en',
