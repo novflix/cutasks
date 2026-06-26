@@ -225,6 +225,11 @@ export default function App() {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   }
 
+  const projectTasksRef = useRef(projectTasks);
+  useEffect(() => { projectTasksRef.current = projectTasks; }, [projectTasks]);
+  const habitsRef = useRef(habits);
+  useEffect(() => { habitsRef.current = habits; }, [habits]);
+
   useEffect(() => {
     if (!user || !syncReadyRef.current) return;
 
@@ -240,8 +245,9 @@ export default function App() {
       const dayAfterTomorrow = new Date(tomorrowStart);
       dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1);
 
-      const allTasks = [...tasks, ...projectTasks];
+      const allTasks = [...tasksRef.current, ...projectTasksRef.current];
       const lang = i18n.language;
+      const hour = now.getHours();
 
       const overdueTasks = allTasks.filter((t) =>
         !t.completed && t.deadline && new Date(t.deadline) < todayStart
@@ -251,7 +257,6 @@ export default function App() {
         const title = t('notifications.overdue.title');
         const body = getLocalizedMessage('overdue', lang, { title: task.title });
         sendNotification({ title, body, type: 'overdue', tag: 'overdue-check' });
-        return;
       }
 
       const tomorrowTasks = allTasks.filter((t) =>
@@ -264,21 +269,18 @@ export default function App() {
         const title = t('notifications.deadlineTomorrow.title');
         const body = getLocalizedMessage('deadlineTomorrow', lang, { title: task.title });
         sendNotification({ title, body, type: 'deadlineTomorrow', tag: 'deadline-tomorrow-check' });
-        return;
       }
 
-      const hour = now.getHours();
-      if (hour === 8) {
+      if (hour >= 7 && hour <= 9) {
         const activeTasks = allTasks.filter((t) => !t.completed);
         if (activeTasks.length > 0) {
           const title = t('notifications.morningGreeting.title');
           const body = getLocalizedMessage('morningGreeting', lang, { count: activeTasks.length });
           sendNotification({ title, body, type: 'morningGreeting', tag: 'morning-greeting' });
-          return;
         }
       }
 
-      if (hour === 20) {
+      if (hour >= 19 && hour <= 21) {
         const completedToday = allTasks.filter((t) =>
           t.completed && t.completedAt && t.completedAt >= todayStart.getTime()
         ).length;
@@ -289,11 +291,10 @@ export default function App() {
           const title = t('notifications.eveningSummary.title');
           const body = getLocalizedMessage('eveningSummary', lang, { done: completedToday, total: totalToday });
           sendNotification({ title, body, type: 'eveningSummary', tag: 'evening-summary' });
-          return;
         }
       }
 
-      const todayHabits = habits.filter((h) => h.weekdays.includes(now.getDay()));
+      const todayHabits = habitsRef.current.filter((h) => h.weekdays.includes(now.getDay()));
       const uncompletedHabits = todayHabits.filter((h) => !h.completions[dateKey(now)]);
       if (uncompletedHabits.length > 0 && hour >= 18) {
         const habit = uncompletedHabits[0];
@@ -310,7 +311,7 @@ export default function App() {
       clearTimeout(timer);
       clearInterval(interval);
     };
-  }, [user, tasks, projectTasks, habits, i18n.language, t]);
+  }, [user]);
 
   const pushHistory = useCallback(() => {
     historyRef.current.push({
