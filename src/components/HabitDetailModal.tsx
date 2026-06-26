@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect, type ComponentType } from 'react';
 import {
-  CloseCircle, PenNewRound, CalendarMinimalistic, Fire,
+  CloseCircle, PenNewRound, CalendarMinimalistic, Fire, Target,
   Book, Running, Meditation, Waterdrop, Heart, MoonStars,
-  CupHot, Target, MedalStar, Shield, Leaf, Star, Bolt, Alarm,
+  CupHot, MedalStar, Shield, Leaf, Star, Bolt, Alarm,
   SmileCircle, Football, CodeSquare, Palette, MusicNote, Notes,
 } from '@solar-icons/react';
 import { useTranslation } from 'react-i18next';
@@ -77,6 +77,14 @@ export default function HabitDetailModal({ habit, onClose, onUpdate, onDelete, i
     if (editing) setTimeout(() => nameRef.current?.focus(), 100);
   }, [editing]);
 
+  useEffect(() => {
+    setName(habit.name);
+    setIcon(habit.icon);
+    setColor(habit.color);
+    setWeekdays(habit.weekdays);
+    setTargetReps(habit.targetReps || 1);
+  }, [habit]);
+
   function startEdit() {
     setName(habit.name);
     setIcon(habit.icon);
@@ -106,9 +114,9 @@ export default function HabitDetailModal({ habit, onClose, onUpdate, onDelete, i
       <div className={modalClass} onClick={(e) => e.stopPropagation()}>
         <div className="detail-top">
           <div className="detail-top-left">
-            <div className="habits-detail-icon" style={{ background: `${habit.color}18`, color: habit.color }}>
+            <div className="habits-detail-icon" style={{ background: `${color}18`, color }}>
               {/* eslint-disable-next-line react-hooks/static-components */}
-              {(() => { const Ic = getIcon(habit.icon); return <Ic size={22} strokeWidth={1.8} />; })()}
+              {(() => { const Ic = getIcon(icon); return <Ic size={22} strokeWidth={1.8} />; })()}
             </div>
             <div className="detail-top-info">
               {editing ? (
@@ -121,7 +129,7 @@ export default function HabitDetailModal({ habit, onClose, onUpdate, onDelete, i
                   maxLength={50}
                 />
               ) : (
-                <h2 className="detail-title">{habit.name}</h2>
+                <h2 className="detail-title">{name}</h2>
               )}
             </div>
           </div>
@@ -238,12 +246,22 @@ export default function HabitDetailModal({ habit, onClose, onUpdate, onDelete, i
               <span className="detail-meta-value">{totalCompletions}</span>
             </div>
 
+            {targetReps > 1 && (
+              <div className="detail-meta-row">
+                <span className="detail-meta-label">
+                  <Target size={14} />
+                  {t('habits.repetitionsPerDay')}
+                </span>
+                <span className="detail-meta-value">×{targetReps}</span>
+              </div>
+            )}
+
             <div className="detail-meta-row">
               <span className="detail-meta-label">
                 <CalendarMinimalistic size={14} />
                 {t('habits.repeat')}
               </span>
-              <span className="detail-meta-value">{getWeekdayLabel(habit.weekdays, t)}</span>
+              <span className="detail-meta-value">{getWeekdayLabel(weekdays, t)}</span>
             </div>
 
             <div className="detail-meta-row">
