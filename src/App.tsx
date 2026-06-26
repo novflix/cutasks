@@ -158,11 +158,13 @@ export default function App() {
   useEffect(() => { tasksRef.current = tasks; }, [tasks]);
   const historyRef = useRef<{ tasks: Task[]; projects: Project[]; sections: Section[]; projectTasks: ProjectTask[]; habits: Habit[] }[]>([]);
   const formTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const projectFormTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const detailTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     return () => {
       if (formTimer.current) clearTimeout(formTimer.current);
+      if (projectFormTimer.current) clearTimeout(projectFormTimer.current);
       if (detailTimer.current) clearTimeout(detailTimer.current);
       if (detailTimer2.current) clearTimeout(detailTimer2.current);
     };
@@ -693,9 +695,9 @@ export default function App() {
   }
 
   function closeProjectForm() {
-    if (formTimer.current) clearTimeout(formTimer.current);
+    if (projectFormTimer.current) clearTimeout(projectFormTimer.current);
     setProjectFormClosing(true);
-    formTimer.current = setTimeout(() => {
+    projectFormTimer.current = setTimeout(() => {
       setShowProjectForm(false);
       setProjectFormClosing(false);
       setEditingProject(null);
@@ -716,6 +718,7 @@ export default function App() {
 
     const now = Date.now();
     if (editingProject) {
+      pushHistory();
       setProjects((prev) =>
         prev.map((p) =>
           p.id === editingProject.id
@@ -724,6 +727,7 @@ export default function App() {
         )
       );
     } else {
+      pushHistory();
       const newProject: Project = {
         id: generateId(),
         name: trimmedName,
@@ -810,7 +814,7 @@ export default function App() {
 
 
   function openCreateProjectTask(sectionId: string | null) {
-    if (formTimer.current) clearTimeout(formTimer.current);
+    if (projectFormTimer.current) clearTimeout(projectFormTimer.current);
     setEditingProjectTask(null);
     setPtTitle('');
     setPtDescription('');
@@ -824,7 +828,7 @@ export default function App() {
   }
 
   function openEditProjectTask(task: ProjectTask) {
-    if (formTimer.current) clearTimeout(formTimer.current);
+    if (projectFormTimer.current) clearTimeout(projectFormTimer.current);
     setEditingProjectTask(task);
     setPtTitle(task.title);
     setPtDescription(task.description);
@@ -838,9 +842,9 @@ export default function App() {
   }
 
   function closeProjectTaskForm() {
-    if (formTimer.current) clearTimeout(formTimer.current);
+    if (projectFormTimer.current) clearTimeout(projectFormTimer.current);
     setProjectTaskFormClosing(true);
-    formTimer.current = setTimeout(() => {
+    projectFormTimer.current = setTimeout(() => {
       setShowProjectTaskForm(false);
       setProjectTaskFormClosing(false);
       setEditingProjectTask(null);
@@ -942,7 +946,7 @@ export default function App() {
 
   useEffect(() => {
     function handleSaveSections(e: Event) {
-      pushHistory();
+      pushHistoryRef.current();
       setSections((e as CustomEvent).detail);
     }
     function handleWeekStartChange(e: Event) {
@@ -955,6 +959,9 @@ export default function App() {
       window.removeEventListener('week-start-changed', handleWeekStartChange);
     };
   }, []);
+
+  const pushHistoryRef = useRef(pushHistory);
+  useEffect(() => { pushHistoryRef.current = pushHistory; }, [pushHistory]);
 
   useEffect(() => () => { if (pomoIntervalRef.current) clearInterval(pomoIntervalRef.current); }, []);
 
@@ -1268,9 +1275,9 @@ export default function App() {
         )}
       </div>
 
-      {(activeViewingTask || detailClosing) && (
+      {activeViewingTask && (
         <TaskDetailModal
-          task={activeViewingTask!}
+          task={activeViewingTask}
           tasks={tasks}
           onClose={closeDetail}
           onEdit={(t) => { closeDetail(); setTimeout(() => openEditForm(t), 220); }}
@@ -1279,9 +1286,9 @@ export default function App() {
         />
       )}
 
-      {(activeViewingProjectTask || projectTaskDetailClosing) && (
+      {activeViewingProjectTask && (
         <TaskDetailModal
-          task={activeViewingProjectTask!}
+          task={activeViewingProjectTask}
           tasks={projectTasks}
           onClose={closeProjectTaskDetail}
           onEdit={(t) => { closeProjectTaskDetail(); setTimeout(() => openEditProjectTask(t as ProjectTask), 220); }}

@@ -27,7 +27,6 @@ export default function ConfirmDialog({ title, message, confirmLabel, onConfirm,
 
   function handleConfirm() {
     onConfirm();
-    handleClose();
   }
 
   return (
