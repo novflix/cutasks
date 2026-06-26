@@ -323,6 +323,9 @@ export default function App() {
     if (historyRef.current.length > 50) historyRef.current.shift();
   }, [projects, sections, projectTasks, habits]);
 
+  const pushHistoryRef = useRef(pushHistory);
+  useEffect(() => { pushHistoryRef.current = pushHistory; }, [pushHistory]);
+
   const undo = useCallback(() => {
     if (historyRef.current.length === 0) return;
     const prev = historyRef.current.pop()!;
@@ -956,9 +959,6 @@ export default function App() {
       window.removeEventListener('week-start-changed', handleWeekStartChange);
     };
   }, []);
-
-  const pushHistoryRef = useRef(pushHistory);
-  useEffect(() => { pushHistoryRef.current = pushHistory; }, [pushHistory]);
 
   useEffect(() => () => { if (pomoIntervalRef.current) clearInterval(pomoIntervalRef.current); }, []);
 
