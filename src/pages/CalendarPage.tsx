@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, AltArrowLeft, AltArrowRight } from '@solar-icons/react';
 import type { Task, ProjectTask } from '../types';
-import { formatDeadline, getDeadlineStatus, getTagColor, priorityOrder } from '../utils';
+import { formatDeadline, getDeadlineStatus, getTagColor, priorityOrder, dateKey } from '../utils';
 import '../styles/calendar.css';
 
 type CalMode = 'week' | 'month';
@@ -19,10 +19,6 @@ function isSameDay(a: Date, b: Date): boolean {
   return a.getFullYear() === b.getFullYear() &&
     a.getMonth() === b.getMonth() &&
     a.getDate() === b.getDate();
-}
-
-function dateKey(d: Date): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 function getWeekStart(date: Date, weekStartDay: string = 'monday'): Date {

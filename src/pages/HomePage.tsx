@@ -7,17 +7,13 @@ import {
   CheckCircle, Lock, Target, AltArrowRight,
 } from '@solar-icons/react';
 import type { Task, Project, Habit, ProjectTask } from '../types';
-import { getDeadlineStatus } from '../utils';
+import { getDeadlineStatus, dateKey } from '../utils';
 
 interface HomePageProps {
   tasks: Task[];
   projects: Project[];
   habits: Habit[];
   projectTasks: ProjectTask[];
-}
-
-function dateKey(d: Date): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 export default function HomePage({ tasks, projects, habits, projectTasks }: HomePageProps) {

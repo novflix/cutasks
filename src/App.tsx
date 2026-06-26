@@ -5,7 +5,7 @@ import './App.css';
 import type { Task, Priority, Page, FilterType, Project, ProjectStatus, Section, ProjectTask, Habit } from './types';
 import type { PomoMode, PomoConfig } from './pages/PomodoroPage';
 import { LONG_BREAK_INTERVAL } from './constants/pomo';
-import { generateId, priorityOrder, validateTitle, validateDescription, sanitizeInput, sanitizePriority, MAX_TASKS_COUNT, MAX_PROJECTS_COUNT } from './utils';
+import { generateId, priorityOrder, validateTitle, validateDescription, sanitizeInput, sanitizePriority, MAX_TASKS_COUNT, MAX_PROJECTS_COUNT, dateKey } from './utils';
 import { loadPomoConfig, loadPomoSavedState, savePomoState, loadPomoRunning } from './utils/pomo';
 import { loadTasks, saveTasks as localSaveTasks, getAllTags, loadProjects, saveProjects as localSaveProjects, loadSections, saveSections as localSaveSections, loadProjectTasks, saveProjectTasks as localSaveProjectTasks, loadHabits, saveHabits as localSaveHabits } from './storage';
 import { useAuth } from './contexts/AuthContext';
@@ -22,7 +22,6 @@ import MobileNav from './components/MobileNav';
 import ProtectedRoute from './components/ProtectedRoute';
 import ConfirmDialog from './components/ConfirmDialog';
 import Skeleton from './components/Skeleton';
-import { getDeadlineStatus } from './utils';
 import { MinimalisticMagnifier, ArrowLeft } from '@solar-icons/react';
 import { PROJECT_ICONS } from './constants';
 
@@ -222,10 +221,6 @@ export default function App() {
       }
     }).catch(() => {});
   }, [user]);
-
-  function dateKey(d: Date): string {
-    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-  }
 
   const projectTasksRef = useRef(projectTasks);
   useEffect(() => { projectTasksRef.current = projectTasks; }, [projectTasks]);

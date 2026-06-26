@@ -9,7 +9,7 @@ import {
 } from '@solar-icons/react';
 import type { Habit } from '../types';
 import HabitDetailModal from '../components/HabitDetailModal';
-import { MAX_HABITS_COUNT } from '../utils';
+import { MAX_HABITS_COUNT, dateKey } from '../utils';
 
 const ALL_DAY_KEYS = ['common.mon', 'common.tue', 'common.wed', 'common.thu', 'common.fri', 'common.sat', 'common.sun'];
 const MONTH_KEYS = [
@@ -72,10 +72,6 @@ function isSameDay(a: Date, b: Date): boolean {
   return a.getFullYear() === b.getFullYear() &&
     a.getMonth() === b.getMonth() &&
     a.getDate() === b.getDate();
-}
-
-function dateKey(d: Date): string {
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 function formatDateRange(start: Date, t: (key: string) => string): string {
