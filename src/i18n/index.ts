@@ -21,13 +21,13 @@ export const LANGUAGES = [
   { code: 'es', label: 'Español', countryCode: 'es' },
   { code: 'it', label: 'Italiano', countryCode: 'it' },
   { code: 'pt', label: 'Português', countryCode: 'pt' },
+  { code: 'nl', label: 'Nederlands', countryCode: 'nl' },
   { code: 'ru', label: 'Русский', countryCode: 'ru' },
   { code: 'tr', label: 'Türkçe', countryCode: 'tr' },
   { code: 'zh', label: '中文', countryCode: 'cn' },
   { code: 'ja', label: '日本語', countryCode: 'jp' },
   { code: 'ko', label: '한국어', countryCode: 'kr' },
   { code: 'hi', label: 'हिन्दी', countryCode: 'in' },
-  { code: 'nl', label: 'Nederlands', countryCode: 'nl' },
 ] as const;
 
 export type LanguageCode = (typeof LANGUAGES)[number]['code'];
