@@ -45,6 +45,7 @@ CuTasks is a modern productivity app that combines task management, project orga
 - Custom tags with color coding
 - Smart deadlines with overdue detection
 - Quick search and filtering
+- Create new tasks directly from search (press Enter)
 - Undo/redo support (Ctrl+Z)
 
     </td>
@@ -55,6 +56,7 @@ CuTasks is a modern productivity app that combines task management, project orga
 - Custom icons and colors per project
 - Sections within projects for kanban-style workflow
 - Project-level task statistics
+- Create new projects directly from search
 - Drag-and-drop project reordering
 
     </td>
@@ -74,6 +76,7 @@ CuTasks is a modern productivity app that combines task management, project orga
 
 ### Habits Tracker
 - Daily habit tracking with streaks
+- Configurable daily repetitions (1–10) with colored progress
 - Customizable weekday schedules
 - Visual progress on home dashboard
 - Best streak display
@@ -103,8 +106,9 @@ CuTasks is a modern productivity app that combines task management, project orga
 
 ### Additional Features
 
-- **10 Languages** — EN, FR, DE, ES, IT, PT, RU, TR, ZH, JA
+- **13 Languages** — EN, FR, DE, ES, IT, PT, NL, RU, TR, ZH, JA, KO, HI
 - **3 Themes** — Dark, Light, and Midnight
+- **Quick Create** — Type in search and press Enter to create a new task/project instantly
 - **PWA Support** — Install on any device, works offline
 - **Cloud Sync** — Firebase Firestore keeps your data safe
 - **Responsive** — Beautiful on desktop and mobile
@@ -216,6 +220,9 @@ cutasks/
 │   │   ├── TaskFormModal.tsx
 │   │   ├── TaskDetailModal.tsx
 │   │   ├── ProjectFormModal.tsx
+│   │   ├── HabitDetailModal.tsx
+│   │   ├── ConfirmDialog.tsx
+│   │   ├── Toolbar.tsx
 │   │   ├── PomoMiniTimer.tsx
 │   │   ├── MobileNav.tsx
 │   │   └── ...
@@ -237,7 +244,7 @@ cutasks/
 │   │   └── AuthContext.tsx
 │   ├── i18n/               # Translations
 │   │   ├── index.ts
-│   │   └── locales/        # 10 languages
+│   │   └── locales/        # 13 languages
 │   ├── styles/             # CSS modules
 │   │   ├── themes.css
 │   │   ├── sidebar.css
