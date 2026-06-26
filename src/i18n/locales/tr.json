@@ -171,6 +171,7 @@
     "thisWeek": "Bu hafta",
     "habitName": "Hangi alışkanlığı oluşturmak istiyorsunuz?",
     "repeatOn": "Tekrarla",
+    "repetitionsPerDay": "Günlük tekrar sayısı",
     "createHabit": "Alışkanlık Oluştur",
     "dragToReorder": "Yeniden sıralamak için sürükleyin",
     "everyDay": "Her gün",
@@ -755,5 +756,15 @@
       "s14c": "Faaliyet gösterdiğimiz her yerde tüm gizlilik yasalarına uyuyoruz.",
       "closing": "Gizliliğinizi ciddiye alıyoruz ve CuTasks'ı kullanırken kendinizi güvende hissetmenizi istiyoruz. Hiç şüphe duyarsanız veya bir sorunuz olursa, bize ulaşın. Yardımcı olmak için buradayız."
     }
+  },
+  "notifications": {
+    "deadlineTomorrow": { "title": "Son tarih yarın" },
+    "overdue": { "title": "Görev geçti" },
+    "habitReminder": { "title": "Alışkanlık hatırlatması" },
+    "streakAtRisk": { "title": "Seri tehlikede" },
+    "streakCelebration": { "title": "Seri kilometre taşı!" },
+    "morningGreeting": { "title": "Günaydın!" },
+    "eveningSummary": { "title": "Gün özeti" },
+    "inactivity": { "title": "Seni özledik!" }
   }
 }

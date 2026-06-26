@@ -171,6 +171,7 @@
     "thisWeek": "本周",
     "habitName": "您想养成什么习惯？",
     "repeatOn": "重复日期",
+    "repetitionsPerDay": "每日重复次数",
     "createHabit": "创建习惯",
     "dragToReorder": "拖动以重新排序",
     "everyDay": "每天",
@@ -755,5 +756,15 @@
       "s14c": "我们遵守运营所在地的所有隐私法律。",
       "closing": "我们重视您的隐私，希望您能放心使用 CuTasks。如果您有任何疑问或不确定，请随时联系我们。我们乐意提供帮助。"
     }
+  },
+  "notifications": {
+    "deadlineTomorrow": { "title": "明天到期" },
+    "overdue": { "title": "任务已过期" },
+    "habitReminder": { "title": "习惯提醒" },
+    "streakAtRisk": { "title": "连续记录有风险" },
+    "streakCelebration": { "title": "连续记录里程碑！" },
+    "morningGreeting": { "title": "早上好！" },
+    "eveningSummary": { "title": "每日总结" },
+    "inactivity": { "title": "我们想你了！" }
   }
 }

@@ -171,6 +171,7 @@
     "thisWeek": "今週",
     "habitName": "どんな習慣を身につけたいですか？",
     "repeatOn": "繰り返す日",
+    "repetitionsPerDay": "1日の繰り返し回数",
     "createHabit": "習慣を作成",
     "dragToReorder": "ドラッグして並べ替え",
     "everyDay": "毎日",
@@ -755,5 +756,15 @@
       "s14c": "当社は事業を行っているすべての地域のプライバシー法令を遵守しています。",
       "closing": "お客様のプライバシーを大切に考え、CuTasks を信頼していただけるよう努めています。ご不明な点やご質問がございましたら、お気軽にお問い合わせください。"
     }
+  },
+  "notifications": {
+    "deadlineTomorrow": { "title": "明日が期限" },
+    "overdue": { "title": "タスクが期限切れ" },
+    "habitReminder": { "title": "習慣のリマインダー" },
+    "streakAtRisk": { "title": "連続記録が危険" },
+    "streakCelebration": { "title": "連続記録マイルストーン！" },
+    "morningGreeting": { "title": "おはよう！" },
+    "eveningSummary": { "title": "今日のまとめ" },
+    "inactivity": { "title": "会いたかった！" }
   }
 }

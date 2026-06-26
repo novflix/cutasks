@@ -42,8 +42,8 @@ function getIcon(name: string) {
   return HABIT_ICONS.find((i) => i.name === name)?.icon ?? Book;
 }
 
-function countCompletions(completions: Record<string, boolean>): number {
-  return Object.values(completions).filter(Boolean).length;
+function countCompletions(completions: Record<string, number>): number {
+  return Object.values(completions).reduce((sum, v) => sum + v, 0);
 }
 
 function getWeekdayLabel(weekdays: number[], t: (key: string) => string): string {
@@ -70,6 +70,7 @@ export default function HabitDetailModal({ habit, onClose, onUpdate, onDelete, i
   const [icon, setIcon] = useState(habit.icon);
   const [color, setColor] = useState(habit.color);
   const [weekdays, setWeekdays] = useState<number[]>(habit.weekdays);
+  const [targetReps, setTargetReps] = useState(habit.targetReps || 1);
   const nameRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -81,13 +82,14 @@ export default function HabitDetailModal({ habit, onClose, onUpdate, onDelete, i
     setIcon(habit.icon);
     setColor(habit.color);
     setWeekdays(habit.weekdays);
+    setTargetReps(habit.targetReps || 1);
     setEditing(true);
   }
 
   function saveEdit() {
     const trimmed = name.trim();
     if (!trimmed) return;
-    onUpdate(habit.id, { name: trimmed, icon, color, weekdays, updatedAt: Date.now() });
+    onUpdate(habit.id, { name: trimmed, icon, color, weekdays, targetReps, updatedAt: Date.now() });
     setEditing(false);
   }
 
@@ -184,6 +186,37 @@ export default function HabitDetailModal({ habit, onClose, onUpdate, onDelete, i
                     <span className="habits-weekday-letter">{t(dayKey).charAt(0)}</span>
                   </button>
                 ))}
+              </div>
+            </div>
+
+            <div className="fm-field">
+              <label className="fm-label">{t('habits.repetitionsPerDay')}</label>
+              <div className="habits-reps-input-wrap">
+                <button
+                  type="button"
+                  className="habits-reps-adj"
+                  onClick={() => setTargetReps((p) => Math.max(1, p - 1))}
+                >
+                  −
+                </button>
+                <input
+                  type="number"
+                  min={1}
+                  max={10}
+                  value={targetReps}
+                  onChange={(e) => {
+                    const v = parseInt(e.target.value, 10);
+                    if (!isNaN(v)) setTargetReps(Math.min(10, Math.max(1, v)));
+                  }}
+                  className="fm-input habits-reps-input"
+                />
+                <button
+                  type="button"
+                  className="habits-reps-adj"
+                  onClick={() => setTargetReps((p) => Math.min(10, p + 1))}
+                >
+                  +
+                </button>
               </div>
             </div>
           </div>

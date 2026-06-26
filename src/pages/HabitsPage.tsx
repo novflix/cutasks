@@ -96,19 +96,19 @@ function getDayOfWeek(d: Date): number {
   return day === 0 ? 6 : day - 1;
 }
 
-function calcStreak(completions: Record<string, boolean>, weekdays: number[]): number {
+function calcStreak(completions: Record<string, number>, weekdays: number[], targetReps: number): number {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   let streak = 0;
   const d = new Date(today);
 
   const todayDow = getDayOfWeek(d);
-  if (!weekdays.includes(todayDow) || !completions[dateKey(d)]) {
+  if (!weekdays.includes(todayDow) || (completions[dateKey(d)] || 0) < targetReps) {
     d.setDate(d.getDate() - 1);
   }
 
   while (weekdays.includes(getDayOfWeek(d))) {
-    if (completions[dateKey(d)]) {
+    if ((completions[dateKey(d)] || 0) >= targetReps) {
       streak++;
     } else {
       break;
@@ -145,17 +145,22 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
   const [newIcon, setNewIcon] = useState(HABIT_ICONS[0].name);
   const [newColor, setNewColor] = useState(HABIT_COLORS[0]);
   const [newWeekdays, setNewWeekdays] = useState<number[]>([0, 1, 2, 3, 4, 5, 6]);
+  const [newTargetReps, setNewTargetReps] = useState(1);
   const nameRef = useRef<HTMLInputElement>(null);
   const formTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const detailTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const dragStateRef = useRef<{ habitId: string; ghost: HTMLElement | null; currentTarget: string | null; isMouse: boolean } | null>(null);
+  const [particleKeys, setParticleKeys] = useState<Record<string, number>>({});
+  const [floatingNum, setFloatingNum] = useState<{ id: string; x: number; y: number; value: number; color: string; key: number; dx: number } | null>(null);
+  const floatingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     return () => {
       if (formTimer.current) clearTimeout(formTimer.current);
       if (detailTimerRef.current) clearTimeout(detailTimerRef.current);
+      if (floatingTimerRef.current) clearTimeout(floatingTimerRef.current);
     };
   }, []);
 
@@ -192,21 +197,49 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
     [habits, selectedDow]
   );
 
+  const MAX_REPS = 10;
+
+  const LEVEL_COLORS = [
+    '#ed9b6d', '#66bb6a', '#64b5f6', '#ba68c8', '#ffb74d',
+    '#4db6ac', '#e57373', '#9575cd', '#4fc3f7', '#f06292',
+  ];
+
   function toggleHabit(id: string) {
     onHabitsChange((prev) =>
       prev.map((h) => {
         if (h.id !== id) return h;
-        const wasDone = !!h.completions[selectedKey];
+        const current = h.completions[selectedKey] || 0;
+        const target = h.targetReps || 1;
         const newCompletions = { ...h.completions };
-        if (wasDone) {
-          delete newCompletions[selectedKey];
+        if (current >= target) {
+          newCompletions[selectedKey] = 0;
         } else {
-          newCompletions[selectedKey] = true;
+          newCompletions[selectedKey] = current + 1;
         }
-        const newStreak = calcStreak(newCompletions, h.weekdays);
+        const newStreak = calcStreak(newCompletions, h.weekdays, target);
         return { ...h, completions: newCompletions, streak: newStreak, updatedAt: Date.now() };
       })
     );
+
+    const habit = habits.find((h) => h.id === id);
+    if (!habit) return;
+    const current = habit.completions[selectedKey] || 0;
+    const target = habit.targetReps || 1;
+    const next = current >= target ? 0 : current + 1;
+
+    setParticleKeys((prev) => ({ ...prev, [id]: (prev[id] || 0) + 1 }));
+
+    if (target > 1 && next > 0) {
+      const el = document.querySelector(`[data-habit-id="${id}"] .habits-check`);
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        const levelColor = LEVEL_COLORS[(next - 1) % LEVEL_COLORS.length];
+        const dx = Math.round((Math.random() - 0.5) * 50);
+        if (floatingTimerRef.current) clearTimeout(floatingTimerRef.current);
+        setFloatingNum({ id, x: rect.left + rect.width / 2, y: rect.top, value: next, color: levelColor, key: Date.now(), dx });
+        floatingTimerRef.current = setTimeout(() => setFloatingNum(null), 1200);
+      }
+    }
   }
 
   function openForm() {
@@ -214,6 +247,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
     setNewIcon(HABIT_ICONS[0].name);
     setNewColor(HABIT_COLORS[0]);
     setNewWeekdays([0, 1, 2, 3, 4, 5, 6]);
+    setNewTargetReps(1);
     setFormClosing(false);
     setShowForm(true);
     setTimeout(() => nameRef.current?.focus(), 100);
@@ -240,6 +274,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
       streak: 0,
       weekdays: newWeekdays,
       completions: {},
+      targetReps: newTargetReps,
       createdAt: now,
       updatedAt: now,
     };
@@ -467,7 +502,10 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
           </div>
         ) : (
           visibleHabits.map((habit, i) => {
-            const isDone = !!habit.completions[selectedKey];
+            const currentReps = habit.completions[selectedKey] || 0;
+            const target = habit.targetReps || 1;
+            const isFullyDone = currentReps >= target;
+            const isPartial = currentReps > 0 && !isFullyDone;
             const isDragging = draggingId === habit.id;
             const isDragOver = dragOverId === habit.id;
             const isFuture = selectedDay > today;
@@ -486,17 +524,18 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
                   </svg>
                 </div>
                 <div
-                  className={`habits-item ${isDone ? 'habits-item--done' : ''} ${isDragging ? 'habits-item--dragging' : ''} ${isDragOver ? 'habits-item--drag-over' : ''}`}
+                  className={`habits-item ${isFullyDone ? 'habits-item--done' : ''} ${isPartial ? 'habits-item--partial' : ''} ${isDragging ? 'habits-item--dragging' : ''} ${isDragOver ? 'habits-item--drag-over' : ''}`}
                   style={{ animationDelay: `${i * 0.05}s` }}
                 >
                 <button
-                  className={`habits-check ${isDone ? 'habits-check--checked' : ''} ${isFuture ? 'habits-check--disabled' : ''}`}
+                  className={`habits-check ${target <= 1 ? 'habits-check--simple' : ''} ${isFullyDone ? 'habits-check--checked' : ''} ${isPartial ? `habits-check--partial habits-check--level-${currentReps}` : ''} ${isFuture ? 'habits-check--disabled' : ''}`}
                   onClick={() => { if (!isFuture) toggleHabit(habit.id); }}
                   disabled={isFuture}
-                  aria-label={isDone ? `${t('components.taskCard.undo')} ${habit.name}` : `${t('components.taskCard.complete')} ${habit.name}`}
+                  aria-label={isFullyDone ? `${t('components.taskCard.undo')} ${habit.name}` : `${t('components.taskCard.complete')} ${habit.name}`}
+                  style={isFullyDone ? { background: habit.color, borderColor: habit.color } : isPartial ? { borderColor: LEVEL_COLORS[(currentReps - 1) % LEVEL_COLORS.length] } : !isFuture ? { borderColor: habit.color } : undefined}
                 >
-                  <span className="habits-check-particles">
-                    <i /><i /><i /><i /><i /><i />
+                  <span className="habits-check-particles" key={particleKeys[habit.id] || 0}>
+                    <i /><i /><i /><i /><i /><i /><i /><i />
                   </span>
                   <svg viewBox="0 0 24 24" fill="none" className="habits-check-icon">
                     <polyline points="5 12 10 17 19 7" />
@@ -507,6 +546,11 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
                     {(() => { const Ic = HABIT_ICONS.find((ic) => ic.name === habit.icon)?.icon ?? Book; return <Ic size={18} strokeWidth={1.8} />; })()}
                   </span>
                   <span className="habits-item-name">{habit.name}</span>
+                  {target > 1 && (
+                    <span className="habits-reps-badge" style={{ background: `${habit.color}20`, color: habit.color }}>
+                      ×{target}
+                    </span>
+                  )}
                 </div>
                 <div className={`habits-item-streak${habit.streak >= 100 ? ' streak-100' : habit.streak >= 30 ? ' streak-30' : habit.streak >= 7 ? ' streak-7' : ''}`}>
                   <img src="/icons/streak.svg" alt="" className="habits-streak-icon" width="16" height="16" />
@@ -601,6 +645,37 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
                   ))}
                 </div>
               </div>
+
+              <div className="fm-field">
+                <label className="fm-label">{t('habits.repetitionsPerDay')}</label>
+                <div className="habits-reps-input-wrap">
+                  <button
+                    type="button"
+                    className="habits-reps-adj"
+                    onClick={() => setNewTargetReps((p) => Math.max(1, p - 1))}
+                  >
+                    −
+                  </button>
+                  <input
+                    type="number"
+                    min={1}
+                    max={MAX_REPS}
+                    value={newTargetReps}
+                    onChange={(e) => {
+                      const v = parseInt(e.target.value, 10);
+                      if (!isNaN(v)) setNewTargetReps(Math.min(MAX_REPS, Math.max(1, v)));
+                    }}
+                    className="fm-input habits-reps-input"
+                  />
+                  <button
+                    type="button"
+                    className="habits-reps-adj"
+                    onClick={() => setNewTargetReps((p) => Math.min(MAX_REPS, p + 1))}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
             </form>
 
             <div className="fm-footer">
@@ -628,6 +703,23 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
           onDelete={deleteHabit}
           isClosing={detailClosing}
         />
+      )}
+
+      {floatingNum && (
+        <div
+          key={floatingNum.key}
+          className="habits-floating-num"
+          style={{
+            left: floatingNum.x,
+            top: floatingNum.y,
+            color: '#fff',
+            borderColor: floatingNum.color,
+            background: floatingNum.color,
+            '--dx': `${floatingNum.dx}px`,
+          } as React.CSSProperties}
+        >
+          ×{floatingNum.value}
+        </div>
       )}
     </>
   );

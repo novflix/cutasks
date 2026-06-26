@@ -145,6 +145,7 @@ function habitToDoc(h: Habit): DocumentData {
     streak: h.streak,
     weekdays: h.weekdays || [0, 1, 2, 3, 4, 5, 6],
     completions: h.completions || {},
+    targetReps: h.targetReps || 1,
     createdAt: h.createdAt,
     updatedAt: h.updatedAt,
   });
@@ -158,7 +159,10 @@ function docToHabit(id: string, data: DocumentData): Habit {
     color: data.color ?? '#ed9b6d',
     streak: data.streak ?? 0,
     weekdays: data.weekdays ?? [0, 1, 2, 3, 4, 5, 6],
-    completions: data.completions ?? {},
+    completions: Object.fromEntries(
+      Object.entries(data.completions ?? {}).map(([k, v]) => [k, typeof v === 'boolean' ? (v ? 1 : 0) : v])
+    ) as Record<string, number>,
+    targetReps: data.targetReps ?? 1,
     createdAt: data.createdAt ?? 0,
     updatedAt: data.updatedAt ?? 0,
   };

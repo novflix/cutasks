@@ -295,7 +295,7 @@ export default function App() {
       }
 
       const todayHabits = habitsRef.current.filter((h) => h.weekdays.includes(now.getDay()));
-      const uncompletedHabits = todayHabits.filter((h) => !h.completions[dateKey(now)]);
+      const uncompletedHabits = todayHabits.filter((h) => (h.completions[dateKey(now)] || 0) < (h.targetReps || 1));
       if (uncompletedHabits.length > 0 && hour >= 18) {
         const habit = uncompletedHabits[0];
         const title = t('notifications.streakAtRisk.title');

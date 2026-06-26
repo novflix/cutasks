@@ -171,6 +171,7 @@
     "thisWeek": "Questa settimana",
     "habitName": "Quale abitudine vuoi costruire?",
     "repeatOn": "Ripeti il",
+    "repetitionsPerDay": "Ripetizioni al giorno",
     "createHabit": "Crea abitudine",
     "dragToReorder": "Trascina per riordinare",
     "everyDay": "Ogni giorno",
@@ -755,5 +756,15 @@
       "s14c": "Rispettiamo tutte le leggi sulla privacy nei luoghi in cui operiamo.",
       "closing": "Ci prendiamo seriamente la tua privacy e vogliamo che tu ti senta sicuro utilizzando CuTasks. Se hai mai qualche dubbio o domanda, contattaci. Siamo qui per aiutarti."
     }
+  },
+  "notifications": {
+    "deadlineTomorrow": { "title": "Scadenza domani" },
+    "overdue": { "title": "Task in ritardo" },
+    "habitReminder": { "title": "Promemoria abitudine" },
+    "streakAtRisk": { "title": "Serie in pericolo" },
+    "streakCelebration": { "title": "Tappa serie!" },
+    "morningGreeting": { "title": "Buongiorno!" },
+    "eveningSummary": { "title": "Riepilogo della giornata" },
+    "inactivity": { "title": "Ti manchiamo!" }
   }
 }

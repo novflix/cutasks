@@ -171,6 +171,7 @@
     "thisWeek": "This week",
     "habitName": "What habit do you want to build?",
     "repeatOn": "Repeat on",
+    "repetitionsPerDay": "Repetitions per day",
     "createHabit": "Create Habit",
     "dragToReorder": "Drag to reorder",
     "everyDay": "Every day",

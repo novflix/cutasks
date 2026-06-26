@@ -51,7 +51,8 @@ export interface Habit {
   color: string;
   streak: number;
   weekdays: number[];
-  completions: Record<string, boolean>;
+  completions: Record<string, number>;
+  targetReps: number;
   createdAt: number;
   updatedAt: number;
 }

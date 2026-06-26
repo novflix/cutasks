@@ -105,7 +105,10 @@ export function loadHabits(): Habit[] {
       color: h.color || '#ed9b6d',
       streak: h.streak || 0,
       weekdays: h.weekdays || [0, 1, 2, 3, 4, 5, 6],
-      completions: h.completions || {},
+      completions: Object.fromEntries(
+        Object.entries(h.completions || {}).map(([k, v]) => [k, typeof v === 'boolean' ? (v ? 1 : 0) : v])
+      ),
+      targetReps: h.targetReps || 1,
       createdAt: h.createdAt || Date.now(),
       updatedAt: h.updatedAt || Date.now(),
     }));
