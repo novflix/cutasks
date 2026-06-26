@@ -363,6 +363,7 @@
   "components": {
     "toolbar": {
       "search": "Görev ara...",
+      "pressEnter": "Oluşturmak için Enter'a basın...",
       "all": "Tümü",
       "active": "Aktif",
       "done": "Tamamlandı"

@@ -363,6 +363,7 @@
   "components": {
     "toolbar": {
       "search": "Buscar tareas...",
+      "pressEnter": "Presiona Enter para crear...",
       "all": "Todos",
       "active": "Activos",
       "done": "Hechos"

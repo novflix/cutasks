@@ -363,6 +363,7 @@
   "components": {
     "toolbar": {
       "search": "搜索任务...",
+      "pressEnter": "按回车键创建...",
       "all": "全部",
       "active": "进行中",
       "done": "已完成"

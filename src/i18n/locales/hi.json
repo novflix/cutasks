@@ -364,6 +364,7 @@
   "components": {
     "toolbar": {
       "search": "कार्य खोजें...",
+      "pressEnter": "बनाने के लिए Enter दबाएं...",
       "all": "सभी",
       "active": "सक्रिय",
       "done": "पूर्ण"

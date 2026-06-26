@@ -364,6 +364,7 @@
   "components": {
     "toolbar": {
       "search": "Поиск задач...",
+      "pressEnter": "Нажмите Enter для создания...",
       "all": "Все",
       "active": "Активные",
       "done": "Готово"

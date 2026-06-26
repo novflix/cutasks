@@ -14,6 +14,7 @@ interface TasksPageProps {
   onSearch: (query: string) => void;
   onFilter: (filter: FilterType) => void;
   onCreate: () => void;
+  onCreateFromSearch?: (query: string) => void;
   onToggle: (id: string) => void;
   onView: (task: Task) => void;
   onEdit: (task: Task) => void;
@@ -23,7 +24,7 @@ interface TasksPageProps {
 
 export default function TasksPage({
   stats, tasks, taskMap, filter, searchQuery,
-  onSearch, onFilter, onCreate, onToggle, onView, onEdit, onDelete, onSetSubtask,
+  onSearch, onFilter, onCreate, onCreateFromSearch, onToggle, onView, onEdit, onDelete, onSetSubtask,
 }: TasksPageProps) {
   const { t } = useTranslation();
   return (
@@ -37,6 +38,8 @@ export default function TasksPage({
         onSearch={onSearch}
         filter={filter}
         onFilter={onFilter}
+        onCreateFromSearch={onCreateFromSearch}
+        hasResults={tasks.length > 0}
       />
       <main className="main">
         <TaskList

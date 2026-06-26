@@ -363,6 +363,7 @@
   "components": {
     "toolbar": {
       "search": "Cerca attività...",
+      "pressEnter": "Premi Invio per creare...",
       "all": "Tutti",
       "active": "Attivi",
       "done": "Fatti"

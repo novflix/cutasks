@@ -363,6 +363,7 @@
   "components": {
     "toolbar": {
       "search": "タスクを検索...",
+      "pressEnter": "Enterで作成...",
       "all": "すべて",
       "active": "進行中",
       "done": "完了"

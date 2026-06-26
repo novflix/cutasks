@@ -364,6 +364,7 @@
   "components": {
     "toolbar": {
       "search": "Taken zoeken...",
+      "pressEnter": "Druk op Enter om aan te maken...",
       "all": "Alle",
       "active": "Actief",
       "done": "Afgerond"

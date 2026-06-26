@@ -363,6 +363,7 @@
   "components": {
     "toolbar": {
       "search": "Rechercher des tâches...",
+      "pressEnter": "Appuyez sur Entrée pour créer...",
       "all": "Tout",
       "active": "Actif",
       "done": "Terminé"

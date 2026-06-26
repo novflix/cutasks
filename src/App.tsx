@@ -539,6 +539,26 @@ export default function App() {
     setShowForm(true);
   }
 
+  function createTaskFromSearch(title: string) {
+    pushHistory();
+    const now = Date.now();
+    const newTask: Task = {
+      id: generateId(),
+      title,
+      description: '',
+      priority: 'medium',
+      deadline: '',
+      tags: [],
+      completed: false,
+      completedAt: null,
+      parentId: null,
+      createdAt: now,
+      updatedAt: now,
+    };
+    setTasks((prev) => [newTask, ...prev]);
+    setSearchQuery('');
+  }
+
   function openEditForm(task: Task) {
     if (formTimer.current) clearTimeout(formTimer.current);
     setEditingTask(task);
@@ -680,6 +700,23 @@ export default function App() {
     setProjectStatus('active');
     setProjectFormClosing(false);
     setShowProjectForm(true);
+  }
+
+  function createProjectFromSearch(name: string) {
+    pushHistory();
+    const now = Date.now();
+    const newProject: Project = {
+      id: generateId(),
+      name,
+      description: '',
+      icon: 'Folder',
+      color: '#ed9b6d',
+      status: 'active',
+      createdAt: now,
+      updatedAt: now,
+    };
+    setProjects((prev) => [newProject, ...prev]);
+    setProjectSearch('');
   }
 
   function openEditProject(project: Project) {
@@ -825,6 +862,29 @@ export default function App() {
     setPtSectionId(sectionId);
     setProjectTaskFormClosing(false);
     setShowProjectTaskForm(true);
+  }
+
+  function createProjectTaskFromSearch(title: string) {
+    if (!activeProject) return;
+    pushHistory();
+    const now = Date.now();
+    const newTask: ProjectTask = {
+      id: generateId(),
+      projectId: activeProject.id,
+      title,
+      description: '',
+      priority: 'medium',
+      deadline: '',
+      tags: [],
+      completed: false,
+      completedAt: null,
+      parentId: null,
+      sectionId: null,
+      createdAt: now,
+      updatedAt: now,
+    };
+    setProjectTasks((prev) => [newTask, ...prev]);
+    setProjectTaskSearch('');
   }
 
   function openEditProjectTask(task: ProjectTask) {
@@ -1141,6 +1201,7 @@ export default function App() {
               onSearch={setSearchQuery}
               onFilter={setFilter}
               onCreate={openCreateForm}
+              onCreateFromSearch={createTaskFromSearch}
               onToggle={toggleComplete}
               onView={setViewingTask}
               onEdit={openEditForm}
@@ -1161,9 +1222,14 @@ export default function App() {
                   <MinimalisticMagnifier size={18} className="search-icon" />
                   <input
                     type="text"
-                    placeholder={t('projects.searchProjects')}
+                    placeholder={projectSearch.trim() && filteredProjects.length === 0 ? t('components.toolbar.pressEnter') : t('projects.searchProjects')}
                     value={projectSearch}
                     onChange={(e) => setProjectSearch(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && projectSearch.trim() && filteredProjects.length === 0) {
+                        createProjectFromSearch(projectSearch.trim());
+                      }
+                    }}
                     className="search-input"
                   />
                 </div>
@@ -1220,9 +1286,14 @@ export default function App() {
                       <MinimalisticMagnifier size={18} className="search-icon" />
                       <input
                         type="text"
-                        placeholder={t('tasks.searchTasks')}
+                        placeholder={projectTaskSearch.trim() && filteredProjectTasks.length === 0 ? t('components.toolbar.pressEnter') : t('tasks.searchTasks')}
                         value={projectTaskSearch}
                         onChange={(e) => setProjectTaskSearch(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && projectTaskSearch.trim() && filteredProjectTasks.length === 0) {
+                            createProjectTaskFromSearch(projectTaskSearch.trim());
+                          }
+                        }}
                         className="search-input"
                       />
                     </div>

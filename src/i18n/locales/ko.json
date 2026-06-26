@@ -364,6 +364,7 @@
   "components": {
     "toolbar": {
       "search": "할 일 검색...",
+      "pressEnter": "Enter를 눌러 생성...",
       "all": "전체",
       "active": "진행 중",
       "done": "완료"

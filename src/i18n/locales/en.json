@@ -364,6 +364,7 @@
   "components": {
     "toolbar": {
       "search": "Search tasks...",
+      "pressEnter": "Press Enter to create...",
       "all": "All",
       "active": "Active",
       "done": "Done"

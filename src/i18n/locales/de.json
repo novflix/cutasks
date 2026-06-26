@@ -363,6 +363,7 @@
   "components": {
     "toolbar": {
       "search": "Aufgaben suchen...",
+      "pressEnter": "Enter zum Erstellen drücken...",
       "all": "Alle",
       "active": "Aktiv",
       "done": "Erledigt"

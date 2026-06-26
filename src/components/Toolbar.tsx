@@ -7,6 +7,8 @@ interface ToolbarProps {
   onSearch: (query: string) => void;
   filter: FilterType;
   onFilter: (filter: FilterType) => void;
+  onCreateFromSearch?: (query: string) => void;
+  hasResults?: boolean;
 }
 
 const FILTER_KEYS: Record<FilterType, string> = {
@@ -15,17 +17,25 @@ const FILTER_KEYS: Record<FilterType, string> = {
   completed: 'components.toolbar.done',
 };
 
-export default function Toolbar({ searchQuery, onSearch, filter, onFilter }: ToolbarProps) {
+export default function Toolbar({ searchQuery, onSearch, filter, onFilter, onCreateFromSearch, hasResults = true }: ToolbarProps) {
   const { t } = useTranslation();
+
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === 'Enter' && searchQuery.trim() && !hasResults && onCreateFromSearch) {
+      onCreateFromSearch(searchQuery.trim());
+    }
+  }
+
   return (
     <div className="toolbar">
       <div className="search-box">
         <MinimalisticMagnifier size={18} className="search-icon" />
         <input
           type="text"
-          placeholder={t('components.toolbar.search')}
+          placeholder={searchQuery.trim() && !hasResults ? t('components.toolbar.pressEnter') : t('components.toolbar.search')}
           value={searchQuery}
           onChange={(e) => onSearch(e.target.value)}
+          onKeyDown={handleKeyDown}
           className="search-input"
         />
       </div>
