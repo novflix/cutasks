@@ -114,7 +114,7 @@ export default function App() {
   const [confirmDelete, setConfirmDelete] = useState<{ type: 'task' | 'project'; id: string; title: string } | null>(null);
 
   const [pomoConfig, setPomoConfig] = useState<PomoConfig>(loadPomoConfig);
-  const savedPomo = loadPomoSavedState();
+  const [savedPomo] = useState(() => loadPomoSavedState());
   const [pomoMode, setPomoMode] = useState<PomoMode>(savedPomo?.mode ?? 'work');
   const [pomoSeconds, setPomoSeconds] = useState(savedPomo?.secondsLeft ?? pomoConfig.work * 60);
   const [pomoRunning, setPomoRunning] = useState(loadPomoRunning);
@@ -296,7 +296,9 @@ export default function App() {
         }
       }
 
-      const todayHabits = habitsRef.current.filter((h) => h.weekdays.includes(now.getDay()));
+      const jsDay = now.getDay();
+      const habitDay = jsDay === 0 ? 6 : jsDay - 1;
+      const todayHabits = habitsRef.current.filter((h) => h.weekdays.includes(habitDay));
       const uncompletedHabits = todayHabits.filter((h) => (h.completions[dateKey(now)] || 0) < (h.targetReps || 1));
       if (uncompletedHabits.length > 0 && hour >= 18) {
         const habit = uncompletedHabits[0];
@@ -1126,7 +1128,7 @@ export default function App() {
               <Route path="/app/calendar" element={
                 <ProtectedRoute>
                   <main className="main">
-                    <CalendarPage tasks={tasks} projectTasks={projectTasks} onViewTask={(t) => {
+                    <CalendarPage tasks={tasks} projectTasks={projectTasks} weekStartDay={weekStart} onViewTask={(t) => {
                       if ('projectId' in t) setViewingProjectTask(t as ProjectTask);
                       else setViewingTask(t);
                     }} />

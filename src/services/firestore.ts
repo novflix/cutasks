@@ -193,6 +193,7 @@ export async function saveAllData(
     projects: Project[];
     sections: Section[];
     projectTasks: ProjectTask[];
+    habits?: Habit[];
   }
 ) {
   const batch = writeBatch(db);
@@ -224,6 +225,9 @@ export async function saveAllData(
   await syncCollection('projects', data.projects, projectToDoc);
   await syncCollection('sections', data.sections, sectionToDoc);
   await syncCollection('projectTasks', data.projectTasks, projectTaskToDoc);
+  if (data.habits) {
+    await syncCollection('habits', data.habits, habitToDoc);
+  }
 
   await batch.commit();
 }

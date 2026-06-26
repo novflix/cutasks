@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, type ComponentType } from 'react';
 import {
-  CloseCircle, PenNewRound, CalendarMinimalistic, Fire, Target,
+  CloseCircle, PenNewRound, CalendarMinimalistic, Fire, Target, Flame,
   Book, Running, Meditation, Waterdrop, Heart, MoonStars,
   CupHot, MedalStar, Shield, Leaf, Star, Bolt, Alarm,
   SmileCircle, Football, CodeSquare, Palette, MusicNote, Notes,
@@ -17,6 +17,7 @@ const HABIT_ICONS: { name: string; icon: ComponentType<{ size?: number; strokeWi
   { name: 'Heart', icon: Heart },
   { name: 'MoonStars', icon: MoonStars },
   { name: 'CupHot', icon: CupHot },
+  { name: 'Flame', icon: Flame },
   { name: 'Target', icon: Target },
   { name: 'MedalStar', icon: MedalStar },
   { name: 'Shield', icon: Shield },

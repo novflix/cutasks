@@ -25,12 +25,17 @@ function dateKey(d: Date): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-function getWeekStart(date: Date): Date {
+function getWeekStart(date: Date, weekStartDay: string = 'monday'): Date {
   const d = new Date(date);
   d.setHours(0, 0, 0, 0);
   const day = d.getDay();
-  const diff = d.getDate() - day + (day === 0 ? -6 : 1);
-  d.setDate(diff);
+  if (weekStartDay === 'saturday') {
+    const diff = d.getDate() - ((day + 1) % 7);
+    d.setDate(diff);
+  } else {
+    const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+    d.setDate(diff);
+  }
   return d;
 }
 
@@ -65,9 +70,10 @@ interface CalendarPageProps {
   tasks: Task[];
   projectTasks: ProjectTask[];
   onViewTask: (task: Task) => void;
+  weekStartDay?: string;
 }
 
-export default function CalendarPage({ tasks, projectTasks, onViewTask }: CalendarPageProps) {
+export default function CalendarPage({ tasks, projectTasks, onViewTask, weekStartDay = 'monday' }: CalendarPageProps) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const today = useMemo(() => {
@@ -78,10 +84,10 @@ export default function CalendarPage({ tasks, projectTasks, onViewTask }: Calend
 
   const [mode, setMode] = useState<CalMode>('week');
   const [selectedDay, setSelectedDay] = useState<Date>(today);
-  const [weekStart, setWeekStart] = useState(() => getWeekStart(today));
+  const [weekStart, setWeekStart] = useState(() => getWeekStart(today, weekStartDay));
   const [monthDate, setMonthDate] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
 
-  const isCurrentWeek = useMemo(() => isSameDay(weekStart, getWeekStart(today)), [weekStart, today]);
+  const isCurrentWeek = useMemo(() => isSameDay(weekStart, getWeekStart(today, weekStartDay)), [weekStart, today, weekStartDay]);
   const isCurrentMonth = useMemo(
     () => today.getMonth() === monthDate.getMonth() && today.getFullYear() === monthDate.getFullYear(),
     [monthDate, today]
@@ -141,15 +147,15 @@ export default function CalendarPage({ tasks, projectTasks, onViewTask }: Calend
   const handleNextMonth = useCallback(() => setMonthDate(d => new Date(d.getFullYear(), d.getMonth() + 1, 1)), []);
   const handleToday = useCallback(() => {
     setSelectedDay(today);
-    setWeekStart(getWeekStart(today));
+    setWeekStart(getWeekStart(today, weekStartDay));
     setMonthDate(new Date(today.getFullYear(), today.getMonth(), 1));
-  }, [today]);
+  }, [today, weekStartDay]);
 
   const handleDayClick = useCallback((d: Date) => {
     setSelectedDay(d);
-    setWeekStart(getWeekStart(d));
+    setWeekStart(getWeekStart(d, weekStartDay));
     setMonthDate(new Date(d.getFullYear(), d.getMonth(), 1));
-  }, []);
+  }, [weekStartDay]);
 
   const showTodayBadge = (mode === 'week' && !isCurrentWeek) || (mode === 'month' && !isCurrentMonth);
 

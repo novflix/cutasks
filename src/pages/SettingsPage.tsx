@@ -120,15 +120,11 @@ export default function SettingsPage() {
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', activeTheme);
     localStorage.setItem('cutasks_theme', activeTheme);
-    if (user) saveSettings(user.uid, { theme: activeTheme, deleteMode, weekStart: weekStartDay }).catch(() => {});
-  }, [activeTheme, deleteMode, weekStartDay, user]);
-
-  useEffect(() => {
     localStorage.setItem('cutasks_delete_mode', deleteMode);
     localStorage.setItem('cutasks_week_start', weekStartDay);
     window.dispatchEvent(new CustomEvent('week-start-changed', { detail: weekStartDay }));
     if (user) saveSettings(user.uid, { theme: activeTheme, deleteMode, weekStart: weekStartDay }).catch(() => {});
-  }, [deleteMode, weekStartDay, activeTheme, user]);
+  }, [activeTheme, deleteMode, weekStartDay, user]);
 
   useEffect(() => {
     localStorage.setItem(POMO_STORAGE, JSON.stringify(pomoConfig));
@@ -165,7 +161,7 @@ export default function SettingsPage() {
       setPasswordError(t('settings.fillAllFields'));
       return;
     }
-    if (newPassword.length < 6) {
+    if (newPassword.length < 8) {
       setPasswordError(t('settings.passwordMin6'));
       return;
     }
@@ -303,6 +299,7 @@ export default function SettingsPage() {
           projects: data.projects || [],
           sections: data.sections || [],
           projectTasks: data.projectTasks || [],
+          habits: data.habits || [],
         });
         window.location.reload();
       }
