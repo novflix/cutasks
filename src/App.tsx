@@ -5,7 +5,7 @@ import './App.css';
 import type { Task, Priority, Page, FilterType, Project, ProjectStatus, Section, ProjectTask, Habit } from './types';
 import type { PomoMode, PomoConfig } from './pages/PomodoroPage';
 import { LONG_BREAK_INTERVAL } from './constants/pomo';
-import { generateId, priorityOrder, validateTitle, validateDescription, sanitizeInput, sanitizePriority, MAX_TASKS_COUNT, MAX_PROJECTS_COUNT, dateKey } from './utils';
+import { generateId, priorityOrder, validateTitle, validateDescription, sanitizeInput, sanitizePriority, MAX_TASKS_COUNT, MAX_PROJECTS_COUNT, dateKey, getDeadlineStatus } from './utils';
 import { loadPomoConfig, loadPomoSavedState, savePomoState, loadPomoRunning } from './utils/pomo';
 import { loadTasks, saveTasks as localSaveTasks, getAllTags, loadProjects, saveProjects as localSaveProjects, loadSections, saveSections as localSaveSections, loadProjectTasks, saveProjectTasks as localSaveProjectTasks, loadHabits, saveHabits as localSaveHabits } from './storage';
 import { useAuth } from './contexts/AuthContext';
