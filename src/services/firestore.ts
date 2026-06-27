@@ -6,7 +6,9 @@ import {
   setDoc,
   writeBatch,
   serverTimestamp,
+  onSnapshot,
   type DocumentData,
+  type Unsubscribe,
 } from 'firebase/firestore';
 import { db } from '../firebase';
 import type { Task, Project, Section, ProjectTask, Habit } from '../types';
@@ -336,4 +338,69 @@ export async function saveSettings(uid: string, settings: UserSettings) {
     d: settings.deleteMode,
     w: settings.weekStart,
   });
+}
+
+export interface RealtimeCallbacks {
+  onTasks: (tasks: Task[]) => void;
+  onProjects: (projects: Project[]) => void;
+  onSections: (sections: Section[]) => void;
+  onProjectTasks: (tasks: ProjectTask[]) => void;
+  onHabits: (habits: Habit[]) => void;
+}
+
+export function subscribeToAllData(uid: string, callbacks: RealtimeCallbacks): Unsubscribe {
+  let prevTasks = '';
+  let prevProjects = '';
+  let prevSections = '';
+  let prevProjectTasks = '';
+  let prevHabits = '';
+
+  const unsubTasks = onSnapshot(userCol(uid, 'tasks'), (snap) => {
+    const data = snap.docs.map((d) => docToTask(d.id, d.data()));
+    const json = JSON.stringify(data);
+    if (json !== prevTasks) {
+      prevTasks = json;
+      callbacks.onTasks(data);
+    }
+  });
+  const unsubProjects = onSnapshot(userCol(uid, 'projects'), (snap) => {
+    const data = snap.docs.map((d) => docToProject(d.id, d.data()));
+    const json = JSON.stringify(data);
+    if (json !== prevProjects) {
+      prevProjects = json;
+      callbacks.onProjects(data);
+    }
+  });
+  const unsubSections = onSnapshot(userCol(uid, 'sections'), (snap) => {
+    const data = snap.docs.map((d) => docToSection(d.id, d.data()));
+    const json = JSON.stringify(data);
+    if (json !== prevSections) {
+      prevSections = json;
+      callbacks.onSections(data);
+    }
+  });
+  const unsubProjectTasks = onSnapshot(userCol(uid, 'projectTasks'), (snap) => {
+    const data = snap.docs.map((d) => docToProjectTask(d.id, d.data()));
+    const json = JSON.stringify(data);
+    if (json !== prevProjectTasks) {
+      prevProjectTasks = json;
+      callbacks.onProjectTasks(data);
+    }
+  });
+  const unsubHabits = onSnapshot(userCol(uid, 'habits'), (snap) => {
+    const data = snap.docs.map((d) => docToHabit(d.id, d.data()));
+    const json = JSON.stringify(data);
+    if (json !== prevHabits) {
+      prevHabits = json;
+      callbacks.onHabits(data);
+    }
+  });
+
+  return () => {
+    unsubTasks();
+    unsubProjects();
+    unsubSections();
+    unsubProjectTasks();
+    unsubHabits();
+  };
 }

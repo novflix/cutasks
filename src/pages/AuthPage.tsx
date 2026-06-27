@@ -2,8 +2,6 @@ import { useState, useRef, useEffect, useMemo, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { login, register } from '../services/auth';
-import { saveAllData, loadAllData } from '../services/firestore';
-import { loadTasks, loadProjects, loadSections, loadProjectTasks } from '../storage';
 import { useAuth } from '../contexts/AuthContext';
 import { getFirebaseErrorMessage } from '../utils/firebaseErrors';
 import '../styles/auth.css';
@@ -24,7 +22,6 @@ export default function AuthPage() {
   const [closing, setClosing] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
-  const [migrating, setMigrating] = useState(false);
   const [migrated, setMigrated] = useState(false);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
@@ -50,38 +47,7 @@ export default function AuthPage() {
 
   useEffect(() => {
     if (!user || migrated) return;
-    async function migrate() {
-      const localTasks = loadTasks();
-      const localProjects = loadProjects();
-      const localSections = loadSections();
-      const localProjectTasks = loadProjectTasks();
-      const hasLocal = localTasks.length + localProjects.length + localSections.length + localProjectTasks.length > 0;
-      if (!hasLocal) {
-        setMigrated(true);
-        return;
-      }
-      setMigrating(true);
-      try {
-        const fsData = await loadAllData(user!.uid);
-        const hasFirestore = fsData.tasks.length + fsData.projects.length + fsData.sections.length + fsData.projectTasks.length > 0;
-        if (hasFirestore) {
-          setMigrated(true);
-          return;
-        }
-        await saveAllData(user!.uid, {
-          tasks: localTasks,
-          projects: localProjects,
-          sections: localSections,
-          projectTasks: localProjectTasks,
-        });
-        setMigrated(true);
-      } catch {
-        setMigrated(true);
-      } finally {
-        setMigrating(false);
-      }
-    }
-    migrate();
+    setMigrated(true);
   }, [user, migrated]);
 
   if (user && migrated) return null;
@@ -118,7 +84,7 @@ export default function AuthPage() {
     }, 180);
   }
 
-  if (user && migrating) {
+  if (user && !migrated) {
     return (
       <div className="auth-page">
         <div className={`auth-card${closing ? ' closing' : ''}`}>

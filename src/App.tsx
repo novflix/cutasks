@@ -7,9 +7,9 @@ import type { PomoMode, PomoConfig } from './pages/PomodoroPage';
 import { LONG_BREAK_INTERVAL } from './constants/pomo';
 import { generateId, priorityOrder, validateTitle, validateDescription, sanitizeInput, sanitizePriority, MAX_TASKS_COUNT, MAX_PROJECTS_COUNT, dateKey, getDeadlineStatus } from './utils';
 import { loadPomoConfig, loadPomoSavedState, savePomoState, loadPomoRunning } from './utils/pomo';
-import { loadTasks, saveTasks as localSaveTasks, getAllTags, loadProjects, saveProjects as localSaveProjects, loadSections, saveSections as localSaveSections, loadProjectTasks, saveProjectTasks as localSaveProjectTasks, loadHabits, saveHabits as localSaveHabits } from './storage';
+import { getAllTags } from './storage';
 import { useAuth } from './contexts/AuthContext';
-import { saveTasks as fsSaveTasks, saveProjects as fsSaveProjects, saveSections as fsSaveSections, saveProjectTasks as fsSaveProjectTasks, saveHabits as fsSaveHabits, loadAllData, loadSettings } from './services/firestore';
+import { saveTasks as fsSaveTasks, saveProjects as fsSaveProjects, saveSections as fsSaveSections, saveProjectTasks as fsSaveProjectTasks, saveHabits as fsSaveHabits, loadAllData, loadSettings, subscribeToAllData } from './services/firestore';
 import { isNotificationsEnabled, sendNotification, getLocalizedMessage } from './services/notifications';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -60,7 +60,7 @@ export default function App() {
   const { user, loading: authLoading } = useAuth();
   const { t, i18n } = useTranslation();
 
-  const [tasks, setTasks] = useState<Task[]>(loadTasks);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [formClosing, setFormClosing] = useState(false);
   const [viewingTask, setViewingTask] = useState<Task | null>(null);
@@ -75,7 +75,7 @@ export default function App() {
   const [filter, setFilter] = useState<FilterType>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sidebarWidth, setSidebarWidth] = useState(220);
-  const [projects, setProjects] = useState<Project[]>(loadProjects);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [showProjectForm, setShowProjectForm] = useState(false);
   const [projectFormClosing, setProjectFormClosing] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -85,9 +85,9 @@ export default function App() {
   const [projectColor, setProjectColor] = useState('#ed9b6d');
   const [projectStatus, setProjectStatus] = useState<ProjectStatus>('active');
   const [projectSearch, setProjectSearch] = useState('');
-  const [projectTasks, setProjectTasks] = useState<ProjectTask[]>(loadProjectTasks);
-  const [sections, setSections] = useState<Section[]>(loadSections);
-  const [habits, setHabits] = useState<Habit[]>(loadHabits);
+  const [projectTasks, setProjectTasks] = useState<ProjectTask[]>([]);
+  const [sections, setSections] = useState<Section[]>([]);
+  const [habits, setHabits] = useState<Habit[]>([]);
   const [weekStart, setWeekStart] = useState<string>(() => localStorage.getItem('cutasks_week_start') || 'monday');
   const [projectTaskFilter, setProjectTaskFilter] = useState<FilterType>('all');
   const [projectTaskSearch, setProjectTaskSearch] = useState('');
@@ -106,6 +106,7 @@ export default function App() {
   const detailTimer2 = useRef<ReturnType<typeof setTimeout> | null>(null);
   const syncReadyRef = useRef(false);
   const justLoadedFromFsRef = useRef(false);
+  const skipSyncRef = useRef(false);
   const [dataLoading, setDataLoading] = useState(() => {
     return !localStorage.getItem('cutasks_tasks') && !localStorage.getItem('cutasks_projects');
   });
@@ -176,12 +177,6 @@ export default function App() {
     justLoadedFromFsRef.current = true;
     setDataLoading(true);
 
-    localStorage.removeItem('cutasks_tasks');
-    localStorage.removeItem('cutasks_projects');
-    localStorage.removeItem('cutasks_sections');
-    localStorage.removeItem('cutasks_project_tasks');
-    localStorage.removeItem('cutasks_habits');
-
     function cleanupExpired(tasks: Task[], projectTasks: ProjectTask[]): { tasks: Task[]; projectTasks: ProjectTask[] } {
       const mode = (localStorage.getItem('cutasks_delete_mode') || 'instant') as 'instant' | '3days' | '7days';
       if (mode === 'instant') return { tasks, projectTasks };
@@ -230,6 +225,43 @@ export default function App() {
         document.documentElement.setAttribute('data-theme', settings.theme);
       }
     }).catch(() => {});
+
+    const unsubscribe = subscribeToAllData(user.uid, {
+      onTasks: (tasks) => {
+        if (!syncReadyRef.current) return;
+        skipSyncRef.current = true;
+        const cleaned = cleanupExpired(tasks, projectTasksRef.current);
+        setTasks(cleaned.tasks);
+        setTimeout(() => { skipSyncRef.current = false; }, 100);
+      },
+      onProjects: (projects) => {
+        if (!syncReadyRef.current) return;
+        skipSyncRef.current = true;
+        setProjects(projects);
+        setTimeout(() => { skipSyncRef.current = false; }, 100);
+      },
+      onSections: (sections) => {
+        if (!syncReadyRef.current) return;
+        skipSyncRef.current = true;
+        setSections(sections);
+        setTimeout(() => { skipSyncRef.current = false; }, 100);
+      },
+      onProjectTasks: (projectTasks) => {
+        if (!syncReadyRef.current) return;
+        skipSyncRef.current = true;
+        const cleaned = cleanupExpired(tasksRef.current, projectTasks);
+        setProjectTasks(cleaned.projectTasks);
+        setTimeout(() => { skipSyncRef.current = false; }, 100);
+      },
+      onHabits: (habits) => {
+        if (!syncReadyRef.current) return;
+        skipSyncRef.current = true;
+        setHabits(habits);
+        setTimeout(() => { skipSyncRef.current = false; }, 100);
+      },
+    });
+
+    return () => { unsubscribe(); };
   }, [user]);
 
   const projectTasksRef = useRef(projectTasks);
@@ -420,40 +452,35 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    localSaveTasks(tasks);
-    if (user && syncReadyRef.current && !justLoadedFromFsRef.current) {
+    if (user && syncReadyRef.current && !justLoadedFromFsRef.current && !skipSyncRef.current) {
       const timer = setTimeout(() => fsSaveTasks(user.uid, tasks).catch(() => {}), 500);
       return () => clearTimeout(timer);
     }
   }, [tasks, user]);
 
   useEffect(() => {
-    localSaveProjects(projects);
-    if (user && syncReadyRef.current && !justLoadedFromFsRef.current) {
+    if (user && syncReadyRef.current && !justLoadedFromFsRef.current && !skipSyncRef.current) {
       const timer = setTimeout(() => fsSaveProjects(user.uid, projects).catch(() => {}), 500);
       return () => clearTimeout(timer);
     }
   }, [projects, user]);
 
   useEffect(() => {
-    localSaveProjectTasks(projectTasks);
-    if (user && syncReadyRef.current && !justLoadedFromFsRef.current) {
+    if (user && syncReadyRef.current && !justLoadedFromFsRef.current && !skipSyncRef.current) {
       const timer = setTimeout(() => fsSaveProjectTasks(user.uid, projectTasks).catch(() => {}), 500);
       return () => clearTimeout(timer);
     }
   }, [projectTasks, user]);
 
   useEffect(() => {
-    localSaveSections(sections);
-    if (user && syncReadyRef.current && !justLoadedFromFsRef.current) {
+    if (user && syncReadyRef.current && !justLoadedFromFsRef.current && !skipSyncRef.current) {
       const timer = setTimeout(() => fsSaveSections(user.uid, sections).catch(() => {}), 500);
       return () => clearTimeout(timer);
     }
   }, [sections, user]);
 
   useEffect(() => {
-    localSaveHabits(habits);
-    if (user && syncReadyRef.current && !justLoadedFromFsRef.current) {
+    if (user && syncReadyRef.current && !justLoadedFromFsRef.current && !skipSyncRef.current) {
       const timer = setTimeout(() => fsSaveHabits(user.uid, habits).catch(() => {}), 500);
       return () => clearTimeout(timer);
     }
