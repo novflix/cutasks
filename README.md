@@ -29,7 +29,7 @@
 
 ## Why CuTasks?
 
-CuTasks is a modern productivity app that combines task management, project organization, habit tracking, and focus techniques into one seamless experience. Built with performance and beauty in mind, it works offline and syncs across devices when you're connected.
+CuTasks is a modern productivity app that combines task management, project organization, habit tracking, and focus techniques into one seamless experience. Built with performance and beauty in mind, it syncs across devices in real time.
 
 ---
 
@@ -109,9 +109,10 @@ CuTasks is a modern productivity app that combines task management, project orga
 - **13 Languages** — EN, FR, DE, ES, IT, PT, NL, RU, TR, ZH, JA, KO, HI
 - **3 Themes** — Dark, Light, and Midnight
 - **Quick Create** — Type in search and press Enter to create a new task/project instantly
-- **PWA Support** — Install on any device, works offline
+- **PWA Support** — Install on any device
 - **Cloud Sync** — Firebase Firestore keeps your data safe
 - **Responsive** — Beautiful on desktop and mobile
+- **Push Notifications** — Deadline reminders, streak alerts, daily summaries
 - **Easter Eggs** — Shake your device for motivational quotes
 
 ---
@@ -205,15 +206,25 @@ cutasks/
 │   │   ├── Sidebar.tsx
 │   │   ├── Header.tsx
 │   │   ├── TaskCard.tsx
+│   │   ├── TaskList.tsx
 │   │   ├── TaskFormModal.tsx
 │   │   ├── TaskDetailModal.tsx
+│   │   ├── ProjectCard.tsx
 │   │   ├── ProjectFormModal.tsx
+│   │   ├── ProjectRoute.tsx
+│   │   ├── SectionFormModal.tsx
 │   │   ├── HabitDetailModal.tsx
 │   │   ├── ConfirmDialog.tsx
 │   │   ├── Toolbar.tsx
 │   │   ├── PomoMiniTimer.tsx
 │   │   ├── MobileNav.tsx
-│   │   └── ...
+│   │   ├── DatePicker.tsx
+│   │   ├── TagInput.tsx
+│   │   ├── ParentTaskSelect.tsx
+│   │   ├── LanguagePicker.tsx
+│   │   ├── Logo.tsx
+│   │   ├── Skeleton.tsx
+│   │   └── ProtectedRoute.tsx
 │   ├── pages/              # Route pages
 │   │   ├── HomePage.tsx
 │   │   ├── TasksPage.tsx
@@ -224,23 +235,36 @@ cutasks/
 │   │   ├── CalendarPage.tsx
 │   │   ├── SettingsPage.tsx
 │   │   ├── AuthPage.tsx
-│   │   └── LandingPage.tsx
+│   │   ├── LandingPage.tsx
+│   │   ├── TermsPage.tsx
+│   │   ├── PrivacyPage.tsx
+│   │   └── NotFoundPage.tsx
+│   ├── constants/          # App constants
+│   │   ├── projects.ts     # Project icons and colors
+│   │   ├── habits.ts       # Habit icons and colors
+│   │   └── pomo.ts         # Pomodoro configuration
 │   ├── services/           # Firebase operations
 │   │   ├── auth.ts
-│   │   └── firestore.ts
+│   │   ├── firestore.ts
+│   │   └── notifications.ts
 │   ├── contexts/           # React contexts
 │   │   └── AuthContext.tsx
+│   ├── utils/              # Utility modules
+│   │   ├── pomo.ts
+│   │   └── firebaseErrors.ts
 │   ├── i18n/               # Translations
 │   │   ├── index.ts
 │   │   └── locales/        # 13 languages
-│   ├── styles/             # CSS modules
+│   ├── styles/             # CSS styles
 │   │   ├── themes.css
 │   │   ├── sidebar.css
 │   │   ├── modal.css
+│   │   ├── toolbar.css
+│   │   ├── task.css
 │   │   └── ...
 │   ├── types.ts            # TypeScript types
 │   ├── utils.ts            # Utility functions
-│   ├── storage.ts          # localStorage layer
+│   ├── storage.ts          # Tag extraction
 │   ├── firebase.ts         # Firebase init
 │   ├── App.tsx             # Root component
 │   └── main.tsx            # Entry point
@@ -254,23 +278,20 @@ cutasks/
 
 ## Data Architecture
 
-CuTasks uses a **dual-sync** architecture:
+CuTasks uses **Firebase Firestore** for all data storage with real-time sync across devices.
 
-1. **localStorage** — Instant offline access, no latency
-2. **Firebase Firestore** — Cloud backup and cross-device sync
-
-When a user is authenticated, data is saved to both localStorage (immediately) and Firestore (debounced 500ms). On login, Firestore data loads and merges with local data.
+When a user is authenticated, data is loaded from Firestore on login, then kept in sync via real-time `onSnapshot` listeners. Local changes are immediately reflected in the UI and debounced to Firestore (500ms).
 
 ```
-┌─────────────┐     ┌──────────────────┐
-│   Browser   │────▶│    localStorage   │
-│   (UI)      │     │   (instant sync)  │
-└──────┬──────┘     └──────────────────┘
+┌─────────────┐
+│   Browser   │──── UI updates (instant)
+│   (UI)      │
+└──────┬──────┘
        │
        │ 500ms debounce
        ▼
 ┌─────────────┐
-│   Firebase  │
+│   Firebase  │◀─── onSnapshot (real-time)
 │  Firestore  │
 │  (cloud)    │
 └─────────────┘
