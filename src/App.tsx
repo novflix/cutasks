@@ -172,6 +172,16 @@ export default function App() {
   useEffect(() => {
     if (!user) return;
 
+    syncReadyRef.current = false;
+    justLoadedFromFsRef.current = true;
+    setDataLoading(true);
+
+    localStorage.removeItem('cutasks_tasks');
+    localStorage.removeItem('cutasks_projects');
+    localStorage.removeItem('cutasks_sections');
+    localStorage.removeItem('cutasks_project_tasks');
+    localStorage.removeItem('cutasks_habits');
+
     function cleanupExpired(tasks: Task[], projectTasks: ProjectTask[]): { tasks: Task[]; projectTasks: ProjectTask[] } {
       const mode = (localStorage.getItem('cutasks_delete_mode') || 'instant') as 'instant' | '3days' | '7days';
       if (mode === 'instant') return { tasks, projectTasks };
