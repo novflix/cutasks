@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/novflix/cutasks/5067d30d8a4c0ba6900b8c4260245c4ff62c4320/public/logo.svg" alt="CuTasks Logo" width="220" />
+  <img src="https://github.com/novflix/cutasks/blob/main/media/banner-2.png?raw=true" alt="CuTasks Logo"/>
 </p>
 
 <p align="center">
@@ -118,24 +118,12 @@ CuTasks is a modern productivity app that combines task management, project orga
 
 ## Demo
 
-<!-- Add your screenshots here -->
-
 <p align="center">
-  <em>Screenshots coming soon — replace this section with actual images</em>
-</p>
-
-<!-- Example placeholder:
-<p align="center">
-  <img src="docs/screenshots/home.png" alt="Dashboard" width="400" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/tasks.png" alt="Tasks" width="400" />
+  <img src="https://github.com/novflix/cutasks/blob/main/media/screen-1.png?raw=true" alt="Screenshot 1"/>
 </p>
 <p align="center">
-  <img src="docs/screenshots/projects.png" alt="Projects" width="400" />
-  &nbsp;&nbsp;
-  <img src="docs/screenshots/pomodoro.png" alt="Pomodoro" width="400" />
+  <img src="https://github.com/novflix/cutasks/blob/main/media/screen-2.png?raw=true" alt="Screenshot 2"/>
 </p>
--->
 
 ---
 
