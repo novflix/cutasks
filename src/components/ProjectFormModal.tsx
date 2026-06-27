@@ -2,7 +2,7 @@ import { useRef, useEffect } from 'react';
 import { CloseCircle } from '@solar-icons/react';
 import { useTranslation } from 'react-i18next';
 import type { Project, ProjectStatus } from '../types';
-import { PROJECT_ICONS, PROJECT_COLORS } from '../constants';
+import { PROJECT_ICONS, PROJECT_COLORS } from '../constants/projects';
 
 interface ProjectFormModalProps {
   editingProject: Project | null;

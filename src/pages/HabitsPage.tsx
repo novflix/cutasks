@@ -1,50 +1,18 @@
-import { useState, useMemo, useRef, useEffect, type ComponentType } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft, AltArrowLeft, AltArrowRight, AddSquare, CloseCircle,
-  Book, Running, Meditation, Waterdrop, Heart, MoonStars,
-  CupHot, Flame, Target, MedalStar, Shield, Leaf, Star, Bolt, Alarm,
-  SmileCircle, Football, CodeSquare, Palette, MusicNote, Notes,
 } from '@solar-icons/react';
 import type { Habit } from '../types';
 import HabitDetailModal from '../components/HabitDetailModal';
 import { MAX_HABITS_COUNT, dateKey } from '../utils';
+import { HABIT_ICONS, HABIT_COLORS } from '../constants/habits';
 
 const ALL_DAY_KEYS = ['common.mon', 'common.tue', 'common.wed', 'common.thu', 'common.fri', 'common.sat', 'common.sun'];
 const MONTH_KEYS = [
   'common.january', 'common.february', 'common.march', 'common.april', 'common.may', 'common.june',
   'common.july', 'common.august', 'common.september', 'common.october', 'common.november', 'common.december',
-];
-
-const HABIT_ICONS: { name: string; icon: ComponentType<{ size?: number; strokeWidth?: number }> }[] = [
-  { name: 'Book', icon: Book },
-  { name: 'Running', icon: Running },
-  { name: 'Meditation', icon: Meditation },
-  { name: 'Waterdrop', icon: Waterdrop },
-  { name: 'Heart', icon: Heart },
-  { name: 'MoonStars', icon: MoonStars },
-  { name: 'CupHot', icon: CupHot },
-  { name: 'Flame', icon: Flame },
-  { name: 'Target', icon: Target },
-  { name: 'MedalStar', icon: MedalStar },
-  { name: 'Shield', icon: Shield },
-  { name: 'Leaf', icon: Leaf },
-  { name: 'Star', icon: Star },
-  { name: 'Bolt', icon: Bolt },
-  { name: 'Alarm', icon: Alarm },
-  { name: 'SmileCircle', icon: SmileCircle },
-  { name: 'Football', icon: Football },
-  { name: 'CodeSquare', icon: CodeSquare },
-  { name: 'Palette', icon: Palette },
-  { name: 'MusicNote', icon: MusicNote },
-  { name: 'Notes', icon: Notes },
-];
-
-const HABIT_COLORS = [
-  '#ed9b6d', '#66bb6a', '#64b5f6', '#ba68c8', '#ffb74d',
-  '#4db6ac', '#e57373', '#9575cd', '#4fc3f7', '#f06292',
-  '#aed581', '#ff8a65',
 ];
 
 function getWeekStart(date: Date, mode: string): Date {
@@ -541,7 +509,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
                 </button>
                 <div className="habits-item-body" onClick={() => setViewingHabit(habit)} style={{ cursor: 'pointer' }}>
                   <span className="habits-item-icon" style={{ background: `${habit.color}18`, color: habit.color }}>
-                    {(() => { const Ic = HABIT_ICONS.find((ic) => ic.name === habit.icon)?.icon ?? Book; return <Ic size={18} strokeWidth={1.8} />; })()}
+                    {(() => { const Ic = HABIT_ICONS.find((ic) => ic.name === habit.icon)?.icon ?? HABIT_ICONS[0].icon; return <Ic size={18} strokeWidth={1.8} />; })()}
                   </span>
                   <span className="habits-item-name">{habit.name}</span>
                   {target > 1 && (

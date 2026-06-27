@@ -1,7 +1,7 @@
 import { Pen, TrashBinMinimalistic } from '@solar-icons/react';
 import { useTranslation } from 'react-i18next';
 import type { Project, ProjectTask } from '../types';
-import { PROJECT_ICONS } from '../constants';
+import { PROJECT_ICONS } from '../constants/projects';
 import { formatDate, highlightMatch } from '../utils';
 
 interface ProjectCardProps {

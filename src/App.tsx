@@ -23,7 +23,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import ConfirmDialog from './components/ConfirmDialog';
 import Skeleton from './components/Skeleton';
 import { MinimalisticMagnifier, ArrowLeft } from '@solar-icons/react';
-import { PROJECT_ICONS } from './constants';
+import { PROJECT_ICONS } from './constants/projects';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const TasksPage = lazy(() => import('./pages/TasksPage'));
