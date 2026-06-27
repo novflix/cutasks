@@ -53,6 +53,7 @@ export default function TaskFormModal({
         </div>
 
         <form id="fm-hidden" onSubmit={onSubmit} className="fm-body">
+          <div className="fm-scroll">
           <div className="fm-field">
             <label className="fm-label">{t('modals.taskForm.title')}</label>
             <input
@@ -122,6 +123,7 @@ export default function TaskFormModal({
               allTasks={allTasks}
               onChange={onParentChange}
             />
+          </div>
           </div>
         </form>
 

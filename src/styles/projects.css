@@ -327,6 +327,7 @@
   border-radius: 16px;
   border: 1.5px solid color-mix(in srgb, var(--preview-color, var(--border)) 25%, var(--border));
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .project-preview-label {

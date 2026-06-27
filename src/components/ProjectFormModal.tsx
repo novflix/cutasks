@@ -49,6 +49,7 @@ export default function ProjectFormModal({
         </div>
 
         <form id="project-form" onSubmit={onSubmit} className="fm-body">
+          <div className="fm-scroll">
           <div className="fm-field">
             <label className="fm-label">{t('modals.projectForm.name')}</label>
             <input
@@ -140,6 +141,7 @@ export default function ProjectFormModal({
                 <span className={`project-preview-status preview-status-${status}`}>{t(`modals.projectForm.${status}`)}</span>
               </div>
             </div>
+          </div>
           </div>
         </form>
 
