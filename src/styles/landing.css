@@ -1664,35 +1664,6 @@
   }
 }
 
-/* ── Shake toast ── */
-.lp-shake-toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  padding: 12px 24px;
-  background: rgba(30, 30, 30, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(237, 155, 109, 0.2);
-  border-radius: 12px;
-  color: #f0f0f0;
-  font-size: 0.85rem;
-  font-weight: 500;
-  font-style: italic;
-  z-index: 10000;
-  opacity: 0;
-  transition: opacity 0.3s, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 20px rgba(237, 155, 109, 0.1);
-  max-width: 340px;
-  text-align: center;
-  pointer-events: none;
-}
-.lp-shake-toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-
 /* ── Compact Language Picker (Landing & Documents) ── */
 .lp-lang-picker {
   position: relative;
