@@ -540,6 +540,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
             </div>
 
             <form onSubmit={handleFormSubmit} className="fm-body">
+              <div className="fm-scroll">
               <div className="fm-field">
                 <label className="fm-label">{t('common.name')}</label>
                 <input
@@ -641,6 +642,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
                     +
                   </button>
                 </div>
+              </div>
               </div>
             </form>
 
