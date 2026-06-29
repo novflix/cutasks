@@ -33,6 +33,7 @@ export default function SectionFormModal({ sectionName, onNameChange, onSubmit, 
         </div>
 
         <form id="section-form" onSubmit={onSubmit} className="fm-body">
+          <div className="fm-scroll">
           <div className="fm-field">
             <label className="fm-label">{t('modals.sectionForm.name')}</label>
             <input
@@ -45,6 +46,7 @@ export default function SectionFormModal({ sectionName, onNameChange, onSubmit, 
               maxLength={50}
               required
             />
+          </div>
           </div>
         </form>
 
