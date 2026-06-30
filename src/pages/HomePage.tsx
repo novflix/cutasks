@@ -208,11 +208,12 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
               <rect x="90" y="15" width="5" height="5" rx="1" fill="rgba(255,255,255,0.07)" />
             </svg>
             <div className="banner-bubbles">
-              <span className="bubble bubble-1" />
-              <span className="bubble bubble-2" />
-              <span className="bubble bubble-3" />
-              <span className="bubble bubble-4" />
-              <span className="bubble bubble-5" />
+              <span className="bubble h-bubble-1" />
+              <span className="bubble h-bubble-2" />
+              <span className="bubble h-bubble-3" />
+              <span className="bubble h-bubble-4" />
+              <span className="bubble h-bubble-5" />
+              <span className="bubble h-bubble-6" />
             </div>
             <div className="banner-icon-big">
               <img src="/icons/habits.svg" alt="" width="44" height="44" />
@@ -232,19 +233,18 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
         <button className="banner-card banner-pomodoro" onClick={() => navigate('/app/pomodoro')}>
           <div className="banner-visual banner-visual-pomodoro">
             <svg className="banner-deco" width="100%" height="100%" viewBox="0 0 200 120" fill="none" preserveAspectRatio="none">
-              <circle cx="160" cy="30" r="35" fill="rgba(255,255,255,0.05)" />
-              <circle cx="40" cy="90" r="30" fill="rgba(255,255,255,0.04)" />
-              <circle cx="120" cy="100" r="20" fill="rgba(255,255,255,0.06)" />
-              <rect x="80" y="20" width="5" height="5" rx="1" fill="rgba(255,255,255,0.09)" />
-              <rect x="150" y="80" width="4" height="4" rx="1" fill="rgba(255,255,255,0.08)" />
-              <rect x="20" y="30" width="3" height="3" rx="0.75" fill="rgba(255,255,255,0.07)" />
+              <circle cx="30" cy="25" r="45" fill="rgba(255,255,255,0.04)" />
+              <circle cx="180" cy="80" r="30" fill="rgba(255,255,255,0.05)" />
+              <circle cx="90" cy="110" r="25" fill="rgba(255,255,255,0.03)" />
+              <rect x="140" y="15" width="4" height="4" rx="1" fill="rgba(255,255,255,0.08)" />
+              <rect x="50" y="70" width="3" height="3" rx="0.75" fill="rgba(255,255,255,0.1)" />
+              <rect x="170" y="50" width="5" height="5" rx="1.5" fill="rgba(255,255,255,0.06)" />
             </svg>
             <div className="banner-bubbles">
-              <span className="bubble bubble-1" />
-              <span className="bubble bubble-2" />
-              <span className="bubble bubble-3" />
-              <span className="bubble bubble-4" />
-              <span className="bubble bubble-5" />
+              <span className="bubble p-bubble-1" />
+              <span className="bubble p-bubble-2" />
+              <span className="bubble p-bubble-3" />
+              <span className="bubble p-bubble-4" />
             </div>
             <div className="banner-icon-big">
               <img src="/icons/timer.svg" alt="" width="44" height="44" />
@@ -264,12 +264,12 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
         <button className="banner-card banner-calendar" onClick={() => navigate('/app/calendar')}>
           <div className="banner-visual banner-visual-calendar">
             <svg className="banner-deco" width="100%" height="100%" viewBox="0 0 200 120" fill="none" preserveAspectRatio="none">
-              <circle cx="150" cy="25" r="38" fill="rgba(255,255,255,0.05)" />
-              <circle cx="30" cy="80" r="28" fill="rgba(255,255,255,0.04)" />
-              <circle cx="100" cy="105" r="22" fill="rgba(255,255,255,0.06)" />
-              <rect x="60" y="15" width="5" height="5" rx="1" fill="rgba(255,255,255,0.08)" />
-              <rect x="170" y="70" width="4" height="4" rx="1" fill="rgba(255,255,255,0.07)" />
-              <rect x="10" y="40" width="3" height="3" rx="0.75" fill="rgba(255,255,255,0.09)" />
+              <circle cx="60" cy="15" r="42" fill="rgba(255,255,255,0.04)" />
+              <circle cx="170" cy="95" r="32" fill="rgba(255,255,255,0.05)" />
+              <circle cx="120" cy="40" r="18" fill="rgba(255,255,255,0.06)" />
+              <rect x="10" y="80" width="5" height="5" rx="1" fill="rgba(255,255,255,0.09)" />
+              <rect x="90" y="10" width="3" height="3" rx="0.75" fill="rgba(255,255,255,0.08)" />
+              <rect x="150" y="55" width="4" height="4" rx="1" fill="rgba(255,255,255,0.07)" />
             </svg>
             <div className="banner-bubbles banner-bubbles-calendar">
               <span className="cal-dot cal-dot-1" />
@@ -300,19 +300,19 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
         <button className="banner-card banner-templates" onClick={() => navigate('/app/templates')}>
           <div className="banner-visual banner-visual-templates">
             <svg className="banner-deco" width="100%" height="100%" viewBox="0 0 200 120" fill="none" preserveAspectRatio="none">
-              <circle cx="160" cy="30" r="35" fill="rgba(255,255,255,0.05)" />
-              <circle cx="40" cy="90" r="30" fill="rgba(255,255,255,0.04)" />
-              <circle cx="120" cy="100" r="20" fill="rgba(255,255,255,0.06)" />
-              <rect x="80" y="20" width="5" height="5" rx="1" fill="rgba(255,255,255,0.09)" />
-              <rect x="150" y="80" width="4" height="4" rx="1" fill="rgba(255,255,255,0.08)" />
-              <rect x="20" y="30" width="3" height="3" rx="0.75" fill="rgba(255,255,255,0.07)" />
+              <circle cx="170" cy="60" r="50" fill="rgba(255,255,255,0.03)" />
+              <circle cx="20" cy="100" r="35" fill="rgba(255,255,255,0.05)" />
+              <circle cx="100" cy="20" r="22" fill="rgba(255,255,255,0.04)" />
+              <rect x="60" y="80" width="6" height="6" rx="1.5" fill="rgba(255,255,255,0.07)" />
+              <rect x="130" y="10" width="3" height="3" rx="0.75" fill="rgba(255,255,255,0.09)" />
+              <rect x="180" y="100" width="4" height="4" rx="1" fill="rgba(255,255,255,0.06)" />
             </svg>
             <div className="banner-bubbles">
-              <span className="bubble bubble-1" />
-              <span className="bubble bubble-2" />
-              <span className="bubble bubble-3" />
-              <span className="bubble bubble-4" />
-              <span className="bubble bubble-5" />
+              <span className="bubble t-bubble-1" />
+              <span className="bubble t-bubble-2" />
+              <span className="bubble t-bubble-3" />
+              <span className="bubble t-bubble-4" />
+              <span className="bubble t-bubble-5" />
             </div>
             <div className="banner-icon-big">
               <img src="/icons/templates.svg" alt="" width="44" height="44" />

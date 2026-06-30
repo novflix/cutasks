@@ -129,6 +129,8 @@
   min-height: 110px;
   flex-shrink: 0;
   overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, black 70%, transparent 100%);
+  mask-image: linear-gradient(to right, black 70%, transparent 100%);
 }
 
 .banner-deco {
@@ -161,26 +163,72 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  overflow: hidden;
 }
 
 .bubble {
   position: absolute;
-  bottom: -10px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
-  animation: bubbleRise linear infinite;
 }
 
-/* Habits bubbles — warm tint */
-.banner-habits .bubble { background: rgba(237, 155, 109, 0.08); }
+/* ── Habits: warm orange bubbles — slow drift upward ── */
+.banner-habits .bubble { background: rgba(237, 155, 109, 0.12); }
+.h-bubble-1 { width: 10px; height: 10px; bottom: 10%; left: 10%; animation: hFloat1 5s ease-in-out infinite; }
+.h-bubble-2 { width: 6px; height: 6px; bottom: 30%; left: 35%; animation: hFloat2 7s ease-in-out infinite; }
+.h-bubble-3 { width: 14px; height: 14px; bottom: 5%; left: 60%; animation: hFloat3 6s ease-in-out infinite; }
+.h-bubble-4 { width: 5px; height: 5px; bottom: 45%; left: 80%; animation: hFloat1 8s ease-in-out infinite; }
+.h-bubble-5 { width: 8px; height: 8px; bottom: 20%; left: 90%; animation: hFloat2 5.5s ease-in-out infinite; }
+.h-bubble-6 { width: 4px; height: 4px; bottom: 55%; left: 22%; animation: hFloat3 9s ease-in-out infinite; }
 
-/* Pomodoro bubbles — cool tint */
-.banner-pomodoro .bubble { background: rgba(100, 181, 246, 0.08); }
+@keyframes hFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.6; }
+  50% { transform: translate(5px, -12px) scale(1.1); opacity: 1; }
+}
+@keyframes hFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.5; }
+  33% { transform: translate(-4px, -8px) scale(0.9); opacity: 0.8; }
+  66% { transform: translate(3px, -16px) scale(1.15); opacity: 0.7; }
+}
+@keyframes hFloat3 {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.4; }
+  50% { transform: translate(8px, -10px) scale(1.2); opacity: 0.9; }
+}
 
-/* Calendar bubbles — red-orange tint */
-.banner-calendar .bubble { background: rgba(255, 60, 0, 0.08); }
-.banner-templates .bubble { background: rgba(137, 226, 25, 0.08); }
+/* ── Pomodoro: cool blue bubbles — precise pulse ── */
+.banner-pomodoro .bubble { background: rgba(100, 181, 246, 0.12); }
+.p-bubble-1 { width: 4px; height: 4px; top: 15%; left: 12%; animation: pPulse1 3s ease-in-out infinite; }
+.p-bubble-2 { width: 7px; height: 7px; top: 55%; left: 40%; animation: pPulse2 4s ease-in-out infinite; }
+.p-bubble-3 { width: 5px; height: 5px; top: 25%; left: 70%; animation: pPulse1 3.5s ease-in-out infinite; }
+.p-bubble-4 { width: 3px; height: 3px; top: 70%; left: 88%; animation: pPulse2 4.5s ease-in-out infinite; }
+
+@keyframes pPulse1 {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.6); opacity: 0.9; }
+}
+@keyframes pPulse2 {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  40% { transform: scale(1.4); opacity: 0.8; }
+  70% { transform: scale(0.8); opacity: 0.3; }
+}
+
+/* ── Templates: lime green bubbles — diagonal drift ── */
+.banner-templates .bubble { background: rgba(137, 226, 25, 0.12); }
+.t-bubble-1 { width: 6px; height: 6px; top: 20%; left: 8%; animation: tDrift1 6s ease-in-out infinite; }
+.t-bubble-2 { width: 9px; height: 9px; top: 60%; left: 28%; animation: tDrift2 5s ease-in-out infinite; }
+.t-bubble-3 { width: 5px; height: 5px; top: 15%; left: 52%; animation: tDrift1 7s ease-in-out infinite; }
+.t-bubble-4 { width: 8px; height: 8px; top: 50%; left: 75%; animation: tDrift2 5.5s ease-in-out infinite; }
+.t-bubble-5 { width: 4px; height: 4px; top: 75%; left: 92%; animation: tDrift1 8s ease-in-out infinite; }
+
+@keyframes tDrift1 {
+  0%, 100% { transform: translate(0, 0); opacity: 0.5; }
+  25% { transform: translate(6px, -5px); opacity: 0.8; }
+  50% { transform: translate(-3px, -10px); opacity: 0.6; }
+  75% { transform: translate(4px, -3px); opacity: 0.9; }
+}
+@keyframes tDrift2 {
+  0%, 100% { transform: translate(0, 0); opacity: 0.4; }
+  33% { transform: translate(-5px, 4px); opacity: 0.7; }
+  66% { transform: translate(7px, -6px); opacity: 0.5; }
+}
 
 /* ── Calendar: floating dot particles ── */
 .banner-bubbles-calendar {
@@ -218,11 +266,26 @@
   50% { opacity: 0.8; transform: scale(1.4); }
 }
 
-.bubble-1 { width: 6px; height: 6px; left: 15%; animation-duration: 4.5s; animation-delay: 0s; }
-.bubble-2 { width: 4px; height: 4px; left: 40%; animation-duration: 5.5s; animation-delay: -1.2s; }
-.bubble-3 { width: 8px; height: 8px; left: 60%; animation-duration: 6s; animation-delay: -2.8s; }
-.bubble-4 { width: 5px; height: 5px; left: 78%; animation-duration: 5s; animation-delay: -0.6s; }
-.bubble-5 { width: 3px; height: 3px; left: 30%; animation-duration: 7s; animation-delay: -3.5s; }
+/* ── Habits bubbles: warm, clustered, organic ── */
+.h-bubble-1 { width: 8px; height: 8px; left: 12%; animation-duration: 4s; animation-delay: 0s; }
+.h-bubble-2 { width: 5px; height: 5px; left: 35%; animation-duration: 5.2s; animation-delay: -1s; }
+.h-bubble-3 { width: 10px; height: 10px; left: 55%; animation-duration: 6.5s; animation-delay: -2.5s; }
+.h-bubble-4 { width: 4px; height: 4px; left: 75%; animation-duration: 4.8s; animation-delay: -0.8s; }
+.h-bubble-5 { width: 6px; height: 6px; left: 88%; animation-duration: 5.8s; animation-delay: -3s; }
+.h-bubble-6 { width: 3px; height: 3px; left: 25%; animation-duration: 7s; animation-delay: -4s; }
+
+/* ── Pomodoro bubbles: small, scattered, precise ── */
+.p-bubble-1 { width: 3px; height: 3px; left: 10%; animation-duration: 6s; animation-delay: -0.5s; }
+.p-bubble-2 { width: 5px; height: 5px; left: 45%; animation-duration: 5s; animation-delay: -2s; }
+.p-bubble-3 { width: 4px; height: 4px; left: 70%; animation-duration: 7s; animation-delay: -1.5s; }
+.p-bubble-4 { width: 3px; height: 3px; left: 90%; animation-duration: 5.5s; animation-delay: -3.5s; }
+
+/* ── Templates bubbles: medium, evenly spread, technical ── */
+.t-bubble-1 { width: 5px; height: 5px; left: 8%; animation-duration: 5.5s; animation-delay: -1s; }
+.t-bubble-2 { width: 7px; height: 7px; left: 30%; animation-duration: 4.5s; animation-delay: 0s; }
+.t-bubble-3 { width: 4px; height: 4px; left: 52%; animation-duration: 6s; animation-delay: -2s; }
+.t-bubble-4 { width: 6px; height: 6px; left: 72%; animation-duration: 5s; animation-delay: -3s; }
+.t-bubble-5 { width: 3px; height: 3px; left: 92%; animation-duration: 6.5s; animation-delay: -1.5s; }
 
 @keyframes bubbleRise {
   0% {
