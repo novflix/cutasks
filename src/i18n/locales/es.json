@@ -120,6 +120,10 @@
       "calendar": {
         "title": "Calendario",
         "desc": "Vea su horario y planifique con un vistazo"
+      },
+      "templates": {
+        "title": "Plantillas",
+        "desc": "Ahorre tiempo con plantillas reutilizables de tareas y proyectos"
       }
     }
   },

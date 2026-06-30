@@ -120,6 +120,10 @@
       "calendar": {
         "title": "Kalender",
         "desc": "Bekijk je agenda en plan vooruit in één oogopslag"
+      },
+      "templates": {
+        "title": "Sjablonen",
+        "desc": "Bespaar tijd met herbruikbare taak- en projectsjablonen"
       }
     }
   },

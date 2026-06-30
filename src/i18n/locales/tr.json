@@ -120,6 +120,10 @@
       "calendar": {
         "title": "Takvim",
         "desc": "Programınızı görüntüleyin ve planlarınızı bir göz atın"
+      },
+      "templates": {
+        "title": "Şablonlar",
+        "desc": "Görev ve proje şablonlarıyla zamandan tasarruf edin"
       }
     }
   },

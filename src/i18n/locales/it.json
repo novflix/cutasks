@@ -120,6 +120,10 @@
       "calendar": {
         "title": "Calendario",
         "desc": "Visualizza il tuo orario e pianifica con un'occhiata"
+      },
+      "templates": {
+        "title": "Modelli",
+        "desc": "Risparmia tempo con modelli riutilizzabili di attività e progetti"
       }
     }
   },

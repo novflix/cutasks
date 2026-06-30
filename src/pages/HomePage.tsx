@@ -193,6 +193,8 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
         </div>
       </div>
 
+      <div className="banner-divider" />
+
       {/* ── Banners ── */}
       <div className="home-banners">
         <button className="banner-card banner-habits" onClick={() => navigate('/app/habits')}>
@@ -285,6 +287,40 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
           <div className="banner-content">
             <h2 className="banner-title">{t('home.banners.calendar.title')}</h2>
             <p className="banner-desc">{t('home.banners.calendar.desc')}</p>
+            <div className="banner-arrow">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </div>
+          </div>
+        </button>
+
+        <div className="banner-divider" />
+
+        <button className="banner-card banner-templates" onClick={() => {}}>
+          <div className="banner-visual banner-visual-templates">
+            <svg className="banner-deco" width="100%" height="100%" viewBox="0 0 200 120" fill="none" preserveAspectRatio="none">
+              <circle cx="160" cy="30" r="35" fill="rgba(255,255,255,0.05)" />
+              <circle cx="40" cy="90" r="30" fill="rgba(255,255,255,0.04)" />
+              <circle cx="120" cy="100" r="20" fill="rgba(255,255,255,0.06)" />
+              <rect x="80" y="20" width="5" height="5" rx="1" fill="rgba(255,255,255,0.09)" />
+              <rect x="150" y="80" width="4" height="4" rx="1" fill="rgba(255,255,255,0.08)" />
+              <rect x="20" y="30" width="3" height="3" rx="0.75" fill="rgba(255,255,255,0.07)" />
+            </svg>
+            <div className="banner-bubbles">
+              <span className="bubble bubble-1" />
+              <span className="bubble bubble-2" />
+              <span className="bubble bubble-3" />
+              <span className="bubble bubble-4" />
+              <span className="bubble bubble-5" />
+            </div>
+            <div className="banner-icon-big">
+              <img src="/icons/templates.svg" alt="" width="44" height="44" />
+            </div>
+          </div>
+          <div className="banner-content">
+            <h2 className="banner-title">{t('home.banners.templates.title')}</h2>
+            <p className="banner-desc">{t('home.banners.templates.desc')}</p>
             <div className="banner-arrow">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />

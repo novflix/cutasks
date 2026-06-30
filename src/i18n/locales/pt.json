@@ -120,6 +120,10 @@
       "calendar": {
         "title": "Calendário",
         "desc": "Veja sua agenda e planeje com um olhar"
+      },
+      "templates": {
+        "title": "Modelos",
+        "desc": "Economize tempo com modelos reutilizáveis de tarefas e projetos"
       }
     }
   },

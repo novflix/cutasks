@@ -120,6 +120,10 @@
       "calendar": {
         "title": "Calendrier",
         "desc": "Consultez votre planning et planifiez en un coup d'œil"
+      },
+      "templates": {
+        "title": "Modèles",
+        "desc": "Gagnez du temps avec des modèles de tâches et de projets réutilisables"
       }
     }
   },

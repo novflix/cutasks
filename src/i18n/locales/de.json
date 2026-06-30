@@ -120,6 +120,10 @@
       "calendar": {
         "title": "Kalender",
         "desc": "Sehen Sie Ihren Zeitplan und planen Sie voraus"
+      },
+      "templates": {
+        "title": "Vorlagen",
+        "desc": "Sparen Sie Zeit mit wiederverwendbaren Aufgaben- und Projektvorlagen"
       }
     }
   },

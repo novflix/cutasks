@@ -120,6 +120,10 @@
       "calendar": {
         "title": "Calendar",
         "desc": "View your schedule and plan ahead at a glance"
+      },
+      "templates": {
+        "title": "Templates",
+        "desc": "Save time with reusable task and project templates"
       }
     }
   },
