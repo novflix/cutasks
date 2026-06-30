@@ -297,7 +297,7 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
 
         <div className="banner-divider" />
 
-        <button className="banner-card banner-templates" onClick={() => {}}>
+        <button className="banner-card banner-templates" onClick={() => navigate('/app/templates')}>
           <div className="banner-visual banner-visual-templates">
             <svg className="banner-deco" width="100%" height="100%" viewBox="0 0 200 120" fill="none" preserveAspectRatio="none">
               <circle cx="160" cy="30" r="35" fill="rgba(255,255,255,0.05)" />

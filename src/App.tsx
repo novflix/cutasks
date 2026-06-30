@@ -32,6 +32,7 @@ const ProjectDetailPage = lazy(() => import('./pages/ProjectDetailPage'));
 const HabitsPage = lazy(() => import('./pages/HabitsPage'));
 const PomodoroPage = lazy(() => import('./pages/PomodoroPage'));
 const CalendarPage = lazy(() => import('./pages/CalendarPage'));
+const TemplatesPage = lazy(() => import('./pages/TemplatesPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const AuthPage = lazy(() => import('./pages/AuthPage'));
 const LandingPage = lazy(() => import('./pages/LandingPage'));
@@ -150,7 +151,7 @@ export default function App() {
   }, [pomoRunning, pomoMiniVisible]);
   /* eslint-enable react-hooks/set-state-in-effect */
 
-  const activePage: Page = location.pathname.startsWith('/app/projects/') ? 'project-detail' : location.pathname.startsWith('/app/projects') ? 'projects' : location.pathname.startsWith('/app/settings') ? 'settings' : location.pathname.startsWith('/app/habits') || location.pathname.startsWith('/app/pomodoro') || location.pathname.startsWith('/app/calendar') || location.pathname.startsWith('/app/home') ? 'home' : 'tasks';
+  const activePage: Page = location.pathname.startsWith('/app/projects/') ? 'project-detail' : location.pathname.startsWith('/app/projects') ? 'projects' : location.pathname.startsWith('/app/settings') ? 'settings' : location.pathname.startsWith('/app/habits') || location.pathname.startsWith('/app/pomodoro') || location.pathname.startsWith('/app/calendar') || location.pathname.startsWith('/app/home') || location.pathname.startsWith('/app/templates') ? 'home' : 'tasks';
   const activeProjectId = activePage === 'project-detail' ? location.pathname.split('/')[3] : null;
   const activeProject = useMemo(() => activeProjectId ? projects.find((p) => p.id === activeProjectId) ?? null : null, [projects, activeProjectId]);
 
@@ -1175,6 +1176,13 @@ export default function App() {
                       if ('projectId' in t) setViewingProjectTask(t as ProjectTask);
                       else setViewingTask(t);
                     }} />
+                  </main>
+                </ProtectedRoute>
+              } />
+              <Route path="/app/templates" element={
+                <ProtectedRoute>
+                  <main className="main">
+                    <TemplatesPage />
                   </main>
                 </ProtectedRoute>
               } />
