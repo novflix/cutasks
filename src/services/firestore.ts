@@ -323,13 +323,14 @@ export interface UserSettings {
   theme: string;
   deleteMode: string;
   weekStart: string;
+  defaultPriority: string;
 }
 
 export async function loadSettings(uid: string): Promise<UserSettings | null> {
   const snap = await getDoc(doc(db, 'users', uid, 'settings', 'prefs'));
   if (!snap.exists()) return null;
   const d = snap.data();
-  return { theme: d.t || 'dark', deleteMode: d.d || 'instant', weekStart: d.w || 'monday' };
+  return { theme: d.t || 'dark', deleteMode: d.d || 'instant', weekStart: d.w || 'monday', defaultPriority: d.p || 'medium' };
 }
 
 export async function saveSettings(uid: string, settings: UserSettings) {
@@ -337,6 +338,7 @@ export async function saveSettings(uid: string, settings: UserSettings) {
     t: settings.theme,
     d: settings.deleteMode,
     w: settings.weekStart,
+    p: settings.defaultPriority,
   });
 }
 

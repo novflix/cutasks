@@ -69,9 +69,9 @@
     "updated": "Обновлено",
     "total": "всего",
     "paused": "на паузе",
-    "low": "низкий",
-    "medium": "средний",
-    "high": "высокий",
+    "low": "Низкий",
+    "medium": "Средний",
+    "high": "Высокий",
     "system": "Система"
   },
   "nav": {
@@ -247,6 +247,10 @@
     "mondayDesc": "Неделя начинается с понедельника",
     "saturday": "Субботы",
     "saturdayDesc": "Неделя начинается с субботы",
+    "defaultPriority": "Приоритет по умолчанию",
+    "defaultPriorityLowDesc": "Новые задачи будут с низким приоритетом",
+    "defaultPriorityMediumDesc": "Новые задачи будут со средним приоритетом",
+    "defaultPriorityHighDesc": "Новые задачи будут с высоким приоритетом",
     "language": "Язык",
     "info": "Инфо",
     "version": "Версия",

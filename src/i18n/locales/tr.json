@@ -69,9 +69,9 @@
     "updated": "Güncellendi",
     "total": "toplam",
     "paused": "duraklatıldı",
-    "low": "düşük",
-    "medium": "orta",
-    "high": "yüksek",
+    "low": "Düşük",
+    "medium": "Orta",
+    "high": "Yüksek",
     "system": "Sistem"
   },
   "nav": {
@@ -247,6 +247,10 @@
     "mondayDesc": "Hafta Pazartesi başlar",
     "saturday": "Cumartesi",
     "saturdayDesc": "Hafta Cumartesi başlar",
+    "defaultPriority": "Varsayılan öncelik",
+    "defaultPriorityLowDesc": "Yeni görevler düşük öncelikli olacak",
+    "defaultPriorityMediumDesc": "Yeni görevler orta öncelikli olacak",
+    "defaultPriorityHighDesc": "Yeni görevler yüksek öncelikli olacak",
     "language": "Dil",
     "info": "Bilgi",
     "version": "Sürüm",

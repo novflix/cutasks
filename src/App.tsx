@@ -70,6 +70,7 @@ export default function App() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [priority, setPriority] = useState<Priority>('medium');
+  const [defaultPriority, setDefaultPriority] = useState<Priority>('medium');
   const [deadline, setDeadline] = useState('');
   const [tags, setTags] = useState<string[]>([]);
   const [parentId, setParentId] = useState<string | null>(null);
@@ -224,6 +225,7 @@ export default function App() {
         localStorage.setItem('cutasks_delete_mode', settings.deleteMode);
         localStorage.setItem('cutasks_week_start', settings.weekStart);
         document.documentElement.setAttribute('data-theme', settings.theme);
+        setDefaultPriority((settings.defaultPriority as Priority) || 'medium');
       }
     }).catch(() => {});
 
@@ -535,7 +537,7 @@ export default function App() {
       id: generateId(),
       title,
       description: '',
-      priority: 'medium',
+      priority: defaultPriority,
       deadline: '',
       tags: [],
       completed: false,
@@ -862,7 +864,7 @@ export default function App() {
       projectId: activeProject.id,
       title,
       description: '',
-      priority: 'medium',
+      priority: defaultPriority,
       deadline: '',
       tags: [],
       completed: false,
@@ -1001,11 +1003,16 @@ export default function App() {
     function handleWeekStartChange(e: Event) {
       setWeekStart((e as CustomEvent).detail);
     }
+    function handleDefaultPriorityChange(e: Event) {
+      setDefaultPriority((e as CustomEvent).detail);
+    }
     window.addEventListener('save-sections', handleSaveSections);
     window.addEventListener('week-start-changed', handleWeekStartChange);
+    window.addEventListener('default-priority-changed', handleDefaultPriorityChange);
     return () => {
       window.removeEventListener('save-sections', handleSaveSections);
       window.removeEventListener('week-start-changed', handleWeekStartChange);
+      window.removeEventListener('default-priority-changed', handleDefaultPriorityChange);
     };
   }, []);
 

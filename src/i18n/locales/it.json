@@ -69,9 +69,9 @@
     "updated": "Aggiornato",
     "total": "totale",
     "paused": "in pausa",
-    "low": "bassa",
-    "medium": "media",
-    "high": "alta",
+    "low": "Bassa",
+    "medium": "Media",
+    "high": "Alta",
     "system": "Sistema"
   },
   "nav": {
@@ -247,6 +247,10 @@
     "mondayDesc": "La settimana inizia il lunedì",
     "saturday": "Sabato",
     "saturdayDesc": "La settimana inizia il sabato",
+    "defaultPriority": "Priorità predefinita",
+    "defaultPriorityLowDesc": "Le nuove attività avranno priorità bassa",
+    "defaultPriorityMediumDesc": "Le nuove attività avranno priorità media",
+    "defaultPriorityHighDesc": "Le nuove attività avranno priorità alta",
     "language": "Lingua",
     "info": "Info",
     "version": "Versione",

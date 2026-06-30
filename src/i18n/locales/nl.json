@@ -69,9 +69,9 @@
     "updated": "Bijgewerkt",
     "total": "totaal",
     "paused": "gepauzeerd",
-    "low": "laag",
-    "medium": "gemiddeld",
-    "high": "hoog",
+    "low": "Laag",
+    "medium": "Gemiddeld",
+    "high": "Hoog",
     "system": "Systeem"
   },
   "nav": {
@@ -315,6 +315,10 @@
     "mondayDesc": "Week begint op maandag",
     "saturday": "Zaterdag",
     "saturdayDesc": "Week begint op zaterdag",
+    "defaultPriority": "Standaard prioriteit",
+    "defaultPriorityLowDesc": "Nieuwe taken hebben lage prioriteit",
+    "defaultPriorityMediumDesc": "Nieuwe taken hebben gemiddelde prioriteit",
+    "defaultPriorityHighDesc": "Nieuwe taken hebben hoge prioriteit",
     "language": "Taal",
     "info": "Info",
     "version": "Versie",

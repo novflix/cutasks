@@ -9,7 +9,7 @@ import {
   subscribeToPush, unsubscribeFromPush,
 } from '../services/notifications';
 import { logout, changePassword, deleteAccount, updateDisplayName } from '../services/auth';
-import { saveSettings } from '../services/firestore';
+import { saveSettings, loadSettings } from '../services/firestore';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGES, setLanguage, type LanguageCode } from '../i18n';
@@ -19,6 +19,7 @@ import { DEFAULT_POMO_CONFIG } from '../constants/pomo';
 
 type DeleteMode = 'instant' | '3days' | '7days';
 type WeekStartDay = 'monday' | 'saturday';
+type DefaultPriority = 'low' | 'medium' | 'high';
 
 const POMO_STORAGE = 'cutasks_pomodoro';
 
@@ -66,6 +67,7 @@ export default function SettingsPage() {
   const [weekStartDay, setWeekStartDay] = useState<WeekStartDay>(() => {
     return (localStorage.getItem('cutasks_week_start') as WeekStartDay) || 'monday';
   });
+  const [defaultPriority, setDefaultPriority] = useState<DefaultPriority>('medium');
   const [pomoConfig, setPomoConfig] = useState<PomoConfig>(() => {
     try { const r = localStorage.getItem(POMO_STORAGE); return r ? { ...DEFAULT_POMO_CONFIG, ...JSON.parse(r) } : DEFAULT_POMO_CONFIG; } catch { return DEFAULT_POMO_CONFIG; }
   });
@@ -96,6 +98,7 @@ export default function SettingsPage() {
   const [donateModalClosing, setDonateModalClosing] = useState(false);
   const donateModalTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
+  const settingsLoadedRef = useRef(false);
   const [notifSupported] = useState(() => isNotificationsSupported());
   const [notifPermission, setNotifPermission] = useState(() => getNotificationPermission());
   const [notifEnabled, setNotifEnabled] = useState(() => isNotificationsEnabled());
@@ -123,8 +126,19 @@ export default function SettingsPage() {
     localStorage.setItem('cutasks_delete_mode', deleteMode);
     localStorage.setItem('cutasks_week_start', weekStartDay);
     window.dispatchEvent(new CustomEvent('week-start-changed', { detail: weekStartDay }));
-    if (user) saveSettings(user.uid, { theme: activeTheme, deleteMode, weekStart: weekStartDay }).catch(() => {});
-  }, [activeTheme, deleteMode, weekStartDay, user]);
+    window.dispatchEvent(new CustomEvent('default-priority-changed', { detail: defaultPriority }));
+    if (user && settingsLoadedRef.current) saveSettings(user.uid, { theme: activeTheme, deleteMode, weekStart: weekStartDay, defaultPriority }).catch(() => {});
+  }, [activeTheme, deleteMode, weekStartDay, defaultPriority, user]);
+
+  useEffect(() => {
+    if (!user) return;
+    loadSettings(user.uid).then((settings) => {
+      if (settings) {
+        setDefaultPriority((settings.defaultPriority as DefaultPriority) || 'medium');
+      }
+      settingsLoadedRef.current = true;
+    }).catch(() => { settingsLoadedRef.current = true; });
+  }, [user]);
 
   useEffect(() => {
     localStorage.setItem(POMO_STORAGE, JSON.stringify(pomoConfig));
@@ -498,6 +512,31 @@ export default function SettingsPage() {
               key={opt.value}
               className={`delete-option${weekStartDay === opt.value ? ' active' : ''}`}
               onClick={() => setWeekStartDay(opt.value)}
+            >
+              <div className="delete-option-radio">
+                <div className="delete-option-dot" />
+              </div>
+              <div className="delete-option-info">
+                <span className="delete-option-label">{opt.label}</span>
+                <span className="delete-option-desc">{opt.desc}</span>
+              </div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="settings-section">
+          <span className="settings-section-label">{t('settings.defaultPriority')}</span>
+        <div className="delete-options">
+          {([
+            { value: 'low' as DefaultPriority, label: t('common.low'), desc: t('settings.defaultPriorityLowDesc') },
+            { value: 'medium' as DefaultPriority, label: t('common.medium'), desc: t('settings.defaultPriorityMediumDesc') },
+            { value: 'high' as DefaultPriority, label: t('common.high'), desc: t('settings.defaultPriorityHighDesc') },
+          ]).map((opt) => (
+            <button
+              key={opt.value}
+              className={`delete-option${defaultPriority === opt.value ? ' active' : ''}`}
+              onClick={() => setDefaultPriority(opt.value)}
             >
               <div className="delete-option-radio">
                 <div className="delete-option-dot" />

@@ -69,9 +69,9 @@
     "updated": "Aktualisiert",
     "total": "gesamt",
     "paused": "pausiert",
-    "low": "niedrig",
-    "medium": "mittel",
-    "high": "hoch",
+    "low": "Niedrig",
+    "medium": "Mittel",
+    "high": "Hoch",
     "system": "System"
   },
   "nav": {
@@ -247,6 +247,10 @@
     "mondayDesc": "Woche beginnt am Montag",
     "saturday": "Samstag",
     "saturdayDesc": "Woche beginnt am Samstag",
+    "defaultPriority": "Standardpriorität",
+    "defaultPriorityLowDesc": "Neue Aufgaben haben niedrige Priorität",
+    "defaultPriorityMediumDesc": "Neue Aufgaben haben mittlere Priorität",
+    "defaultPriorityHighDesc": "Neue Aufgaben haben hohe Priorität",
     "language": "Sprache",
     "info": "Info",
     "version": "Version",
