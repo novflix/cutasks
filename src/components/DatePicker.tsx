@@ -2,6 +2,19 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { ArrowLeft, ArrowRight } from '@solar-icons/react';
 import { useTranslation } from 'react-i18next';
 
+function getDropdownPosition(trigger: HTMLElement) {
+  const rect = trigger.getBoundingClientRect();
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const dropdownHeight = 340;
+  const openUp = spaceBelow < dropdownHeight + 16 && rect.top > dropdownHeight;
+  return {
+    position: 'fixed' as const,
+    top: openUp ? rect.top - dropdownHeight - 8 : rect.bottom + 8,
+    left: rect.left,
+    zIndex: 1000,
+  };
+}
+
 interface DatePickerProps {
   value: string;
   onChange: (date: string) => void;
@@ -137,6 +150,15 @@ export default function DatePicker({ value, onChange, min, label, id }: DatePick
   const minDate = min || '';
 
   const dropdownClass = `dp-dropdown${closing ? ' closing' : ''}`;
+  const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({});
+
+  useEffect(() => {
+    if (open && ref.current && window.innerWidth > 640) {
+      setDropdownStyle(getDropdownPosition(ref.current));
+    } else if (open) {
+      setDropdownStyle({});
+    }
+  }, [open]);
 
   return (
     <div className="dp" ref={ref}>
@@ -162,7 +184,7 @@ export default function DatePicker({ value, onChange, min, label, id }: DatePick
         )}
       </button>
       {(open || closing) && (
-        <div className={dropdownClass}>
+        <div className={dropdownClass} style={dropdownStyle}>
           <div className="dp-header">
             <button type="button" className="dp-nav" onClick={prevMonth}>
               <ArrowLeft size={16} />
