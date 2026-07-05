@@ -1,0 +1,997 @@
+@keyframes skeletonPulse {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.3; }
+}
+
+@keyframes skeletonWave {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.sk {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Reusable bar ── */
+.sk-bar {
+  height: 14px;
+  border-radius: 7px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-bar--sm { width: 30%; height: 12px; }
+.sk-bar--md { width: 50%; }
+.sk-bar--lg { width: 70%; }
+.sk-bar--xl { width: 90%; }
+.sk-bar--full { width: 100%; }
+
+/* ── Hero title ── */
+.sk-hero {
+  padding: 24px 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sk-hero-title {
+  width: 140px;
+  height: 24px;
+  border-radius: 8px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-hero-back {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--text-muted);
+  flex-shrink: 0;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* ── Stats row ── */
+.sk-stats {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 0 0 4px;
+}
+
+.sk-stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 12px;
+  flex: 1;
+  min-width: 70px;
+}
+
+.sk-stat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  flex-shrink: 0;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-stat-text {
+  width: 40px;
+  height: 14px;
+  border-radius: 7px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-add-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.sk-add-btn-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-add-btn-text {
+  width: 60px;
+  height: 12px;
+  border-radius: 6px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* ── Search bar ── */
+.sk-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 14px;
+}
+
+.sk-search-icon {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  background: var(--text-muted);
+  flex-shrink: 0;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-search-input {
+  flex: 1;
+  height: 16px;
+  border-radius: 8px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* ── Task rows ── */
+.sk-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sk-task-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 14px;
+}
+
+.sk-task-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--text-muted);
+  flex-shrink: 0;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-task-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sk-task-title {
+  width: 65%;
+  height: 16px;
+  border-radius: 8px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-task-desc {
+  width: 45%;
+  height: 12px;
+  border-radius: 6px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-task-tags {
+  display: flex;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.sk-tag {
+  width: 48px;
+  height: 18px;
+  border-radius: 9px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* ── Dashboard card (Home) ── */
+.sk-dash-card {
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 18px;
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.sk-dash-deco {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.sk-dash-deco-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--text-muted);
+  opacity: 0.06;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-dash-deco-circle:nth-child(1) { width: 120px; height: 120px; top: -30px; right: -20px; }
+.sk-dash-deco-circle:nth-child(2) { width: 80px; height: 80px; bottom: -20px; right: 10px; }
+.sk-dash-deco-circle:nth-child(3) { width: 100px; height: 100px; bottom: -30px; left: -30px; }
+
+.sk-dash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.sk-dash-text {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.sk-dash-greeting {
+  width: 180px;
+  height: 20px;
+  border-radius: 10px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-dash-sub {
+  width: 240px;
+  height: 14px;
+  border-radius: 7px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-dash-ring {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 6px solid var(--border-subtle);
+  flex-shrink: 0;
+  position: relative;
+}
+
+.sk-dash-ring-inner {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 6px solid transparent;
+  border-top-color: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-dash-ring-num {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 14px;
+  border-radius: 7px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* ── Stats row inside dashboard ── */
+.sk-dash-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.sk-dash-stat {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 12px;
+}
+
+.sk-dash-stat-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--text-muted);
+  opacity: 0.15;
+  flex-shrink: 0;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-dash-stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sk-dash-stat-num {
+  width: 24px;
+  height: 16px;
+  border-radius: 8px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-dash-stat-label {
+  width: 36px;
+  height: 10px;
+  border-radius: 5px;
+  background: var(--text-muted);
+  opacity: 0.5;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* ── Bottom row in dashboard ── */
+.sk-dash-bottom {
+  display: flex;
+  gap: 10px;
+  position: relative;
+  z-index: 1;
+}
+
+.sk-dash-bottom-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 12px;
+}
+
+.sk-dash-bottom-icon {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: var(--text-muted);
+  opacity: 0.2;
+  flex-shrink: 0;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-dash-bottom-text {
+  width: 80px;
+  height: 12px;
+  border-radius: 6px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* ── Banner cards (Home) ── */
+.sk-banners {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sk-banner {
+  display: flex;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-subtle);
+  min-height: 110px;
+}
+
+.sk-banner-visual {
+  width: 140px;
+  flex-shrink: 0;
+  background: var(--text-muted);
+  opacity: 0.06;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+  position: relative;
+}
+
+.sk-banner-visual-deco {
+  position: absolute;
+  inset: 0;
+}
+
+.sk-banner-visual-circle {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--text-muted);
+  opacity: 0.1;
+}
+
+.sk-banner-visual-circle:nth-child(1) { width: 60px; height: 60px; top: 10px; right: 10px; }
+.sk-banner-visual-circle:nth-child(2) { width: 40px; height: 40px; bottom: 10px; left: 10px; }
+
+.sk-banner-content {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  justify-content: center;
+}
+
+.sk-banner-title {
+  width: 140px;
+  height: 18px;
+  border-radius: 9px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-banner-desc {
+  width: 200px;
+  height: 12px;
+  border-radius: 6px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-banner-arrow {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: var(--text-muted);
+  opacity: 0.15;
+  align-self: flex-end;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* ── Projects grid ── */
+.sk-projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.sk-project-card {
+  padding: 22px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sk-project-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sk-project-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--text-muted);
+  opacity: 0.15;
+  flex-shrink: 0;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-project-name {
+  width: 120px;
+  height: 16px;
+  border-radius: 8px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-project-desc-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sk-project-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.sk-project-badge {
+  width: 60px;
+  height: 18px;
+  border-radius: 9px;
+  background: var(--text-muted);
+  opacity: 0.2;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-project-date {
+  width: 80px;
+  height: 12px;
+  border-radius: 6px;
+  background: var(--text-muted);
+  opacity: 0.4;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* ── Project detail header ── */
+.sk-project-detail-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 0;
+}
+
+.sk-pd-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: var(--text-muted);
+  opacity: 0.12;
+  flex-shrink: 0;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-pd-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.sk-pd-name {
+  width: 160px;
+  height: 20px;
+  border-radius: 10px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-pd-desc {
+  width: 240px;
+  height: 12px;
+  border-radius: 6px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* ── Habits ── */
+.sk-habits-week-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.sk-habits-week-center {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sk-habits-arrow {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--text-muted);
+  opacity: 0.15;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-habits-date-range {
+  width: 180px;
+  height: 16px;
+  border-radius: 8px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-habits-add {
+  width: 80px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--text-muted);
+  opacity: 0.15;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* ── Habits calendar row ── */
+.sk-habits-cal {
+  display: flex;
+  gap: 6px;
+}
+
+.sk-habits-day {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+}
+
+.sk-habits-day-name {
+  width: 24px;
+  height: 10px;
+  border-radius: 5px;
+  background: var(--text-muted);
+  opacity: 0.4;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-habits-day-pill {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  opacity: 0.12;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* ── Habits date label ── */
+.sk-habits-date-label {
+  width: 120px;
+  height: 14px;
+  border-radius: 7px;
+  background: var(--text-muted);
+  opacity: 0.3;
+  margin: 8px 0;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* ── Habits list items ── */
+.sk-habits-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sk-habit-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-card);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 14px;
+}
+
+.sk-habit-handle {
+  width: 12px;
+  height: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  opacity: 0.2;
+  flex-shrink: 0;
+}
+
+.sk-habit-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-habit-check {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--text-muted);
+  flex-shrink: 0;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-habit-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sk-habit-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--text-muted);
+  opacity: 0.12;
+  flex-shrink: 0;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-habit-name {
+  width: 100px;
+  height: 14px;
+  border-radius: 7px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-habit-streak {
+  width: 32px;
+  height: 14px;
+  border-radius: 7px;
+  background: var(--text-muted);
+  opacity: 0.3;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* ── Pomodoro ── */
+.sk-pomo-container {
+  background: linear-gradient(135deg, #2a1a0e, #4a2a12, #5c3518);
+  border-radius: 22px;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.sk-pomo-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.sk-pomo-tab {
+  width: 80px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--text-muted);
+  opacity: 0.15;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-pomo-tab:nth-child(1) { opacity: 0.25; }
+
+.sk-pomo-ring-wrap {
+  position: relative;
+  width: 220px;
+  height: 220px;
+}
+
+.sk-pomo-ring-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 8px solid var(--text-muted);
+  opacity: 0.1;
+}
+
+.sk-pomo-ring-progress {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 8px solid transparent;
+  border-top-color: var(--text-muted);
+  opacity: 0.2;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-pomo-time {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.sk-pomo-time-text {
+  width: 100px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--text-muted);
+  opacity: 0.2;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-pomo-time-label {
+  width: 60px;
+  height: 12px;
+  border-radius: 6px;
+  background: var(--text-muted);
+  opacity: 0.15;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-pomo-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.sk-pomo-btn-secondary {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  opacity: 0.12;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-pomo-btn-main {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  opacity: 0.2;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-pomo-quote {
+  width: 200px;
+  height: 12px;
+  border-radius: 6px;
+  background: var(--text-muted);
+  opacity: 0.12;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-pomo-sessions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.sk-pomo-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  opacity: 0.15;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-pomo-dot:nth-child(1) { opacity: 0.25; }
+
+/* ── Calendar ── */
+.sk-cal-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.sk-cal-mode-toggle {
+  display: flex;
+  gap: 4px;
+}
+
+.sk-cal-mode-btn {
+  width: 70px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--text-muted);
+  opacity: 0.12;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-cal-mode-btn:nth-child(1) { opacity: 0.2; }
+
+.sk-cal-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sk-cal-nav-arrow {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: var(--text-muted);
+  opacity: 0.15;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-cal-nav-label {
+  width: 160px;
+  height: 16px;
+  border-radius: 8px;
+  background: var(--text-muted);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* ── Calendar week row ── */
+.sk-cal-week {
+  display: flex;
+  gap: 6px;
+}
+
+.sk-cal-day {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 0;
+}
+
+.sk-cal-day-name {
+  width: 24px;
+  height: 10px;
+  border-radius: 5px;
+  background: var(--text-muted);
+  opacity: 0.4;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-cal-day-pill {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  opacity: 0.12;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-cal-day-pill--today {
+  opacity: 0.2;
+  border: 2px solid var(--text-muted);
+}
+
+/* ── Calendar day label ── */
+.sk-cal-date-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.sk-cal-date-text {
+  width: 200px;
+  height: 14px;
+  border-radius: 7px;
+  background: var(--text-muted);
+  opacity: 0.4;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.sk-cal-date-count {
+  width: 40px;
+  height: 14px;
+  border-radius: 7px;
+  background: var(--text-muted);
+  opacity: 0.3;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+/* ── Staggered animation delays ── */
+.sk-delay-1 { animation-delay: 0.05s !important; }
+.sk-delay-2 { animation-delay: 0.1s !important; }
+.sk-delay-3 { animation-delay: 0.15s !important; }
+.sk-delay-4 { animation-delay: 0.2s !important; }
+.sk-delay-5 { animation-delay: 0.25s !important; }
+.sk-delay-6 { animation-delay: 0.3s !important; }
+.sk-delay-7 { animation-delay: 0.35s !important; }
+.sk-delay-8 { animation-delay: 0.4s !important; }
+.sk-delay-9 { animation-delay: 0.45s !important; }
+.sk-delay-10 { animation-delay: 0.5s !important; }
+
+@media (min-width: 768px) {
+  .sk-projects-grid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
+}

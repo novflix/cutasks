@@ -21,7 +21,7 @@ import PomoMiniTimer from './components/PomoMiniTimer';
 import MobileNav from './components/MobileNav';
 import ProtectedRoute from './components/ProtectedRoute';
 import ConfirmDialog from './components/ConfirmDialog';
-import Skeleton from './components/Skeleton';
+import PageSkeleton from './components/skeletons/PageSkeleton';
 import { MinimalisticMagnifier, ArrowLeft } from '@solar-icons/react';
 import { PROJECT_ICONS } from './constants/projects';
 
@@ -1127,13 +1127,7 @@ export default function App() {
       <div className="app-content">
         {dataLoading ? (
           <main className="main">
-            <div className="page-hero">
-              <div className="skeleton-line skeleton-line-medium" style={{ width: 120, height: 24 }} />
-            </div>
-            <Skeleton type="stat" lines={4} />
-            <div style={{ marginTop: 20 }}>
-              <Skeleton type="task" lines={5} />
-            </div>
+            <PageSkeleton pathname={location.pathname} />
           </main>
         ) : (
         <AnimatedRoutes
