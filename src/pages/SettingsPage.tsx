@@ -67,6 +67,9 @@ export default function SettingsPage() {
   const [weekStartDay, setWeekStartDay] = useState<WeekStartDay>(() => {
     return (localStorage.getItem('cutasks_week_start') as WeekStartDay) || 'monday';
   });
+  const [expandProjects, setExpandProjects] = useState<boolean>(() => {
+    return localStorage.getItem('cutasks_expand_projects') === '1';
+  });
   const [defaultPriority, setDefaultPriority] = useState<DefaultPriority>('medium');
   const [pomoConfig, setPomoConfig] = useState<PomoConfig>(() => {
     try { const r = localStorage.getItem(POMO_STORAGE); return r ? { ...DEFAULT_POMO_CONFIG, ...JSON.parse(r) } : DEFAULT_POMO_CONFIG; } catch { return DEFAULT_POMO_CONFIG; }
@@ -125,10 +128,12 @@ export default function SettingsPage() {
     localStorage.setItem('cutasks_theme', activeTheme);
     localStorage.setItem('cutasks_delete_mode', deleteMode);
     localStorage.setItem('cutasks_week_start', weekStartDay);
+    localStorage.setItem('cutasks_expand_projects', expandProjects ? '1' : '0');
     window.dispatchEvent(new CustomEvent('week-start-changed', { detail: weekStartDay }));
     window.dispatchEvent(new CustomEvent('default-priority-changed', { detail: defaultPriority }));
+    window.dispatchEvent(new CustomEvent('expand-projects-changed', { detail: expandProjects }));
     if (user && settingsLoadedRef.current) saveSettings(user.uid, { theme: activeTheme, deleteMode, weekStart: weekStartDay, defaultPriority }).catch(() => {});
-  }, [activeTheme, deleteMode, weekStartDay, defaultPriority, user]);
+  }, [activeTheme, deleteMode, weekStartDay, defaultPriority, expandProjects, user]);
 
   useEffect(() => {
     if (!user) return;
@@ -547,6 +552,24 @@ export default function SettingsPage() {
               </div>
             </button>
           ))}
+        </div>
+      </div>
+
+      <div className="settings-section settings-section-desktop-only">
+          <span className="settings-section-label">{t('settings.sidebar')}</span>
+        <div className="delete-options">
+          <button
+            className={`delete-option${expandProjects ? ' active' : ''}`}
+            onClick={() => setExpandProjects(!expandProjects)}
+          >
+            <div className="delete-option-radio">
+              <div className="delete-option-dot" />
+            </div>
+            <div className="delete-option-info">
+              <span className="delete-option-label">{t('settings.expandProjects')}</span>
+              <span className="delete-option-desc">{t('settings.expandProjectsDesc')}</span>
+            </div>
+          </button>
         </div>
       </div>
 

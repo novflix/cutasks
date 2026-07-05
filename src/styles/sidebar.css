@@ -78,8 +78,14 @@
     flex-direction: column;
     gap: 4px;
     flex: 1;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     position: relative;
+    scrollbar-width: none;
+  }
+
+  .sidebar-nav::-webkit-scrollbar {
+    display: none;
   }
 
   .sidebar-indicator {
@@ -186,5 +192,80 @@
       opacity: 1;
       transform: translateX(0);
     }
+  }
+
+  /* ── Expandable projects in sidebar ── */
+  .sidebar-nav-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .sidebar-expand-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s ease;
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+
+  .sidebar-expand-icon:hover {
+    background: var(--bg-hover);
+  }
+
+  .sidebar-expand-icon.expanded {
+    transform: rotate(90deg);
+  }
+
+  .sidebar-projects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0 0 0 20px;
+  }
+
+  .sidebar-project-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: inherit;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    text-align: left;
+    width: 100%;
+  }
+
+  .sidebar-project-item:hover {
+    background: var(--bg-hover);
+    color: var(--text-secondary);
+  }
+
+  .sidebar-project-item.active {
+    background: color-mix(in srgb, var(--project-color) 12%, transparent);
+    color: var(--project-color);
+  }
+
+  .sidebar-project-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
   }
 }
