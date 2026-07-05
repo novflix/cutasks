@@ -143,10 +143,8 @@
   background: var(--bg-card);
   border: 1.5px solid var(--border-subtle);
   border-radius: 16px;
+  will-change: transform, opacity;
   transition:
-    background 0.25s ease,
-    border-color 0.25s ease,
-    box-shadow 0.35s cubic-bezier(0.22, 1, 0.36, 1),
     transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
     opacity 0.3s ease;
   animation: taskEnter 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
@@ -162,15 +160,11 @@
 .task-node:nth-child(8) .task-item { animation-delay: 0.24s; }
 
 .task-item:hover {
-  background: var(--bg-elevated);
-  border-color: var(--border);
   transform: translateY(-2px) scale(1.005);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
 }
 
 .task-item:active {
   transform: scale(0.995);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .task-item:hover.task-stripe-low {
@@ -388,7 +382,6 @@
   color: var(--primary);
   border-radius: 4px;
   padding: 0 3px;
-  animation: badgePulse 2s ease-in-out infinite;
 }
 
 .task-desc {
