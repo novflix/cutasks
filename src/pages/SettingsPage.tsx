@@ -635,7 +635,7 @@ export default function SettingsPage() {
             <div className="delete-option-info">
               <span className="delete-option-label">{t('settings.version')}</span>
             </div>
-            <span className="settings-info-value">1.0.2</span>
+            <span className="settings-info-value">{__APP_VERSION__}</span>
           </div>
           <button className="delete-option" onClick={() => navigate('/landing')}>
             <div className="delete-option-info">

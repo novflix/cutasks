@@ -1,9 +1,17 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { readFileSync } from 'fs'
+import { resolve } from 'path'
+
+const version = readFileSync(resolve(__dirname, 'src/version.ts'), 'utf8')
+  .match(/APP_VERSION = '(.+?)'/)?.[1] ?? 'dev';
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  define: {
+    __APP_VERSION__: JSON.stringify(version),
+  },
   build: {
     rollupOptions: {
       output: {

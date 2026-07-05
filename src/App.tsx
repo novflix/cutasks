@@ -408,7 +408,7 @@ export default function App() {
   /* ── Easter egg: console greeting ── */
   useEffect(() => {
     console.log(
-      '%c🚀 CuTasks %cv1.0.2',
+      '%c🚀 CuTasks %cv' + __APP_VERSION__,
       'color: #ed9b6d; font-size: 16px; font-weight: bold;',
       'color: #777; font-size: 12px;'
     );
