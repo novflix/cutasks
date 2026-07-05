@@ -49,6 +49,11 @@ body {
   color: var(--text);
   line-height: 1.5;
   min-height: 100vh;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button, a, [role="button"] {
+  touch-action: manipulation;
 }
 
 #root {
