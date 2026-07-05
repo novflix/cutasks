@@ -1,3 +1,4 @@
+import { useMemo, memo } from 'react';
 import { Pen, TrashBinMinimalistic } from '@solar-icons/react';
 import { useTranslation } from 'react-i18next';
 import type { Project, ProjectTask } from '../types';
@@ -13,18 +14,19 @@ interface ProjectCardProps {
   onOpen: (project: Project) => void;
 }
 
-export default function ProjectCard({ project, searchQuery, projectTasks, onEdit, onDelete, onOpen }: ProjectCardProps) {
+export default memo(function ProjectCard({ project, searchQuery, projectTasks, onEdit, onDelete, onOpen }: ProjectCardProps) {
   const { t } = useTranslation();
   const iconDef = PROJECT_ICONS.find((i) => i.name === project.icon) ?? PROJECT_ICONS[0];
   const Icon = iconDef.icon;
 
   const nameParts = highlightMatch(project.name, searchQuery);
 
-  const matchingTasks = searchQuery.trim()
-    ? projectTasks.filter(
-        (t) => t.projectId === project.id && t.title.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : [];
+  const matchingTasks = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    return projectTasks.filter(
+      (t) => t.projectId === project.id && t.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [projectTasks, project.id, searchQuery]);
 
   return (
     <div
@@ -85,4 +87,4 @@ export default function ProjectCard({ project, searchQuery, projectTasks, onEdit
       </div>
     </div>
   );
-}
+});

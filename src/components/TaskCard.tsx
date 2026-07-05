@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Pen, TrashBinMinimalistic, CalendarMinimalistic, ArrowDown } from '@solar-icons/react';
 import { useTranslation } from 'react-i18next';
 import type { Task } from '../types';
@@ -17,7 +18,7 @@ interface TaskCardProps {
   onDrop: (e: React.DragEvent, targetId: string) => void;
 }
 
-export default function TaskCard({
+export default memo(function TaskCard({
   task, searchQuery, subtaskCount, isDragOver,
   onToggle, onView, onEdit, onDelete,
   onDragOver, onDragLeave, onDrop,
@@ -107,7 +108,7 @@ export default function TaskCard({
       </div>
     </li>
   );
-}
+});
 
 function GripDots() {
   return (
