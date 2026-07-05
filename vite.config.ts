@@ -10,6 +10,8 @@ export default defineConfig({
         manualChunks(id) {
           if (id.includes('node_modules/firebase')) return 'firebase';
           if (id.includes('node_modules/@solar-icons') || id.includes('node_modules/react-icons')) return 'icons';
+          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) return 'vendor';
+          if (id.includes('node_modules/react-router')) return 'router';
         },
       },
     },
