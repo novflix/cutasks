@@ -9,7 +9,7 @@ import { generateId, priorityOrder, validateTitle, validateDescription, sanitize
 import { loadPomoConfig, loadPomoSavedState, savePomoState, loadPomoRunning } from './utils/pomo';
 import { getAllTags } from './storage';
 import { useAuth } from './contexts/AuthContext';
-import { saveTasks as fsSaveTasks, saveProjects as fsSaveProjects, saveSections as fsSaveSections, saveProjectTasks as fsSaveProjectTasks, saveHabits as fsSaveHabits, loadAllData, loadSettings, subscribeToAllData } from './services/firestore';
+import { saveTasksDirty as fsSaveTasksDirty, saveProjectsDirty as fsSaveProjectsDirty, saveSectionsDirty as fsSaveSectionsDirty, saveProjectTasksDirty as fsSaveProjectTasksDirty, saveHabitsDirty as fsSaveHabitsDirty, loadAllData, loadSettings, subscribeToAllData } from './services/firestore';
 import { isNotificationsEnabled, sendNotification, getLocalizedMessage } from './services/notifications';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -107,8 +107,13 @@ export default function App() {
   const [ptSectionId, setPtSectionId] = useState<string | null>(null);
   const detailTimer2 = useRef<ReturnType<typeof setTimeout> | null>(null);
   const syncReadyRef = useRef(false);
-  const justLoadedFromFsRef = useRef(false);
-  const skipSyncRef = useRef(false);
+  const syncGenerationRef = useRef(0);
+  const lastSavedGenerationRef = useRef(0);
+  const dirtyTasksRef = useRef<Set<string>>(new Set());
+  const dirtyProjectsRef = useRef<Set<string>>(new Set());
+  const dirtySectionsRef = useRef<Set<string>>(new Set());
+  const dirtyProjectTasksRef = useRef<Set<string>>(new Set());
+  const dirtyHabitsRef = useRef<Set<string>>(new Set());
   const [dataLoading, setDataLoading] = useState(() => {
     return !localStorage.getItem('cutasks_tasks') && !localStorage.getItem('cutasks_projects');
   });
@@ -176,7 +181,13 @@ export default function App() {
     if (!user) return;
 
     syncReadyRef.current = false;
-    justLoadedFromFsRef.current = true;
+    syncGenerationRef.current = 0;
+    lastSavedGenerationRef.current = 0;
+    dirtyTasksRef.current = new Set();
+    dirtyProjectsRef.current = new Set();
+    dirtySectionsRef.current = new Set();
+    dirtyProjectTasksRef.current = new Set();
+    dirtyHabitsRef.current = new Set();
     setDataLoading(true);
 
     function cleanupExpired(tasks: Task[], projectTasks: ProjectTask[]): { tasks: Task[]; projectTasks: ProjectTask[] } {
@@ -203,7 +214,6 @@ export default function App() {
 
     loadAllData(user.uid).then((data) => {
       const cleaned = cleanupExpired(data.tasks, data.projectTasks);
-      justLoadedFromFsRef.current = true;
       setTasks(cleaned.tasks);
       setProjects(data.projects);
       setSections(data.sections);
@@ -211,11 +221,13 @@ export default function App() {
       setHabits(data.habits);
 
       syncReadyRef.current = true;
+      syncGenerationRef.current = 1;
+      lastSavedGenerationRef.current = 1;
       setDataLoading(false);
-      setTimeout(() => { justLoadedFromFsRef.current = false; }, 100);
     }).catch(() => {
-
       syncReadyRef.current = true;
+      syncGenerationRef.current = 1;
+      lastSavedGenerationRef.current = 1;
       setDataLoading(false);
     });
 
@@ -232,35 +244,35 @@ export default function App() {
     const unsubscribe = subscribeToAllData(user.uid, {
       onTasks: (tasks) => {
         if (!syncReadyRef.current) return;
-        skipSyncRef.current = true;
+        const gen = syncGenerationRef.current;
+        syncGenerationRef.current = gen + 1;
         const cleaned = cleanupExpired(tasks, projectTasksRef.current);
         setTasks(cleaned.tasks);
-        setTimeout(() => { skipSyncRef.current = false; }, 100);
       },
       onProjects: (projects) => {
         if (!syncReadyRef.current) return;
-        skipSyncRef.current = true;
+        const gen = syncGenerationRef.current;
+        syncGenerationRef.current = gen + 1;
         setProjects(projects);
-        setTimeout(() => { skipSyncRef.current = false; }, 100);
       },
       onSections: (sections) => {
         if (!syncReadyRef.current) return;
-        skipSyncRef.current = true;
+        const gen = syncGenerationRef.current;
+        syncGenerationRef.current = gen + 1;
         setSections(sections);
-        setTimeout(() => { skipSyncRef.current = false; }, 100);
       },
       onProjectTasks: (projectTasks) => {
         if (!syncReadyRef.current) return;
-        skipSyncRef.current = true;
+        const gen = syncGenerationRef.current;
+        syncGenerationRef.current = gen + 1;
         const cleaned = cleanupExpired(tasksRef.current, projectTasks);
         setProjectTasks(cleaned.projectTasks);
-        setTimeout(() => { skipSyncRef.current = false; }, 100);
       },
       onHabits: (habits) => {
         if (!syncReadyRef.current) return;
-        skipSyncRef.current = true;
+        const gen = syncGenerationRef.current;
+        syncGenerationRef.current = gen + 1;
         setHabits(habits);
-        setTimeout(() => { skipSyncRef.current = false; }, 100);
       },
     });
 
@@ -406,36 +418,66 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (user && syncReadyRef.current && !justLoadedFromFsRef.current && !skipSyncRef.current) {
-      const timer = setTimeout(() => fsSaveTasks(user.uid, tasks).catch(() => {}), 500);
+    if (user && syncReadyRef.current && dirtyTasksRef.current.size > 0) {
+      const gen = syncGenerationRef.current;
+      const dirty = new Set(dirtyTasksRef.current);
+      dirtyTasksRef.current = new Set();
+      const timer = setTimeout(() => {
+        lastSavedGenerationRef.current = gen;
+        fsSaveTasksDirty(user.uid, tasks, dirty).catch(() => {});
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, [tasks, user]);
 
   useEffect(() => {
-    if (user && syncReadyRef.current && !justLoadedFromFsRef.current && !skipSyncRef.current) {
-      const timer = setTimeout(() => fsSaveProjects(user.uid, projects).catch(() => {}), 500);
+    if (user && syncReadyRef.current && dirtyProjectsRef.current.size > 0) {
+      const gen = syncGenerationRef.current;
+      const dirty = new Set(dirtyProjectsRef.current);
+      dirtyProjectsRef.current = new Set();
+      const timer = setTimeout(() => {
+        lastSavedGenerationRef.current = gen;
+        fsSaveProjectsDirty(user.uid, projects, dirty).catch(() => {});
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, [projects, user]);
 
   useEffect(() => {
-    if (user && syncReadyRef.current && !justLoadedFromFsRef.current && !skipSyncRef.current) {
-      const timer = setTimeout(() => fsSaveProjectTasks(user.uid, projectTasks).catch(() => {}), 500);
+    if (user && syncReadyRef.current && dirtyProjectTasksRef.current.size > 0) {
+      const gen = syncGenerationRef.current;
+      const dirty = new Set(dirtyProjectTasksRef.current);
+      dirtyProjectTasksRef.current = new Set();
+      const timer = setTimeout(() => {
+        lastSavedGenerationRef.current = gen;
+        fsSaveProjectTasksDirty(user.uid, projectTasks, dirty).catch(() => {});
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, [projectTasks, user]);
 
   useEffect(() => {
-    if (user && syncReadyRef.current && !justLoadedFromFsRef.current && !skipSyncRef.current) {
-      const timer = setTimeout(() => fsSaveSections(user.uid, sections).catch(() => {}), 500);
+    if (user && syncReadyRef.current && dirtySectionsRef.current.size > 0) {
+      const gen = syncGenerationRef.current;
+      const dirty = new Set(dirtySectionsRef.current);
+      dirtySectionsRef.current = new Set();
+      const timer = setTimeout(() => {
+        lastSavedGenerationRef.current = gen;
+        fsSaveSectionsDirty(user.uid, sections, dirty).catch(() => {});
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, [sections, user]);
 
   useEffect(() => {
-    if (user && syncReadyRef.current && !justLoadedFromFsRef.current && !skipSyncRef.current) {
-      const timer = setTimeout(() => fsSaveHabits(user.uid, habits).catch(() => {}), 500);
+    if (user && syncReadyRef.current && dirtyHabitsRef.current.size > 0) {
+      const gen = syncGenerationRef.current;
+      const dirty = new Set(dirtyHabitsRef.current);
+      dirtyHabitsRef.current = new Set();
+      const timer = setTimeout(() => {
+        lastSavedGenerationRef.current = gen;
+        fsSaveHabitsDirty(user.uid, habits, dirty).catch(() => {});
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, [habits, user]);
@@ -547,6 +589,7 @@ export default function App() {
       updatedAt: now,
     };
     setTasks((prev) => [newTask, ...prev]);
+    dirtyTasksRef.current.add(newTask.id);
     setSearchQuery('');
   }
 
@@ -596,6 +639,7 @@ export default function App() {
 
     if (editingTask) {
       pushHistory();
+      dirtyTasksRef.current.add(editingTask.id);
       setTasks((prev) =>
         prev.map((t) =>
           t.id === editingTask.id
@@ -619,6 +663,7 @@ export default function App() {
         updatedAt: now,
       };
       setTasks((prev) => [newTask, ...prev]);
+      dirtyTasksRef.current.add(newTask.id);
     }
     closeForm();
   }
@@ -636,6 +681,7 @@ export default function App() {
     pushHistory();
     const mode = (localStorage.getItem('cutasks_delete_mode') || 'instant') as 'instant' | '3days' | '7days';
     const now = Date.now();
+    dirtyTasksRef.current.add(id);
 
     setTasks((prev) =>
       prev.map((t) =>
@@ -663,6 +709,7 @@ export default function App() {
 
   function confirmDeleteTask(id: string) {
     pushHistory();
+    dirtyTasksRef.current.add(id);
     setTasks((prev) => {
       const updated = prev.filter((t) => t.id !== id);
       return updated.map((t) =>
@@ -674,6 +721,7 @@ export default function App() {
   function setSubtaskOf(childId: string, newParentId: string | null) {
     if (childId === newParentId) return;
     pushHistory();
+    dirtyTasksRef.current.add(childId);
     setTasks((prev) =>
       prev.map((t) =>
         t.id === childId ? { ...t, parentId: newParentId, updatedAt: Date.now() } : t
@@ -707,6 +755,7 @@ export default function App() {
       updatedAt: now,
     };
     setProjects((prev) => [newProject, ...prev]);
+    dirtyProjectsRef.current.add(newProject.id);
     setProjectSearch('');
   }
 
@@ -747,6 +796,7 @@ export default function App() {
     const now = Date.now();
     if (editingProject) {
       pushHistory();
+      dirtyProjectsRef.current.add(editingProject.id);
       setProjects((prev) =>
         prev.map((p) =>
           p.id === editingProject.id
@@ -767,6 +817,7 @@ export default function App() {
         updatedAt: now,
       };
       setProjects((prev) => [newProject, ...prev]);
+      dirtyProjectsRef.current.add(newProject.id);
     }
     closeProjectForm();
   }
@@ -778,7 +829,11 @@ export default function App() {
 
   function confirmDeleteProject(id: string) {
     pushHistory();
+    dirtyProjectsRef.current.add(id);
     setProjects((prev) => prev.filter((p) => p.id !== id));
+    // Mark all project tasks and sections as dirty for deletion
+    projectTasks.filter((t) => t.projectId === id).forEach((t) => dirtyProjectTasksRef.current.add(t.id));
+    sections.filter((s) => s.projectId === id).forEach((s) => dirtySectionsRef.current.add(s.id));
     setProjectTasks((prev) => prev.filter((t) => t.projectId !== id));
     setSections((prev) => prev.filter((s) => s.projectId !== id));
     if (activeProject?.id === id) navigate('/app/projects');
@@ -793,6 +848,9 @@ export default function App() {
       const updated = [...prev];
       const [moved] = updated.splice(fromIndex, 1);
       updated.splice(toIndex, 0, moved);
+      // Mark reordered projects as dirty (they don't have an order field in Firestore,
+      // but we mark them so the next sync writes them)
+      for (const p of updated) dirtyProjectsRef.current.add(p.id);
       return updated;
     });
   }
@@ -875,6 +933,7 @@ export default function App() {
       updatedAt: now,
     };
     setProjectTasks((prev) => [newTask, ...prev]);
+    dirtyProjectTasksRef.current.add(newTask.id);
     setProjectTaskSearch('');
   }
 
@@ -916,6 +975,7 @@ export default function App() {
     const now = Date.now();
     if (editingProjectTask) {
       pushHistory();
+      dirtyProjectTasksRef.current.add(editingProjectTask.id);
       setProjectTasks((prev) =>
         prev.map((t) =>
           t.id === editingProjectTask.id
@@ -941,6 +1001,7 @@ export default function App() {
         updatedAt: now,
       };
       setProjectTasks((prev) => [newTask, ...prev]);
+      dirtyProjectTasksRef.current.add(newTask.id);
     }
     closeProjectTaskForm();
   }
@@ -949,6 +1010,7 @@ export default function App() {
     pushHistory();
     const mode = (localStorage.getItem('cutasks_delete_mode') || 'instant') as 'instant' | '3days' | '7days';
     const now = Date.now();
+    dirtyProjectTasksRef.current.add(id);
 
     setProjectTasks((prev) =>
       prev.map((t) => t.id === id ? { ...t, completed: !t.completed, completedAt: !t.completed ? now : null, updatedAt: now } : t)
@@ -974,6 +1036,7 @@ export default function App() {
 
   function confirmDeleteProjectTask(id: string) {
     pushHistory();
+    dirtyProjectTasksRef.current.add(id);
     setProjectTasks((prev) => {
       const updated = prev.filter((t) => t.id !== id);
       return updated.map((t) => t.parentId === id ? { ...t, parentId: null } : t);
@@ -990,6 +1053,7 @@ export default function App() {
 
   function updateProjectTask(id: string, changes: Partial<ProjectTask>) {
     pushHistory();
+    dirtyProjectTasksRef.current.add(id);
     setProjectTasks((prev) =>
       prev.map((t) => t.id === id ? { ...t, ...changes, updatedAt: Date.now() } : t)
     );
@@ -998,7 +1062,10 @@ export default function App() {
   useEffect(() => {
     function handleSaveSections(e: Event) {
       pushHistoryRef.current();
-      setSections((e as CustomEvent).detail);
+      const newSections = (e as CustomEvent).detail;
+      // Mark all sections as dirty since the entire array is replaced
+      for (const s of newSections) dirtySectionsRef.current.add(s.id);
+      setSections(newSections);
     }
     function handleWeekStartChange(e: Event) {
       setWeekStart((e as CustomEvent).detail);

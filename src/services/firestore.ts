@@ -319,6 +319,81 @@ export async function saveHabits(uid: string, habits: Habit[]) {
   await batch.commit();
 }
 
+export async function saveTasksDirty(uid: string, tasks: Task[], dirtyIds: Set<string>) {
+  if (dirtyIds.size === 0) return;
+  const taskMap = new Map(tasks.map((t) => [t.id, t]));
+  const batch = writeBatch(db);
+  for (const id of dirtyIds) {
+    const task = taskMap.get(id);
+    if (task) {
+      batch.set(userDoc(uid, 'tasks', id), taskToDoc(task));
+    } else {
+      batch.delete(userDoc(uid, 'tasks', id));
+    }
+  }
+  await batch.commit();
+}
+
+export async function saveProjectsDirty(uid: string, projects: Project[], dirtyIds: Set<string>) {
+  if (dirtyIds.size === 0) return;
+  const map = new Map(projects.map((p) => [p.id, p]));
+  const batch = writeBatch(db);
+  for (const id of dirtyIds) {
+    const item = map.get(id);
+    if (item) {
+      batch.set(userDoc(uid, 'projects', id), projectToDoc(item));
+    } else {
+      batch.delete(userDoc(uid, 'projects', id));
+    }
+  }
+  await batch.commit();
+}
+
+export async function saveSectionsDirty(uid: string, sections: Section[], dirtyIds: Set<string>) {
+  if (dirtyIds.size === 0) return;
+  const map = new Map(sections.map((s) => [s.id, s]));
+  const batch = writeBatch(db);
+  for (const id of dirtyIds) {
+    const item = map.get(id);
+    if (item) {
+      batch.set(userDoc(uid, 'sections', id), sectionToDoc(item));
+    } else {
+      batch.delete(userDoc(uid, 'sections', id));
+    }
+  }
+  await batch.commit();
+}
+
+export async function saveProjectTasksDirty(uid: string, tasks: ProjectTask[], dirtyIds: Set<string>) {
+  if (dirtyIds.size === 0) return;
+  const map = new Map(tasks.map((t) => [t.id, t]));
+  const batch = writeBatch(db);
+  for (const id of dirtyIds) {
+    const item = map.get(id);
+    if (item) {
+      batch.set(userDoc(uid, 'projectTasks', id), projectTaskToDoc(item));
+    } else {
+      batch.delete(userDoc(uid, 'projectTasks', id));
+    }
+  }
+  await batch.commit();
+}
+
+export async function saveHabitsDirty(uid: string, habits: Habit[], dirtyIds: Set<string>) {
+  if (dirtyIds.size === 0) return;
+  const map = new Map(habits.map((h) => [h.id, h]));
+  const batch = writeBatch(db);
+  for (const id of dirtyIds) {
+    const item = map.get(id);
+    if (item) {
+      batch.set(userDoc(uid, 'habits', id), habitToDoc(item));
+    } else {
+      batch.delete(userDoc(uid, 'habits', id));
+    }
+  }
+  await batch.commit();
+}
+
 export interface UserSettings {
   theme: string;
   deleteMode: string;
@@ -351,51 +426,25 @@ export interface RealtimeCallbacks {
 }
 
 export function subscribeToAllData(uid: string, callbacks: RealtimeCallbacks): Unsubscribe {
-  let prevTasks = '';
-  let prevProjects = '';
-  let prevSections = '';
-  let prevProjectTasks = '';
-  let prevHabits = '';
-
   const unsubTasks = onSnapshot(userCol(uid, 'tasks'), (snap) => {
-    const data = snap.docs.map((d) => docToTask(d.id, d.data()));
-    const json = JSON.stringify(data);
-    if (json !== prevTasks) {
-      prevTasks = json;
-      callbacks.onTasks(data);
-    }
+    if (snap.docChanges().length === 0) return;
+    callbacks.onTasks(snap.docs.map((d) => docToTask(d.id, d.data())));
   });
   const unsubProjects = onSnapshot(userCol(uid, 'projects'), (snap) => {
-    const data = snap.docs.map((d) => docToProject(d.id, d.data()));
-    const json = JSON.stringify(data);
-    if (json !== prevProjects) {
-      prevProjects = json;
-      callbacks.onProjects(data);
-    }
+    if (snap.docChanges().length === 0) return;
+    callbacks.onProjects(snap.docs.map((d) => docToProject(d.id, d.data())));
   });
   const unsubSections = onSnapshot(userCol(uid, 'sections'), (snap) => {
-    const data = snap.docs.map((d) => docToSection(d.id, d.data()));
-    const json = JSON.stringify(data);
-    if (json !== prevSections) {
-      prevSections = json;
-      callbacks.onSections(data);
-    }
+    if (snap.docChanges().length === 0) return;
+    callbacks.onSections(snap.docs.map((d) => docToSection(d.id, d.data())));
   });
   const unsubProjectTasks = onSnapshot(userCol(uid, 'projectTasks'), (snap) => {
-    const data = snap.docs.map((d) => docToProjectTask(d.id, d.data()));
-    const json = JSON.stringify(data);
-    if (json !== prevProjectTasks) {
-      prevProjectTasks = json;
-      callbacks.onProjectTasks(data);
-    }
+    if (snap.docChanges().length === 0) return;
+    callbacks.onProjectTasks(snap.docs.map((d) => docToProjectTask(d.id, d.data())));
   });
   const unsubHabits = onSnapshot(userCol(uid, 'habits'), (snap) => {
-    const data = snap.docs.map((d) => docToHabit(d.id, d.data()));
-    const json = JSON.stringify(data);
-    if (json !== prevHabits) {
-      prevHabits = json;
-      callbacks.onHabits(data);
-    }
+    if (snap.docChanges().length === 0) return;
+    callbacks.onHabits(snap.docs.map((d) => docToHabit(d.id, d.data())));
   });
 
   return () => {
