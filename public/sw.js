@@ -1,4 +1,5 @@
-const CACHE_NAME = 'cutasks-v1';
+const CACHE_NAME = 'cutasks-v2';
+const MAX_CACHE_ENTRIES = 100;
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -24,20 +25,34 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+async function trimCache(cache, maxEntries) {
+  const keys = await cache.keys();
+  if (keys.length > maxEntries) {
+    await cache.delete(keys[0]);
+    await trimCache(cache, maxEntries);
+  }
+}
+
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   if (event.request.url.includes('firestore.googleapis.com')) return;
 
   event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        if (response.ok && event.request.url.startsWith(self.location.origin)) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone));
-        }
-        return response;
-      })
-      .catch(() => caches.match(event.request))
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.match(event.request).then((cached) => {
+        const fetchPromise = fetch(event.request)
+          .then((response) => {
+            if (response.ok && event.request.url.startsWith(self.location.origin)) {
+              cache.put(event.request, response.clone());
+              trimCache(cache, MAX_CACHE_ENTRIES);
+            }
+            return response;
+          })
+          .catch(() => cached);
+
+        return cached || fetchPromise;
+      });
+    })
   );
 });
 
