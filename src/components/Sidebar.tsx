@@ -1,7 +1,8 @@
-import { useRef, useCallback, useEffect, useMemo } from 'react';
-import { ClipboardCheck, Folder, SettingsMinimalistic, HomeSmile } from '@solar-icons/react';
+import { useRef, useCallback, useEffect, useMemo, useState } from 'react';
+import { ClipboardCheck, Folder, SettingsMinimalistic, HomeSmile, AltArrowRight } from '@solar-icons/react';
 import { useTranslation } from 'react-i18next';
-import type { Page } from '../types';
+import type { Page, Project } from '../types';
+import { PROJECT_ICONS } from '../constants/projects';
 import Logo from './Logo';
 
 const MIN_WIDTH = 64;
@@ -27,16 +28,23 @@ interface SidebarProps {
   onResize: (width: number) => void;
   activePage: Page;
   onNavigate: (page: Page) => void;
+  projects?: Project[];
+  expandProjects?: boolean;
+  activeProjectId?: string | null;
+  onOpenProject?: (id: string) => void;
 }
 
-export default function Sidebar({ width, onResize, activePage, onNavigate }: SidebarProps) {
+export default function Sidebar({ width, onResize, activePage, onNavigate, projects = [], expandProjects = false, activeProjectId, onOpenProject }: SidebarProps) {
   const { t } = useTranslation();
   const collapsed = width < COLLAPSE_THRESHOLD;
+  const [projectsExpanded, setProjectsExpanded] = useState(false);
   const dragging = useRef(false);
   const startX = useRef(0);
   const startWidth = useRef(0);
   const navRef = useRef<HTMLDivElement>(null);
   const indicatorRef = useRef<HTMLDivElement>(null);
+
+  const showExpandable = expandProjects && !collapsed;
 
   const navItems = useMemo(() =>
     NAV_ITEMS.map(item => ({ ...item, label: t(item.labelKey) })),
@@ -65,7 +73,7 @@ export default function Sidebar({ width, onResize, activePage, onNavigate }: Sid
     }
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, [activePage, collapsed, width, updateIndicator]);
+  }, [activePage, collapsed, width, updateIndicator, projectsExpanded]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -109,6 +117,57 @@ export default function Sidebar({ width, onResize, activePage, onNavigate }: Sid
         <div className="sidebar-indicator" ref={indicatorRef} />
         {navItems.map((item) => {
           const isActive = item.page === activePage || (item.page === 'projects' && activePage === 'project-detail');
+          const isProjects = item.page === 'projects';
+
+          if (isProjects && showExpandable) {
+            return (
+              <div key={item.page} className="sidebar-nav-group">
+                <button
+                  className={`sidebar-nav-btn${isActive ? ' active' : ''}`}
+                  onClick={() => {
+                    onNavigate(item.page);
+                    setProjectsExpanded((prev) => !prev);
+                  }}
+                >
+                  <item.icon size={22} strokeWidth={1.8} />
+                  <span className="sidebar-nav-label">{item.label}</span>
+                  <span
+                    className={`sidebar-expand-icon${projectsExpanded ? ' expanded' : ''}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setProjectsExpanded((prev) => !prev);
+                    }}
+                  >
+                    <AltArrowRight size={14} />
+                  </span>
+                </button>
+                <div
+                  className="sidebar-projects-list"
+                  style={{
+                    maxHeight: projectsExpanded ? `${projects.length * 40 + 8}px` : '0px',
+                  }}
+                >
+                  {projects.map((project) => {
+                    const iconDef = PROJECT_ICONS.find((i) => i.name === project.icon) ?? PROJECT_ICONS[0];
+                    const Icon = iconDef.icon;
+                    const isProjectActive = activeProjectId === project.id;
+                    return (
+                      <button
+                        key={project.id}
+                        className={`sidebar-project-item${isProjectActive ? ' active' : ''}`}
+                        onClick={() => onOpenProject?.(project.id)}
+                        style={{ '--project-color': project.color } as React.CSSProperties}
+                      >
+                        <Icon size={16} strokeWidth={1.8} />
+                        <span className="sidebar-project-name">{project.name}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          }
+
           return (
             <button
               key={item.page}

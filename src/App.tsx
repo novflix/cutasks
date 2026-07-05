@@ -92,6 +92,7 @@ export default function App() {
   const [sections, setSections] = useState<Section[]>([]);
   const [habits, setHabits] = useState<Habit[]>([]);
   const [weekStart, setWeekStart] = useState<string>(() => localStorage.getItem('cutasks_week_start') || 'monday');
+  const [expandProjects, setExpandProjects] = useState<boolean>(() => localStorage.getItem('cutasks_expand_projects') === '1');
   const [projectTaskFilter, setProjectTaskFilter] = useState<FilterType>('all');
   const [projectTaskSearch, setProjectTaskSearch] = useState('');
   const [showProjectTaskForm, setShowProjectTaskForm] = useState(false);
@@ -1130,13 +1131,18 @@ export default function App() {
     function handleDefaultPriorityChange(e: Event) {
       setDefaultPriority((e as CustomEvent).detail);
     }
+    function handleExpandProjectsChange(e: Event) {
+      setExpandProjects((e as CustomEvent).detail);
+    }
     window.addEventListener('save-sections', handleSaveSections);
     window.addEventListener('week-start-changed', handleWeekStartChange);
     window.addEventListener('default-priority-changed', handleDefaultPriorityChange);
+    window.addEventListener('expand-projects-changed', handleExpandProjectsChange);
     return () => {
       window.removeEventListener('save-sections', handleSaveSections);
       window.removeEventListener('week-start-changed', handleWeekStartChange);
       window.removeEventListener('default-priority-changed', handleDefaultPriorityChange);
+      window.removeEventListener('expand-projects-changed', handleExpandProjectsChange);
     };
   }, []);
 
@@ -1247,7 +1253,16 @@ export default function App() {
 
   return (
     <div className="app" style={{ '--sidebar-w': `${sidebarWidth}px` } as React.CSSProperties}>
-      <Sidebar width={sidebarWidth} onResize={setSidebarWidth} activePage={activePage} onNavigate={sidebarNavigate} />
+      <Sidebar
+        width={sidebarWidth}
+        onResize={setSidebarWidth}
+        activePage={activePage}
+        onNavigate={sidebarNavigate}
+        projects={projects}
+        expandProjects={expandProjects}
+        activeProjectId={activeProjectId}
+        onOpenProject={(id) => navigate(`/app/projects/${id}`)}
+      />
       <div className="app-content">
         {dataLoading ? (
           <main className="main">

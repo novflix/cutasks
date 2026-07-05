@@ -1217,3 +1217,10 @@
   color: var(--text-dim);
   margin: 0;
 }
+
+/* Hide sidebar settings on mobile (no sidebar on small screens) */
+@media (max-width: 767px) {
+  .settings-section-desktop-only {
+    display: none;
+  }
+}
