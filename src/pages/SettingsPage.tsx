@@ -14,6 +14,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import { LANGUAGES, setLanguage, type LanguageCode } from '../i18n';
 import { getFirebaseErrorMessage } from '../utils/firebaseErrors';
+import { sanitizeInput } from '../utils';
 import type { PomoConfig } from './PomodoroPage';
 import { DEFAULT_POMO_CONFIG } from '../constants/pomo';
 
@@ -315,12 +316,26 @@ export default function SettingsPage() {
       const text = await file.text();
       const data = JSON.parse(text);
       if (data.tasks || data.projects || data.sections || data.projectTasks || data.habits) {
+        const sanitizeTask = (t: Record<string, unknown>) => ({
+          ...t,
+          title: typeof t.title === 'string' ? sanitizeInput(t.title) : '',
+          description: typeof t.description === 'string' ? sanitizeInput(t.description) : '',
+        });
+        const sanitizeProject = (p: Record<string, unknown>) => ({
+          ...p,
+          name: typeof p.name === 'string' ? sanitizeInput(p.name) : '',
+          description: typeof p.description === 'string' ? sanitizeInput(p.description) : '',
+        });
+        const sanitizeHabit = (h: Record<string, unknown>) => ({
+          ...h,
+          name: typeof h.name === 'string' ? sanitizeInput(h.name) : '',
+        });
         await saveAllData(user.uid, {
-          tasks: data.tasks || [],
-          projects: data.projects || [],
+          tasks: (data.tasks || []).map(sanitizeTask),
+          projects: (data.projects || []).map(sanitizeProject),
           sections: data.sections || [],
-          projectTasks: data.projectTasks || [],
-          habits: data.habits || [],
+          projectTasks: (data.projectTasks || []).map(sanitizeTask),
+          habits: (data.habits || []).map(sanitizeHabit),
         });
         window.location.reload();
       }
