@@ -11,6 +11,42 @@
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+
+/* ── Grid pattern overlay ── */
+.lp::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
+
+/* ── Ambient glow at top ── */
+.lp::after {
+  content: '';
+  position: fixed;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 600px;
+  background: radial-gradient(ellipse, rgba(237, 155, 109, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  animation: ambientGlow 8s ease-in-out infinite;
+}
+
+@keyframes ambientGlow {
+  0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
 }
 
 .lp *,
@@ -132,6 +168,39 @@
   overflow: hidden;
 }
 
+/* ── Hero gradient mesh ── */
+.lp-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(237, 155, 109, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(100, 181, 246, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(102, 187, 106, 0.08) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+  animation: meshShift 12s ease-in-out infinite;
+}
+
+@keyframes meshShift {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+/* ── Hero noise texture overlay ── */
+.lp-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.5;
+}
+
 /* ── Animated orbs ── */
 .lp-hero-orbs {
   position: absolute;
@@ -143,41 +212,50 @@
   position: absolute;
   border-radius: 50%;
   filter: blur(80px);
-  opacity: 0.5;
+  opacity: 0.6;
   animation: orbFloat 18s ease-in-out infinite;
 }
 .lp-orb-1 {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(237, 155, 109, 0.35), transparent 70%);
-  top: -10%;
-  right: -5%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(237, 155, 109, 0.4), transparent 70%);
+  top: -15%;
+  right: -10%;
   animation-duration: 20s;
 }
 .lp-orb-2 {
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(100, 181, 246, 0.25), transparent 70%);
-  bottom: 0%;
-  left: -8%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(100, 181, 246, 0.3), transparent 70%);
+  bottom: -5%;
+  left: -10%;
   animation-duration: 24s;
   animation-delay: -6s;
 }
 .lp-orb-3 {
-  width: 300px;
-  height: 300px;
-  background: radial-gradient(circle, rgba(102, 187, 106, 0.2), transparent 70%);
-  top: 30%;
-  left: 40%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(102, 187, 106, 0.25), transparent 70%);
+  top: 25%;
+  left: 35%;
   animation-duration: 22s;
   animation-delay: -12s;
+}
+.lp-orb-4 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(186, 104, 200, 0.2), transparent 70%);
+  top: 60%;
+  right: 15%;
+  animation-duration: 26s;
+  animation-delay: -8s;
 }
 
 @keyframes orbFloat {
   0%, 100% { transform: translate(0, 0) scale(1); }
-  25% { transform: translate(30px, -20px) scale(1.05); }
-  50% { transform: translate(-20px, 15px) scale(0.95); }
-  75% { transform: translate(15px, 25px) scale(1.02); }
+  25% { transform: translate(40px, -30px) scale(1.08); }
+  50% { transform: translate(-30px, 20px) scale(0.92); }
+  75% { transform: translate(20px, 35px) scale(1.04); }
 }
 
 /* ── Hero content ── */
@@ -774,6 +852,19 @@
   position: relative;
   padding: 100px 24px;
 }
+
+/* ── Section divider ── */
+.lp-features::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(237, 155, 109, 0.3), transparent);
+}
+
 .lp-features-inner {
   max-width: 1020px;
   margin: 0 auto;
@@ -849,6 +940,19 @@
    ═══════════════════════════════════════════════════ */
 .lp-deep {
   padding: 40px 24px 60px;
+  position: relative;
+}
+
+/* ── Section divider ── */
+.lp-deep::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(237, 155, 109, 0.3), transparent);
 }
 .lp-deep-section {
   max-width: 1020px;
@@ -1348,7 +1452,20 @@
    ═══════════════════════════════════════════════════ */
 .lp-why {
   padding: 80px 24px 100px;
-  background: linear-gradient(180deg, transparent, rgba(237, 155, 109, 0.02), transparent);
+  background: linear-gradient(180deg, transparent, rgba(237, 155, 109, 0.03), transparent);
+  position: relative;
+}
+
+/* ── Section divider ── */
+.lp-why::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(237, 155, 109, 0.3), transparent);
 }
 .lp-why-inner {
   max-width: 1020px;
@@ -1418,6 +1535,19 @@
    ═══════════════════════════════════════════════════ */
 .lp-stats {
   padding: 60px 24px 80px;
+  position: relative;
+}
+
+/* ── Section divider ── */
+.lp-stats::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(237, 155, 109, 0.3), transparent);
 }
 .lp-stats-inner {
   max-width: 800px;
@@ -1475,6 +1605,19 @@
    ═══════════════════════════════════════════════════ */
 .lp-cta {
   padding: 40px 24px 100px;
+  position: relative;
+}
+
+/* ── Section divider ── */
+.lp-cta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(237, 155, 109, 0.3), transparent);
 }
 .lp-cta-inner {
   max-width: 700px;
