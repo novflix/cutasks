@@ -27,9 +27,11 @@ self.addEventListener('activate', (event) => {
 
 async function trimCache(cache, maxEntries) {
   const keys = await cache.keys();
-  if (keys.length > maxEntries) {
-    await cache.delete(keys[0]);
-    await trimCache(cache, maxEntries);
+  const excess = keys.length - maxEntries;
+  if (excess > 0) {
+    for (let i = 0; i < excess; i++) {
+      await cache.delete(keys[i]);
+    }
   }
 }
 
