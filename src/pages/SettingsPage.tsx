@@ -52,7 +52,7 @@ function hashColor(s: string): string {
   let h = 0;
   for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
   const colors = ['#ed9b6d', '#66bb6a', '#64b5f6', '#ba68c8', '#ffb74d', '#4db6ac', '#e57373', '#9575cd'];
-  return colors[Math.abs(h) % colors.length];
+  return colors[(h >>> 0) % colors.length];
 }
 
 export default function SettingsPage() {
