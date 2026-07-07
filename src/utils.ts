@@ -55,8 +55,8 @@ export function getTagColor(tag: string) {
   return TAG_COLORS[hashStr(tag)];
 }
 
-export function formatDate(ts: number) {
-  return new Date(ts).toLocaleDateString('en-US', {
+export function formatDate(ts: number, locale?: string) {
+  return new Date(ts).toLocaleDateString(locale || navigator.language, {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
