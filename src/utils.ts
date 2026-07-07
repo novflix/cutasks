@@ -8,8 +8,11 @@ export function sanitizePriority(p: string): Priority {
   return VALID_PRIORITIES.includes(p as Priority) ? (p as Priority) : 'medium';
 }
 
-export function generateId() {
-  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+export function generateId(): string {
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID().replace(/-/g, '').slice(0, 20);
+  }
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
 }
 
 export function highlightMatch(text: string, query: string): { plain: string; highlighted: string }[] {
