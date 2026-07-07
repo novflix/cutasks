@@ -678,6 +678,16 @@ export default function App() {
     }, 200);
   }
 
+  const handleViewTaskEdit = useCallback((task: Task) => {
+    closeDetail();
+    setTimeout(() => openEditForm(task), 220);
+  }, []);
+
+  const handleViewProjectTaskEdit = useCallback((task: Task) => {
+    closeProjectTaskDetail();
+    setTimeout(() => openEditProjectTask(task as ProjectTask), 220);
+  }, []);
+
   function toggleComplete(id: string) {
     pushHistory();
     const mode = (localStorage.getItem('cutasks_delete_mode') || 'instant') as 'instant' | '3days' | '7days';
@@ -1427,7 +1437,7 @@ export default function App() {
           task={activeViewingTask}
           tasks={tasks}
           onClose={closeDetail}
-          onEdit={(t) => { closeDetail(); setTimeout(() => openEditForm(t), 220); }}
+          onEdit={handleViewTaskEdit}
           onToggle={toggleComplete}
           isClosing={detailClosing}
         />
@@ -1438,7 +1448,7 @@ export default function App() {
           task={activeViewingProjectTask}
           tasks={projectTasks}
           onClose={closeProjectTaskDetail}
-          onEdit={(t) => { closeProjectTaskDetail(); setTimeout(() => openEditProjectTask(t as ProjectTask), 220); }}
+          onEdit={handleViewProjectTaskEdit}
           onToggle={toggleProjectTask}
           isClosing={projectTaskDetailClosing}
         />
