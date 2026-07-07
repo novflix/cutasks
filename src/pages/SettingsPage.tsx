@@ -131,9 +131,6 @@ export default function SettingsPage() {
     localStorage.setItem('cutasks_delete_mode', deleteMode);
     localStorage.setItem('cutasks_week_start', weekStartDay);
     localStorage.setItem('cutasks_expand_projects', expandProjects ? '1' : '0');
-    window.dispatchEvent(new CustomEvent('week-start-changed', { detail: weekStartDay }));
-    window.dispatchEvent(new CustomEvent('default-priority-changed', { detail: defaultPriority }));
-    window.dispatchEvent(new CustomEvent('expand-projects-changed', { detail: expandProjects }));
     if (isInitialMountRef.current) {
       isInitialMountRef.current = false;
       return;
