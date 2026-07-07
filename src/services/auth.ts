@@ -11,10 +11,11 @@ import {
 } from 'firebase/auth';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
+import { sanitizeInput } from '../utils';
 
 export async function register(email: string, password: string, displayName: string): Promise<User> {
   const credential = await createUserWithEmailAndPassword(auth, email, password);
-  await updateProfile(credential.user, { displayName });
+  await updateProfile(credential.user, { displayName: sanitizeInput(displayName) });
   return credential.user;
 }
 
@@ -55,5 +56,5 @@ export async function deleteAccount(password: string): Promise<void> {
 export async function updateDisplayName(name: string): Promise<void> {
   const user = auth.currentUser;
   if (!user) throw new Error('Not authenticated');
-  await updateProfile(user, { displayName: name });
+  await updateProfile(user, { displayName: sanitizeInput(name) });
 }
