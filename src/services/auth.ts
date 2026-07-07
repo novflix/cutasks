@@ -9,7 +9,7 @@ import {
   EmailAuthProvider,
   type User,
 } from 'firebase/auth';
-import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, doc, writeBatch } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import { sanitizeInput } from '../utils';
 
@@ -42,11 +42,18 @@ export async function deleteAccount(password: string): Promise<void> {
   const credential = EmailAuthProvider.credential(user.email, password);
   await reauthenticateWithCredential(user, credential);
 
+  const BATCH_LIMIT = 500;
   const collections = ['tasks', 'projects', 'sections', 'projectTasks', 'habits', 'settings'];
   for (const col of collections) {
     const snap = await getDocs(collection(db, 'users', user.uid, col));
-    for (const d of snap.docs) {
-      await deleteDoc(doc(db, 'users', user.uid, col, d.id));
+    const docs = snap.docs;
+    for (let i = 0; i < docs.length; i += BATCH_LIMIT) {
+      const batch = writeBatch(db);
+      const chunk = docs.slice(i, i + BATCH_LIMIT);
+      for (const d of chunk) {
+        batch.delete(doc(db, 'users', user.uid, col, d.id));
+      }
+      await batch.commit();
     }
   }
 
