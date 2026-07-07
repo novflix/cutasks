@@ -114,6 +114,13 @@ export default function DatePicker({ value, onChange, min, label, id }: DatePick
   }, [handleClose, value]);
 
   function prevMonth() {
+    if (min) {
+      const minDate = new Date(min + 'T00:00:00');
+      const minYear = minDate.getFullYear();
+      const minMonth = minDate.getMonth();
+      if (viewYear === minYear && viewMonth === minMonth) return;
+      if (viewYear < minYear) return;
+    }
     if (viewMonth === 0) {
       setViewMonth(11);
       setViewYear(viewYear - 1);
