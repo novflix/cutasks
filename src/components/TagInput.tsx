@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { CloseCircle } from '@solar-icons/react';
 import { useTranslation } from 'react-i18next';
-import { getTagColor } from '../utils';
+import { getTagColor, MAX_TAGS_COUNT } from '../utils';
 
 interface TagInputProps {
   tags: string[];
@@ -64,7 +64,7 @@ export default function TagInput({ tags, allTags, onChange, label }: TagInputPro
 
   function addTag(tag: string) {
     const trimmed = tag.trim();
-    if (trimmed && !tags.includes(trimmed)) {
+    if (trimmed && !tags.includes(trimmed) && tags.length < MAX_TAGS_COUNT) {
       onChange([...tags, trimmed]);
     }
     setInput('');
