@@ -560,6 +560,11 @@ export default function App() {
     navigate(`/app/projects/${id}`);
   }, [navigate]);
 
+  function handleCalendarViewTask(t: Task | ProjectTask) {
+    if ('projectId' in t) setViewingProjectTask(t as ProjectTask);
+    else setViewingTask(t);
+  }
+
   // ── Render ──
   if (location.pathname === '/auth') {
     return <Suspense fallback={<PageLoader />}><AuthPage /></Suspense>;
@@ -631,10 +636,7 @@ export default function App() {
               <Route path="/app/calendar" element={
                 <ProtectedRoute>
                   <main className="main">
-                    <CalendarPage tasks={tasks} projectTasks={projectTasks} weekStartDay={weekStart} onViewTask={(t) => {
-                      if ('projectId' in t) setViewingProjectTask(t as ProjectTask);
-                      else setViewingTask(t);
-                    }} />
+                    <CalendarPage tasks={tasks} projectTasks={projectTasks} weekStartDay={weekStart} onViewTask={handleCalendarViewTask} />
                   </main>
                 </ProtectedRoute>
               } />
