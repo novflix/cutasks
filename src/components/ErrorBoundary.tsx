@@ -1,4 +1,5 @@
 import { Component, type ReactNode } from 'react';
+import i18n from '../i18n';
 
 interface Props {
   children: ReactNode;
@@ -25,9 +26,9 @@ export default class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return this.props.fallback || (
         <div style={{ padding: '40px', textAlign: 'center', color: '#999' }}>
-          <h2>Something went wrong</h2>
+          <h2>{i18n.t('notFound.title')}</h2>
           <p style={{ marginTop: '8px', fontSize: '14px' }}>
-            {this.state.error?.message || 'An unexpected error occurred'}
+            {this.state.error?.message || i18n.t('notFound.description')}
           </p>
           <button
             onClick={() => { this.setState({ hasError: false, error: null }); window.location.reload(); }}
@@ -36,7 +37,7 @@ export default class ErrorBoundary extends Component<Props, State> {
               color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer',
             }}
           >
-            Reload page
+            {i18n.t('notFound.goBack')}
           </button>
         </div>
       );
