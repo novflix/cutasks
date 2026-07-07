@@ -47,7 +47,7 @@ export default function TaskFormModal({
       <div className={modalClass} onClick={(e) => e.stopPropagation()}>
         <div className="fm-header">
           <h2 className="fm-title">{editingTask ? t('modals.taskForm.edit') : t('modals.taskForm.create')}</h2>
-          <button className="btn-icon fm-close" onClick={onClose}>
+          <button className="btn-icon fm-close" onClick={onClose} aria-label={t('common.close')}>
             <CloseCircle size={20} />
           </button>
         </div>

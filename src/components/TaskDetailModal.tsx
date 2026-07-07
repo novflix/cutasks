@@ -42,7 +42,7 @@ export default function TaskDetailModal({ task, tasks, onClose, onEdit, onToggle
               )}
             </div>
           </div>
-          <button className="btn-icon detail-close" onClick={onClose}>
+          <button className="btn-icon detail-close" onClick={onClose} aria-label={t('common.close')}>
             <CloseCircle size={22} />
           </button>
         </div>
