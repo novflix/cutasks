@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { AddSquare } from '@solar-icons/react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,7 +14,7 @@ interface HeaderProps {
   createLabel?: string;
 }
 
-export default function Header({ stats, onCreate, createLabel }: HeaderProps) {
+export default memo(function Header({ stats, onCreate, createLabel }: HeaderProps) {
   const { t } = useTranslation();
   return (
     <header className="header">
@@ -33,4 +34,4 @@ export default function Header({ stats, onCreate, createLabel }: HeaderProps) {
       </div>
     </header>
   );
-}
+});

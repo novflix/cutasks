@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { MinimalisticMagnifier } from '@solar-icons/react';
 import { useTranslation } from 'react-i18next';
 import type { FilterType } from '../types';
@@ -17,7 +18,7 @@ const FILTER_KEYS: Record<FilterType, string> = {
   completed: 'components.toolbar.done',
 };
 
-export default function Toolbar({ searchQuery, onSearch, filter, onFilter, onCreateFromSearch, hasResults = true }: ToolbarProps) {
+export default memo(function Toolbar({ searchQuery, onSearch, filter, onFilter, onCreateFromSearch, hasResults = true }: ToolbarProps) {
   const { t } = useTranslation();
 
   function handleKeyDown(e: React.KeyboardEvent) {
@@ -52,4 +53,4 @@ export default function Toolbar({ searchQuery, onSearch, filter, onFilter, onCre
       </div>
     </div>
   );
-}
+});
