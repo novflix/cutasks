@@ -1438,6 +1438,7 @@ export default function App() {
           }
         />
         )}
+        </ErrorBoundary>
       </div>
 
       {activeViewingTask && (
@@ -1573,7 +1574,6 @@ export default function App() {
           />
         </div>
       )}
-        </ErrorBoundary>
       </div>
     </div>
   );
