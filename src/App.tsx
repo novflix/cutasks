@@ -697,6 +697,11 @@ export default function App() {
     setTimeout(() => openEditProjectTask(task as ProjectTask), 220);
   }, []);
 
+  const handleHabitsChange = useCallback((updater: Habit[] | ((prev: Habit[]) => Habit[])) => {
+    pushHistoryRef.current();
+    setHabits(updater);
+  }, []);
+
   function toggleComplete(id: string) {
     pushHistory();
     const mode = (localStorage.getItem('cutasks_delete_mode') || 'instant') as 'instant' | '3days' | '7days';
@@ -1250,7 +1255,7 @@ export default function App() {
               <Route path="/app/habits" element={
                 <ProtectedRoute>
                   <main className="main">
-                    <HabitsPage habits={habits} onHabitsChange={(updater) => { pushHistory(); setHabits(updater); }} weekStartDay={weekStart} formOpenerRef={habitFormOpenerRef} />
+                    <HabitsPage habits={habits} onHabitsChange={handleHabitsChange} weekStartDay={weekStart} formOpenerRef={habitFormOpenerRef} />
                   </main>
                 </ProtectedRoute>
               } />
