@@ -197,7 +197,7 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
 
       {/* ── Banners ── */}
       <div className="home-banners">
-        <button className="banner-card banner-habits" onClick={() => navigate('/app/habits')}>
+        <button className="banner-card banner-habits" onClick={() => navigate('/app/habits')} aria-label={t('home.banners.habits.title')}>
           <div className="banner-visual banner-visual-habits">
             <svg className="banner-deco" width="100%" height="100%" viewBox="0 0 200 120" fill="none" preserveAspectRatio="none">
               <circle cx="170" cy="20" r="40" fill="rgba(255,255,255,0.06)" />
@@ -230,7 +230,7 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
           </div>
         </button>
 
-        <button className="banner-card banner-pomodoro" onClick={() => navigate('/app/pomodoro')}>
+        <button className="banner-card banner-pomodoro" onClick={() => navigate('/app/pomodoro')} aria-label={t('home.banners.pomodoro.title')}>
           <div className="banner-visual banner-visual-pomodoro">
             <svg className="banner-deco" width="100%" height="100%" viewBox="0 0 200 120" fill="none" preserveAspectRatio="none">
               <circle cx="30" cy="25" r="45" fill="rgba(255,255,255,0.04)" />
@@ -261,7 +261,7 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
           </div>
         </button>
 
-        <button className="banner-card banner-calendar" onClick={() => navigate('/app/calendar')}>
+        <button className="banner-card banner-calendar" onClick={() => navigate('/app/calendar')} aria-label={t('home.banners.calendar.title')}>
           <div className="banner-visual banner-visual-calendar">
             <svg className="banner-deco" width="100%" height="100%" viewBox="0 0 200 120" fill="none" preserveAspectRatio="none">
               <circle cx="60" cy="15" r="42" fill="rgba(255,255,255,0.04)" />
@@ -297,7 +297,7 @@ export default function HomePage({ tasks, projects, habits, projectTasks }: Home
 
         <div className="banner-divider" />
 
-        <button className="banner-card banner-templates" onClick={() => navigate('/app/templates')}>
+        <button className="banner-card banner-templates" onClick={() => navigate('/app/templates')} aria-label={t('home.banners.templates.title')}>
           <div className="banner-visual banner-visual-templates">
             <svg className="banner-deco" width="100%" height="100%" viewBox="0 0 200 120" fill="none" preserveAspectRatio="none">
               <circle cx="170" cy="60" r="50" fill="rgba(255,255,255,0.03)" />
