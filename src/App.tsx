@@ -1361,7 +1361,7 @@ export default function App() {
               {(project) => (
                 <>
                   <div className="project-detail-header">
-                    <button className="btn-icon project-back-btn" onClick={() => navigate('/app/projects')}>
+                    <button className="btn-icon project-back-btn" onClick={() => navigate('/app/projects')} aria-label={t('projects.backToProjects')}>
                       <ArrowLeft size={22} />
                     </button>
                     <div className="project-detail-icon" style={{ background: `${project.color}15`, color: project.color }}>

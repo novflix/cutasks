@@ -10,7 +10,7 @@ export default function TemplatesPage() {
   return (
     <>
       <div className="page-hero">
-        <button className="btn-icon project-back-btn" onClick={() => navigate('/app/home')}>
+        <button className="btn-icon project-back-btn" onClick={() => navigate('/app/home')} aria-label={t('common.back')}>
           <ArrowLeft size={22} />
         </button>
         <h1 className="page-hero-title">{t('home.banners.templates.title')}</h1>
