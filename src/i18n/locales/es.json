@@ -795,6 +795,10 @@
     }
   },
   "tpl": {
+    "comingSoon": {
+      "title": "Próximamente",
+      "description": "Esta función está en desarrollo y estará disponible en una futura actualización. ¡Estén atentos!"
+    },
     "categories": {
       "personal": "Desarrollo personal",
       "health": "Salud y Fitness",

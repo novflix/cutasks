@@ -796,6 +796,10 @@
     }
   },
   "tpl": {
+    "comingSoon": {
+      "title": "Demnächst verfügbar",
+      "description": "Diese Funktion wird gerade entwickelt und steht in einem zukünftigen Update zur Verfügung. Bleiben Sie dran!"
+    },
     "categories": {
       "personal": "Persönliche Entwicklung",
       "health": "Gesundheit & Fitness",

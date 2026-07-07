@@ -803,6 +803,10 @@
     }
   },
   "tpl": {
+    "comingSoon": {
+      "title": "Coming Soon",
+      "description": "This feature is under development and will be available in a future update. Stay tuned!"
+    },
     "categories": {
       "personal": "Personal Development",
       "health": "Health & Fitness",

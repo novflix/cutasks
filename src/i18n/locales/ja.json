@@ -796,6 +796,10 @@
     }
   },
   "tpl": {
+    "comingSoon": {
+      "title": "近日公開",
+      "description": "この機能は開発中であり、今後のアップデートで利用可能になります。お楽しみに！"
+    },
     "categories": {
       "personal": "自己開発",
       "health": "健康＆フィットネス",

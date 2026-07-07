@@ -796,6 +796,10 @@
     }
   },
   "tpl": {
+    "comingSoon": {
+      "title": "Yakında",
+      "description": "Bu özellik geliştirme aşamasındadır ve gelecek bir güncellemede kullanılabilir olacak. Bizi takip edin!"
+    },
     "categories": {
       "personal": "Kişisel geliştirme",
       "health": "Sağlık & Fitness",

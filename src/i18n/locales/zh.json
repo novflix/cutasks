@@ -796,6 +796,10 @@
     }
   },
   "tpl": {
+    "comingSoon": {
+      "title": "即将推出",
+      "description": "此功能正在开发中，将在未来的更新中推出。敬请期待！"
+    },
     "categories": {
       "personal": "个人发展",
       "health": "健康与健身",
