@@ -48,11 +48,11 @@ function hashStr(s: string): number {
   for (let i = 0; i < s.length; i++) {
     h = ((h << 5) - h + s.charCodeAt(i)) | 0;
   }
-  return Math.abs(h);
+  return (h >>> 0) % TAG_COLORS.length;
 }
 
 export function getTagColor(tag: string) {
-  return TAG_COLORS[hashStr(tag) % TAG_COLORS.length];
+  return TAG_COLORS[hashStr(tag)];
 }
 
 export function formatDate(ts: number) {
