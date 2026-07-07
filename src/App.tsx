@@ -196,6 +196,13 @@ export default function App() {
   }, [undo]);
 
   // ── Notifications ──
+  const tasksRef = useRef(tasks);
+  const projectTasksRef = useRef(projectTasks);
+  const habitsRef = useRef(habits);
+  useEffect(() => { tasksRef.current = tasks; }, [tasks]);
+  useEffect(() => { projectTasksRef.current = projectTasks; }, [projectTasks]);
+  useEffect(() => { habitsRef.current = habits; }, [habits]);
+
   useEffect(() => {
     if (!user || !dataLoading) return;
 
@@ -211,7 +218,7 @@ export default function App() {
       const dayAfterTomorrow = new Date(tomorrowStart);
       dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1);
 
-      const allTasks = [...tasks, ...projectTasks];
+      const allTasks = [...tasksRef.current, ...projectTasksRef.current];
       const lang = i18n.language;
       const hour = now.getHours();
 
@@ -262,7 +269,7 @@ export default function App() {
 
       const jsDay = now.getDay();
       const habitDay = jsDay === 0 ? 6 : jsDay - 1;
-      const todayHabits = habits.filter((h) => h.weekdays.includes(habitDay));
+      const todayHabits = habitsRef.current.filter((h) => h.weekdays.includes(habitDay));
       const uncompletedHabits = todayHabits.filter((h) => (h.completions[dateKey(now)] || 0) < (h.targetReps || 1));
       if (uncompletedHabits.length > 0 && hour >= 18) {
         const habit = uncompletedHabits[0];
@@ -366,15 +373,15 @@ export default function App() {
     }, 200);
   }
 
-  const handleViewTaskEdit = useCallback((task: Task) => {
+  function handleViewTaskEdit(task: Task) {
     closeDetail();
     setTimeout(() => openEditForm(task), 220);
-  }, []);
+  }
 
-  const handleViewProjectTaskEdit = useCallback((task: Task) => {
+  function handleViewProjectTaskEdit(task: Task) {
     closeProjectTaskDetail();
     setTimeout(() => openEditProjectTask(task as ProjectTask), 220);
-  }, []);
+  }
 
   function deleteTaskConfirm(id: string) {
     const task = tasks.find((t) => t.id === id);
