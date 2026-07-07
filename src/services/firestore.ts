@@ -198,12 +198,12 @@ export async function saveAllData(
     habits?: Habit[];
   }
 ) {
-  const batch = writeBatch(db);
+  const BATCH_LIMIT = 500;
+  const operations: Array<{ type: 'set' | 'delete'; ref: ReturnType<typeof doc>; data?: DocumentData }> = [];
 
-  const metaRef = doc(db, 'users', uid);
-  batch.set(metaRef, { updatedAt: serverTimestamp() }, { merge: true });
+  operations.push({ type: 'set', ref: doc(db, 'users', uid), data: { updatedAt: serverTimestamp() } });
 
-  const syncCollection = async <T extends { id: string }>(
+  const collectCollection = async <T extends { id: string }>(
     colName: string,
     items: T[],
     toDoc: (item: T) => DocumentData
@@ -213,25 +213,36 @@ export async function saveAllData(
     const newIds = new Set(items.map((i) => i.id));
 
     for (const item of items) {
-      batch.set(userDoc(uid, colName, item.id), toDoc(item));
+      operations.push({ type: 'set', ref: userDoc(uid, colName, item.id), data: toDoc(item) });
     }
 
     for (const id of currentIds) {
       if (!newIds.has(id)) {
-        batch.delete(userDoc(uid, colName, id));
+        operations.push({ type: 'delete', ref: userDoc(uid, colName, id) });
       }
     }
   };
 
-  await syncCollection('tasks', data.tasks, taskToDoc);
-  await syncCollection('projects', data.projects, projectToDoc);
-  await syncCollection('sections', data.sections, sectionToDoc);
-  await syncCollection('projectTasks', data.projectTasks, projectTaskToDoc);
+  await collectCollection('tasks', data.tasks, taskToDoc);
+  await collectCollection('projects', data.projects, projectToDoc);
+  await collectCollection('sections', data.sections, sectionToDoc);
+  await collectCollection('projectTasks', data.projectTasks, projectTaskToDoc);
   if (data.habits) {
-    await syncCollection('habits', data.habits, habitToDoc);
+    await collectCollection('habits', data.habits, habitToDoc);
   }
 
-  await batch.commit();
+  for (let i = 0; i < operations.length; i += BATCH_LIMIT) {
+    const batch = writeBatch(db);
+    const chunk = operations.slice(i, i + BATCH_LIMIT);
+    for (const op of chunk) {
+      if (op.type === 'set' && op.data) {
+        batch.set(op.ref, op.data, { merge: true });
+      } else {
+        batch.delete(op.ref);
+      }
+    }
+    await batch.commit();
+  }
 }
 
 export async function saveTasks(uid: string, tasks: Task[]) {
