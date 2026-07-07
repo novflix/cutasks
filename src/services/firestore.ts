@@ -425,7 +425,7 @@ export async function saveSettings(uid: string, settings: UserSettings) {
     d: settings.deleteMode,
     w: settings.weekStart,
     p: settings.defaultPriority,
-  });
+  }, { merge: true });
 }
 
 export interface RealtimeCallbacks {
