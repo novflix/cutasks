@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { login, register } from '../services/auth';
 import { useAuth } from '../contexts/AuthContext';
@@ -11,7 +11,9 @@ type Mode = 'login' | 'register';
 export default function AuthPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const { t } = useTranslation();
+  const from = (location.state as { from?: string })?.from || '/app/home';
   const [mode, setMode] = useState<Mode>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -42,8 +44,8 @@ export default function AuthPage() {
   }, [mode]);
 
   useEffect(() => {
-    if (user && migrated) navigate('/app/home', { replace: true });
-  }, [user, migrated, navigate]);
+    if (user && migrated) navigate(from, { replace: true });
+  }, [user, migrated, navigate, from]);
 
   useEffect(() => {
     if (!user || migrated) return;
