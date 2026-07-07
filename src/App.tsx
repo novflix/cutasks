@@ -556,6 +556,10 @@ export default function App() {
     setHabits(updater);
   }, [setHabits]);
 
+  const handleOpenProject = useCallback((id: string) => {
+    navigate(`/app/projects/${id}`);
+  }, [navigate]);
+
   // ── Render ──
   if (location.pathname === '/auth') {
     return <Suspense fallback={<PageLoader />}><AuthPage /></Suspense>;
@@ -586,7 +590,7 @@ export default function App() {
         projects={projects}
         expandProjects={expandProjects}
         activeProjectId={activeProjectId}
-        onOpenProject={(id) => navigate(`/app/projects/${id}`)}
+        onOpenProject={handleOpenProject}
       />
       <div className="app-content">
         <ErrorBoundary>
