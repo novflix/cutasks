@@ -103,6 +103,7 @@ export default function SettingsPage() {
   const donateModalTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
   const settingsLoadedRef = useRef(false);
+  const isInitialMountRef = useRef(true);
   const [notifSupported] = useState(() => isNotificationsSupported());
   const [notifPermission, setNotifPermission] = useState(() => getNotificationPermission());
   const [notifEnabled, setNotifEnabled] = useState(() => isNotificationsEnabled());
@@ -133,6 +134,10 @@ export default function SettingsPage() {
     window.dispatchEvent(new CustomEvent('week-start-changed', { detail: weekStartDay }));
     window.dispatchEvent(new CustomEvent('default-priority-changed', { detail: defaultPriority }));
     window.dispatchEvent(new CustomEvent('expand-projects-changed', { detail: expandProjects }));
+    if (isInitialMountRef.current) {
+      isInitialMountRef.current = false;
+      return;
+    }
     if (user && settingsLoadedRef.current) saveSettings(user.uid, { theme: activeTheme, deleteMode, weekStart: weekStartDay, defaultPriority }).catch(() => {});
   }, [activeTheme, deleteMode, weekStartDay, defaultPriority, expandProjects, user]);
 
