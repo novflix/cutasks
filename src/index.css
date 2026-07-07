@@ -84,3 +84,19 @@ textarea {
     box-shadow: none;
   }
 }
+
+:focus-visible {
+  outline: 2px solid var(--primary, #ed9b6d);
+  outline-offset: 2px;
+}
+
+button:focus-visible {
+  outline: 2px solid var(--primary, #ed9b6d);
+  outline-offset: 2px;
+}
+
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--primary, #ed9b6d);
+  outline-offset: 1px;
+}
