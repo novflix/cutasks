@@ -30,7 +30,7 @@ export default function ConfirmDialog({ title, message, confirmLabel, onConfirm,
   }
 
   return (
-    <div className={`modal-overlay${closing ? ' closing' : ''}`} onClick={handleClose}>
+    <div className={`modal-overlay${closing ? ' closing' : ''}`} onClick={handleClose} role="dialog" aria-modal="true">
       <div className={`modal confirm-dialog${closing ? ' closing' : ''}`} onClick={(e) => e.stopPropagation()}>
         <div className="confirm-dialog-icon">
           <DangerTriangle size={28} />
