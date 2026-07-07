@@ -21,6 +21,7 @@ import PomoMiniTimer from './components/PomoMiniTimer';
 import MobileNav from './components/MobileNav';
 import ProtectedRoute from './components/ProtectedRoute';
 import ConfirmDialog from './components/ConfirmDialog';
+import ErrorBoundary from './components/ErrorBoundary';
 import PageSkeleton from './components/skeletons/PageSkeleton';
 import { MinimalisticMagnifier, ArrowLeft } from '@solar-icons/react';
 import { PROJECT_ICONS } from './constants/projects';
@@ -1223,6 +1224,7 @@ export default function App() {
         onOpenProject={(id) => navigate(`/app/projects/${id}`)}
       />
       <div className="app-content">
+        <ErrorBoundary>
         {dataLoading ? (
           <main className="main">
             <PageSkeleton pathname={location.pathname} />
@@ -1571,6 +1573,8 @@ export default function App() {
           />
         </div>
       )}
+        </ErrorBoundary>
+      </div>
     </div>
   );
 }
