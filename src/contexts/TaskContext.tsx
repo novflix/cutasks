@@ -57,15 +57,12 @@ interface TaskContextValue {
   // Derived
   filteredTasks: Task[];
   filteredProjects: Project[];
-  filteredProjectTasks: ProjectTask[];
   allTags: string[];
   allProjectTags: string[];
   taskStats: { total: number; active: number; completed: number; overdue: number };
   projectStats: { label: string; value: number; color?: string }[];
   taskStatsFormatted: { label: string; value: number; color?: string }[];
-  projectTaskStats: { label: string; value: number; color?: string }[];
   taskMap: Map<string, Task>;
-  activeProjectTasks: ProjectTask[];
 
   // Settings
   defaultPriority: Priority;
@@ -151,11 +148,15 @@ export function TaskProvider({ children }: { children: ReactNode }) {
   const dirtyProjectTasksRef = useRef<Set<string>>(new Set());
   const dirtyHabitsRef = useRef<Set<string>>(new Set());
   const tasksRef = useRef(tasks);
+  const projectsRef = useRef(projects);
+  const sectionsRef = useRef(sections);
   const projectTasksRef = useRef(projectTasks);
   const habitsRef = useRef(habits);
   const historyRef = useRef<{ tasks: Task[]; projects: Project[]; sections: Section[]; projectTasks: ProjectTask[]; habits: Habit[] }[]>([]);
 
   useEffect(() => { tasksRef.current = tasks; }, [tasks]);
+  useEffect(() => { projectsRef.current = projects; }, [projects]);
+  useEffect(() => { sectionsRef.current = sections; }, [sections]);
   useEffect(() => { projectTasksRef.current = projectTasks; }, [projectTasks]);
   useEffect(() => { habitsRef.current = habits; }, [habits]);
 
@@ -323,13 +324,13 @@ export function TaskProvider({ children }: { children: ReactNode }) {
   const pushHistory = useCallback(() => {
     historyRef.current.push({
       tasks: [...tasksRef.current],
-      projects: [...projects],
-      sections: [...sections],
-      projectTasks: [...projectTasks],
-      habits: [...habits],
+      projects: [...projectsRef.current],
+      sections: [...sectionsRef.current],
+      projectTasks: [...projectTasksRef.current],
+      habits: [...habitsRef.current],
     });
     if (historyRef.current.length > 50) historyRef.current.shift();
-  }, [projects, sections, projectTasks, habits]);
+  }, []);
 
   // ── Task operations ──
   const createTask = useCallback((title: string) => {
@@ -420,11 +421,18 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     pushHistory();
     dirtyProjectsRef.current.add(id);
     setProjects((prev) => prev.filter((p) => p.id !== id));
-    projectTasks.filter((t) => t.projectId === id).forEach((t) => dirtyProjectTasksRef.current.add(t.id));
-    sections.filter((s) => s.projectId === id).forEach((s) => dirtySectionsRef.current.add(s.id));
-    setProjectTasks((prev) => prev.filter((t) => t.projectId !== id));
-    setSections((prev) => prev.filter((s) => s.projectId !== id));
-  }, [pushHistory, projectTasks, sections]);
+    // Use functional updates to avoid stale closures
+    setProjectTasks((prev) => {
+      const toDelete = prev.filter((t) => t.projectId === id);
+      toDelete.forEach((t) => dirtyProjectTasksRef.current.add(t.id));
+      return prev.filter((t) => t.projectId !== id);
+    });
+    setSections((prev) => {
+      const toDelete = prev.filter((s) => s.projectId === id);
+      toDelete.forEach((s) => dirtySectionsRef.current.add(s.id));
+      return prev.filter((s) => s.projectId !== id);
+    });
+  }, [pushHistory]);
 
   const reorderProjects = useCallback((fromIndex: number, toIndex: number) => {
     setProjects((prev) => {
@@ -527,16 +535,6 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     return result;
   }, [projects, projectSearch, projectTasks]);
 
-  const activeProjectTasks = useMemo(() => {
-    // This will be set by the consumer based on activeProjectId
-    return [];
-  }, []);
-
-  const filteredProjectTasks = useMemo(() => {
-    // This will be computed by the consumer based on activeProjectTasks
-    return [];
-  }, []);
-
   const taskStats = useMemo(() => ({
     total: tasks.length,
     active: tasks.filter((t) => !t.completed).length,
@@ -567,8 +565,6 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     { label: 'done', value: projects.filter((p) => p.status === 'completed').length, color: '#64b5f6' },
   ], [projects]);
 
-  const projectTaskStats = useMemo(() => [], []);
-
   // ── Delete confirmation ──
   const confirmDeleteTask = useCallback((id: string) => { deleteTask(id); }, [deleteTask]);
   const confirmDeleteProject = useCallback((id: string) => { deleteProject(id); }, [deleteProject]);
@@ -583,9 +579,9 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     filter, setFilter, searchQuery, setSearchQuery,
     projectSearch, setProjectSearch, projectTaskFilter, setProjectTaskFilter,
     projectTaskSearch, setProjectTaskSearch,
-    filteredTasks, filteredProjects, filteredProjectTasks,
+    filteredTasks, filteredProjects,
     allTags, allProjectTags, taskStats, projectStats, taskStatsFormatted,
-    projectTaskStats, taskMap, activeProjectTasks,
+    taskMap,
     defaultPriority, setDefaultPriority, weekStart, setWeekStart,
     expandProjects, setExpandProjects,
     confirmDelete, setConfirmDelete, confirmDeleteTask, confirmDeleteProject, confirmDeleteProjectTask,
