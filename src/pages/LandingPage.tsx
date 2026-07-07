@@ -100,6 +100,7 @@ export default function LandingPage() {
           <div className="lp-orb lp-orb-1" />
           <div className="lp-orb lp-orb-2" />
           <div className="lp-orb lp-orb-3" />
+          <div className="lp-orb lp-orb-4" />
         </div>
         <div className="lp-hero-content">
           <div className="lp-hero-badge">
