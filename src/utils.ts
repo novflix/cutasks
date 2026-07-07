@@ -68,7 +68,7 @@ export function formatDate(ts: number, locale?: string) {
 export function formatDeadline(dateStr: string) {
   if (!dateStr) return '';
   const d = new Date(dateStr + 'T00:00:00');
-  return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+  return d.toLocaleDateString(navigator.language, { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 export function getDeadlineStatus(dateStr: string, completed: boolean): 'overdue' | 'today' | 'soon' | 'normal' | '' {
