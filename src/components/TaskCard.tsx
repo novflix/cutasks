@@ -99,10 +99,10 @@ export default memo(function TaskCard({
         </div>
       </div>
       <div className="task-actions">
-        <button className="btn-icon" onClick={() => onEdit(task)} title={t('components.taskCard.edit')}>
+        <button className="btn-icon" onClick={() => onEdit(task)} title={t('components.taskCard.edit')} aria-label={t('components.taskCard.edit')}>
           <Pen size={20} />
         </button>
-        <button className="btn-icon btn-icon-danger" onClick={() => onDelete(task.id)} title={t('components.taskCard.delete')}>
+        <button className="btn-icon btn-icon-danger" onClick={() => onDelete(task.id)} title={t('components.taskCard.delete')} aria-label={t('components.taskCard.delete')}>
           <TrashBinMinimalistic size={20} />
         </button>
       </div>

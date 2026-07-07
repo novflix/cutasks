@@ -50,10 +50,10 @@ export default memo(function ProjectCard({ project, searchQuery, projectTasks, o
               : project.name}
           </h3>
           <div className="project-card-actions">
-            <button className="btn-icon" onClick={(e) => { e.stopPropagation(); onEdit(project); }} title={t('common.edit')}>
+            <button className="btn-icon" onClick={(e) => { e.stopPropagation(); onEdit(project); }} title={t('common.edit')} aria-label={t('common.edit')}>
               <Pen size={18} />
             </button>
-            <button className="btn-icon btn-icon-danger" onClick={(e) => { e.stopPropagation(); onDelete(project.id); }} title={t('common.delete')}>
+            <button className="btn-icon btn-icon-danger" onClick={(e) => { e.stopPropagation(); onDelete(project.id); }} title={t('common.delete')} aria-label={t('common.delete')}>
               <TrashBinMinimalistic size={18} />
             </button>
           </div>
