@@ -43,7 +43,7 @@ export default function TaskFormModal({
   const modalClass = `modal form-modal${isClosing ? ' closing' : ''}`;
 
   return (
-    <div className={overlayClass} onClick={onClose}>
+    <div className={overlayClass} onClick={onClose} role="dialog" aria-modal="true">
       <div className={modalClass} onClick={(e) => e.stopPropagation()}>
         <div className="fm-header">
           <h2 className="fm-title">{editingTask ? t('modals.taskForm.edit') : t('modals.taskForm.create')}</h2>
