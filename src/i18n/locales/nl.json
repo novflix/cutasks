@@ -800,6 +800,10 @@
     }
   },
   "tpl": {
+    "comingSoon": {
+      "title": "Binnenkort beschikbaar",
+      "description": "Deze functie is in ontwikkeling en wordt beschikbaar in een toekomstige update. Blijf op de hoogte!"
+    },
     "categories": {
       "personal": "Persoonlijke ontwikkeling",
       "health": "Gezondheid & Fitness",

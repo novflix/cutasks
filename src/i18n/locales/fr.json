@@ -796,6 +796,10 @@
     }
   },
   "tpl": {
+    "comingSoon": {
+      "title": "Bientôt disponible",
+      "description": "Cette fonctionnalité est en cours de développement et sera disponible dans une prochaine mise à jour. Restez à l'écoute !"
+    },
     "categories": {
       "personal": "Développement personnel",
       "health": "Santé & Fitness",

@@ -800,6 +800,10 @@
     }
   },
   "tpl": {
+    "comingSoon": {
+      "title": "출시 예정",
+      "description": "이 기능은 현재 개발 중이며 향후 업데이트에서 사용할 수 있습니다. 기대해 주세요!"
+    },
     "categories": {
       "personal": "개인 발전",
       "health": "건강 & 피트니스",
