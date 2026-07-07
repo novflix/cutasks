@@ -392,6 +392,12 @@ export default function App() {
     setSections(prev.sections);
     setProjectTasks(prev.projectTasks);
     setHabits(prev.habits);
+    // Clear dirty-refs to prevent Firebase from deleting restored data
+    dirtyTasksRef.current.clear();
+    dirtyProjectsRef.current.clear();
+    dirtySectionsRef.current.clear();
+    dirtyProjectTasksRef.current.clear();
+    dirtyHabitsRef.current.clear();
   }, []);
 
   useEffect(() => {
