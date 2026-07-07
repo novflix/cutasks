@@ -24,7 +24,6 @@ import ConfirmDialog from './components/ConfirmDialog';
 import PageSkeleton from './components/skeletons/PageSkeleton';
 import { MinimalisticMagnifier, ArrowLeft } from '@solar-icons/react';
 import { PROJECT_ICONS } from './constants/projects';
-import type { Template } from './constants/templates';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const TasksPage = lazy(() => import('./pages/TasksPage'));
@@ -845,62 +844,6 @@ export default function App() {
     navigate(`/app/projects/${project.id}`);
   }
 
-  function handleCopyTemplate(template: Template) {
-    pushHistory();
-    const now = Date.now();
-    const projectId = generateId();
-    const tplKey = `tpl.${template.tplKey}`;
-
-    const newProject: Project = {
-      id: projectId,
-      name: t(`${tplKey}.name`),
-      description: t(`${tplKey}.desc`),
-      icon: template.icon,
-      color: template.color,
-      status: 'active',
-      createdAt: now,
-      updatedAt: now,
-    };
-
-    const newSections: Section[] = template.sections.map((s, i) => ({
-      id: generateId(),
-      projectId,
-      name: t(`${tplKey}.${s.key}`),
-      order: i,
-      createdAt: now,
-    }));
-
-    const newTasks: ProjectTask[] = [];
-    template.sections.forEach((section, sIdx) => {
-      section.tasks.forEach((task) => {
-        newTasks.push({
-          id: generateId(),
-          projectId,
-          sectionId: newSections[sIdx].id,
-          title: t(`${tplKey}.${task.key}`),
-          description: '',
-          priority: task.priority,
-          deadline: '',
-          tags: [],
-          completed: false,
-          completedAt: null,
-          parentId: null,
-          createdAt: now,
-          updatedAt: now,
-        });
-      });
-    });
-
-    setProjects((prev) => [newProject, ...prev]);
-    dirtyProjectsRef.current.add(projectId);
-    setSections((prev) => [...prev, ...newSections]);
-    for (const s of newSections) dirtySectionsRef.current.add(s.id);
-    setProjectTasks((prev) => [...prev, ...newTasks]);
-    for (const t of newTasks) dirtyProjectTasksRef.current.add(t.id);
-
-    navigate(`/app/projects/${projectId}`);
-  }
-
   function reorderProjects(fromIndex: number, toIndex: number) {
     setProjects((prev) => {
       const updated = [...prev];
@@ -1322,7 +1265,7 @@ export default function App() {
               <Route path="/app/templates" element={
                 <ProtectedRoute>
                   <main className="main">
-                    <TemplatesPage onCopyTemplate={handleCopyTemplate} />
+                    <TemplatesPage />
                   </main>
                 </ProtectedRoute>
               } />
