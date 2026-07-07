@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Logout, Key, CheckCircle, CloseCircle, TrashBinMinimalistic, Pen, AltArrowRight, Heart, Copy, DownloadMinimalistic, UploadMinimalistic } from '@solar-icons/react';
 import { loadAllData, saveAllData } from '../services/firestore';
-import { SiTon, SiTether, SiSolana, SiLitecoin, SiCircle } from 'react-icons/si';
+import { CRYPTO_ICONS } from '../components/CryptoIcons';
 import {
   isNotificationsSupported, getNotificationPermission,
   requestPermission, isNotificationsEnabled, setNotificationsEnabled,
@@ -880,11 +880,7 @@ export default function SettingsPage() {
                     : w.network.toLowerCase().includes('ton') ? 'ton'
                     : w.network.toLowerCase().includes('solana') ? 'sol'
                     : 'ltc';
-                  const CryptoIcon = cls === 'usdc' ? SiCircle
-                    : cls === 'usdt' ? SiTether
-                    : cls === 'ton' ? SiTon
-                    : cls === 'sol' ? SiSolana
-                    : SiLitecoin;
+                  const CryptoIcon = CRYPTO_ICONS[cls] || CRYPTO_ICONS.ltc;
                   return (
                     <div key={w.network} className="donate-item">
                       <div className={`donate-item-icon ${cls}`}>
