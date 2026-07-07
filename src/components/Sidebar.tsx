@@ -156,6 +156,7 @@ export default function Sidebar({ width, onResize, activePage, onNavigate, proje
                         key={project.id}
                         className={`sidebar-project-item${isProjectActive ? ' active' : ''}`}
                         onClick={() => onOpenProject?.(project.id)}
+                        aria-label={project.name}
                         style={{ '--project-color': project.color } as React.CSSProperties}
                       >
                         <Icon size={16} strokeWidth={1.8} />
@@ -173,6 +174,7 @@ export default function Sidebar({ width, onResize, activePage, onNavigate, proje
               key={item.page}
               className={`sidebar-nav-btn${isActive ? ' active' : ''}`}
               title={collapsed ? item.label : undefined}
+              aria-label={item.label}
               onClick={() => onNavigate(item.page)}
             >
               <item.icon size={22} strokeWidth={1.8} />
