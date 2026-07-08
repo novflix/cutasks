@@ -1,13 +1,16 @@
-import { useState, useEffect, useMemo, useRef, useCallback, Suspense, lazy } from 'react';
+import { useMemo, useCallback, Suspense, lazy } from 'react';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import './App.css';
-import type { Task, Priority, Page, FilterType, Project, ProjectStatus, ProjectTask, Habit } from './types';
-import { validateTitle, validateDescription, sanitizeInput, sanitizePriority, MAX_TASKS_COUNT, MAX_PROJECTS_COUNT, getDeadlineStatus } from './utils';
+import type { FilterType, Habit } from './types';
+import { getDeadlineStatus } from './utils';
 import { useTaskContext } from './contexts/TaskContext';
 import { usePomoContext } from './contexts/PomoContext';
+import { useUIContext } from './contexts/UIContext';
 import { useAuth } from './contexts/AuthContext';
-import { isNotificationsEnabled, sendNotification, getLocalizedMessage } from './services/notifications';
+import { useNotifications } from './hooks/useNotifications';
+import { usePomodoroTitle } from './hooks/usePomodoroTitle';
+import { useUndoShortcut } from './hooks/useUndoShortcut';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import TaskDetailModal from './components/TaskDetailModal';
@@ -22,7 +25,6 @@ import ErrorBoundary from './components/ErrorBoundary';
 import PageSkeleton from './components/skeletons/PageSkeleton';
 import { MinimalisticMagnifier, ArrowLeft } from '@solar-icons/react';
 import { PROJECT_ICONS } from './constants/projects';
-import { dateKey } from './utils';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const TasksPage = lazy(() => import('./pages/TasksPage'));
@@ -58,14 +60,12 @@ export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading: authLoading } = useAuth();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   const {
-    tasks, projects, sections, projectTasks, habits, dataLoading,
-    createTask, updateTask, toggleTask, setSubtaskOf,
-    createProject, updateProject, reorderProjects,
-    createProjectTask, updateProjectTask, toggleProjectTask,
-    setHabits, undo,
+    tasks, projects, projectTasks, habits, sections, dataLoading,
+    toggleTask, setSubtaskOf, updateProjectTask, toggleProjectTask,
+    reorderProjects, setHabits, undo,
     filter, setFilter, searchQuery, setSearchQuery,
     projectSearch, setProjectSearch, projectTaskFilter, setProjectTaskFilter,
     projectTaskSearch, setProjectTaskSearch,
@@ -83,59 +83,33 @@ export default function App() {
     skipSession: pomoSkipSession,
   } = usePomoContext();
 
-  // ── UI state ──
-  const [showForm, setShowForm] = useState(false);
-  const [formClosing, setFormClosing] = useState(false);
-  const [viewingTask, setViewingTask] = useState<Task | null>(null);
-  const [detailClosing, setDetailClosing] = useState(false);
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [priority, setPriority] = useState<Priority>('medium');
-  const [deadline, setDeadline] = useState('');
-  const [tags, setTags] = useState<string[]>([]);
-  const [parentId, setParentId] = useState<string | null>(null);
-  const [sidebarWidth, setSidebarWidth] = useState(220);
-  const [showProjectForm, setShowProjectForm] = useState(false);
-  const [projectFormClosing, setProjectFormClosing] = useState(false);
-  const [editingProject, setEditingProject] = useState<Project | null>(null);
-  const [projectName, setProjectName] = useState('');
-  const [projectDesc, setProjectDesc] = useState('');
-  const [projectIcon, setProjectIcon] = useState('Folder');
-  const [projectColor, setProjectColor] = useState('#ed9b6d');
-  const [projectStatus, setProjectStatus] = useState<ProjectStatus>('active');
-  const [showProjectTaskForm, setShowProjectTaskForm] = useState(false);
-  const [projectTaskFormClosing, setProjectTaskFormClosing] = useState(false);
-  const [editingProjectTask, setEditingProjectTask] = useState<ProjectTask | null>(null);
-  const [viewingProjectTask, setViewingProjectTask] = useState<ProjectTask | null>(null);
-  const [projectTaskDetailClosing, setProjectTaskDetailClosing] = useState(false);
-  const [ptTitle, setPtTitle] = useState('');
-  const [ptDescription, setPtDescription] = useState('');
-  const [ptPriority, setPtPriority] = useState<Priority>('medium');
-  const [ptDeadline, setPtDeadline] = useState('');
-  const [ptTags, setPtTags] = useState<string[]>([]);
-  const [ptParentId, setPtParentId] = useState<string | null>(null);
-  const [ptSectionId, setPtSectionId] = useState<string | null>(null);
-  const habitFormOpenerRef = useRef<(() => void) | null>(null);
+  const {
+    sidebarWidth, setSidebarWidth,
+    showForm, formClosing, editingTask,
+    title, setTitle, description, setDescription, priority, setPriority,
+    deadline, setDeadline, tags, setTags, parentId, setParentId,
+    openCreateForm, openEditForm, closeForm, handleSubmit,
+    viewingTask, setViewingTask, detailClosing, closeDetail, handleViewTaskEdit, deleteTaskConfirm,
+    showProjectForm, projectFormClosing, editingProject,
+    projectName, setProjectName, projectDesc, setProjectDesc,
+    projectIcon, setProjectIcon, projectColor, setProjectColor,
+    projectStatus, setProjectStatus,
+    openCreateProject, openEditProject, closeProjectForm, handleProjectSubmit, deleteProjectConfirm, openProject,
+    showProjectTaskForm, projectTaskFormClosing, editingProjectTask,
+    ptTitle, setPtTitle, ptDescription, setPtDescription, ptPriority, setPtPriority,
+    ptDeadline, setPtDeadline, ptTags, setPtTags, ptParentId, setPtParentId,
+    openCreateProjectTask, openEditProjectTask, closeProjectTaskForm, handleProjectTaskSubmit,
+    viewingProjectTask, setViewingProjectTask, projectTaskDetailClosing, closeProjectTaskDetail, handleViewProjectTaskEdit, deleteProjectTaskConfirm,
+    createTaskFromSearch, createProjectFromSearch, createProjectTaskFromSearch,
+    handleCreate, handleCalendarViewTask,
+    activePage, activeProjectId, activeProject,
+    habitFormOpenerRef,
+  } = useUIContext();
 
-  const detailTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const detailTimer2 = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const formTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const projectFormTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (formTimer.current) clearTimeout(formTimer.current);
-      if (projectFormTimer.current) clearTimeout(projectFormTimer.current);
-      if (detailTimer.current) clearTimeout(detailTimer.current);
-      if (detailTimer2.current) clearTimeout(detailTimer2.current);
-    };
-  }, []);
-
-  // ── Page detection ──
-  const activePage: Page = location.pathname.startsWith('/app/projects/') ? 'project-detail' : location.pathname.startsWith('/app/projects') ? 'projects' : location.pathname.startsWith('/app/settings') ? 'settings' : location.pathname.startsWith('/app/habits') || location.pathname.startsWith('/app/pomodoro') || location.pathname.startsWith('/app/calendar') || location.pathname.startsWith('/app/home') || location.pathname.startsWith('/app/templates') ? 'home' : 'tasks';
-  const activeProjectId = activePage === 'project-detail' ? location.pathname.split('/')[3] : null;
-  const activeProject = useMemo(() => activeProjectId ? projects.find((p) => p.id === activeProjectId) ?? null : null, [projects, activeProjectId]);
+  // ── Hooks ──
+  useNotifications(user, dataLoading, tasks, projectTasks, habits);
+  usePomodoroTitle(pomoRunning, pomoSeconds, pomoMode);
+  useUndoShortcut(undo);
 
   // ── Project tasks for active project ──
   const activeProjectTasks = useMemo(
@@ -183,369 +157,8 @@ export default function App() {
     [projectTasks, viewingProjectTask]
   );
 
-  // ── Undo keyboard shortcut ──
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if ((e.ctrlKey || e.metaKey) && e.code === 'KeyZ') {
-        e.preventDefault();
-        undo();
-      }
-    }
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [undo]);
-
-  // ── Notifications ──
-  const tasksRef = useRef(tasks);
-  const projectTasksRef = useRef(projectTasks);
-  const habitsRef = useRef(habits);
-  useEffect(() => { tasksRef.current = tasks; }, [tasks]);
-  useEffect(() => { projectTasksRef.current = projectTasks; }, [projectTasks]);
-  useEffect(() => { habitsRef.current = habits; }, [habits]);
-
-  useEffect(() => {
-    if (!user || !dataLoading) return;
-
-    function checkNotifications() {
-      if (!isNotificationsEnabled()) return;
-      if (Notification.permission !== 'granted') return;
-
-      const now = new Date();
-      const todayStart = new Date(now);
-      todayStart.setHours(0, 0, 0, 0);
-      const tomorrowStart = new Date(todayStart);
-      tomorrowStart.setDate(tomorrowStart.getDate() + 1);
-      const dayAfterTomorrow = new Date(tomorrowStart);
-      dayAfterTomorrow.setDate(dayAfterTomorrow.getDate() + 1);
-
-      const allTasks = [...tasksRef.current, ...projectTasksRef.current];
-      const lang = i18n.language;
-      const hour = now.getHours();
-
-      const overdueTasks = allTasks.filter((t) =>
-        !t.completed && t.deadline && new Date(t.deadline) < todayStart
-      );
-      if (overdueTasks.length > 0) {
-        const task = overdueTasks[0];
-        const title = t('notifications.overdue.title');
-        const body = getLocalizedMessage('overdue', lang, { title: task.title });
-        sendNotification({ title, body, type: 'overdue', tag: 'overdue-check' });
-      }
-
-      const tomorrowTasks = allTasks.filter((t) =>
-        !t.completed && t.deadline &&
-        new Date(t.deadline) >= tomorrowStart &&
-        new Date(t.deadline) < dayAfterTomorrow
-      );
-      if (tomorrowTasks.length > 0) {
-        const task = tomorrowTasks[0];
-        const title = t('notifications.deadlineTomorrow.title');
-        const body = getLocalizedMessage('deadlineTomorrow', lang, { title: task.title });
-        sendNotification({ title, body, type: 'deadlineTomorrow', tag: 'deadline-tomorrow-check' });
-      }
-
-      if (hour >= 7 && hour <= 9) {
-        const activeTasks = allTasks.filter((t) => !t.completed);
-        if (activeTasks.length > 0) {
-          const title = t('notifications.morningGreeting.title');
-          const body = getLocalizedMessage('morningGreeting', lang, { count: activeTasks.length });
-          sendNotification({ title, body, type: 'morningGreeting', tag: 'morning-greeting' });
-        }
-      }
-
-      if (hour >= 19 && hour <= 21) {
-        const completedToday = allTasks.filter((t) =>
-          t.completed && t.completedAt && t.completedAt >= todayStart.getTime()
-        ).length;
-        const totalToday = allTasks.filter((t) =>
-          t.createdAt >= todayStart.getTime() || !t.completed
-        ).length;
-        if (totalToday > 0) {
-          const title = t('notifications.eveningSummary.title');
-          const body = getLocalizedMessage('eveningSummary', lang, { done: completedToday, total: totalToday });
-          sendNotification({ title, body, type: 'eveningSummary', tag: 'evening-summary' });
-        }
-      }
-
-      const jsDay = now.getDay();
-      const habitDay = jsDay === 0 ? 6 : jsDay - 1;
-      const todayHabits = habitsRef.current.filter((h) => h.weekdays.includes(habitDay));
-      const uncompletedHabits = todayHabits.filter((h) => (h.completions[dateKey(now)] || 0) < (h.targetReps || 1));
-      if (uncompletedHabits.length > 0 && hour >= 18) {
-        const habit = uncompletedHabits[0];
-        const title = t('notifications.streakAtRisk.title');
-        const body = getLocalizedMessage('streakAtRisk', lang, { habit: habit.name, streak: habit.streak });
-        sendNotification({ title, body, type: 'streakAtRisk', tag: `streak-risk-${habit.id}` });
-      }
-    }
-
-    const timer = setTimeout(checkNotifications, 3000);
-    const interval = setInterval(checkNotifications, 30 * 60 * 1000);
-
-    return () => {
-      clearTimeout(timer);
-      clearInterval(interval);
-    };
-  }, [user, dataLoading]);
-
-  // ── Pomodoro title ──
-  useEffect(() => {
-    if (pomoRunning) {
-      const m = Math.floor(pomoSeconds / 60);
-      const s = pomoSeconds % 60;
-      const label = pomoMode === 'work' ? t('pomodoro.focus') : pomoMode === 'short' ? t('pomodoro.shortBreak') : t('pomodoro.longBreak');
-      document.title = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')} — ${label} | CuTasks`;
-    } else if (location.pathname !== '/app/pomodoro') {
-      document.title = 'CuTasks';
-    }
-  }, [pomoRunning, pomoSeconds, pomoMode, location.pathname, t]);
-
-  // ── Form handlers ──
-  function openCreateForm() {
-    if (formTimer.current) clearTimeout(formTimer.current);
-    setEditingTask(null);
-    setTitle('');
-    setDescription('');
-    setPriority('medium');
-    setDeadline('');
-    setTags([]);
-    setParentId(null);
-    setFormClosing(false);
-    setShowForm(true);
-  }
-
-  function openEditForm(task: Task) {
-    if (formTimer.current) clearTimeout(formTimer.current);
-    setEditingTask(task);
-    setTitle(task.title);
-    setDescription(task.description);
-    setPriority(task.priority);
-    setDeadline(task.deadline || '');
-    setTags(task.tags || []);
-    setParentId(task.parentId ?? null);
-    setFormClosing(false);
-    setShowForm(true);
-  }
-
-  function closeForm() {
-    if (formTimer.current) clearTimeout(formTimer.current);
-    setFormClosing(true);
-    formTimer.current = setTimeout(() => {
-      setShowForm(false);
-      setFormClosing(false);
-      setEditingTask(null);
-      setTitle('');
-      setDescription('');
-      setPriority('medium');
-      setDeadline('');
-      setTags([]);
-      setParentId(null);
-    }, 200);
-  }
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const titleError = validateTitle(title);
-    if (titleError) return;
-    const descError = validateDescription(description);
-    if (descError) return;
-
-    const trimmedTitle = sanitizeInput(title);
-    const trimmedDesc = sanitizeInput(description);
-    const safePriority = sanitizePriority(priority);
-
-    if (!editingTask && tasks.length >= MAX_TASKS_COUNT) return;
-
-    if (editingTask) {
-      updateTask(editingTask.id, { title: trimmedTitle, description: trimmedDesc, priority: safePriority, deadline, tags, parentId });
-    } else {
-      createTask(trimmedTitle);
-    }
-    closeForm();
-  }
-
-  function closeDetail() {
-    if (detailTimer.current) clearTimeout(detailTimer.current);
-    setDetailClosing(true);
-    detailTimer.current = setTimeout(() => {
-      setViewingTask(null);
-      setDetailClosing(false);
-    }, 200);
-  }
-
-  function handleViewTaskEdit(task: Task) {
-    closeDetail();
-    setTimeout(() => openEditForm(task), 220);
-  }
-
-  function handleViewProjectTaskEdit(task: Task) {
-    closeProjectTaskDetail();
-    setTimeout(() => openEditProjectTask(task as ProjectTask), 220);
-  }
-
-  function deleteTaskConfirm(id: string) {
-    const task = tasks.find((t) => t.id === id);
-    setConfirmDelete({ type: 'task', id, title: task?.title || '' });
-  }
-
-  // ── Project form handlers ──
-  function openCreateProject() {
-    if (projectFormTimer.current) clearTimeout(projectFormTimer.current);
-    setEditingProject(null);
-    setProjectName('');
-    setProjectDesc('');
-    setProjectIcon('Folder');
-    setProjectColor('#ed9b6d');
-    setProjectStatus('active');
-    setProjectFormClosing(false);
-    setShowProjectForm(true);
-  }
-
-  function openEditProject(project: Project) {
-    if (projectFormTimer.current) clearTimeout(projectFormTimer.current);
-    setEditingProject(project);
-    setProjectName(project.name);
-    setProjectDesc(project.description);
-    setProjectIcon(project.icon);
-    setProjectColor(project.color);
-    setProjectStatus(project.status);
-    setProjectFormClosing(false);
-    setShowProjectForm(true);
-  }
-
-  function closeProjectForm() {
-    if (projectFormTimer.current) clearTimeout(projectFormTimer.current);
-    setProjectFormClosing(true);
-    projectFormTimer.current = setTimeout(() => {
-      setShowProjectForm(false);
-      setProjectFormClosing(false);
-      setEditingProject(null);
-    }, 200);
-  }
-
-  function handleProjectSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const nameError = validateTitle(projectName);
-    if (nameError) return;
-    const descError = validateDescription(projectDesc);
-    if (descError) return;
-
-    const trimmedName = sanitizeInput(projectName);
-    const trimmedDesc = sanitizeInput(projectDesc);
-
-    if (!editingProject && projects.length >= MAX_PROJECTS_COUNT) return;
-
-    if (editingProject) {
-      updateProject(editingProject.id, { name: trimmedName, description: trimmedDesc, icon: projectIcon, color: projectColor, status: projectStatus });
-    } else {
-      createProject(trimmedName);
-    }
-    closeProjectForm();
-  }
-
-  function deleteProjectConfirm(id: string) {
-    const project = projects.find((p) => p.id === id);
-    setConfirmDelete({ type: 'project', id, title: project?.name || '' });
-  }
-
-  function openProject(project: Project) {
-    navigate(`/app/projects/${project.id}`);
-  }
-
-  // ── Project task form handlers ──
-  function openCreateProjectTask(sectionId: string | null) {
-    if (projectFormTimer.current) clearTimeout(projectFormTimer.current);
-    setEditingProjectTask(null);
-    setPtTitle('');
-    setPtDescription('');
-    setPtPriority('medium');
-    setPtDeadline('');
-    setPtTags([]);
-    setPtParentId(null);
-    setPtSectionId(sectionId);
-    setProjectTaskFormClosing(false);
-    setShowProjectTaskForm(true);
-  }
-
-  function openEditProjectTask(task: ProjectTask) {
-    if (projectFormTimer.current) clearTimeout(projectFormTimer.current);
-    setEditingProjectTask(task);
-    setPtTitle(task.title);
-    setPtDescription(task.description);
-    setPtPriority(task.priority);
-    setPtDeadline(task.deadline || '');
-    setPtTags(task.tags || []);
-    setPtParentId(task.parentId ?? null);
-    setPtSectionId(task.sectionId ?? null);
-    setProjectTaskFormClosing(false);
-    setShowProjectTaskForm(true);
-  }
-
-  function closeProjectTaskForm() {
-    if (projectFormTimer.current) clearTimeout(projectFormTimer.current);
-    setProjectTaskFormClosing(true);
-    projectFormTimer.current = setTimeout(() => {
-      setShowProjectTaskForm(false);
-      setProjectTaskFormClosing(false);
-      setEditingProjectTask(null);
-    }, 200);
-  }
-
-  function handleProjectTaskSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const titleError = validateTitle(ptTitle);
-    if (titleError || !activeProject) return;
-    const descError = validateDescription(ptDescription);
-    if (descError) return;
-
-    const trimmedTitle = sanitizeInput(ptTitle);
-    const trimmedDesc = sanitizeInput(ptDescription);
-    const safePriority = sanitizePriority(ptPriority);
-
-    if (editingProjectTask) {
-      updateProjectTask(editingProjectTask.id, { title: trimmedTitle, description: trimmedDesc, priority: safePriority, deadline: ptDeadline, tags: ptTags, parentId: ptParentId, sectionId: ptSectionId });
-    } else {
-      createProjectTask(activeProject.id, trimmedTitle, ptSectionId);
-    }
-    closeProjectTaskForm();
-  }
-
-  function deleteProjectTaskConfirm(id: string) {
-    const task = projectTasks.find((t) => t.id === id);
-    setConfirmDelete({ type: 'task', id, title: task?.title || '' });
-  }
-
-  function closeProjectTaskDetail() {
-    setProjectTaskDetailClosing(true);
-    detailTimer2.current = setTimeout(() => {
-      setViewingProjectTask(null);
-      setProjectTaskDetailClosing(false);
-    }, 200);
-  }
-
-  // ── Create from search ──
-  function createTaskFromSearch(title: string) {
-    createTask(title);
-    setSearchQuery('');
-  }
-
-  function createProjectFromSearch(name: string) {
-    createProject(name);
-    setProjectSearch('');
-  }
-
-  function createProjectTaskFromSearch(title: string) {
-    if (!activeProject) return;
-    createProjectTask(activeProject.id, title);
-    setProjectTaskSearch('');
-  }
-
-  // ── Navigation ──
-  const handleCreate = location.pathname.startsWith('/app/habits')
-    ? () => habitFormOpenerRef.current?.()
-    : activePage === 'project-detail' ? () => openCreateProjectTask(null) : activePage === 'projects' ? openCreateProject : openCreateForm;
-
-  const sidebarNavigate = useCallback((p: Page) => {
+  // ── Navigation callbacks ──
+  const sidebarNavigate = useCallback((p: 'home' | 'tasks' | 'projects' | 'settings' | 'project-detail') => {
     if (p === 'home') navigate('/app/home');
     else if (p === 'tasks') navigate('/app/tasks');
     else if (p === 'projects') navigate('/app/projects');
@@ -559,11 +172,6 @@ export default function App() {
   const handleOpenProject = useCallback((id: string) => {
     navigate(`/app/projects/${id}`);
   }, [navigate]);
-
-  function handleCalendarViewTask(t: Task | ProjectTask) {
-    if ('projectId' in t) setViewingProjectTask(t as ProjectTask);
-    else setViewingTask(t);
-  }
 
   // ── Render ──
   if (location.pathname === '/auth') {
