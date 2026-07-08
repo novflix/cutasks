@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cutasks-v2';
+const CACHE_NAME = 'cutasks-v3';
 const MAX_CACHE_ENTRIES = 100;
 const STATIC_ASSETS = [
   '/',
@@ -6,6 +6,8 @@ const STATIC_ASSETS = [
   '/favicon.svg',
   '/logo.svg',
   '/logo-mini.svg',
+  '/logo-light.svg',
+  '/logo-mini-light.svg',
   '/manifest.webmanifest',
 ];
 
@@ -38,6 +40,7 @@ async function trimCache(cache, maxEntries) {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   if (event.request.url.includes('firestore.googleapis.com')) return;
+  if (event.request.url.includes('localhost:5173') || event.request.url.includes('@vite')) return;
 
   event.respondWith(
     caches.open(CACHE_NAME).then((cache) => {
@@ -50,7 +53,7 @@ self.addEventListener('fetch', (event) => {
             }
             return response;
           })
-          .catch(() => cached);
+          .catch(() => cached || new Response('', { status: 504 }));
 
         return cached || fetchPromise;
       });
