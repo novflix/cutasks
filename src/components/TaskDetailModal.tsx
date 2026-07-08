@@ -1,4 +1,10 @@
-import { CloseCircle, CalendarMinimalistic, PenNewRound, Flag2, Tag, ArrowDown, ArrowUp } from '@solar-icons/react';
+import CloseCircle from '@solar-icons/react/icons/ui/CloseCircle';
+import CalendarMinimalistic from '@solar-icons/react/icons/time/CalendarMinimalistic';
+import PenNewRound from '@solar-icons/react/icons/messages/PenNewRound';
+import Flag2 from '@solar-icons/react/icons/ui/Flag2';
+import Tag from '@solar-icons/react/icons/money/Tag';
+import ArrowDown from '@solar-icons/react/icons/arrows/ArrowDown';
+import ArrowUp from '@solar-icons/react/icons/arrows/ArrowUp';
 import { useTranslation } from 'react-i18next';
 import type { Task } from '../types';
 import { formatDate, formatDeadline, getDeadlineStatus, getTagColor } from '../utils';

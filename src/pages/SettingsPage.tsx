@@ -1,6 +1,16 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Logout, Key, CheckCircle, CloseCircle, TrashBinMinimalistic, Pen, AltArrowRight, Heart, Copy, DownloadMinimalistic, UploadMinimalistic } from '@solar-icons/react';
+import Logout from '@solar-icons/react/icons/arrows-action/Logout';
+import Key from '@solar-icons/react/icons/security/Key';
+import CheckCircle from '@solar-icons/react/icons/ui/CheckCircle';
+import CloseCircle from '@solar-icons/react/icons/ui/CloseCircle';
+import TrashBinMinimalistic from '@solar-icons/react/icons/ui/TrashBinMinimalistic';
+import Pen from '@solar-icons/react/icons/messages/Pen';
+import AltArrowRight from '@solar-icons/react/icons/arrows/AltArrowRight';
+import Heart from '@solar-icons/react/icons/like/Heart';
+import Copy from '@solar-icons/react/icons/ui/Copy';
+import DownloadMinimalistic from '@solar-icons/react/icons/arrows-action/DownloadMinimalistic';
+import UploadMinimalistic from '@solar-icons/react/icons/arrows-action/UploadMinimalistic';
 import { loadAllData, saveAllData } from '../services/firestore';
 import { CRYPTO_ICONS } from '../components/CryptoIcons';
 import {

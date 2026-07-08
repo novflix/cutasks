@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft } from '@solar-icons/react';
+import ArrowLeft from '@solar-icons/react/icons/arrows/ArrowLeft';
 import LanguagePicker from '../components/LanguagePicker';
 import '../styles/documents.css';
 

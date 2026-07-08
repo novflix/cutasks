@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { CloseCircle } from '@solar-icons/react';
+import CloseCircle from '@solar-icons/react/icons/ui/CloseCircle';
 import { useTranslation } from 'react-i18next';
 import type { Project, ProjectStatus } from '../types';
 import { PROJECT_ICONS, PROJECT_COLORS } from '../constants/projects';

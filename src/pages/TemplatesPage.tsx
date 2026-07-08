@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, ClockSquare } from '@solar-icons/react';
+import ArrowLeft from '@solar-icons/react/icons/arrows/ArrowLeft';
+import ClockSquare from '@solar-icons/react/icons/time/ClockSquare';
 import '../styles/templates.css';
 
 export default function TemplatesPage() {

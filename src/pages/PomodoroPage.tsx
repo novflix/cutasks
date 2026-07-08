@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Play, Pause, Restart, SkipNext } from '@solar-icons/react';
+import ArrowLeft from '@solar-icons/react/icons/arrows/ArrowLeft';
+import Play from '@solar-icons/react/icons/video/Play';
+import Pause from '@solar-icons/react/icons/video/Pause';
+import Restart from '@solar-icons/react/icons/arrows/Restart';
+import SkipNext from '@solar-icons/react/icons/video/SkipNext';
 import { LONG_BREAK_INTERVAL, MODE_META } from '../constants/pomo';
 
 export type PomoMode = 'work' | 'short' | 'long';

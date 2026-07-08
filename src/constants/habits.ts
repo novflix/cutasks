@@ -1,16 +1,35 @@
-import {
-  Book, Running, Meditation, WalletMoney,
-  GamepadNoCharge, StickerSquare, Alarm,
-  TrashBinTrash, Broom, Flag, Gift,
-  MagicStick2, JarOfPills, Pills,
-  CartLarge2, SquareAcademicCap, Backpack,
-  Palette2, TeaCup, Bottle, Archive,
-  Waterdrop, DumbbellLargeMinimalistic,
-  DocumentAdd, Mailbox, MusicNote3,
-  Cloud, Planet, EmojiFunnySquare,
-  SleepingSquare, Paw, Box,
-
-} from '@solar-icons/react';
+import Book from '@solar-icons/react/icons/school/Book';
+import Running from '@solar-icons/react/icons/sports/Running';
+import Meditation from '@solar-icons/react/icons/sports/Meditation';
+import WalletMoney from '@solar-icons/react/icons/money/WalletMoney';
+import GamepadNoCharge from '@solar-icons/react/icons/devices/GamepadNoCharge';
+import StickerSquare from '@solar-icons/react/icons/faces/StickerSquare';
+import Alarm from '@solar-icons/react/icons/time/Alarm';
+import TrashBinTrash from '@solar-icons/react/icons/ui/TrashBinTrash';
+import Broom from '@solar-icons/react/icons/ui/Broom';
+import Flag from '@solar-icons/react/icons/ui/Flag';
+import Gift from '@solar-icons/react/icons/ui/Gift';
+import MagicStick2 from '@solar-icons/react/icons/ui/MagicStick2';
+import JarOfPills from '@solar-icons/react/icons/medicine/JarOfPills';
+import Pills from '@solar-icons/react/icons/medicine/Pills';
+import CartLarge2 from '@solar-icons/react/icons/shopping/CartLarge2';
+import SquareAcademicCap from '@solar-icons/react/icons/school/SquareAcademicCap';
+import Backpack from '@solar-icons/react/icons/school/Backpack';
+import Palette2 from '@solar-icons/react/icons/tools/Palette2';
+import TeaCup from '@solar-icons/react/icons/food/TeaCup';
+import Bottle from '@solar-icons/react/icons/food/Bottle';
+import Archive from '@solar-icons/react/icons/notes/Archive';
+import Waterdrop from '@solar-icons/react/icons/ui/Waterdrop';
+import DumbbellLargeMinimalistic from '@solar-icons/react/icons/sports/DumbbellLargeMinimalistic';
+import DocumentAdd from '@solar-icons/react/icons/notes/DocumentAdd';
+import Mailbox from '@solar-icons/react/icons/messages/Mailbox';
+import MusicNote3 from '@solar-icons/react/icons/video/MusicNote3';
+import Cloud from '@solar-icons/react/icons/weather/Cloud';
+import Planet from '@solar-icons/react/icons/astronomy/Planet';
+import EmojiFunnySquare from '@solar-icons/react/icons/faces/EmojiFunnySquare';
+import SleepingSquare from '@solar-icons/react/icons/faces/SleepingSquare';
+import Paw from '@solar-icons/react/icons/ui/Paw';
+import Box from '@solar-icons/react/icons/ui/Box';
 import type { ComponentType } from 'react';
 
 export const HABIT_ICONS: { name: string; icon: ComponentType<{ size?: number; strokeWidth?: number }> }[] = [

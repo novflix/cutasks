@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { ArrowLeft, ArrowRight } from '@solar-icons/react';
+import ArrowLeft from '@solar-icons/react/icons/arrows/ArrowLeft';
+import ArrowRight from '@solar-icons/react/icons/arrows/ArrowRight';
 import { useTranslation } from 'react-i18next';
 
 function getDropdownPosition(trigger: HTMLElement) {

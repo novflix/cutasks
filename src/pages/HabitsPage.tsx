@@ -1,9 +1,11 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import {
-  ArrowLeft, AltArrowLeft, AltArrowRight, AddSquare, CloseCircle,
-} from '@solar-icons/react';
+import ArrowLeft from '@solar-icons/react/icons/arrows/ArrowLeft';
+import AltArrowLeft from '@solar-icons/react/icons/arrows/AltArrowLeft';
+import AltArrowRight from '@solar-icons/react/icons/arrows/AltArrowRight';
+import AddSquare from '@solar-icons/react/icons/ui/AddSquare';
+import CloseCircle from '@solar-icons/react/icons/ui/CloseCircle';
 import type { Habit } from '../types';
 import HabitDetailModal from '../components/HabitDetailModal';
 import { MAX_HABITS_COUNT, dateKey } from '../utils';

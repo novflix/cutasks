@@ -3,34 +3,32 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import LanguagePicker from '../components/LanguagePicker';
-import {
-  ClipboardCheck,
-  Folder,
-  SettingsMinimalistic,
-  HomeSmile,
-  ClockCircle,
-  ListCheck,
-  FolderOpen,
-  BookBookmark,
-  ClockSquare,
-  CalendarSearch,
-  Shield,
-  Palette,
-  ArrowRight,
-  CheckCircle,
-  Lightning,
-  WindowFrame,
-  ArrowDown,
-  MinimalisticMagnifier,
-  Calendar,
-  Flame,
-  Book,
-  Heart,
-  MedalStar,
-  Restart,
-  Play,
-  SkipNext,
-} from '@solar-icons/react';
+import ClipboardCheck from '@solar-icons/react/icons/notes/ClipboardCheck';
+import Folder from '@solar-icons/react/icons/folders/Folder';
+import SettingsMinimalistic from '@solar-icons/react/icons/settings/SettingsMinimalistic';
+import HomeSmile from '@solar-icons/react/icons/ui/HomeSmile';
+import ClockCircle from '@solar-icons/react/icons/time/ClockCircle';
+import ListCheck from '@solar-icons/react/icons/list/ListCheck';
+import FolderOpen from '@solar-icons/react/icons/folders/FolderOpen';
+import BookBookmark from '@solar-icons/react/icons/school/BookBookmark';
+import ClockSquare from '@solar-icons/react/icons/time/ClockSquare';
+import CalendarSearch from '@solar-icons/react/icons/time/CalendarSearch';
+import Shield from '@solar-icons/react/icons/security/Shield';
+import Palette from '@solar-icons/react/icons/tools/Palette';
+import ArrowRight from '@solar-icons/react/icons/arrows/ArrowRight';
+import CheckCircle from '@solar-icons/react/icons/ui/CheckCircle';
+import Lightning from '@solar-icons/react/icons/devices/Lightning';
+import WindowFrame from '@solar-icons/react/icons/it/WindowFrame';
+import ArrowDown from '@solar-icons/react/icons/arrows/ArrowDown';
+import MinimalisticMagnifier from '@solar-icons/react/icons/search/MinimalisticMagnifier';
+import Calendar from '@solar-icons/react/icons/time/Calendar';
+import Flame from '@solar-icons/react/icons/nature/Flame';
+import Book from '@solar-icons/react/icons/school/Book';
+import Heart from '@solar-icons/react/icons/like/Heart';
+import MedalStar from '@solar-icons/react/icons/like/MedalStar';
+import Restart from '@solar-icons/react/icons/arrows/Restart';
+import Play from '@solar-icons/react/icons/video/Play';
+import SkipNext from '@solar-icons/react/icons/video/SkipNext';
 
 export default function LandingPage() {
   const navigate = useNavigate();

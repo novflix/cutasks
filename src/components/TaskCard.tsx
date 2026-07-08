@@ -1,5 +1,8 @@
 import { memo } from 'react';
-import { Pen, TrashBinMinimalistic, CalendarMinimalistic, ArrowDown } from '@solar-icons/react';
+import Pen from '@solar-icons/react/icons/messages/Pen';
+import TrashBinMinimalistic from '@solar-icons/react/icons/ui/TrashBinMinimalistic';
+import CalendarMinimalistic from '@solar-icons/react/icons/time/CalendarMinimalistic';
+import ArrowDown from '@solar-icons/react/icons/arrows/ArrowDown';
 import { useTranslation } from 'react-i18next';
 import type { Task } from '../types';
 import { formatDeadline, getDeadlineStatus, getTagColor, highlightMatch } from '../utils';

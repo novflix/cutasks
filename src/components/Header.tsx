@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { AddSquare } from '@solar-icons/react';
+import AddSquare from '@solar-icons/react/icons/ui/AddSquare';
 import { useTranslation } from 'react-i18next';
 
 interface StatItem {

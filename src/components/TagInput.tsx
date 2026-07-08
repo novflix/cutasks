@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { CloseCircle } from '@solar-icons/react';
+import CloseCircle from '@solar-icons/react/icons/ui/CloseCircle';
 import { useTranslation } from 'react-i18next';
 import { getTagColor, MAX_TAGS_COUNT } from '../utils';
 
