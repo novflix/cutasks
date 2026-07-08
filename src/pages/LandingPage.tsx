@@ -591,9 +591,9 @@ export default function LandingPage() {
           </div>
           <p className="lp-footer-copy">&copy; {new Date().getFullYear()} {t('landing.footer')}</p>
           <div className="lp-footer-legal">
-            <a href="/terms" target="_blank" rel="noopener noreferrer">{t('legal.termsShort')}</a>
+            <a href="/terms">{t('legal.termsShort')}</a>
             <span className="lp-footer-legal-dot">·</span>
-            <a href="/privacy" target="_blank" rel="noopener noreferrer">{t('legal.privacyShort')}</a>
+            <a href="/privacy">{t('legal.privacyShort')}</a>
           </div>
         </div>
       </footer>

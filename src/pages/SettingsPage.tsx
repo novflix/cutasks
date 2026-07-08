@@ -903,9 +903,9 @@ export default function SettingsPage() {
       )}
 
       <div className="settings-legal">
-        <a href="/terms" target="_blank" rel="noopener noreferrer">{t('legal.termsShort')}</a>
+        <a href="/terms">{t('legal.termsShort')}</a>
         <span className="settings-legal-dot">·</span>
-        <a href="/privacy" target="_blank" rel="noopener noreferrer">{t('legal.privacyShort')}</a>
+        <a href="/privacy">{t('legal.privacyShort')}</a>
       </div>
     </div>
   );

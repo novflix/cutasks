@@ -217,7 +217,7 @@ export default function AuthPage() {
                   </svg>
                 </span>
                 <span className="auth-checkbox-text">
-                  {t('auth.agreeTo')} <a href="/terms" target="_blank" rel="noopener noreferrer">{t('legal.termsShort')}</a>
+                  {t('auth.agreeTo')} <a href="/terms">{t('legal.termsShort')}</a>
                 </span>
               </label>
               <label className="auth-checkbox">
@@ -233,7 +233,7 @@ export default function AuthPage() {
                   </svg>
                 </span>
                 <span className="auth-checkbox-text">
-                  {t('auth.agreeTo')} <a href="/privacy" target="_blank" rel="noopener noreferrer">{t('legal.privacyShort')}</a>
+                  {t('auth.agreeTo')} <a href="/privacy">{t('legal.privacyShort')}</a>
                 </span>
               </label>
             </div>
