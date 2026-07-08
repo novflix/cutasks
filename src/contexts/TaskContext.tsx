@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useRef, useCallback, useMemo, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Task, Project, Section, ProjectTask, Habit, Priority, FilterType } from '../types';
 import { generateId, priorityOrder, sanitizeInput, getDeadlineStatus } from '../utils';
 import { getAllTags } from '../storage';
@@ -112,6 +113,7 @@ function cleanupExpired(tasks: Task[], projectTasks: ProjectTask[]): { tasks: Ta
 
 export function TaskProvider({ children }: { children: ReactNode }) {
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   // ── Core state ──
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -543,11 +545,11 @@ export function TaskProvider({ children }: { children: ReactNode }) {
   }), [tasks]);
 
   const taskStatsFormatted = useMemo(() => [
-    { label: 'total', value: taskStats.total },
-    { label: 'active', value: taskStats.active, color: '#ed9b6d' },
-    { label: 'done', value: taskStats.completed, color: '#66bb6a' },
-    ...(taskStats.overdue > 0 ? [{ label: 'overdue', value: taskStats.overdue, color: '#ef5350' }] : []),
-  ], [taskStats]);
+    { label: t('common.total'), value: taskStats.total },
+    { label: t('common.active'), value: taskStats.active, color: '#ed9b6d' },
+    { label: t('common.done'), value: taskStats.completed, color: '#66bb6a' },
+    ...(taskStats.overdue > 0 ? [{ label: t('common.overdue'), value: taskStats.overdue, color: '#ef5350' }] : []),
+  ], [taskStats, t]);
 
   const allTags = useMemo(() => getAllTags(tasks), [tasks]);
   const allProjectTags = useMemo(() => getAllTags(projectTasks), [projectTasks]);
@@ -559,11 +561,11 @@ export function TaskProvider({ children }: { children: ReactNode }) {
   }, [tasks]);
 
   const projectStats = useMemo(() => [
-    { label: 'total', value: projects.length },
-    { label: 'active', value: projects.filter((p) => p.status === 'active').length, color: '#66bb6a' },
-    { label: 'paused', value: projects.filter((p) => p.status === 'paused').length, color: '#ffb74d' },
-    { label: 'done', value: projects.filter((p) => p.status === 'completed').length, color: '#64b5f6' },
-  ], [projects]);
+    { label: t('common.total'), value: projects.length },
+    { label: t('common.active'), value: projects.filter((p) => p.status === 'active').length, color: '#66bb6a' },
+    { label: t('common.paused'), value: projects.filter((p) => p.status === 'paused').length, color: '#ffb74d' },
+    { label: t('common.done'), value: projects.filter((p) => p.status === 'completed').length, color: '#64b5f6' },
+  ], [projects, t]);
 
   // ── Delete confirmation ──
   const confirmDeleteTask = useCallback((id: string) => { deleteTask(id); }, [deleteTask]);
