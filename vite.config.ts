@@ -3,14 +3,16 @@ import react from '@vitejs/plugin-react'
 import { readFileSync } from 'fs'
 import { resolve } from 'path'
 
-const version = readFileSync(resolve(__dirname, 'src/version.ts'), 'utf8')
-  .match(/APP_VERSION = '(.+?)'/)?.[1] ?? 'dev';
+const versionFile = readFileSync(resolve(__dirname, 'src/version.ts'), 'utf8');
+const version = versionFile.match(/APP_VERSION = '(.+?)'/)?.[1] ?? 'dev';
+const buildDate = versionFile.match(/APP_BUILD_DATE = '(.+?)'/)?.[1] ?? '';
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   define: {
     __APP_VERSION__: JSON.stringify(version),
+    __APP_BUILD_DATE__: JSON.stringify(buildDate),
   },
   build: {
     rollupOptions: {
