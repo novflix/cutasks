@@ -1,40 +1,41 @@
 import type { ComponentType } from 'react';
 
-const SiCircle: ComponentType<{ size?: number }> = ({ size = 20 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-    <circle cx="12" cy="12" r="10" />
+type IconProps = { size?: number | string; color?: string };
+
+const Usdc: ComponentType<IconProps> = ({ size = 16, color = '#2775c9' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+    <path d="M12 20.813A8.81 8.81 0 013.188 12 8.81 8.81 0 0112 3.188a8.812 8.812 0 110 17.625M11.475 8.73a1.935 1.935 0 00-1.838 1.852c0 .908.556 1.5 1.733 1.748l.825.195c.803.188 1.133.457 1.133.915s-.578.908-1.328.908a1.43 1.43 0 01-1.35-.683.51.51 0 00-.457-.292H9.75a.26.26 0 00-.21.307 2.05 2.05 0 001.958 1.56v.63a.529.529 0 001.057 0v-.637a1.965 1.965 0 001.943-1.936c0-.952-.548-1.5-1.845-1.777l-.75-.165c-.75-.187-1.103-.435-1.103-.855s.45-.885 1.2-.885a1.23 1.23 0 011.193.607.6.6 0 00.54.346h.352a.315.315 0 00.232-.375 1.99 1.99 0 00-1.784-1.5v-.518a.529.529 0 10-1.058 0zM5.393 12a6.59 6.59 0 004.5 6.247h.104a.337.337 0 00.338-.337v-.157A.71.71 0 009.9 17.1a5.52 5.52 0 010-10.237.7.7 0 00.435-.646v-.172a.314.314 0 00-.42-.3A6.59 6.59 0 005.393 12m13.215 0a6.59 6.59 0 00-4.5-6.24h-.113a.353.353 0 00-.352.353v.112a.75.75 0 00.457.675 5.52 5.52 0 010 10.23.75.75 0 00-.45.668v.127a.352.352 0 00.465.33A6.59 6.59 0 0018.608 12" />
   </svg>
 );
 
-const SiTether: ComponentType<{ size?: number }> = ({ size = 20 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z" />
+const Usdt: ComponentType<IconProps> = ({ size = 16, color = '#00a478' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+    <path fillRule="evenodd" d="M13.473 12.501c-.083.006-.508.031-1.457.031a32 32 0 01-1.478-.031v.002c-2.916-.128-5.092-.636-5.092-1.243s2.176-1.115 5.092-1.245v1.983c.19.013.737.045 1.491.045.906 0 1.36-.037 1.444-.045v-1.982c2.91.13 5.081.638 5.081 1.244 0 .607-2.171 1.113-5.081 1.242m0-2.692V8.034h4.06V5.328H6.479v2.706h4.06v1.774c-3.3.152-5.782.806-5.782 1.589s2.482 1.436 5.782 1.588v5.687h2.935v-5.688c3.295-.152 5.77-.805 5.77-1.587 0-.783-2.475-1.436-5.77-1.588" clipRule="evenodd" />
   </svg>
 );
 
-const SiSolana: ComponentType<{ size?: number }> = ({ size = 20 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M4.27 7.62a.5.5 0 0 1 .5-.04l11.55 6.05a.5.5 0 0 1 .02.87l-6.45 3.58a.5.5 0 0 1-.72-.19L4.25 8.15a.5.5 0 0 1 .02-.53zm.5 2.81a.5.5 0 0 1 .69-.17l7.12 4.56a.5.5 0 0 1 .02.83l-4.55 2.77a.5.5 0 0 1-.73-.15L4.8 10.4a.5.5 0 0 1-.03-.97zm.5 3.32a.5.5 0 0 1 .69-.15l4.23 2.92a.5.5 0 0 1 .02.79l-2.72 1.8a.5.5 0 0 1-.72-.14L5.3 13.75zm.5 3.02a.5.5 0 0 1 .69-.13l2.62 1.82a.5.5 0 0 1 .02.74l-1.3 1a.5.5 0 0 1-.72-.13L5.8 16.77z" />
+const TonIcon: ComponentType<IconProps> = ({ size = 16, color = '#0098ea' }) => (
+  <svg width={size} height={size} viewBox="0 0 56 56" fill={color}>
+    <path d="M37.56 15.628H18.44c-3.516 0-5.745 3.792-3.976 6.858l11.801 20.455c.77 1.335 2.7 1.335 3.47 0l11.804-20.455c1.767-3.06-.462-6.858-3.975-6.858zM26.255 36.807l-2.57-4.974-6.202-11.092c-.409-.71.096-1.62.953-1.62h7.816V36.81zM38.51 20.739l-6.2 11.096-2.57 4.972V19.119h7.817c.857 0 1.362.91.953 1.62" />
   </svg>
 );
 
-const SiLitecoin: ComponentType<{ size?: number }> = ({ size = 20 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-    <circle cx="12" cy="12" r="10" fillOpacity="0.2" />
-    <text x="12" y="16" textAnchor="middle" fontSize="12" fontWeight="bold" fill="currentColor">L</text>
+const Sol: ComponentType<IconProps> = ({ size = 16, color = '#9945ff' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+    <path d="M2.41 7.77h15.68a.5.5 0 00.37-.16l3.43-3.67a.4.4 0 00-.3-.67H5.91a.5.5 0 00-.37.16L2.11 7.1a.4.4 0 00.3.67m0 13h15.68a.5.5 0 00.37-.16l3.43-3.67a.4.4 0 00-.3-.67H5.91a.5.5 0 00-.37.16L2.11 20.1a.4.4 0 00.3.67m19.18-6.5H5.91a.5.5 0 01-.37-.16l-3.43-3.67a.4.4 0 01.3-.67h15.68a.5.5 0 01.37.16l3.43 3.67a.4.4 0 01-.3.67" />
   </svg>
 );
 
-const SiTon: ComponentType<{ size?: number }> = ({ size = 20 }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+const Ltc: ComponentType<IconProps> = ({ size = 16, color = '#345d9d' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
+    <path fillRule="evenodd" d="M7.82 14.41l-1.07.416.516-2.07 1.083-.434L9.909 6h3.848l-1.14 4.647 1.058-.428-.51 2.062-1.07.428-.636 2.613h5.791L16.595 18H6.94z" clipRule="evenodd" />
   </svg>
 );
 
-export const CRYPTO_ICONS: Record<string, ComponentType<{ size?: number }>> = {
-  usdc: SiCircle,
-  usdt: SiTether,
-  ton: SiTon,
-  sol: SiSolana,
-  ltc: SiLitecoin,
+export const CRYPTO_ICONS: Record<string, ComponentType<IconProps>> = {
+  usdc: Usdc,
+  usdt: Usdt,
+  ton: TonIcon,
+  sol: Sol,
+  ltc: Ltc,
 };
