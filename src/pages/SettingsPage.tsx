@@ -881,7 +881,7 @@ export default function SettingsPage() {
                   return (
                     <div key={w.network} className="donate-item">
                       <div className={`donate-item-icon ${cls}`}>
-                        <CryptoIcon size={20} />
+                        <CryptoIcon size={26} />
                       </div>
                       <div className="donate-item-info">
                         <span className="donate-item-name">{w.network}</span>
