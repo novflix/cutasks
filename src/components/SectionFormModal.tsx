@@ -1,5 +1,5 @@
 import { useRef, useEffect } from 'react';
-import { CloseCircle } from '@solar-icons/react';
+import CloseCircle from '@solar-icons/react/icons/ui/CloseCircle';
 import { useTranslation } from 'react-i18next';
 
 interface SectionFormModalProps {

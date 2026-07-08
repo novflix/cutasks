@@ -1,5 +1,7 @@
 import { useState, useMemo, useRef, useEffect, useLayoutEffect } from 'react';
-import { AddSquare, Pen, TrashBinMinimalistic } from '@solar-icons/react';
+import AddSquare from '@solar-icons/react/icons/ui/AddSquare';
+import Pen from '@solar-icons/react/icons/messages/Pen';
+import TrashBinMinimalistic from '@solar-icons/react/icons/ui/TrashBinMinimalistic';
 import { useTranslation } from 'react-i18next';
 import type { Project, Section as SectionType, ProjectTask } from '../types';
 import { generateId, canAddSubtask, getTaskDepth, MAX_SUBTASK_DEPTH, priorityOrder } from '../utils';

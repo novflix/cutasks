@@ -1,7 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useEffect, useState } from 'react';
-import { ArrowLeft, ClipboardCheck, Folder, Star, CheckCircle, Calendar } from '@solar-icons/react';
+import ArrowLeft from '@solar-icons/react/icons/arrows/ArrowLeft';
+import ClipboardCheck from '@solar-icons/react/icons/notes/ClipboardCheck';
+import Folder from '@solar-icons/react/icons/folders/Folder';
+import Star from '@solar-icons/react/icons/like/Star';
+import CheckCircle from '@solar-icons/react/icons/ui/CheckCircle';
+import Calendar from '@solar-icons/react/icons/time/Calendar';
 import '../styles/notfound.css';
 
 export default function NotFoundPage() {

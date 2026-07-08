@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { MinimalisticMagnifier } from '@solar-icons/react';
+import MinimalisticMagnifier from '@solar-icons/react/icons/search/MinimalisticMagnifier';
 import { useTranslation } from 'react-i18next';
 import type { FilterType } from '../types';
 

@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { CloseCircle, ArrowUp } from '@solar-icons/react';
+import CloseCircle from '@solar-icons/react/icons/ui/CloseCircle';
+import ArrowUp from '@solar-icons/react/icons/arrows/ArrowUp';
 import { useTranslation } from 'react-i18next';
 import type { Task } from '../types';
 

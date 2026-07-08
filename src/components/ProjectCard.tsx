@@ -1,5 +1,6 @@
 import { useMemo, memo } from 'react';
-import { Pen, TrashBinMinimalistic } from '@solar-icons/react';
+import Pen from '@solar-icons/react/icons/messages/Pen';
+import TrashBinMinimalistic from '@solar-icons/react/icons/ui/TrashBinMinimalistic';
 import { useTranslation } from 'react-i18next';
 import type { Project, ProjectTask } from '../types';
 import { PROJECT_ICONS } from '../constants/projects';

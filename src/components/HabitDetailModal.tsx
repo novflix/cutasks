@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
-import {
-  CloseCircle, PenNewRound, CalendarMinimalistic, Fire, Target,
-} from '@solar-icons/react';
+import CloseCircle from '@solar-icons/react/icons/ui/CloseCircle';
+import PenNewRound from '@solar-icons/react/icons/messages/PenNewRound';
+import CalendarMinimalistic from '@solar-icons/react/icons/time/CalendarMinimalistic';
+import Fire from '@solar-icons/react/icons/nature/Fire';
+import Target from '@solar-icons/react/icons/ui/Target';
 import { useTranslation } from 'react-i18next';
 import type { Habit } from '../types';
 import { formatDate } from '../utils';

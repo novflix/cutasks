@@ -2,10 +2,14 @@ import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
-import {
-  ClipboardCheck, Fire, Folder, DangerTriangle,
-  CheckCircle, Lock, Target, AltArrowRight,
-} from '@solar-icons/react';
+import ClipboardCheck from '@solar-icons/react/icons/notes/ClipboardCheck';
+import Fire from '@solar-icons/react/icons/nature/Fire';
+import Folder from '@solar-icons/react/icons/folders/Folder';
+import DangerTriangle from '@solar-icons/react/icons/ui/DangerTriangle';
+import CheckCircle from '@solar-icons/react/icons/ui/CheckCircle';
+import Lock from '@solar-icons/react/icons/security/Lock';
+import Target from '@solar-icons/react/icons/ui/Target';
+import AltArrowRight from '@solar-icons/react/icons/arrows/AltArrowRight';
 import type { Task, Project, Habit, ProjectTask } from '../types';
 import { getDeadlineStatus, dateKey } from '../utils';
 

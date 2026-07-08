@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, CheckCircle } from '@solar-icons/react';
+import ArrowLeft from '@solar-icons/react/icons/arrows/ArrowLeft';
+import CheckCircle from '@solar-icons/react/icons/ui/CheckCircle';
 import type { Template } from '../constants/templates';
 import { PROJECT_ICONS } from '../constants/projects';
 import { priorityOrder } from '../utils';

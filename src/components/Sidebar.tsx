@@ -1,5 +1,9 @@
 import { useRef, useCallback, useEffect, useMemo, useState } from 'react';
-import { ClipboardCheck, Folder, SettingsMinimalistic, HomeSmile, AltArrowRight } from '@solar-icons/react';
+import ClipboardCheck from '@solar-icons/react/icons/notes/ClipboardCheck';
+import Folder from '@solar-icons/react/icons/folders/Folder';
+import SettingsMinimalistic from '@solar-icons/react/icons/settings/SettingsMinimalistic';
+import HomeSmile from '@solar-icons/react/icons/ui/HomeSmile';
+import AltArrowRight from '@solar-icons/react/icons/arrows/AltArrowRight';
 import { useTranslation } from 'react-i18next';
 import type { Page, Project } from '../types';
 import { PROJECT_ICONS } from '../constants/projects';

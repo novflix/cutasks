@@ -1,7 +1,9 @@
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, AltArrowLeft, AltArrowRight } from '@solar-icons/react';
+import ArrowLeft from '@solar-icons/react/icons/arrows/ArrowLeft';
+import AltArrowLeft from '@solar-icons/react/icons/arrows/AltArrowLeft';
+import AltArrowRight from '@solar-icons/react/icons/arrows/AltArrowRight';
 import type { Task, ProjectTask } from '../types';
 import { formatDeadline, getDeadlineStatus, getTagColor, priorityOrder, dateKey } from '../utils';
 import '../styles/calendar.css';

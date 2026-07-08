@@ -1,5 +1,9 @@
 import { useRef, useCallback, useEffect, type ReactNode } from 'react';
-import { ClipboardCheck, Folder, SettingsMinimalistic, AddCircle, HomeSmile } from '@solar-icons/react';
+import ClipboardCheck from '@solar-icons/react/icons/notes/ClipboardCheck';
+import Folder from '@solar-icons/react/icons/folders/Folder';
+import SettingsMinimalistic from '@solar-icons/react/icons/settings/SettingsMinimalistic';
+import AddCircle from '@solar-icons/react/icons/ui/AddCircle';
+import HomeSmile from '@solar-icons/react/icons/ui/HomeSmile';
 import { useTranslation } from 'react-i18next';
 import type { Page } from '../types';
 
