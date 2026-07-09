@@ -1,0 +1,425 @@
+/* ═══════════════════════════════════════════════════
+   Download Page — CuTasks
+   ═══════════════════════════════════════════════════ */
+
+.dl {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #0a0a0a;
+  color: #f0f0f0;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.dl *,
+.dl *::before,
+.dl *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Reveal animation ── */
+.dl-reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.dl--mounted .dl-reveal {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Background ── */
+.dl-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dl-bg-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+}
+
+.dl-bg-orb--1 {
+  width: 500px;
+  height: 500px;
+  background: rgba(237, 155, 109, 0.06);
+  top: -150px;
+  left: 50%;
+  transform: translateX(-50%);
+  animation: dlPulse 8s ease-in-out infinite;
+}
+
+.dl-bg-orb--2 {
+  width: 400px;
+  height: 400px;
+  background: rgba(102, 187, 106, 0.03);
+  bottom: -100px;
+  right: -100px;
+  animation: dlPulse 10s ease-in-out infinite reverse;
+}
+
+@keyframes dlPulse {
+  0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+  50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+}
+
+.dl-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
+}
+
+/* ── Inner container ── */
+.dl-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 0 24px 48px;
+}
+
+/* ── Header ── */
+.dl-header {
+  display: flex;
+  align-items: center;
+  padding: 24px 0 0;
+}
+
+.dl-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #888;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 7px 14px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.dl-back:hover {
+  color: #ddd;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dl-back svg {
+  flex-shrink: 0;
+}
+
+/* ── Hero ── */
+.dl-hero {
+  padding: 48px 0 36px;
+  text-align: center;
+}
+
+.dl-hero-title {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #f0f0f0;
+  margin-bottom: 12px;
+  line-height: 1.15;
+}
+
+.dl-hero-desc {
+  font-size: 1rem;
+  color: #888;
+  line-height: 1.6;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+/* ── Platforms ── */
+.dl-platforms-section {
+  margin-bottom: 28px;
+}
+
+.dl-platforms {
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+}
+
+.dl-platform {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 6px 12px;
+  border-radius: 12px;
+  border: 1.5px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  color: #666;
+  position: relative;
+}
+
+.dl-platform:hover {
+  background: rgba(255, 255, 255, 0.03);
+  color: #999;
+}
+
+.dl-platform.active {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(237, 155, 109, 0.3);
+  color: #f0f0f0;
+  box-shadow: 0 2px 12px rgba(237, 155, 109, 0.08);
+}
+
+.dl-platform-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  transition: all 0.2s;
+}
+
+.dl-platform.active .dl-platform-icon {
+  background: rgba(237, 155, 109, 0.12);
+  border-color: rgba(237, 155, 109, 0.2);
+}
+
+.dl-platform-icon img {
+  width: 22px;
+  height: 22px;
+}
+
+.dl-platform-name {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.dl-platform-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #66bb6a;
+}
+
+/* ── Content ── */
+.dl-content {
+  margin-bottom: 32px;
+}
+
+/* ── Files ── */
+.dl-files {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dl-file {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.2s;
+}
+
+.dl-file:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.dl-file-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(237, 155, 109, 0.1);
+  color: #ed9b6d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.dl-file-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dl-file-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e0e0e0;
+}
+
+.dl-file-name {
+  font-size: 0.72rem;
+  color: #555;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dl-file-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  background: #ed9b6d;
+  color: #000;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+
+.dl-file-btn:hover {
+  background: #f5ab80;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(237, 155, 109, 0.25);
+}
+
+.dl-file-btn:active {
+  transform: translateY(0);
+}
+
+.dl-file-btn.done {
+  background: #66bb6a;
+  box-shadow: 0 4px 16px rgba(102, 187, 106, 0.25);
+}
+
+/* ── Empty ── */
+.dl-empty {
+  text-align: center;
+  padding: 48px 20px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 14px;
+}
+
+.dl-empty svg {
+  color: #555;
+  margin-bottom: 16px;
+}
+
+.dl-empty h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e0e0e0;
+  margin-bottom: 6px;
+}
+
+.dl-empty p {
+  font-size: 0.82rem;
+  color: #666;
+  line-height: 1.5;
+  max-width: 300px;
+  margin: 0 auto 20px;
+}
+
+.dl-empty-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: #ed9b6d;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  transition: color 0.15s;
+}
+
+.dl-empty-link:hover {
+  color: #f5ab80;
+}
+
+/* ── Footer ── */
+.dl-footer {
+  text-align: center;
+  padding: 24px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.dl-footer p {
+  font-size: 0.75rem;
+  color: #555;
+}
+
+/* ── Responsive ── */
+@media (max-width: 480px) {
+  .dl-inner {
+    padding: 0 16px 32px;
+  }
+
+  .dl-hero {
+    padding: 36px 0 28px;
+  }
+
+  .dl-hero-title {
+    font-size: 1.5rem;
+  }
+
+  .dl-hero-desc {
+    font-size: 0.88rem;
+  }
+
+  .dl-platform {
+    padding: 12px 4px 10px;
+  }
+
+  .dl-platform-icon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .dl-platform-name {
+    font-size: 0.65rem;
+  }
+
+  .dl-file {
+    flex-wrap: wrap;
+  }
+
+  .dl-file-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

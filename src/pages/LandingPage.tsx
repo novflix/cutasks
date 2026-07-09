@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
@@ -29,12 +29,23 @@ import MedalStar from '@solar-icons/react/icons/like/MedalStar';
 import Restart from '@solar-icons/react/icons/arrows/Restart';
 import Play from '@solar-icons/react/icons/video/Play';
 import SkipNext from '@solar-icons/react/icons/video/SkipNext';
+import DownloadMinimalistic from '@solar-icons/react/icons/arrows-action/DownloadMinimalistic';
+import { detectPlatform } from '../utils/os';
+
+const PLATFORM_LABELS: Record<string, string> = {
+  windows: 'Windows',
+  macos: 'macOS',
+  linux: 'Linux',
+  ios: 'iOS',
+  android: 'Android',
+};
 
 export default function LandingPage() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { user } = useAuth();
   const [scrolled, setScrolled] = useState(false);
+  const detectedPlatform = useMemo(() => detectPlatform(), []);
   const heroRef = useRef<HTMLDivElement>(null);
   const featuresRef = useRef<HTMLDivElement>(null);
   const deepRef = useRef<HTMLDivElement>(null);
@@ -113,11 +124,15 @@ export default function LandingPage() {
             {t('landing.heroDesc')}
           </p>
           <div className="lp-hero-actions">
-            <button className="lp-btn lp-btn-primary" onClick={() => navigate(user ? '/app/home' : '/auth')}>
+            <button className="lp-btn lp-btn-primary lp-btn-hero" onClick={() => navigate(user ? '/app/home' : '/auth')}>
               <span>{user ? t('landing.openApp') : t('landing.startForFree')}</span>
               <ArrowRight size={16} />
             </button>
-            <button className="lp-btn lp-btn-ghost" onClick={() => scrollTo(featuresRef.current)}>
+            <button className="lp-btn lp-btn-download lp-btn-hero" onClick={() => navigate('/download')}>
+              <DownloadMinimalistic size={16} />
+              <span>{t('landing.downloadFor')} {PLATFORM_LABELS[detectedPlatform] || 'Windows'}</span>
+            </button>
+            <button className="lp-btn lp-btn-ghost lp-btn-hero" onClick={() => scrollTo(featuresRef.current)}>
               {t('landing.seeFeatures')}
               <ArrowDown size={14} />
             </button>
@@ -574,10 +589,16 @@ export default function LandingPage() {
           <p className="lp-cta-desc">
             {t('landing.ctaDesc')}
           </p>
-          <button className="lp-btn lp-btn-primary lp-btn-lg" onClick={() => navigate(user ? '/app/home' : '/auth')}>
-            <span>{user ? t('landing.openApp') : t('landing.ctaButton')}</span>
-            <ArrowRight size={18} />
-          </button>
+          <div className="lp-cta-actions">
+            <button className="lp-btn lp-btn-primary lp-btn-hero" onClick={() => navigate(user ? '/app/home' : '/auth')}>
+              <span>{user ? t('landing.openApp') : t('landing.ctaButton')}</span>
+              <ArrowRight size={16} />
+            </button>
+            <button className="lp-btn lp-btn-download lp-btn-hero" onClick={() => navigate('/download')}>
+              <DownloadMinimalistic size={16} />
+              <span>{t('landing.downloadFor')} {PLATFORM_LABELS[detectedPlatform] || 'Windows'}</span>
+            </button>
+          </div>
         </div>
       </section>
 

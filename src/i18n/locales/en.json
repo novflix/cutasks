@@ -492,6 +492,7 @@
     "ctaTitle": "Ready to take control of your time?",
     "ctaDesc": "Join thousands of people who finally got organized. Free forever — no credit card, no ads, no tricks.",
     "ctaButton": "Get started now",
+    "downloadFor": "Download for",
     "footer": "CuTasks. Built with care.",
     "mockup": {
       "home": "Home",
@@ -524,6 +525,29 @@
       "habit2Name": "Read 30 min",
       "habit3Name": "Call parents",
       "habit4Name": "Meditate 10 min"
+    }
+  },
+  "download": {
+    "title": "Download CuTasks",
+    "desc": "Get the desktop app for your platform. Fast, lightweight, and always free.",
+    "back": "Back",
+    "download": "Download",
+    "downloaded": "Downloaded",
+    "detected": "Detected",
+    "available": "Available",
+    "soon": "Soon",
+    "comingSoon": "Coming Soon",
+    "comingSoonDesc": "We're actively developing a native version for this platform. Stay tuned!",
+    "useWeb": "In the meantime, use the web version:",
+    "openApp": "Open App",
+    "allPlatforms": "All Platforms",
+    "footerText": "CuTasks is free and open source. No ads, no tracking.",
+    "platforms": {
+      "windows": "Windows",
+      "macos": "macOS",
+      "linux": "Linux",
+      "ios": "iOS",
+      "android": "Android"
     }
   },
   "notFound": {

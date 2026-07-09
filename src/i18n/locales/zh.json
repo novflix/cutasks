@@ -521,7 +521,8 @@
       "habit2Name": "阅读30分钟",
       "habit3Name": "给父母打电话",
       "habit4Name": "冥想10分钟"
-    }
+    },
+    "downloadFor": "下载适用于"
   },
   "notFound": {
     "title": "页面未找到",
@@ -1216,5 +1217,28 @@
       "t10": "组织老朋友聚会",
       "t11": "给10年后的自己写一封信"
     }
+  },
+  "download": {
+    "comingSoon": "即将推出",
+    "back": "返回",
+    "footerText": "CuTasks 免费且开源。无广告，无追踪。",
+    "available": "可用",
+    "download": "下载",
+    "detected": "已检测",
+    "comingSoonDesc": "我们正在积极开发此平台的原生版本。敬请期待！",
+    "platforms": {
+      "linux": "Linux",
+      "macos": "macOS",
+      "android": "Android",
+      "ios": "iOS",
+      "windows": "Windows"
+    },
+    "allPlatforms": "所有平台",
+    "desc": "获取适用于您平台的桌面应用。快速、轻量、永久免费。",
+    "title": "下载 CuTasks",
+    "downloaded": "已下载",
+    "openApp": "打开应用",
+    "useWeb": "在此期间，请使用网页版：",
+    "soon": "即将推出"
   }
 }

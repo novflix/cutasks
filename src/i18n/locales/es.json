@@ -520,7 +520,8 @@
       "habit2Name": "Leer 30 min",
       "habit3Name": "Llamar a los padres",
       "habit4Name": "Meditar 10 min"
-    }
+    },
+    "downloadFor": "Descargar para"
   },
   "notFound": {
     "title": "Página no encontrada",
@@ -1215,5 +1216,28 @@
       "t10": "Organizar reunión con viejos amigos",
       "t11": "Escribir una carta a tu yo futuro en 10 años"
     }
+  },
+  "download": {
+    "comingSoon": "Próximamente",
+    "back": "Volver",
+    "footerText": "CuTasks es gratuito y de código abierto. Sin anuncios, sin rastreo.",
+    "available": "Disponible",
+    "download": "Descargar",
+    "detected": "Detectado",
+    "comingSoonDesc": "Estamos desarrollando activamente una versión nativa para esta plataforma. ¡Estén atentos!",
+    "platforms": {
+      "linux": "Linux",
+      "macos": "macOS",
+      "android": "Android",
+      "ios": "iOS",
+      "windows": "Windows"
+    },
+    "allPlatforms": "Todas las plataformas",
+    "desc": "Obtén la aplicación de escritorio para tu plataforma. Rápida, ligera y siempre gratuita.",
+    "title": "Descargar CuTasks",
+    "downloaded": "Descargado",
+    "openApp": "Abrir app",
+    "useWeb": "Mientras tanto, usa la versión web:",
+    "soon": "Próximamente"
   }
 }

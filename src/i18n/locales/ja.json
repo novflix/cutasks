@@ -521,7 +521,8 @@
       "habit2Name": "30分読書",
       "habit3Name": "家族に電話",
       "habit4Name": "10分瞑想"
-    }
+    },
+    "downloadFor": "ダウンロード"
   },
   "notFound": {
     "title": "ページが見つかりません",
@@ -1216,5 +1217,28 @@
       "t10": "古い友人との集まりを企画",
       "t11": "10年後の自分への手紙を書く"
     }
+  },
+  "download": {
+    "comingSoon": "近日公開",
+    "back": "戻る",
+    "footerText": "CuTasks は無料でオープンソースです。広告なし、追跡なし。",
+    "available": "利用可能",
+    "download": "ダウンロード",
+    "detected": "検出済み",
+    "comingSoonDesc": "このプラットフォーム用のネイティブバージョンを開発中です。お楽しみに！",
+    "platforms": {
+      "linux": "Linux",
+      "macos": "macOS",
+      "android": "Android",
+      "ios": "iOS",
+      "windows": "Windows"
+    },
+    "allPlatforms": "全プラットフォーム",
+    "desc": "あなたのプラットフォーム用のデスクトップアプリを入手しましょう。軽量で高速、永久無料。",
+    "title": "CuTasks をダウンロード",
+    "downloaded": "ダウンロード済み",
+    "openApp": "アプリを開く",
+    "useWeb": "その間、Web バージョンをご利用ください：",
+    "soon": "近日公開"
   }
 }

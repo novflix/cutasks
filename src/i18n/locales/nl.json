@@ -521,7 +521,8 @@
       "habit2Name": "30 min lezen",
       "habit3Name": "Ouders bellen",
       "habit4Name": "10 min mediteren"
-    }
+    },
+    "downloadFor": "Downloaden voor"
   },
   "notFound": {
     "title": "Pagina niet gevonden",
@@ -1220,5 +1221,28 @@
       "t10": "Organiseer een reunie met oude vrienden",
       "t11": "Schrijf een brief aan je toekomstige zelf over 10 jaar"
     }
+  },
+  "download": {
+    "comingSoon": "Binnenkort",
+    "back": "Terug",
+    "footerText": "CuTasks is gratis en open source. Geen advertenties, geen tracking.",
+    "available": "Beschikbaar",
+    "download": "Downloaden",
+    "detected": "Gedetecteerd",
+    "comingSoonDesc": "We ontwikkelen actief een native versie voor dit platform. Blijf op de hoogte!",
+    "platforms": {
+      "linux": "Linux",
+      "macos": "macOS",
+      "android": "Android",
+      "ios": "iOS",
+      "windows": "Windows"
+    },
+    "allPlatforms": "Alle platforms",
+    "desc": "Download de desktop-app voor je platform. Snel, lichtgewicht en altijd gratis.",
+    "title": "Download CuTasks",
+    "downloaded": "Gedownload",
+    "openApp": "App openen",
+    "useWeb": "Gebruik ondertussen de webversie:",
+    "soon": "Binnenkort"
   }
 }

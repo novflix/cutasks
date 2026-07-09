@@ -521,7 +521,8 @@
       "habit2Name": "30 dk oku",
       "habit3Name": "Aileden ara",
       "habit4Name": "10 dk meditasyon"
-    }
+    },
+    "downloadFor": "İndir"
   },
   "notFound": {
     "title": "Sayfa bulunamadı",
@@ -1216,5 +1217,28 @@
       "t10": "Eski arkadaşlarla buluşma düzenle",
       "t11": "10 yıl sonra geleceğine mektup yaz"
     }
+  },
+  "download": {
+    "comingSoon": "Yakında",
+    "back": "Geri",
+    "footerText": "CuTasks ücretsiz ve açık kaynaktır. Reklam yok, takip yok.",
+    "available": "Mevcut",
+    "download": "İndir",
+    "detected": "Algılandı",
+    "comingSoonDesc": "Bu platform için yerel bir sürüm aktif olarak geliştiriliyor. Takipte kalın!",
+    "platforms": {
+      "linux": "Linux",
+      "macos": "macOS",
+      "android": "Android",
+      "ios": "iOS",
+      "windows": "Windows"
+    },
+    "allPlatforms": "Tüm platformlar",
+    "desc": "Platformunuz için masaüstü uygulamasını edinin. Hafif, hızlı ve her zaman ücretsiz.",
+    "title": "CuTasks İndir",
+    "downloaded": "İndirildi",
+    "openApp": "Uygulamayı aç",
+    "useWeb": "Bu arada web sürümünü kullanın:",
+    "soon": "Yakında"
   }
 }
