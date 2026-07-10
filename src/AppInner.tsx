@@ -339,6 +339,7 @@ function AppContent() {
                           onCreateTask={openCreateProjectTask} onEditTask={openEditProjectTask}
                           onDeleteTask={deleteProjectTaskConfirm} onToggleTask={toggleProjectTask}
                           onViewTask={setViewingProjectTask} onUpdateTask={updateProjectTask}
+                          onSaveSections={setSections}
                         />
                       </main>
                     </>

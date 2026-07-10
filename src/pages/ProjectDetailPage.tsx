@@ -20,11 +20,12 @@ interface ProjectDetailPageProps {
   onToggleTask: (id: string) => void;
   onViewTask: (task: ProjectTask) => void;
   onUpdateTask: (id: string, changes: Partial<ProjectTask>) => void;
+  onSaveSections: (sections: SectionType[]) => void;
 }
 
 export default function ProjectDetailPage({
   project, sections, tasks, searchQuery,
-  onCreateTask, onEditTask, onDeleteTask, onToggleTask, onViewTask, onUpdateTask,
+  onCreateTask, onEditTask, onDeleteTask, onToggleTask, onViewTask, onUpdateTask, onSaveSections,
 }: ProjectDetailPageProps) {
   const { t } = useTranslation();
   const [showSectionForm, setShowSectionForm] = useState(false);
@@ -255,7 +256,7 @@ export default function ProjectDetailPage({
   }
 
   function onSaveSectionsLocal(newSections: SectionType[]) {
-    window.dispatchEvent(new CustomEvent('save-sections', { detail: newSections }));
+    onSaveSections(newSections);
   }
 
   function startEditSection(section: SectionType) {
