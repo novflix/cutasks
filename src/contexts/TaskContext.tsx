@@ -162,8 +162,8 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     if (user && syncReadyRef.current && dirtyTasksRef.current.size > 0) {
       const gen = syncGenerationRef.current;
       const dirty = new Set(dirtyTasksRef.current);
-      dirtyTasksRef.current = new Set();
       const timer = setTimeout(() => {
+        dirtyTasksRef.current = new Set();
         lastSavedGenerationRef.current = gen;
         fsSaveTasksDirty(user.uid, tasks, dirty).catch(() => {});
       }, 500);
@@ -176,8 +176,8 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     if (user && syncReadyRef.current && dirtyProjectsRef.current.size > 0) {
       const gen = syncGenerationRef.current;
       const dirty = new Set(dirtyProjectsRef.current);
-      dirtyProjectsRef.current = new Set();
       const timer = setTimeout(() => {
+        dirtyProjectsRef.current = new Set();
         lastSavedGenerationRef.current = gen;
         fsSaveProjectsDirty(user.uid, projects, dirty).catch(() => {});
       }, 500);
@@ -190,8 +190,8 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     if (user && syncReadyRef.current && dirtyProjectTasksRef.current.size > 0) {
       const gen = syncGenerationRef.current;
       const dirty = new Set(dirtyProjectTasksRef.current);
-      dirtyProjectTasksRef.current = new Set();
       const timer = setTimeout(() => {
+        dirtyProjectTasksRef.current = new Set();
         lastSavedGenerationRef.current = gen;
         fsSaveProjectTasksDirty(user.uid, projectTasks, dirty).catch(() => {});
       }, 500);
@@ -204,8 +204,8 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     if (user && syncReadyRef.current && dirtySectionsRef.current.size > 0) {
       const gen = syncGenerationRef.current;
       const dirty = new Set(dirtySectionsRef.current);
-      dirtySectionsRef.current = new Set();
       const timer = setTimeout(() => {
+        dirtySectionsRef.current = new Set();
         lastSavedGenerationRef.current = gen;
         fsSaveSectionsDirty(user.uid, sections, dirty).catch(() => {});
       }, 500);
@@ -218,8 +218,8 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     if (user && syncReadyRef.current && dirtyHabitsRef.current.size > 0) {
       const gen = syncGenerationRef.current;
       const dirty = new Set(dirtyHabitsRef.current);
-      dirtyHabitsRef.current = new Set();
       const timer = setTimeout(() => {
+        dirtyHabitsRef.current = new Set();
         lastSavedGenerationRef.current = gen;
         fsSaveHabitsDirty(user.uid, habits, dirty).catch(() => {});
       }, 500);
