@@ -1,20 +1,13 @@
-const CACHE_NAME = 'cutasks-v6';
-const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-];
+const CACHE_NAME = 'cutasks-v7';
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
-  );
   self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+      Promise.all(keys.map((k) => caches.delete(k)))
     )
   );
   self.clients.claim();
@@ -25,32 +18,8 @@ self.addEventListener('fetch', (event) => {
   if (event.request.url.includes('firestore.googleapis.com')) return;
   if (event.request.url.includes('localhost:5173') || event.request.url.includes('@vite')) return;
 
-  const url = new URL(event.request.url);
-  const isAssetsRequest = url.pathname.startsWith('/assets/');
-
-  // Assets: network only, no cache
-  if (isAssetsRequest) {
-    event.respondWith(fetch(event.request));
-    return;
-  }
-
-  // Other requests: cache-first with network fallback
-  event.respondWith(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.match(event.request).then((cached) => {
-        const fetchPromise = fetch(event.request)
-          .then((response) => {
-            if (response.ok && event.request.url.startsWith(self.location.origin)) {
-              cache.put(event.request, response.clone());
-            }
-            return response;
-          })
-          .catch(() => cached || new Response('', { status: 504 }));
-
-        return cached || fetchPromise;
-      });
-    })
-  );
+  // Always network, no cache for any requests
+  event.respondWith(fetch(event.request));
 });
 
 self.addEventListener('push', (event) => {
