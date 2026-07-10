@@ -17,7 +17,6 @@ import Shield from '@solar-icons/react/icons/security/Shield';
 import Palette from '@solar-icons/react/icons/tools/Palette';
 import ArrowRight from '@solar-icons/react/icons/arrows/ArrowRight';
 import CheckCircle from '@solar-icons/react/icons/ui/CheckCircle';
-import Lightning from '@solar-icons/react/icons/devices/Lightning';
 import WindowFrame from '@solar-icons/react/icons/it/WindowFrame';
 import ArrowDown from '@solar-icons/react/icons/arrows/ArrowDown';
 import MinimalisticMagnifier from '@solar-icons/react/icons/search/MinimalisticMagnifier';
@@ -116,10 +115,6 @@ export default function LandingPage() {
           <div className="lp-orb lp-orb-4" />
         </div>
         <div className="lp-hero-content">
-          <div className="lp-hero-badge">
-            <Lightning size={13} />
-            <span>{t('landing.freeForever')}</span>
-          </div>
           <h1 className="lp-hero-title">
             <span className="lp-hero-gradient">{t('landing.heroTitle')}</span><br />
             {t('landing.heroSubtitle')}
