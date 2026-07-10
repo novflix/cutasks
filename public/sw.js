@@ -1,14 +1,7 @@
-const CACHE_NAME = 'cutasks-v5';
-const MAX_CACHE_ENTRIES = 100;
+const CACHE_NAME = 'cutasks-v6';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
-  '/favicon.svg',
-  '/logo.svg',
-  '/logo-mini.svg',
-  '/logo-light.svg',
-  '/logo-mini-light.svg',
-  '/manifest.webmanifest',
 ];
 
 self.addEventListener('install', (event) => {
@@ -26,16 +19,6 @@ self.addEventListener('activate', (event) => {
   );
   self.clients.claim();
 });
-
-async function trimCache(cache, maxEntries) {
-  const keys = await cache.keys();
-  const excess = keys.length - maxEntries;
-  if (excess > 0) {
-    for (let i = 0; i < excess; i++) {
-      await cache.delete(keys[i]);
-    }
-  }
-}
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
@@ -59,7 +42,6 @@ self.addEventListener('fetch', (event) => {
           .then((response) => {
             if (response.ok && event.request.url.startsWith(self.location.origin)) {
               cache.put(event.request, response.clone());
-              trimCache(cache, MAX_CACHE_ENTRIES);
             }
             return response;
           })
