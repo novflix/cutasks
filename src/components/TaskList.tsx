@@ -269,7 +269,8 @@ export default function TaskList({ tasks, taskMap, filter, searchQuery, onToggle
   const tasksRef = useRef(tasks);
 
   useEffect(() => {
-    return () => { prevPositionsRef.current.clear(); };
+    const prevPositions = prevPositionsRef.current;
+    return () => { prevPositions.clear(); };
   }, []);
 
   useLayoutEffect(() => {
