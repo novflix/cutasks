@@ -33,7 +33,7 @@ export interface TaskContextValue {
   updateSections: (sections: Section[]) => void;
 
   // Habit operations
-  setHabits: (habits: Habit[] | ((prev: Habit[]) => Habit[])) => void;
+  updateHabits: (habits: Habit[] | ((prev: Habit[]) => Habit[])) => void;
 
   // Undo
   undo: () => void;

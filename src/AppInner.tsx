@@ -60,7 +60,7 @@ function AppContent() {
   const {
     tasks, projects, projectTasks, habits, sections, dataLoading,
     toggleTask, setSubtaskOf, updateProjectTask, toggleProjectTask,
-    reorderProjects, updateSections, setHabits, undo,
+    reorderProjects, updateSections, updateHabits, undo,
     filter, setFilter, searchQuery, setSearchQuery,
     projectSearch, setProjectSearch, projectTaskFilter, setProjectTaskFilter,
     projectTaskSearch, setProjectTaskSearch,
@@ -158,8 +158,8 @@ function AppContent() {
   }, [navigate]);
 
   const handleHabitsChange = useCallback((updater: Habit[] | ((prev: Habit[]) => Habit[])) => {
-    setHabits(updater);
-  }, [setHabits]);
+    updateHabits(updater);
+  }, [updateHabits]);
 
   const handleOpenProject = useCallback((id: string) => {
     navigate(`/app/projects/${id}`);

@@ -362,6 +362,15 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     newSections.forEach((s) => dirtySectionsRef.current.add(s.id));
   }, []);
 
+  // ── Habit operations ──
+  const updateHabits = useCallback((newHabits: Habit[] | ((prev: Habit[]) => Habit[])) => {
+    setHabits((prev) => {
+      const result = typeof newHabits === 'function' ? newHabits(prev) : newHabits;
+      result.forEach((h) => dirtyHabitsRef.current.add(h.id));
+      return result;
+    });
+  }, []);
+
   const reorderProjects = useCallback((fromIndex: number, toIndex: number) => {
     setProjects((prev) => {
       const updated = [...prev];
@@ -503,7 +512,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     createTask, updateTask, deleteTask, toggleTask, setSubtaskOf,
     createProject, updateProject, deleteProject, reorderProjects,
     createProjectTask, updateProjectTask, deleteProjectTask, toggleProjectTask,
-    updateSections, setHabits, undo,
+    updateSections, updateHabits, undo,
     filter, setFilter, searchQuery, setSearchQuery,
     projectSearch, setProjectSearch, projectTaskFilter, setProjectTaskFilter,
     projectTaskSearch, setProjectTaskSearch,
