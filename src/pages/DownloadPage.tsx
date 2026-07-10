@@ -149,7 +149,7 @@ export default function DownloadPage() {
                 >
                   <div className="dl-file-icon">
                     {file.icon ? (
-                      <img src={file.icon} alt="" width="32" height="32" />
+                      <img src={file.icon} alt="" width="42" height="42" />
                     ) : (
                       <DownloadMinimalistic size={24} />
                     )}
