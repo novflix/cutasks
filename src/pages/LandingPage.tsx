@@ -45,11 +45,17 @@ export default function LandingPage() {
   const { user } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [faqHeights, setFaqHeights] = useState<number[]>([]);
   const faqRefs = useRef<(HTMLDivElement | null)[]>([]);
   const toggleFaq = useCallback((index: number) => {
     setOpenFaq(prev => prev === index ? null : index);
   }, []);
   const detectedPlatform = useMemo(() => detectPlatform(), []);
+
+  useEffect(() => {
+    const heights = faqRefs.current.map(el => el?.scrollHeight ?? 0);
+    setFaqHeights(heights);
+  }, []);
   const heroRef = useRef<HTMLDivElement>(null);
   const featuresRef = useRef<HTMLDivElement>(null);
   const deepRef = useRef<HTMLDivElement>(null);
@@ -584,7 +590,7 @@ export default function LandingPage() {
                   <ArrowDown size={18} className="lp-faq-chevron" />
                 </button>
                 <div className="lp-faq-answer" ref={el => { faqRefs.current[i] = el; }}
-                  style={{ maxHeight: openFaq === i ? (faqRefs.current[i]?.scrollHeight ?? 0) + 'px' : '0px' }}>
+                  style={{ maxHeight: openFaq === i ? (faqHeights[i] ?? 0) + 'px' : '0px' }}>
                   <p>{item.a}</p>
                 </div>
               </div>
