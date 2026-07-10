@@ -46,6 +46,7 @@ export default function LandingPage() {
   const { user } = useAuth();
   const [scrolled, setScrolled] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const faqRefs = useRef<(HTMLDivElement | null)[]>([]);
   const toggleFaq = useCallback((index: number) => {
     setOpenFaq(prev => prev === index ? null : index);
   }, []);
@@ -587,7 +588,8 @@ export default function LandingPage() {
                   <span>{item.q}</span>
                   <ArrowDown size={18} className="lp-faq-chevron" />
                 </button>
-                <div className="lp-faq-answer">
+                <div className="lp-faq-answer" ref={el => { faqRefs.current[i] = el; }}
+                  style={{ maxHeight: openFaq === i ? (faqRefs.current[i]?.scrollHeight ?? 0) + 'px' : '0px' }}>
                   <p>{item.a}</p>
                 </div>
               </div>
