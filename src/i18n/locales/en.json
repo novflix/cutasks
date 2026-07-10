@@ -537,7 +537,7 @@
     "available": "Available",
     "soon": "Soon",
     "comingSoon": "Coming Soon",
-    "comingSoonDesc": "We're actively developing a native version for this platform. Stay tuned!",
+    "comingSoonDesc": "We're actively developing a native version for {{platform}}. Stay tuned!",
     "useWeb": "In the meantime, use the web version:",
     "openApp": "Open App",
     "allPlatforms": "All Platforms",

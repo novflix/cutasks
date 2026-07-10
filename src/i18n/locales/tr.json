@@ -1225,7 +1225,7 @@
     "available": "Mevcut",
     "download": "İndir",
     "detected": "Algılandı",
-    "comingSoonDesc": "Bu platform için yerel bir sürüm aktif olarak geliştiriliyor. Takipte kalın!",
+    "comingSoonDesc": "{{platform}} için yerel bir sürüm aktif olarak geliştiriliyor. Takipte kalın!",
     "platforms": {
       "linux": "Linux",
       "macos": "macOS",

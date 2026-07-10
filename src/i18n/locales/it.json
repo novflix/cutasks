@@ -1225,7 +1225,7 @@
     "available": "Disponibile",
     "download": "Scarica",
     "detected": "Rilevato",
-    "comingSoonDesc": "Stiamo sviluppando attivamente una versione nativa per questa piattaforma. Resta aggiornato!",
+    "comingSoonDesc": "Stiamo sviluppando attivamente una versione nativa per {{platform}}. Resta aggiornato!",
     "platforms": {
       "linux": "Linux",
       "macos": "macOS",

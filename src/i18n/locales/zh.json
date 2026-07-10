@@ -1225,7 +1225,7 @@
     "available": "可用",
     "download": "下载",
     "detected": "已检测",
-    "comingSoonDesc": "我们正在积极开发此平台的原生版本。敬请期待！",
+    "comingSoonDesc": "我们正在积极开发 {{platform}} 的原生版本。敬请期待！",
     "platforms": {
       "linux": "Linux",
       "macos": "macOS",

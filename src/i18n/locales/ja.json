@@ -1225,7 +1225,7 @@
     "available": "利用可能",
     "download": "ダウンロード",
     "detected": "検出済み",
-    "comingSoonDesc": "このプラットフォーム用のネイティブバージョンを開発中です。お楽しみに！",
+    "comingSoonDesc": "{{platform}} 用のネイティブバージョンを開発中です。お楽しみに！",
     "platforms": {
       "linux": "Linux",
       "macos": "macOS",

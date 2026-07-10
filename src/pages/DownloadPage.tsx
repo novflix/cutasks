@@ -1,8 +1,7 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
-import ArrowLeft from '@solar-icons/react/icons/arrows/ArrowLeft';
 import ArrowRight from '@solar-icons/react/icons/arrows/ArrowRight';
 import DownloadMinimalistic from '@solar-icons/react/icons/arrows-action/DownloadMinimalistic';
 import CheckCircle from '@solar-icons/react/icons/ui/CheckCircle';
@@ -19,7 +18,7 @@ const PLATFORM_META: Record<Platform, { icon: string; color: string }> = {
   unknown: { icon: '/icons/windows.svg', color: '#ed9b6d' },
 };
 
-const PLATFORM_ORDER: Platform[] = ['windows', 'macos', 'linux', 'ios', 'android'];
+const PLATFORM_ORDER: Platform[] = ['windows', 'linux', 'macos', 'android', 'ios'];
 
 export default function DownloadPage() {
   const navigate = useNavigate();
@@ -29,10 +28,34 @@ export default function DownloadPage() {
   const [selectedPlatform, setSelectedPlatform] = useState<Platform>(detected === 'unknown' ? 'windows' : detected);
   const [downloading, setDownloading] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [indicator, setIndicator] = useState({ left: 0, width: 0 });
+  const [contentVisible, setContentVisible] = useState(true);
+  const platformRefs = useRef<Map<Platform, HTMLButtonElement | null>>(new Map());
+
+  const updateIndicator = useCallback(() => {
+    const el = platformRefs.current.get(selectedPlatform);
+    if (el) {
+      const parent = el.parentElement;
+      if (parent) {
+        const parentRect = parent.getBoundingClientRect();
+        const elRect = el.getBoundingClientRect();
+        setIndicator({
+          left: elRect.left - parentRect.left,
+          width: elRect.width,
+        });
+      }
+    }
+  }, [selectedPlatform]);
 
   useEffect(() => {
     requestAnimationFrame(() => setMounted(true));
   }, []);
+
+  useEffect(() => {
+    updateIndicator();
+    window.addEventListener('resize', updateIndicator);
+    return () => window.removeEventListener('resize', updateIndicator);
+  }, [updateIndicator]);
 
   const currentFiles = useMemo(
     () => DOWNLOAD_FILES.filter((f) => f.platform === selectedPlatform),
@@ -40,6 +63,15 @@ export default function DownloadPage() {
   );
 
   const isCurrentPlatform = selectedPlatform === detected;
+
+  function handlePlatformChange(platform: Platform) {
+    if (platform === selectedPlatform) return;
+    setContentVisible(false);
+    setTimeout(() => {
+      setSelectedPlatform(platform);
+      setContentVisible(true);
+    }, 200);
+  }
 
   function handleDownload(url: string, filename: string) {
     setDownloading(filename);
@@ -63,14 +95,6 @@ export default function DownloadPage() {
 
       {/* ── Content ── */}
       <div className="dl-inner">
-        {/* ── Header ── */}
-        <header className="dl-header dl-reveal" style={{ transitionDelay: '0s' }}>
-          <button className="dl-back" onClick={() => navigate('/landing')}>
-            <ArrowLeft size={16} />
-            <span>{t('download.back')}</span>
-          </button>
-        </header>
-
         {/* ── Hero ── */}
         <section className="dl-hero">
           <h1 className="dl-hero-title dl-reveal" style={{ transitionDelay: '0.05s' }}>
@@ -84,6 +108,10 @@ export default function DownloadPage() {
         {/* ── Platform selector ── */}
         <section className="dl-platforms-section dl-reveal" style={{ transitionDelay: '0.2s' }}>
           <div className="dl-platforms">
+            <div
+              className="dl-platforms-indicator"
+              style={{ left: indicator.left, width: indicator.width }}
+            />
             {PLATFORM_ORDER.map((p) => {
               const meta = PLATFORM_META[p];
               const active = selectedPlatform === p;
@@ -91,10 +119,11 @@ export default function DownloadPage() {
               return (
                 <button
                   key={p}
+                  ref={(el) => { platformRefs.current.set(p, el); }}
                   className={`dl-platform${active ? ' active' : ''}`}
-                  onClick={() => setSelectedPlatform(p)}
+                  onClick={() => handlePlatformChange(p)}
                 >
-                  <div className="dl-platform-icon" style={active ? { background: `${meta.color}20`, borderColor: `${meta.color}40` } : undefined}>
+                  <div className="dl-platform-icon">
                     <img src={meta.icon} alt="" width="18" height="18" />
                   </div>
                   <span className="dl-platform-name">{t(`download.platforms.${p}`)}</span>
@@ -106,7 +135,7 @@ export default function DownloadPage() {
         </section>
 
         {/* ── Download area ── */}
-        <section className="dl-content dl-reveal" style={{ transitionDelay: '0.3s' }}>
+        <section className={`dl-content dl-reveal${contentVisible ? '' : ' dl-content--hidden'}`} style={{ transitionDelay: '0.3s' }}>
           {currentFiles.length > 0 ? (
             <div className="dl-files">
               {currentFiles.map((file, i) => (
@@ -145,7 +174,7 @@ export default function DownloadPage() {
             <div className="dl-empty dl-reveal" style={{ transitionDelay: '0.35s' }}>
               <WindowFrame size={32} strokeWidth={1.5} />
               <h3>{t('download.comingSoon')}</h3>
-              <p>{t('download.comingSoonDesc')}</p>
+              <p>{t('download.comingSoonDesc', { platform: t(`download.platforms.${selectedPlatform}`) })}</p>
               {isCurrentPlatform && (
                 <button className="dl-empty-link" onClick={() => navigate(user ? '/app/home' : '/auth')}>
                   {t('download.openApp')}

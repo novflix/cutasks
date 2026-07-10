@@ -1229,7 +1229,7 @@
     "available": "उपलब्ध",
     "download": "डाउनलोड",
     "detected": "पहचाना गया",
-    "comingSoonDesc": "हम इस प्लेटफ़ॉर्म के लिए नेटिव वर्शन सक्रिय रूप से विकसित कर रहे हैं। बने रहें!",
+    "comingSoonDesc": "{{platform}} के लिए नेटिव वर्शन सक्रिय रूप से विकसित कर रहे हैं। बने रहें!",
     "platforms": {
       "linux": "Linux",
       "macos": "macOS",

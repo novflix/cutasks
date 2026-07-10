@@ -1229,7 +1229,7 @@
     "available": "사용 가능",
     "download": "다운로드",
     "detected": "감지됨",
-    "comingSoonDesc": "이 플랫폼용 네이티브 버전을 적극 개발 중입니다. 기대해 주세요!",
+    "comingSoonDesc": "{{platform}}용 네이티브 버전을 적극 개발 중입니다. 기대해 주세요!",
     "platforms": {
       "linux": "Linux",
       "macos": "macOS",

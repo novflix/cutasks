@@ -1229,7 +1229,7 @@
     "available": "Beschikbaar",
     "download": "Downloaden",
     "detected": "Gedetecteerd",
-    "comingSoonDesc": "We ontwikkelen actief een native versie voor dit platform. Blijf op de hoogte!",
+    "comingSoonDesc": "We ontwikkelen actief een native versie voor {{platform}}. Blijf op de hoogte!",
     "platforms": {
       "linux": "Linux",
       "macos": "macOS",
