@@ -48,14 +48,6 @@ export default function HabitDetailModal({ habit, onClose, onUpdate, onDelete, i
     if (editing) setTimeout(() => nameRef.current?.focus(), 100);
   }, [editing]);
 
-  useEffect(() => {
-    setName(habit.name);
-    setIcon(habit.icon);
-    setColor(habit.color);
-    setWeekdays(habit.weekdays);
-    setTargetReps(habit.targetReps || 1);
-  }, [habit]);
-
   function startEdit() {
     setName(habit.name);
     setIcon(habit.icon);

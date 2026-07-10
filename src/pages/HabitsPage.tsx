@@ -667,6 +667,7 @@ export default function HabitsPage({ habits, onHabitsChange, weekStartDay, formO
 
       {(viewingHabit || detailClosing) && (
         <HabitDetailModal
+          key={viewingHabit?.id}
           habit={viewingHabit!}
           onClose={closeDetail}
           onUpdate={updateHabit}
