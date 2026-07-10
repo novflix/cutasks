@@ -60,7 +60,7 @@ function AppContent() {
   const {
     tasks, projects, projectTasks, habits, sections, dataLoading,
     toggleTask, setSubtaskOf, updateProjectTask, toggleProjectTask,
-    reorderProjects, setSections, setHabits, undo,
+    reorderProjects, updateSections, setHabits, undo,
     filter, setFilter, searchQuery, setSearchQuery,
     projectSearch, setProjectSearch, projectTaskFilter, setProjectTaskFilter,
     projectTaskSearch, setProjectTaskSearch,
@@ -341,7 +341,7 @@ function AppContent() {
                           onCreateTask={openCreateProjectTask} onEditTask={openEditProjectTask}
                           onDeleteTask={deleteProjectTaskConfirm} onToggleTask={toggleProjectTask}
                           onViewTask={setViewingProjectTask} onUpdateTask={updateProjectTask}
-                          onSaveSections={setSections}
+                          onSaveSections={updateSections}
                         />
                       </main>
                     </>

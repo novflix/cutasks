@@ -30,7 +30,7 @@ export interface TaskContextValue {
   toggleProjectTask: (id: string) => void;
 
   // Section operations
-  setSections: (sections: Section[]) => void;
+  updateSections: (sections: Section[]) => void;
 
   // Habit operations
   setHabits: (habits: Habit[] | ((prev: Habit[]) => Habit[])) => void;

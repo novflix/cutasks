@@ -356,6 +356,12 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     });
   }, [pushHistory]);
 
+  // ── Section operations ──
+  const updateSections = useCallback((newSections: Section[]) => {
+    setSections(newSections);
+    newSections.forEach((s) => dirtySectionsRef.current.add(s.id));
+  }, []);
+
   const reorderProjects = useCallback((fromIndex: number, toIndex: number) => {
     setProjects((prev) => {
       const updated = [...prev];
@@ -497,7 +503,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     createTask, updateTask, deleteTask, toggleTask, setSubtaskOf,
     createProject, updateProject, deleteProject, reorderProjects,
     createProjectTask, updateProjectTask, deleteProjectTask, toggleProjectTask,
-    setSections, setHabits, undo,
+    updateSections, setHabits, undo,
     filter, setFilter, searchQuery, setSearchQuery,
     projectSearch, setProjectSearch, projectTaskFilter, setProjectTaskFilter,
     projectTaskSearch, setProjectTaskSearch,
