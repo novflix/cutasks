@@ -5,4 +5,13 @@ Allow: /
 Disallow: /app/
 Disallow: /auth
 
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
 Sitemap: https://cutasks.com/sitemap.xml
