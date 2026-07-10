@@ -31,6 +31,7 @@ export interface DownloadFile {
   filename: string;
   url: string;
   arch?: string;
+  icon?: string;
 }
 
 export const DOWNLOAD_FILES: DownloadFile[] = [
@@ -39,6 +40,7 @@ export const DOWNLOAD_FILES: DownloadFile[] = [
     label: 'Windows: Portable',
     filename: 'CuTasks_Portable.zip',
     url: 'https://github.com/novflix/cutasks/releases/download/v0.9.2/CuTasks_Portable.zip',
+    icon: '/icons/portable.svg',
   },
   {
     platform: 'windows',
@@ -46,6 +48,7 @@ export const DOWNLOAD_FILES: DownloadFile[] = [
     filename: 'CuTasks_0.9.2_x64-setup.exe',
     url: 'https://github.com/novflix/cutasks/releases/download/v0.9.2/CuTasks_0.9.2_x64-setup.exe',
     arch: 'x64',
+    icon: '/icons/x64.svg',
   },
   {
     platform: 'windows',
@@ -53,5 +56,6 @@ export const DOWNLOAD_FILES: DownloadFile[] = [
     filename: 'CuTasks_0.9.2_x86-setup.exe',
     url: 'https://github.com/novflix/cutasks/releases/download/v0.9.2/CuTasks_0.9.2_x86-setup.exe',
     arch: 'x86',
+    icon: '/icons/x86.svg',
   },
 ];

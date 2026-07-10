@@ -148,7 +148,11 @@ export default function DownloadPage() {
                   style={{ transitionDelay: `${0.35 + i * 0.05}s` }}
                 >
                   <div className="dl-file-icon">
-                    <DownloadMinimalistic size={20} />
+                    {file.icon ? (
+                      <img src={file.icon} alt="" width="20" height="20" />
+                    ) : (
+                      <DownloadMinimalistic size={20} />
+                    )}
                   </div>
                   <div className="dl-file-info">
                     <span className="dl-file-label">{file.label}</span>
