@@ -58,7 +58,7 @@ function AppContent() {
   const {
     tasks, projects, projectTasks, habits, sections, dataLoading,
     toggleTask, setSubtaskOf, updateProjectTask, toggleProjectTask,
-    reorderProjects, setHabits, undo,
+    reorderProjects, setSections, setHabits, undo,
     filter, setFilter, searchQuery, setSearchQuery,
     projectSearch, setProjectSearch, projectTaskFilter, setProjectTaskFilter,
     projectTaskSearch, setProjectTaskSearch,
