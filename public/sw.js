@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cutasks-v4';
+const CACHE_NAME = 'cutasks-v5';
 const MAX_CACHE_ENTRIES = 100;
 const STATIC_ASSETS = [
   '/',
@@ -45,19 +45,15 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   const isAssetsRequest = url.pathname.startsWith('/assets/');
 
+  // Assets: network only, no cache
+  if (isAssetsRequest) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+
+  // Other requests: cache-first with network fallback
   event.respondWith(
     caches.open(CACHE_NAME).then((cache) => {
-      if (isAssetsRequest) {
-        return fetch(event.request)
-          .then((response) => {
-            if (response.ok) {
-              cache.put(event.request, response.clone());
-            }
-            return response;
-          })
-          .catch(() => cache.match(event.request));
-      }
-
       return cache.match(event.request).then((cached) => {
         const fetchPromise = fetch(event.request)
           .then((response) => {
