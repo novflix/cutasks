@@ -2,7 +2,7 @@ import { createContext, useContext, useState, useRef, useEffect, useMemo, type R
 import { useNavigate, useLocation } from 'react-router-dom';
 import type { Task, Priority, Page, Project, ProjectStatus, ProjectTask } from '../types';
 import { validateTitle, validateDescription, sanitizeInput, sanitizePriority, MAX_TASKS_COUNT, MAX_PROJECTS_COUNT } from '../utils';
-import { useTaskContext } from './TaskContext';
+import { useTaskContext } from '../hooks/useTaskContext';
 
 interface UIContextValue {
   // Sidebar

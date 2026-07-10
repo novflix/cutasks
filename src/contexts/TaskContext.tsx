@@ -81,13 +81,7 @@ interface TaskContextValue {
   confirmDeleteProjectTask: (id: string) => void;
 }
 
-const TaskContext = createContext<TaskContextValue | null>(null);
-
-export function useTaskContext() {
-  const ctx = useContext(TaskContext);
-  if (!ctx) throw new Error('useTaskContext must be used within TaskProvider');
-  return ctx;
-}
+export const TaskContext = createContext<TaskContextValue | null>(null);
 
 function cleanupExpired(tasks: Task[], projectTasks: ProjectTask[]): { tasks: Task[]; projectTasks: ProjectTask[] } {
   const mode = (localStorage.getItem('cutasks_delete_mode') || 'instant') as 'instant' | '3days' | '7days';
@@ -174,7 +168,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     dirtySectionsRef.current = new Set();
     dirtyProjectTasksRef.current = new Set();
     dirtyHabitsRef.current = new Set();
-    setDataLoading(true);
+    requestAnimationFrame(() => setDataLoading(true));
 
     loadAllData(user.uid).then((data) => {
       const cleaned = cleanupExpired(data.tasks, data.projectTasks);
