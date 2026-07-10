@@ -12,7 +12,7 @@ import Copy from '@solar-icons/react/icons/ui/Copy';
 import DownloadMinimalistic from '@solar-icons/react/icons/arrows-action/DownloadMinimalistic';
 import UploadMinimalistic from '@solar-icons/react/icons/arrows-action/UploadMinimalistic';
 import { loadAllData, saveAllData } from '../services/firestore';
-import { CRYPTO_ICONS } from '../components/CryptoIcons';
+import { CRYPTO_ICONS } from '../utils/cryptoIcons';
 import {
   isNotificationsSupported, getNotificationPermission,
   requestPermission, isNotificationsEnabled, setNotificationsEnabled,
