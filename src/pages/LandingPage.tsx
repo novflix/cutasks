@@ -45,11 +45,14 @@ export default function LandingPage() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [scrolled, setScrolled] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const toggleFaq = useCallback((index: number) => {
+    setOpenFaq(prev => prev === index ? null : index);
+  }, []);
   const detectedPlatform = useMemo(() => detectPlatform(), []);
   const heroRef = useRef<HTMLDivElement>(null);
   const featuresRef = useRef<HTMLDivElement>(null);
   const deepRef = useRef<HTMLDivElement>(null);
-  const statsRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -565,20 +568,31 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Stats ── */}
-      <section className="lp-stats" ref={statsRef}>
-        <div className="lp-stats-inner">
+      {/* ── FAQ ── */}
+      <section className="lp-faq">
+        <div className="lp-faq-inner">
+          <span className="lp-section-label l-reveal">{t('landing.faqTitle')}</span>
+          <h2 className="lp-section-title l-reveal">{t('landing.faqSubtitle')}</h2>
+          <div className="lp-faq-list">
             {[
-              { value: '6', label: t('landing.stat1Label') },
-              { value: '3', label: t('landing.stat2Label') },
-              { value: '100%', label: t('landing.stat3Label') },
-              { value: '0', label: t('landing.stat4Label') },
-            ].map((s, i) => (
-            <div key={i} className="lp-stat l-reveal" style={{ transitionDelay: `${i * 0.08}s` }}>
-              <span className="lp-stat-value">{s.value}</span>
-              <span className="lp-stat-label">{s.label}</span>
-            </div>
-          ))}
+              { q: t('landing.faq1Q'), a: t('landing.faq1A') },
+              { q: t('landing.faq2Q'), a: t('landing.faq2A') },
+              { q: t('landing.faq3Q'), a: t('landing.faq3A') },
+              { q: t('landing.faq4Q'), a: t('landing.faq4A') },
+              { q: t('landing.faq5Q'), a: t('landing.faq5A') },
+              { q: t('landing.faq6Q'), a: t('landing.faq6A') },
+            ].map((item, i) => (
+              <div key={i} className={`lp-faq-item${openFaq === i ? ' open' : ''}`}>
+                <button className="lp-faq-question" onClick={() => toggleFaq(i)}>
+                  <span>{item.q}</span>
+                  <ArrowDown size={18} className="lp-faq-chevron" />
+                </button>
+                <div className="lp-faq-answer">
+                  <p>{item.a}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
