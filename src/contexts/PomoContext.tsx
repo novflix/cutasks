@@ -3,7 +3,7 @@ import type { PomoMode, PomoConfig } from '../pages/PomodoroPage';
 import { LONG_BREAK_INTERVAL } from '../constants/pomo';
 import { loadPomoConfig, loadPomoSavedState, savePomoState, loadPomoRunning } from '../utils/pomo';
 
-interface PomoContextValue {
+export interface PomoContextValue {
   mode: PomoMode;
   secondsLeft: number;
   running: boolean;
@@ -20,13 +20,7 @@ interface PomoContextValue {
   setConfig: (config: PomoConfig) => void;
 }
 
-const PomoContext = createContext<PomoContextValue | null>(null);
-
-export function usePomoContext() {
-  const ctx = useContext(PomoContext);
-  if (!ctx) throw new Error('usePomoContext must be used within PomoProvider');
-  return ctx;
-}
+export const PomoContext = createContext<PomoContextValue | null>(null);
 
 export function PomoProvider({ children }: { children: ReactNode }) {
   const [config, setConfig] = useState<PomoConfig>(loadPomoConfig);
@@ -56,8 +50,8 @@ export function PomoProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (running) {
       if (miniTimerRef.current) clearTimeout(miniTimerRef.current);
-      setMiniClosing(false);
       setMiniVisible(true);
+      setMiniClosing(false);
     } else if (miniVisible) {
       setMiniClosing(true);
       miniTimerRef.current = setTimeout(() => {
@@ -66,7 +60,7 @@ export function PomoProvider({ children }: { children: ReactNode }) {
       }, 300);
     }
     return () => { if (miniTimerRef.current) clearTimeout(miniTimerRef.current); };
-  }, [running, miniVisible]);
+  }, [running]);
 
   // Config change listener
   useEffect(() => {
