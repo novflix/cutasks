@@ -358,15 +358,33 @@ export function TaskProvider({ children }: { children: ReactNode }) {
 
   // ── Section operations ──
   const updateSections = useCallback((newSections: Section[]) => {
-    setSections(newSections);
-    newSections.forEach((s) => dirtySectionsRef.current.add(s.id));
+    setSections((prev) => {
+      // Mark new/updated sections as dirty
+      newSections.forEach((s) => dirtySectionsRef.current.add(s.id));
+      // Mark deleted sections as dirty
+      const newIds = new Set(newSections.map((s) => s.id));
+      prev.forEach((s) => {
+        if (!newIds.has(s.id)) {
+          dirtySectionsRef.current.add(s.id);
+        }
+      });
+      return newSections;
+    });
   }, []);
 
   // ── Habit operations ──
   const updateHabits = useCallback((newHabits: Habit[] | ((prev: Habit[]) => Habit[])) => {
     setHabits((prev) => {
       const result = typeof newHabits === 'function' ? newHabits(prev) : newHabits;
+      // Mark new/updated habits as dirty
       result.forEach((h) => dirtyHabitsRef.current.add(h.id));
+      // Mark deleted habits as dirty
+      const newIds = new Set(result.map((h) => h.id));
+      prev.forEach((h) => {
+        if (!newIds.has(h.id)) {
+          dirtyHabitsRef.current.add(h.id);
+        }
+      });
       return result;
     });
   }, []);
