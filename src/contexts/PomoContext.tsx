@@ -1,29 +1,13 @@
-import { createContext, useState, useEffect, useRef, useCallback, type ReactNode } from 'react';
-import type { PomoMode, PomoConfig } from '../pages/PomodoroPage';
+import { useState, useEffect, useRef, useCallback, type ReactNode } from 'react';
+import type { PomoMode } from '../pages/PomodoroPage';
 import { LONG_BREAK_INTERVAL } from '../constants/pomo';
 import { loadPomoConfig, loadPomoSavedState, savePomoState, loadPomoRunning } from '../utils/pomo';
+import { PomoContext, type PomoContextValue } from './PomoContextDef';
 
-export interface PomoContextValue {
-  mode: PomoMode;
-  secondsLeft: number;
-  running: boolean;
-  completedSessions: number;
-  config: PomoConfig;
-  celebrate: boolean;
-  miniVisible: boolean;
-  miniClosing: boolean;
-
-  toggleRunning: () => void;
-  reset: () => void;
-  switchMode: (mode: PomoMode) => void;
-  skipSession: () => void;
-  setConfig: (config: PomoConfig) => void;
-}
-
-export const PomoContext = createContext<PomoContextValue | null>(null);
+export type { PomoContextValue } from './PomoContextDef';
 
 export function PomoProvider({ children }: { children: ReactNode }) {
-  const [config, setConfig] = useState<PomoConfig>(loadPomoConfig);
+  const [config, setConfig] = useState(loadPomoConfig);
   const [savedPomo] = useState(() => loadPomoSavedState());
   const [mode, setMode] = useState<PomoMode>(savedPomo?.mode ?? 'work');
   const [secondsLeft, setSecondsLeft] = useState(savedPomo?.secondsLeft ?? loadPomoConfig().work * 60);
@@ -37,22 +21,27 @@ export function PomoProvider({ children }: { children: ReactNode }) {
   const miniTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sessionsRef = useRef(completedSessions);
   const modeRef = useRef(mode);
+  const miniVisibleRef = useRef(miniVisible);
 
   useEffect(() => { sessionsRef.current = completedSessions; }, [completedSessions]);
   useEffect(() => { modeRef.current = mode; }, [mode]);
+  useEffect(() => { miniVisibleRef.current = miniVisible; }, [miniVisible]);
 
   // Save state
   useEffect(() => {
     savePomoState(mode, secondsLeft, completedSessions, running);
   }, [mode, secondsLeft, completedSessions, running]);
 
-  // Mini timer visibility
+  // Mini timer visibility - use refs to avoid cascading renders
   useEffect(() => {
     if (running) {
       if (miniTimerRef.current) clearTimeout(miniTimerRef.current);
-      setMiniVisible(true);
-      setMiniClosing(false);
-    } else if (miniVisible) {
+      // Defer state updates to avoid cascading renders
+      requestAnimationFrame(() => {
+        setMiniVisible(true);
+        setMiniClosing(false);
+      });
+    } else if (miniVisibleRef.current) {
       setMiniClosing(true);
       miniTimerRef.current = setTimeout(() => {
         setMiniVisible(false);

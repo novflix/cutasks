@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { PomoContext } from '../contexts/PomoContext';
+import { PomoContext } from '../contexts/PomoContextDef';
 
 export function usePomoContext() {
   const ctx = useContext(PomoContext);
