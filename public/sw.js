@@ -1,4 +1,4 @@
-const CACHE_NAME = 'cutasks-v7';
+const CACHE_NAME = 'cutasks-v8';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -13,14 +13,8 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
-  if (event.request.url.includes('firestore.googleapis.com')) return;
-  if (event.request.url.includes('localhost:5173') || event.request.url.includes('@vite')) return;
-
-  // Always network, no cache for any requests
-  event.respondWith(fetch(event.request));
-});
+// No fetch handler - let browser handle all requests normally
+// Service worker only handles push notifications
 
 self.addEventListener('push', (event) => {
   if (!event.data) return;
