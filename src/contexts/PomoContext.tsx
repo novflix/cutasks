@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useRef, useCallback, type ReactNode } from 'react';
+import { createContext, useState, useEffect, useRef, useCallback, type ReactNode } from 'react';
 import type { PomoMode, PomoConfig } from '../pages/PomodoroPage';
 import { LONG_BREAK_INTERVAL } from '../constants/pomo';
 import { loadPomoConfig, loadPomoSavedState, savePomoState, loadPomoRunning } from '../utils/pomo';
