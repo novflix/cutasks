@@ -97,6 +97,9 @@ export default function DownloadPage() {
       <div className="dl-inner">
         {/* ── Hero ── */}
         <section className="dl-hero">
+          <div className="dl-hero-icon dl-reveal" style={{ transitionDelay: '0s' }}>
+            <DownloadMinimalistic size={26} />
+          </div>
           <h1 className="dl-hero-title dl-reveal" style={{ transitionDelay: '0.05s' }}>
             {t('download.title')}
           </h1>
@@ -145,7 +148,7 @@ export default function DownloadPage() {
                   style={{ transitionDelay: `${0.35 + i * 0.05}s` }}
                 >
                   <div className="dl-file-icon">
-                    <DownloadMinimalistic size={18} />
+                    <DownloadMinimalistic size={20} />
                   </div>
                   <div className="dl-file-info">
                     <span className="dl-file-label">{file.label}</span>
@@ -172,7 +175,7 @@ export default function DownloadPage() {
             </div>
           ) : (
             <div className="dl-empty dl-reveal" style={{ transitionDelay: '0.35s' }}>
-              <WindowFrame size={32} strokeWidth={1.5} />
+              <WindowFrame size={40} strokeWidth={1.5} />
               <h3>{t('download.comingSoon')}</h3>
               <p>{t('download.comingSoonDesc', { platform: t(`download.platforms.${selectedPlatform}`) })}</p>
               {isCurrentPlatform && (
