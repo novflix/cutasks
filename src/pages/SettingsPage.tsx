@@ -71,6 +71,7 @@ export default function SettingsPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t, i18n } = useTranslation();
+  const { expandProjects, setExpandProjects } = useTaskContext();
   const [activeTheme, setActiveTheme] = useState<string>(() => {
     return localStorage.getItem('cutasks_theme') || 'dark';
   });
@@ -79,9 +80,6 @@ export default function SettingsPage() {
   });
   const [weekStartDay, setWeekStartDay] = useState<WeekStartDay>(() => {
     return (localStorage.getItem('cutasks_week_start') as WeekStartDay) || 'monday';
-  });
-  const [expandProjects, setExpandProjects] = useState<boolean>(() => {
-    return localStorage.getItem('cutasks_expand_projects') === '1';
   });
   const [defaultPriority, setDefaultPriority] = useState<DefaultPriority>('medium');
   const [pomoConfig, setPomoConfig] = useState<PomoConfig>(() => {
