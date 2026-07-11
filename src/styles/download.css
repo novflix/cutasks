@@ -98,7 +98,7 @@
 .dl-header {
   display: flex;
   align-items: center;
-  padding: 24px 0 0;
+  padding: calc(24px + env(safe-area-inset-top, 0px)) 0 0;
 }
 
 /* ── Hero ── */

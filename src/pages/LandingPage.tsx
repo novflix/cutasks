@@ -66,6 +66,11 @@ export default function LandingPage() {
     window.scrollTo(0, 0);
   }, []);
 
+  useEffect(() => {
+    document.body.style.paddingTop = '0';
+    return () => { document.body.style.paddingTop = ''; };
+  }, []);
+
   usePreventOverscroll();
 
   const scrollTo = useCallback((el: HTMLElement | null) => {

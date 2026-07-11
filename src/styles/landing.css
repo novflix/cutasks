@@ -79,7 +79,7 @@
   left: 0;
   right: 0;
   z-index: 100;
-  padding: 0 24px;
+  padding: env(safe-area-inset-top, 0) 24px 0;
   transition: background 0.3s, box-shadow 0.3s, backdrop-filter 0.3s;
 }
 .lp-nav.scrolled {

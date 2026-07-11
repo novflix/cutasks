@@ -52,6 +52,11 @@ export default function DownloadPage() {
     requestAnimationFrame(() => setMounted(true));
   }, []);
 
+  useEffect(() => {
+    document.body.style.paddingTop = '0';
+    return () => { document.body.style.paddingTop = ''; };
+  }, []);
+
   usePreventOverscroll();
 
   useEffect(() => {
