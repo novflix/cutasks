@@ -2,6 +2,7 @@ import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
+import { usePreventOverscroll } from '../hooks/usePreventOverscroll';
 import ArrowRight from '@solar-icons/react/icons/arrows/ArrowRight';
 import DownloadMinimalistic from '@solar-icons/react/icons/arrows-action/DownloadMinimalistic';
 import CheckCircle from '@solar-icons/react/icons/ui/CheckCircle';
@@ -50,6 +51,8 @@ export default function DownloadPage() {
   useEffect(() => {
     requestAnimationFrame(() => setMounted(true));
   }, []);
+
+  usePreventOverscroll();
 
   useEffect(() => {
     updateIndicator();

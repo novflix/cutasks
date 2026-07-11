@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
+import { usePreventOverscroll } from '../hooks/usePreventOverscroll';
 import LanguagePicker from '../components/LanguagePicker';
 import ClipboardCheck from '@solar-icons/react/icons/notes/ClipboardCheck';
 import Folder from '@solar-icons/react/icons/folders/Folder';
@@ -64,6 +65,8 @@ export default function LandingPage() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  usePreventOverscroll();
 
   const scrollTo = useCallback((el: HTMLElement | null) => {
     el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
