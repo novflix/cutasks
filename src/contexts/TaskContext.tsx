@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef, useCallback, useMemo, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Task, Project, Section, ProjectTask, Habit, Priority, FilterType } from '../types';
+import type { HotkeyAction, HotkeyCombo } from '../constants/hotkeys';
+import { getDefaultHotkeyConfig } from '../constants/hotkeys';
 import { generateId, priorityOrder, sanitizeInput, getDeadlineStatus } from '../utils';
 import { getAllTags } from '../storage';
-import { saveTasksDirty as fsSaveTasksDirty, saveProjectsDirty as fsSaveProjectsDirty, saveSectionsDirty as fsSaveSectionsDirty, saveProjectTasksDirty as fsSaveProjectTasksDirty, saveHabitsDirty as fsSaveHabitsDirty, loadAllData, loadSettings, subscribeToAllData } from '../services/firestore';
+import { saveTasksDirty as fsSaveTasksDirty, saveProjectsDirty as fsSaveProjectsDirty, saveSectionsDirty as fsSaveSectionsDirty, saveProjectTasksDirty as fsSaveProjectTasksDirty, saveHabitsDirty as fsSaveHabitsDirty, loadAllData, loadSettings, saveSettings, subscribeToAllData } from '../services/firestore';
 import { useAuth } from './AuthContext';
 import { TaskContext, type TaskContextValue } from './TaskContextDef';
 
@@ -56,6 +58,9 @@ export function TaskProvider({ children }: { children: ReactNode }) {
   const [defaultPriority, setDefaultPriority] = useState<Priority>('medium');
   const [weekStart, setWeekStart] = useState<string>(() => localStorage.getItem('cutasks_week_start') || 'monday');
   const [expandProjects, setExpandProjects] = useState<boolean>(() => localStorage.getItem('cutasks_expand_projects') === '1');
+
+  // ── Hotkeys ──
+  const [hotkeyConfig, setHotkeyConfigState] = useState<Record<HotkeyAction, HotkeyCombo>>(getDefaultHotkeyConfig);
 
   // ── Delete confirmation ──
   const [confirmDelete, setConfirmDelete] = useState<{ type: 'task' | 'project'; id: string; title: string } | null>(null);
@@ -121,6 +126,9 @@ export function TaskProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('cutasks_week_start', settings.weekStart);
         document.documentElement.setAttribute('data-theme', settings.theme);
         setDefaultPriority((settings.defaultPriority as Priority) || 'medium');
+        if (settings.hotkeys && Object.keys(settings.hotkeys).length > 0) {
+          setHotkeyConfigState(settings.hotkeys as Record<HotkeyAction, HotkeyCombo>);
+        }
       }
     }).catch(() => {});
 
@@ -525,6 +533,20 @@ export function TaskProvider({ children }: { children: ReactNode }) {
   const confirmDeleteProject = useCallback((id: string) => { deleteProject(id); }, [deleteProject]);
   const confirmDeleteProjectTask = useCallback((id: string) => { deleteProjectTask(id); }, [deleteProjectTask]);
 
+  // ── Hotkey config save ──
+  const setHotkeyConfig = useCallback((config: Record<HotkeyAction, HotkeyCombo>) => {
+    setHotkeyConfigState(config);
+    if (user) {
+      saveSettings(user.uid, {
+        theme: localStorage.getItem('cutasks_theme') || 'dark',
+        deleteMode: localStorage.getItem('cutasks_delete_mode') || 'instant',
+        weekStart,
+        defaultPriority,
+        hotkeys: config,
+      }).catch(() => {});
+    }
+  }, [user, weekStart, defaultPriority]);
+
   const value: TaskContextValue = {
     tasks, projects, sections, projectTasks, habits, dataLoading,
     createTask, updateTask, deleteTask, toggleTask, setSubtaskOf,
@@ -539,6 +561,7 @@ export function TaskProvider({ children }: { children: ReactNode }) {
     taskMap,
     defaultPriority, setDefaultPriority, weekStart, setWeekStart,
     expandProjects, setExpandProjects,
+    hotkeyConfig, setHotkeyConfig,
     confirmDelete, setConfirmDelete, confirmDeleteTask, confirmDeleteProject, confirmDeleteProjectTask,
   };
 

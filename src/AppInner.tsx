@@ -12,6 +12,7 @@ import { useAuth } from './contexts/AuthContext';
 import { useNotifications } from './hooks/useNotifications';
 import { usePomodoroTitle } from './hooks/usePomodoroTitle';
 import { useUndoShortcut } from './hooks/useUndoShortcut';
+import { useHotkeys } from './hooks/useHotkeys';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import TaskDetailModal from './components/TaskDetailModal';
@@ -67,6 +68,7 @@ function AppContent() {
     filteredTasks, filteredProjects, allTags, allProjectTags,
     projectStats, taskStatsFormatted, taskMap,
     expandProjects, weekStart,
+    hotkeyConfig,
     confirmDelete, setConfirmDelete, confirmDeleteTask, confirmDeleteProject, confirmDeleteProjectTask,
   } = useTaskContext();
 
@@ -104,6 +106,33 @@ function AppContent() {
   useNotifications(user, dataLoading, tasks, projectTasks, habits);
   usePomodoroTitle(pomoRunning, pomoSeconds, pomoMode);
   useUndoShortcut(undo);
+
+  const closeTopModal = useCallback(() => {
+    if (confirmDelete) { setConfirmDelete(null); return; }
+    if (showForm) { closeForm(); return; }
+    if (showProjectForm) { closeProjectForm(); return; }
+    if (showProjectTaskForm) { closeProjectTaskForm(); return; }
+    if (viewingTask) { closeDetail(); return; }
+    if (viewingProjectTask) { closeProjectTaskDetail(); return; }
+  }, [
+    confirmDelete, setConfirmDelete,
+    showForm, closeForm,
+    showProjectForm, closeProjectForm,
+    showProjectTaskForm, closeProjectTaskForm,
+    viewingTask, closeDetail,
+    viewingProjectTask, closeProjectTaskDetail,
+  ]);
+
+  useHotkeys({
+    hotkeyConfig,
+    createTask: openCreateForm,
+    createProject: openCreateProject,
+    createHabit: () => habitFormOpenerRef.current?.(),
+    togglePomodoro: pomoToggleRunning,
+    closeTopModal,
+    sidebarWidth,
+    setSidebarWidth,
+  });
 
   const activeProjectTasks = useMemo(
     () => activeProject ? projectTasks.filter((t) => t.projectId === activeProject.id) : [],

@@ -410,13 +410,20 @@ export interface UserSettings {
   deleteMode: string;
   weekStart: string;
   defaultPriority: string;
+  hotkeys: Record<string, { code: string; alt: boolean; ctrl: boolean; shift: boolean }>;
 }
 
 export async function loadSettings(uid: string): Promise<UserSettings | null> {
   const snap = await getDoc(doc(db, 'users', uid, 'settings', 'prefs'));
   if (!snap.exists()) return null;
   const d = snap.data();
-  return { theme: d.t || 'dark', deleteMode: d.d || 'instant', weekStart: d.w || 'monday', defaultPriority: d.p || 'medium' };
+  return {
+    theme: d.t || 'dark',
+    deleteMode: d.d || 'instant',
+    weekStart: d.w || 'monday',
+    defaultPriority: d.p || 'medium',
+    hotkeys: d.h || {},
+  };
 }
 
 export async function saveSettings(uid: string, settings: UserSettings) {
@@ -425,6 +432,7 @@ export async function saveSettings(uid: string, settings: UserSettings) {
     d: settings.deleteMode,
     w: settings.weekStart,
     p: settings.defaultPriority,
+    h: settings.hotkeys,
   }, { merge: true });
 }
 

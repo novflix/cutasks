@@ -1261,5 +1261,22 @@
       "t10": "Organize a reunion with old friends",
       "t11": "Write a letter to yourself 10 years from now"
     }
+  },
+  "hotkeys": {
+    "title": "Keyboard Shortcuts",
+    "createTask": "Create Task",
+    "createProject": "Create Project",
+    "createHabit": "Create Habit",
+    "togglePomodoro": "Start / Pause Pomodoro",
+    "focusSearch": "Focus Search",
+    "openCalendar": "Open Calendar",
+    "toggleSidebar": "Toggle Sidebar",
+    "goHome": "Go to Home",
+    "goTasks": "Go to Tasks",
+    "goProjects": "Go to Projects",
+    "goSettings": "Go to Settings",
+    "pressKey": "Press your shortcut...",
+    "resetDefaults": "Reset to defaults",
+    "hint": "Click a shortcut to reassign it"
   }
 }

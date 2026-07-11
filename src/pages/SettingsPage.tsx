@@ -27,6 +27,8 @@ import { getFirebaseErrorMessage } from '../utils/firebaseErrors';
 import { sanitizeInput } from '../utils';
 import type { PomoConfig } from './PomodoroPage';
 import { DEFAULT_POMO_CONFIG } from '../constants/pomo';
+import { DEFAULT_HOTKEYS, getDefaultHotkeyConfig, comboToDisplay, type HotkeyAction, type HotkeyCombo } from '../constants/hotkeys';
+import { useTaskContext } from '../hooks/useTaskContext';
 
 type DeleteMode = 'instant' | '3days' | '7days';
 type WeekStartDay = 'monday' | 'saturday';
@@ -118,6 +120,10 @@ export default function SettingsPage() {
   const [notifPermission, setNotifPermission] = useState(() => getNotificationPermission());
   const [notifEnabled, setNotifEnabled] = useState(() => isNotificationsEnabled());
 
+  const { hotkeyConfig, setHotkeyConfig } = useTaskContext();
+  const [recordingAction, setRecordingAction] = useState<HotkeyAction | null>(null);
+  const recordingRef = useRef<HotkeyAction | null>(null);
+
   const DELETE_OPTIONS: { value: DeleteMode; label: string; desc: string }[] = [
     { value: 'instant', label: t('settings.instant'), desc: t('settings.instantDesc') },
     { value: '3days', label: t('settings.after3days'), desc: t('settings.after3daysDesc') },
@@ -145,8 +151,8 @@ export default function SettingsPage() {
       isInitialMountRef.current = false;
       return;
     }
-    if (user && settingsLoadedRef.current) saveSettings(user.uid, { theme: activeTheme, deleteMode, weekStart: weekStartDay, defaultPriority }).catch(() => {});
-  }, [activeTheme, deleteMode, weekStartDay, defaultPriority, expandProjects, user]);
+    if (user && settingsLoadedRef.current) saveSettings(user.uid, { theme: activeTheme, deleteMode, weekStart: weekStartDay, defaultPriority, hotkeys: hotkeyConfig }).catch(() => {});
+  }, [activeTheme, deleteMode, weekStartDay, defaultPriority, expandProjects, user, hotkeyConfig]);
 
   useEffect(() => {
     if (!user) return;
@@ -398,6 +404,54 @@ export default function SettingsPage() {
     } finally {
       setNameLoading(false);
     }
+  }
+
+  function startRecording(action: HotkeyAction) {
+    setRecordingAction(action);
+    recordingRef.current = action;
+  }
+
+  function cancelRecording() {
+    setRecordingAction(null);
+    recordingRef.current = null;
+  }
+
+  useEffect(() => {
+    if (!recordingAction) return;
+
+    function handleKeyDown(e: KeyboardEvent) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (e.key === 'Escape') {
+        cancelRecording();
+        return;
+      }
+
+      // Ignore bare modifier presses
+      if (e.code === 'AltLeft' || e.code === 'AltRight' || e.code === 'ControlLeft' || e.code === 'ControlRight' || e.code === 'ShiftLeft' || e.code === 'ShiftRight') return;
+
+      const action = recordingRef.current;
+      if (!action) return;
+
+      const combo: HotkeyCombo = {
+        code: e.code,
+        alt: e.altKey,
+        ctrl: e.ctrlKey || e.metaKey,
+        shift: e.shiftKey,
+      };
+
+      setHotkeyConfig({ ...hotkeyConfig, [action]: combo });
+      setRecordingAction(null);
+      recordingRef.current = null;
+    }
+
+    window.addEventListener('keydown', handleKeyDown, true);
+    return () => window.removeEventListener('keydown', handleKeyDown, true);
+  }, [recordingAction, hotkeyConfig, setHotkeyConfig]);
+
+  function handleResetHotkeys() {
+    setHotkeyConfig(getDefaultHotkeyConfig());
   }
 
   return (
@@ -654,6 +708,33 @@ export default function SettingsPage() {
             </div>
           </div>
         ))}
+        </div>
+      </div>
+
+      <div className="settings-section settings-section-desktop-only">
+          <span className="settings-section-label">{t('hotkeys.title')}</span>
+        <div className="hotkey-list">
+          {DEFAULT_HOTKEYS.map((item) => {
+            const combo = hotkeyConfig[item.id];
+            const isRecording = recordingAction === item.id;
+            return (
+              <div key={item.id} className="hotkey-row">
+                <span className="hotkey-label">{t(item.labelKey)}</span>
+                <button
+                  className={`hotkey-btn${isRecording ? ' recording' : ''}`}
+                  onClick={() => isRecording ? cancelRecording() : startRecording(item.id)}
+                >
+                  {isRecording ? t('hotkeys.pressKey') : comboToDisplay(combo)}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+        <div className="hotkey-footer">
+          <button className="hotkey-reset-btn" onClick={handleResetHotkeys}>
+            {t('hotkeys.resetDefaults')}
+          </button>
+          <span className="hotkey-hint">{t('hotkeys.hint')}</span>
         </div>
       </div>
 

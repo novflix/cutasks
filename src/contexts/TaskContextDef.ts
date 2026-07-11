@@ -1,5 +1,6 @@
 import { createContext } from 'react';
 import type { Task, Project, Section, ProjectTask, Habit, Priority, FilterType } from '../types';
+import type { HotkeyAction, HotkeyCombo } from '../constants/hotkeys';
 
 export interface TaskContextValue {
   // State
@@ -67,6 +68,10 @@ export interface TaskContextValue {
   setWeekStart: (w: string) => void;
   expandProjects: boolean;
   setExpandProjects: (e: boolean) => void;
+
+  // Hotkeys
+  hotkeyConfig: Record<HotkeyAction, HotkeyCombo>;
+  setHotkeyConfig: (config: Record<HotkeyAction, HotkeyCombo>) => void;
 
   // Delete confirmation
   confirmDelete: { type: 'task' | 'project'; id: string; title: string } | null;
