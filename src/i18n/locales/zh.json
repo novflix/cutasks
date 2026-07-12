@@ -1254,5 +1254,22 @@
     "openApp": "打开应用",
     "useWeb": "在此期间，请使用网页版：",
     "soon": "即将推出"
+  },
+  "hotkeys": {
+    "title": "键盘快捷键",
+    "createTask": "创建任务",
+    "createProject": "创建项目",
+    "createHabit": "创建习惯",
+    "togglePomodoro": "开始 / 暂停番茄钟",
+    "focusSearch": "聚焦搜索",
+    "openCalendar": "打开日历",
+    "toggleSidebar": "切换侧边栏",
+    "goHome": "前往首页",
+    "goTasks": "前往任务",
+    "goProjects": "前往项目",
+    "goSettings": "前往设置",
+    "pressKey": "按下你的快捷键...",
+    "resetDefaults": "恢复默认设置",
+    "hint": "点击快捷键可重新分配"
   }
 }

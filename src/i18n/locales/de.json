@@ -1254,5 +1254,22 @@
     "openApp": "App öffnen",
     "useWeb": "Verwenden Sie in der Zwischenzeit die Web-Version:",
     "soon": "Bald"
+  },
+  "hotkeys": {
+    "title": "Tastenkürzel",
+    "createTask": "Aufgabe erstellen",
+    "createProject": "Projekt erstellen",
+    "createHabit": "Gewohnheit erstellen",
+    "togglePomodoro": "Pomodoro starten/pausieren",
+    "focusSearch": "Suche fokussieren",
+    "openCalendar": "Kalender öffnen",
+    "toggleSidebar": "Seitenleiste umschalten",
+    "goHome": "Zur Startseite",
+    "goTasks": "Zu Aufgaben",
+    "goProjects": "Zu Projekten",
+    "goSettings": "Zu Einstellungen",
+    "pressKey": "Taste drücken...",
+    "resetDefaults": "Auf Standard zurücksetzen",
+    "hint": "Klicken Sie auf ein Kürzel, um es neu zuzuweisen"
   }
 }

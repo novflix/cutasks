@@ -1253,5 +1253,22 @@
     "openApp": "Abrir app",
     "useWeb": "Mientras tanto, usa la versión web:",
     "soon": "Próximamente"
+  },
+  "hotkeys": {
+    "title": "Atajos de teclado",
+    "createTask": "Crear tarea",
+    "createProject": "Crear proyecto",
+    "createHabit": "Crear hábito",
+    "togglePomodoro": "Iniciar / Pausar Pomodoro",
+    "focusSearch": "Enfocar búsqueda",
+    "openCalendar": "Abrir calendario",
+    "toggleSidebar": "Alternar barra lateral",
+    "goHome": "Ir a Inicio",
+    "goTasks": "Ir a Tareas",
+    "goProjects": "Ir a Proyectos",
+    "goSettings": "Ir a Ajustes",
+    "pressKey": "Presiona tu atajo...",
+    "resetDefaults": "Restablecer valores predeterminados",
+    "hint": "Haz clic en un atajo para reasignarlo"
   }
 }

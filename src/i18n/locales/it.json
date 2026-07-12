@@ -1254,5 +1254,22 @@
     "openApp": "Apri app",
     "useWeb": "Nel frattempo, usa la versione web:",
     "soon": "Prossimamente"
+  },
+  "hotkeys": {
+    "title": "Scorciatoie da tastiera",
+    "createTask": "Crea activity",
+    "createProject": "Crea progetto",
+    "createHabit": "Crea abitudine",
+    "togglePomodoro": "Avvia / Metti in pausa Pomodoro",
+    "focusSearch": "Focus sulla ricerca",
+    "openCalendar": "Apri calendario",
+    "toggleSidebar": "Alterna barra laterale",
+    "goHome": "Vai alla Home",
+    "goTasks": "Vai alle Attività",
+    "goProjects": "Vai ai Progetti",
+    "goSettings": "Vai alle Impostazioni",
+    "pressKey": "Premi la tua scorciatoia...",
+    "resetDefaults": "Ripristina valori predefiniti",
+    "hint": "Clicca su una scorciatoia per riassegnarla"
   }
 }

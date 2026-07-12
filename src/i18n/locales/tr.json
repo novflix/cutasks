@@ -1254,5 +1254,22 @@
     "openApp": "Uygulamayı aç",
     "useWeb": "Bu arada web sürümünü kullanın:",
     "soon": "Yakında"
+  },
+  "hotkeys": {
+    "title": "Klavye kısayolları",
+    "createTask": "Görev oluştur",
+    "createProject": "Proje oluştur",
+    "createHabit": "Alışkanlık oluştur",
+    "togglePomodoro": "Pomodoro'yu başlat / duraklat",
+    "focusSearch": "Aramaya odaklan",
+    "openCalendar": "Takvimi aç",
+    "toggleSidebar": "Kenar çubuğunu değiştir",
+    "goHome": "Ana Sayfaya git",
+    "goTasks": "Görevlere git",
+    "goProjects": "Projelere git",
+    "goSettings": "Ayarlarına git",
+    "pressKey": "Kısayolunuza basın...",
+    "resetDefaults": "Varsayılana sıfırla",
+    "hint": "Bir kısayolu yeniden atamak için tıklayın"
   }
 }

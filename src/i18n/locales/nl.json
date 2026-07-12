@@ -1258,5 +1258,22 @@
     "openApp": "App openen",
     "useWeb": "Gebruik ondertussen de webversie:",
     "soon": "Binnenkort"
+  },
+  "hotkeys": {
+    "title": "Sneltoetsen",
+    "createTask": "Taak aanmaken",
+    "createProject": "Project aanmaken",
+    "createHabit": "Gewoonte aanmaken",
+    "togglePomodoro": "Pomodoro starten / pauzeren",
+    "focusSearch": "Focus op zoekbalk",
+    "openCalendar": "Kalender openen",
+    "toggleSidebar": "Zijbalk wisselen",
+    "goHome": "Ga naar Home",
+    "goTasks": "Ga naar Taken",
+    "goProjects": "Ga naar Projecten",
+    "goSettings": "Ga naar Instellingen",
+    "pressKey": "Druk op je sneltoets...",
+    "resetDefaults": "Standaardwaarden herstellen",
+    "hint": "Klik op een sneltoets om deze opnieuw toe te wijzen"
   }
 }

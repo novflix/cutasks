@@ -1254,5 +1254,22 @@
     "openApp": "アプリを開く",
     "useWeb": "その間、Web バージョンをご利用ください：",
     "soon": "近日公開"
+  },
+  "hotkeys": {
+    "title": "キーボードショートカット",
+    "createTask": "タスクを作成",
+    "createProject": "プロジェクトを作成",
+    "createHabit": "習慣を作成",
+    "togglePomodoro": "ポモドーロ開始 / 一時停止",
+    "focusSearch": "検索にフォーカス",
+    "openCalendar": "カレンダーを開く",
+    "toggleSidebar": "サイドバーを切り替え",
+    "goHome": "ホームへ",
+    "goTasks": "タスクへ",
+    "goProjects": "プロジェクトへ",
+    "goSettings": "設定へ",
+    "pressKey": "ショートカットキーを押してください...",
+    "resetDefaults": "デフォルトに戻す",
+    "hint": "ショートカットをクリックして再割り当て"
   }
 }
