@@ -16,12 +16,11 @@
     align-items: center;
     justify-content: center;
     position: fixed;
-    bottom: 28px;
-    bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+    bottom: 16px;
     left: 0;
     right: 0;
     z-index: 200;
-    padding: 0 16px;
+    padding: 0 16px env(safe-area-inset-bottom, 0px);
     pointer-events: none;
     animation: slideUpFade 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
   }
@@ -167,7 +166,7 @@
 @media (max-width: 360px) {
   .mobile-bottom-bar {
     gap: 10px;
-    bottom: 24px;
+    bottom: 12px;
   }
 
   .mobile-nav {
