@@ -1328,3 +1328,37 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.6; }
 }
+
+/* ── Hotkeys modal ── */
+
+.hotkeys-modal {
+  max-width: 480px;
+  width: 100%;
+}
+
+.hotkeys-modal .modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hotkeys-modal .hotkey-list {
+  max-height: 50vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 480px) {
+  .hotkeys-modal {
+    max-width: 100%;
+    max-height: 85vh;
+  }
+
+  .hotkeys-modal .modal-body {
+    padding: 0 16px 16px;
+  }
+
+  .hotkeys-modal .hotkey-list {
+    max-height: 60vh;
+  }
+}

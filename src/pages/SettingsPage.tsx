@@ -9,6 +9,7 @@ import Pen from '@solar-icons/react/icons/messages/Pen';
 import AltArrowRight from '@solar-icons/react/icons/arrows/AltArrowRight';
 import Heart from '@solar-icons/react/icons/like/Heart';
 import Copy from '@solar-icons/react/icons/ui/Copy';
+import Keyboard from '@solar-icons/react/icons/devices/Keyboard';
 import DownloadMinimalistic from '@solar-icons/react/icons/arrows-action/DownloadMinimalistic';
 import UploadMinimalistic from '@solar-icons/react/icons/arrows-action/UploadMinimalistic';
 import { loadAllData, saveAllData } from '../services/firestore';
@@ -27,8 +28,8 @@ import { getFirebaseErrorMessage } from '../utils/firebaseErrors';
 import { sanitizeInput } from '../utils';
 import type { PomoConfig } from './PomodoroPage';
 import { DEFAULT_POMO_CONFIG } from '../constants/pomo';
-import { DEFAULT_HOTKEYS, getDefaultHotkeyConfig, comboToDisplay, type HotkeyAction, type HotkeyCombo } from '../constants/hotkeys';
 import { useTaskContext } from '../hooks/useTaskContext';
+import HotkeysModal from '../components/HotkeysModal';
 
 type DeleteMode = 'instant' | '3days' | '7days';
 type WeekStartDay = 'monday' | 'saturday';
@@ -118,9 +119,10 @@ export default function SettingsPage() {
   const [notifPermission, setNotifPermission] = useState(() => getNotificationPermission());
   const [notifEnabled, setNotifEnabled] = useState(() => isNotificationsEnabled());
 
-  const { hotkeyConfig, setHotkeyConfig } = useTaskContext();
-  const [recordingAction, setRecordingAction] = useState<HotkeyAction | null>(null);
-  const recordingRef = useRef<HotkeyAction | null>(null);
+  const { hotkeyConfig } = useTaskContext();
+  const [showHotkeysModal, setShowHotkeysModal] = useState(false);
+  const [hotkeysModalClosing, setHotkeysModalClosing] = useState(false);
+  const hotkeysModalTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const DELETE_OPTIONS: { value: DeleteMode; label: string; desc: string }[] = [
     { value: 'instant', label: t('settings.instant'), desc: t('settings.instantDesc') },
@@ -404,52 +406,17 @@ export default function SettingsPage() {
     }
   }
 
-  function startRecording(action: HotkeyAction) {
-    setRecordingAction(action);
-    recordingRef.current = action;
+  function openHotkeysModal() {
+    setHotkeysModalClosing(false);
+    setShowHotkeysModal(true);
   }
 
-  function cancelRecording() {
-    setRecordingAction(null);
-    recordingRef.current = null;
-  }
-
-  useEffect(() => {
-    if (!recordingAction) return;
-
-    function handleKeyDown(e: KeyboardEvent) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      if (e.key === 'Escape') {
-        cancelRecording();
-        return;
-      }
-
-      // Ignore bare modifier presses
-      if (e.code === 'AltLeft' || e.code === 'AltRight' || e.code === 'ControlLeft' || e.code === 'ControlRight' || e.code === 'ShiftLeft' || e.code === 'ShiftRight') return;
-
-      const action = recordingRef.current;
-      if (!action) return;
-
-      const combo: HotkeyCombo = {
-        code: e.code,
-        alt: e.altKey,
-        ctrl: e.ctrlKey || e.metaKey,
-        shift: e.shiftKey,
-      };
-
-      setHotkeyConfig({ ...hotkeyConfig, [action]: combo });
-      setRecordingAction(null);
-      recordingRef.current = null;
-    }
-
-    window.addEventListener('keydown', handleKeyDown, true);
-    return () => window.removeEventListener('keydown', handleKeyDown, true);
-  }, [recordingAction, hotkeyConfig, setHotkeyConfig]);
-
-  function handleResetHotkeys() {
-    setHotkeyConfig(getDefaultHotkeyConfig());
+  function closeHotkeysModal() {
+    setHotkeysModalClosing(true);
+    hotkeysModalTimer.current = setTimeout(() => {
+      setShowHotkeysModal(false);
+      setHotkeysModalClosing(false);
+    }, 200);
   }
 
   return (
@@ -709,30 +676,17 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="settings-section settings-section-desktop-only">
+      <div className="settings-section">
           <span className="settings-section-label">{t('hotkeys.title')}</span>
-        <div className="hotkey-list">
-          {DEFAULT_HOTKEYS.map((item) => {
-            const combo = hotkeyConfig[item.id];
-            const isRecording = recordingAction === item.id;
-            return (
-              <div key={item.id} className="hotkey-row">
-                <span className="hotkey-label">{t(item.labelKey)}</span>
-                <button
-                  className={`hotkey-btn${isRecording ? ' recording' : ''}`}
-                  onClick={() => isRecording ? cancelRecording() : startRecording(item.id)}
-                >
-                  {isRecording ? t('hotkeys.pressKey') : comboToDisplay(combo)}
-                </button>
-              </div>
-            );
-          })}
-        </div>
-        <div className="hotkey-footer">
-          <button className="hotkey-reset-btn" onClick={handleResetHotkeys}>
-            {t('hotkeys.resetDefaults')}
+        <div className="delete-options">
+          <button className="delete-option" onClick={openHotkeysModal}>
+            <Keyboard size={18} style={{ color: 'var(--text-muted)', flexShrink: 0 }} />
+            <div className="delete-option-info">
+              <span className="delete-option-label">{t('hotkeys.title')}</span>
+              <span className="delete-option-desc">{t('hotkeys.hint')}</span>
+            </div>
+            <AltArrowRight size={16} style={{ color: 'var(--text-dim)', flexShrink: 0 }} />
           </button>
-          <span className="hotkey-hint">{t('hotkeys.hint')}</span>
         </div>
       </div>
 
@@ -996,6 +950,10 @@ export default function SettingsPage() {
         <span className="settings-legal-dot">·</span>
         <a href="/privacy">{t('legal.privacyShort')}</a>
       </div>
+
+      {(showHotkeysModal || hotkeysModalClosing) && (
+        <HotkeysModal isClosing={hotkeysModalClosing} onClose={closeHotkeysModal} />
+      )}
     </div>
   );
 }
