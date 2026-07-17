@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Task, Project, Section, ProjectTask, Habit, Priority, FilterType } from '../types';
+import type { Task, Project, ProjectStatus, Section, ProjectTask, Habit, Priority, FilterType } from '../types';
 import type { HotkeyAction, HotkeyCombo } from '../constants/hotkeys';
 import { getDefaultHotkeyConfig } from '../constants/hotkeys';
 import { generateId, priorityOrder, sanitizeInput, getDeadlineStatus } from '../utils';
@@ -324,16 +324,16 @@ export function TaskProvider({ children }: { children: ReactNode }) {
   }, [pushHistory]);
 
   // ── Project operations ──
-  const createProject = useCallback((name: string) => {
+  const createProject = useCallback((name: string, options?: { icon?: string; color?: string; status?: ProjectStatus }) => {
     pushHistory();
     const now = Date.now();
     const newProject: Project = {
       id: generateId(),
       name: sanitizeInput(name),
       description: '',
-      icon: 'Folder',
-      color: '#ed9b6d',
-      status: 'active',
+      icon: options?.icon ?? 'Folder',
+      color: options?.color ?? '#ed9b6d',
+      status: options?.status ?? 'active',
       createdAt: now,
       updatedAt: now,
     };

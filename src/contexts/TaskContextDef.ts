@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import type { Task, Project, Section, ProjectTask, Habit, Priority, FilterType } from '../types';
+import type { Task, Project, ProjectStatus, Section, ProjectTask, Habit, Priority, FilterType } from '../types';
 import type { HotkeyAction, HotkeyCombo } from '../constants/hotkeys';
 
 export interface TaskContextValue {
@@ -19,7 +19,7 @@ export interface TaskContextValue {
   setSubtaskOf: (childId: string, parentId: string | null) => void;
 
   // Project operations
-  createProject: (name: string) => void;
+  createProject: (name: string, options?: { icon?: string; color?: string; status?: ProjectStatus }) => void;
   updateProject: (id: string, changes: Partial<Project>) => void;
   deleteProject: (id: string) => void;
   reorderProjects: (fromIndex: number, toIndex: number) => void;

@@ -320,7 +320,7 @@ export function UIProvider({ children }: { children: ReactNode }) {
     if (editingProject) {
       updateProject(editingProject.id, { name: trimmedName, description: trimmedDesc, icon: projectIcon, color: projectColor, status: projectStatus });
     } else {
-      createProject(trimmedName);
+      createProject(trimmedName, { icon: projectIcon, color: projectColor, status: projectStatus });
     }
     closeProjectForm();
   }
