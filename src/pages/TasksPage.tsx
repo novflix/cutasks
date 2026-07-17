@@ -32,15 +32,17 @@ export default function TasksPage({
       <div className="page-hero">
         <h1 className="page-hero-title">{t('tasks.title')}</h1>
       </div>
-      <Header stats={stats} onCreate={onCreate} />
-      <Toolbar
-        searchQuery={searchQuery}
-        onSearch={onSearch}
-        filter={filter}
-        onFilter={onFilter}
-        onCreateFromSearch={onCreateFromSearch}
-        hasResults={tasks.length > 0}
-      />
+      <div className="sticky-top">
+        <Header stats={stats} onCreate={onCreate} />
+        <Toolbar
+          searchQuery={searchQuery}
+          onSearch={onSearch}
+          filter={filter}
+          onFilter={onFilter}
+          onCreateFromSearch={onCreateFromSearch}
+          hasResults={tasks.length > 0}
+        />
+      </div>
       <main className="main">
         <TaskList
           tasks={tasks}

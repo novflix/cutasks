@@ -275,6 +275,7 @@ function AppContent() {
                   <div className="page-hero">
                     <h1 className="page-hero-title">{t('projects.title')}</h1>
                   </div>
+                  <div className="sticky-top">
                   <Header stats={projectStats} onCreate={openCreateProject} createLabel={t('projects.newProject')} />
                   <div className="toolbar">
                     <div className="search-box">
@@ -292,6 +293,7 @@ function AppContent() {
                         className="search-input"
                       />
                     </div>
+                  </div>
                   </div>
                   <main className="main">
                     <ProjectsPage
@@ -334,6 +336,7 @@ function AppContent() {
                           {project.description && <p className="project-detail-desc">{project.description}</p>}
                         </div>
                       </div>
+                      <div className="sticky-top">
                       <Header stats={projectTaskStats} onCreate={() => openCreateProjectTask(null)} createLabel={t('tasks.newTask')} />
                       <div className="toolbar">
                         <div className="search-box">
@@ -362,6 +365,7 @@ function AppContent() {
                             </button>
                           ))}
                         </div>
+                      </div>
                       </div>
                       <main className="main">
                         <ProjectDetailPage

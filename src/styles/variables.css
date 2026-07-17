@@ -106,7 +106,8 @@ button, a, [role="button"] {
   .toolbar,
   .main,
   .project-detail-header,
-  .page-hero {
+  .page-hero,
+  .sticky-top {
     max-width: 680px;
     margin-left: auto;
     margin-right: auto;

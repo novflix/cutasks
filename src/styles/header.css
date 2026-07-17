@@ -1,9 +1,12 @@
 .header {
+  padding: 28px 0 20px;
+}
+
+.sticky-top {
   position: sticky;
   top: 0;
   z-index: 100;
-  padding: 28px 0 20px;
-  background: linear-gradient(to bottom, var(--bg) 70%, transparent);
+  background: var(--bg);
 }
 
 .header-content {
