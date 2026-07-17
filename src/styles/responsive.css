@@ -48,7 +48,7 @@
 
 @media (max-width: 480px) {
   .app {
-    padding: 0 16px 80px;
+    padding: 0 16px 180px;
   }
 
   /* HEADER */
@@ -409,7 +409,7 @@
 
 @media (max-width: 360px) {
   .app {
-    padding: 0 12px 70px;
+    padding: 0 12px 160px;
   }
 
   .task-list {
