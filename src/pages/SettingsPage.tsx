@@ -676,7 +676,7 @@ export default function SettingsPage() {
         </div>
       </div>
 
-      <div className="settings-section">
+      <div className="settings-section settings-section-desktop-only">
           <span className="settings-section-label">{t('hotkeys.title')}</span>
         <div className="delete-options">
           <button className="delete-option" onClick={openHotkeysModal}>
