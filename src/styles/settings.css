@@ -23,7 +23,7 @@
 .theme-cards {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 16px;
 }
 
 .theme-card {
@@ -57,45 +57,45 @@
 }
 
 .theme-card-preview {
-  height: 80px;
+  height: 120px;
   position: relative;
   overflow: hidden;
   display: flex;
 }
 
 .theme-card-sidebar-col {
-  width: 32%;
+  width: 30%;
   height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 12px 0;
-  gap: 8px;
+  padding: 14px 0;
+  gap: 10px;
 }
 
 .theme-card-sidebar-pill {
-  width: 28px;
+  width: 32px;
   height: 4px;
   border-radius: 2px;
 }
 
 .theme-card-sidebar-icon {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   border-radius: 4px;
 }
 
 .theme-card-content-col {
   flex: 1;
   height: 100%;
-  padding: 12px;
+  padding: 14px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .theme-card-content-bar {
-  height: 5px;
+  height: 6px;
   border-radius: 3px;
 }
 
@@ -104,14 +104,14 @@
 .theme-card-content-bar.w80 { width: 80%; }
 
 .theme-card-content-accent {
-  width: 18px;
-  height: 5px;
+  width: 20px;
+  height: 6px;
   border-radius: 3px;
   margin-top: auto;
 }
 
 .theme-card-body {
-  padding: 14px 16px;
+  padding: 16px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -119,14 +119,14 @@
 }
 
 .theme-card-label {
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--text);
 }
 
 .theme-card-dot {
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   border: 2.5px solid var(--border);
   display: flex;
